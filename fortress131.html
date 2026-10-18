@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>The Fortress 1-3-1</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000;font-family:Arial,sans-serif;color:#fff;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+
+#screen-intro{
+  position:fixed;inset:0;display:flex;flex-direction:column;
+  align-items:center;
+  /* Starting at the top rather than centring — with the demo and the
+     instructions the intro is taller than a phone screen, and a
+     centred flex column pushes its own top past the padding. */
+  justify-content:flex-start;
+  background:#000;z-index:100;
+  overflow-y:auto;overflow-x:hidden;
+  padding:84px 16px 34px;
+}
+.vrr-sub{font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;color:#22D3EE;margin-bottom:8px;text-align:center}
+.vrr-title{font-size:2.4rem;font-weight:900;font-style:italic;letter-spacing:.06em;text-transform:uppercase;text-shadow:0 0 40px rgba(12,127,196,.7);margin-bottom:16px;text-align:center}
+.vrr-title span{color:#22D3EE}
+.rule-t{font-size:.9rem;color:#c9b8a8;line-height:1.55;max-width:420px;margin-bottom:22px;text-align:center}
+.rule-t b{color:#fff}
+.big-btn{width:100%;max-width:420px;height:68px;border:none;border-radius:20px;background:linear-gradient(135deg,#0C7FC4,#22D3EE);color:#fff;font-size:1.2rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 40px rgba(12,127,196,.7);margin-bottom:14px}
+.big-btn:hover{transform:scale(1.03)}
+.big-btn.official{background:linear-gradient(135deg,#38BDF8,#0C7FC4);color:#04121A;box-shadow:0 0 40px rgba(56,189,248,.6)}
+/* ---- the demonstration and the instructions, intro screen only ---- */
+.demo-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;margin:14px 0 20px}
+.demo-label{
+  font-size:.7rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;
+  background:#050A12;border:1px solid rgba(34,211,238,.35);color:#22D3EE;
+  padding:7px 16px;border-radius:999px;white-space:nowrap;transition:color .2s,border-color .2s;
+}
+.demo-label.turn{color:#7DD3FC;border-color:rgba(56,189,248,.5)}
+.demo-label.good{color:#00D9A5;border-color:rgba(0,217,165,.5)}
+
+/* The same five positions the game uses, on a panel the same shape
+   as the real one — so what a student learns here is what they see. */
+/* the same 5x5 court as the game, drawn with gradients rather than
+   twenty-five elements */
+.demo-panel{
+  position:relative;width:min(220px,62vw);aspect-ratio:1;
+  background:#0D1826;
+  border:2px solid rgba(255,122,24,.4);border-radius:12px;
+}
+.demo-dot{
+  position:absolute;transform:translate(-50%,-50%);
+  width:17%;aspect-ratio:1;border-radius:50%;
+  transition:all .14s;
+}
+.demo-dot.lit{filter:brightness(1.4);box-shadow:0 0 22px rgba(255,255,255,.35);transform:translate(-50%,-50%) scale(1.14)}
+.demo-dot.ok{box-shadow:0 0 0 3px #00D9A5,0 0 18px rgba(0,217,165,.8)}
+.demo-panel.pulse{animation:demoPulse .5s ease-out}
+@keyframes demoPulse{0%{box-shadow:0 0 0 0 rgba(34,211,238,.5)}60%{box-shadow:0 0 22px 7px rgba(34,211,238,.22)}100%{box-shadow:none}}
+
+.htp{width:100%;max-width:420px;margin:0 0 16px}
+.htp-toggle{
+  display:flex;align-items:center;justify-content:center;gap:9px;width:100%;
+  padding:12px 16px;border-radius:12px;cursor:pointer;font-family:inherit;
+  background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.25);
+}
+.htp-toggle-text{font-size:.82rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#22D3EE}
+.htp-arrow{color:#22D3EE;font-size:.7rem;transition:transform .3s}
+.htp-toggle.open .htp-arrow{transform:rotate(180deg)}
+.htp-body{max-height:0;overflow:hidden;transition:max-height .45s ease-out}
+.htp-body.open{max-height:900px}
+.htp-card{background:#0D1826;border:1px solid #1E3550;border-radius:12px;padding:15px;margin-top:10px;text-align:left}
+.htp-card-title{font-size:.8rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#22D3EE;margin-bottom:11px}
+.htp-step{display:flex;gap:10px;margin-bottom:9px;align-items:flex-start}
+.htp-step:last-child{margin-bottom:0}
+.htp-step .n{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  background:#22D3EE;color:#04121A;font-size:.72rem;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+}
+.htp-step .tx{font-size:.8rem;color:#CFE3F2;line-height:1.5}
+.htp-step .tx b{color:#7DD3FC}
+.htp-tip{background:rgba(56,189,248,.07);border-left:3px solid #38BDF8;padding:10px 12px;border-radius:0 8px 8px 0;margin-top:12px}
+.htp-tip-title{font-size:.6rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#38BDF8;margin-bottom:4px}
+.htp-tip-text{font-size:.75rem;color:#8AA4BD;line-height:1.45}
+
+.name-input{width:100%;max-width:420px;padding:14px;border-radius:14px;border:2px solid rgba(12,127,196,.4);background:rgba(255,255,255,.05);color:#fff;font-family:Arial,sans-serif;font-size:1rem;text-align:center;margin-bottom:14px}
+.name-input:focus{outline:none;border-color:#22D3EE;box-shadow:0 0 20px rgba(12,127,196,.35)}
+.box-open-btn{width:100%;max-width:420px;height:52px;border:2px solid rgba(34,211,238,.5);background:rgba(34,211,238,.1);border-radius:14px;color:#7DD3FC;font-size:.9rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;margin-top:6px;text-decoration:none;display:flex;align-items:center;justify-content:center}
+.best-line{margin-top:16px;font-size:.85rem;color:#a7adba}
+.best-line b{color:#22D3EE}
+.lang-btn{position:fixed;top:16px;right:16px;padding:8px 14px;border:2px solid rgba(34,211,238,.45);background:rgba(0,0,0,.5);color:#7DD3FC;font-size:.72rem;font-weight:900;letter-spacing:.08em;border-radius:999px;cursor:pointer;z-index:60}
+.intro-back{position:fixed;top:16px;left:16px;padding:8px 16px;border:2px solid rgba(255,255,255,.25);background:rgba(0,0,0,.5);color:#fff;font-size:.78rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;text-decoration:none;z-index:60}
+
+.official-banner{
+  max-width:420px;width:100%;padding:14px 16px;border-radius:14px;
+  border:2px solid rgba(56,189,248,.45);background:rgba(56,189,248,.08);
+  margin-bottom:18px;text-align:center;
+}
+.official-banner .ob-kick{font-size:.6rem;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:#38BDF8;margin-bottom:5px}
+.official-banner .ob-name{font-size:1.05rem;font-weight:900;color:#fff}
+.official-banner .ob-note{font-size:.78rem;color:#c9b8a8;margin-top:6px;line-height:1.45}
+
+#countdown{position:fixed;inset:0;z-index:56;display:none;align-items:center;justify-content:center;background:#000}
+#bigCount{font-size:8rem;font-weight:900;color:#22D3EE;text-shadow:0 0 60px rgba(12,127,196,.9)}
+
+#screen-end{position:fixed;inset:0;z-index:70;display:none;flex-direction:column;align-items:center;justify-content:center;background:#000;text-align:center;padding:20px;overflow-y:auto}
+.final-num{font-size:6rem;font-weight:900;color:#22D3EE;line-height:1;text-shadow:0 0 60px rgba(12,127,196,.9)}
+.final-label{font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:#a7adba;margin-top:10px}
+.next-player-btn{margin-top:28px;height:64px;padding:0 40px;border:none;border-radius:16px;background:linear-gradient(120deg,#0C7FC4,#22D3EE);color:#fff;font-size:1.15rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 30px rgba(12,127,196,.6)}
+
+.final-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:300px;margin:18px auto}
+.final-stat-cell{border-radius:12px;border:2px solid rgba(12,127,196,.35);background:rgba(12,127,196,.06);padding:12px 4px;text-align:center}
+.final-stat-label{font-size:.58rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#7DD3FC;margin-bottom:4px}
+.final-stat-val{font-size:1.3rem;font-weight:900;color:#fff}
+.points-cell{border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.08)}
+.points-cell .final-stat-label{color:#38BDF8}
+.save-status{font-size:.78rem;font-weight:700;margin-top:14px;min-height:18px}
+
+#screen-game{position:fixed;inset:0;display:none;flex-direction:column;background:#000;overflow:hidden}
+.topbar{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;padding:10px 10px 4px;flex-shrink:0}
+.top-box{background:rgba(12,127,196,.08);border:1px solid rgba(12,127,196,.3);border-radius:10px;padding:5px 14px;text-align:center;min-width:70px}
+.top-box.official{border-color:rgba(56,189,248,.45);background:rgba(56,189,248,.08)}
+.top-label{font-size:.55rem;color:#a7adba;text-transform:uppercase;letter-spacing:.06em}
+.top-val{font-size:1.3rem;font-weight:900}
+#hLevel{color:#fff}#hPoints{color:#38BDF8}#hTime{color:#38BDF8}
+
+#msg{text-align:center;padding:6px;font-size:1.15rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;flex-shrink:0}
+#msg.watch{color:#22D3EE}#msg.go{color:#38BDF8}#msg.miss{color:#ff1e3c}
+
+.court-wrap{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:6px}
+/* The ball layer is fixed to the viewport, so it must not be left
+   sitting over other screens' buttons once a run is over. */
+
+.fortress-ball{position:absolute;border-radius:50%;cursor:pointer;transform:translate(-50%,-50%) scale(1);transition:filter .12s,box-shadow .12s,transform .12s;pointer-events:none;opacity:1;display:grid;place-content:center}
+/* The dollar sign rides on top of the ball art. Its own size is set
+   in JS alongside the ball's, so it scales with the court rather than
+   being fixed. */
+/* The dollar sign is drawn as SVG rather than set as a character.
+   A heavy text outline was closing the gaps around the vertical bar
+   and turning it into an S — here the bar is its own shape, so it
+   cannot be lost at any size. */
+
+.fortress-ball.ready{pointer-events:all}
+.fortress-ball.lit{filter:brightness(1.45) saturate(1.25);box-shadow:0 0 46px currentColor,0 0 92px currentColor;transform:translate(-50%,-50%) scale(1.14)}
+.fortress-ball.wrong{filter:grayscale(1) brightness(.5)}
+.ripple{position:fixed;border-radius:50%;border:3px solid #22D3EE;transform:translate(-50%,-50%) scale(0);pointer-events:none;z-index:14;animation:rippleOut .5s ease-out forwards}
+@keyframes rippleOut{0%{transform:translate(-50%,-50%) scale(.5);opacity:1}100%{transform:translate(-50%,-50%) scale(2.4);opacity:0}}
+#flash{position:fixed;inset:0;pointer-events:none;z-index:10;opacity:0;transition:opacity .1s}
+
+#controls{display:flex;justify-content:center;gap:10px;padding:8px 16px 14px;flex-shrink:0}
+.ctrl-btn{height:46px;flex:0 1 170px;max-width:200px;border:2px solid rgba(12,127,196,.5);background:rgba(0,0,0,.4);border-radius:12px;color:#fff;font-size:.92rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center}
+
+/* The court, exactly as The Recall builds it: a square 5x5 grid of
+   real cells. The 1-3-1 occupies five of them; the other twenty stay
+   empty, which is what makes the formation read. */
+.court-area{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:8px}
+.court{
+  display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);
+  gap:2.2%;padding:2.2%;
+  border:2px solid rgba(255,122,24,.4);border-radius:16px;
+  background:#0D1826;
+  box-shadow:0 0 60px rgba(255,122,24,.18),inset 0 0 40px rgba(255,122,24,.05),0 20px 60px rgba(0,0,0,.8);
+}
+.court .cell{
+  border-radius:10px;background:rgba(255,255,255,.03);border:2px solid rgba(255,255,255,.07);
+}
+/* the five that are in play */
+.court .spot{
+  border-radius:50%;border:none;background-size:100% 100%;cursor:pointer;
+  transition:filter .12s,box-shadow .12s,transform .12s;
+  transform:scale(1);
+}
+.court .spot.lit{
+  filter:brightness(1.45) saturate(1.25);
+  box-shadow:0 0 34px currentColor,0 0 70px currentColor;
+  transform:scale(1.08);
+}
+.court .spot.correct{box-shadow:0 0 0 4px #00D9A5,0 0 22px rgba(0,217,165,.8)}
+.court .spot.wrong{box-shadow:0 0 0 4px #FF1493,0 0 22px rgba(255,20,147,.8)}
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="screen-intro">
+  <a class="intro-back" href="index.html" id="introBack">← Back</a>
+  <button class="lang-btn" id="langBtn" onclick="toggleLang()">ES</button>
+  <div class="vrr-sub">1-3-1 zone</div>
+  <div class="vrr-title">THE <span>FORTRESS 1-3-1</span></div>
+
+  <div class="official-banner" id="officialBanner" style="display:none;">
+    <div class="ob-kick" id="obKick">Official Run</div>
+    <div class="ob-name" id="obPlayer">—</div>
+    <div class="ob-note" id="obNote">This run counts. Your sponsors pay on the points you score, and you only get one.</div>
+  </div>
+
+  <!-- A running demonstration, so a student who has never seen this
+       understands it before reading a word. It loops until they start
+       a run, and stops the moment they do. -->
+  <div class="demo-wrap">
+    <div class="demo-label" id="demoLabel">👀 Watch…</div>
+    <div class="demo-panel" id="demoPanel"></div>
+  </div>
+
+  <div class="htp">
+    <button class="htp-toggle" id="htpToggle" onclick="toggleHtp()">
+      <span>📖</span>
+      <span class="htp-toggle-text" id="htpText">How to play</span>
+      <span class="htp-arrow" id="htpArrow">▼</span>
+    </button>
+    <div class="htp-body" id="htpBody">
+      <div class="htp-card">
+        <div class="htp-card-title" id="cObjective">🎯 What to do</div>
+        <div class="htp-step"><span class="n">1</span><span class="tx" id="cs1"></span></div>
+        <div class="htp-step"><span class="n">2</span><span class="tx" id="cs2"></span></div>
+        <div class="htp-step"><span class="n">3</span><span class="tx" id="cs3"></span></div>
+      </div>
+      <div class="htp-card">
+        <div class="htp-card-title" id="cScoring">⭐ Chain scoring</div>
+        <div class="htp-step"><span class="n">→</span><span class="tx" id="cp1"></span></div>
+        <div class="htp-step"><span class="n">→</span><span class="tx" id="cp2"></span></div>
+        <div class="htp-step"><span class="n">→</span><span class="tx" id="cp3"></span></div>
+        <div class="htp-tip">
+          <div class="htp-tip-title" id="cTipTitle">💡 Tip</div>
+          <div class="htp-tip-text" id="cTip"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="big-btn" id="bigStart" onclick="handleStartClick()">▶ START</button>
+  <div class="best-line" id="bestLine"></div>
+</div>
+
+<!-- COUNTDOWN -->
+<div id="countdown"><div id="bigCount">3</div></div>
+
+<!-- GAMEPLAY -->
+<div id="screen-game">
+  <div id="flash"></div>
+  <div class="topbar">
+    <div class="top-box"><div class="top-label" id="lblLevel">Level</div><div class="top-val" id="hLevel">0</div></div>
+    <div class="top-box official"><div class="top-label" id="lblPoints">Points</div><div class="top-val" id="hPoints">0</div></div>
+    <div class="top-box"><div class="top-label" id="lblTime">Time</div><div class="top-val" id="hTime">0.0</div></div>
+  </div>
+  <div id="msg" class="watch"></div>
+  <div class="court-area">
+    <div class="court" id="court"></div>
+  </div>
+  <div id="controls">
+    <a class="ctrl-btn" href="index.html" id="homeBtn">← Home</a>
+  </div>
+</div>
+
+<!-- END -->
+<div id="screen-end">
+  <div class="final-num" id="endNum">0</div>
+  <div class="final-label" id="endLabel">Longest Chain Held</div>
+
+  <div class="final-stats">
+    <div class="final-stat-cell points-cell"><div class="final-stat-label" id="statPointsLbl">Points</div><div class="final-stat-val" id="endPoints">0</div></div>
+    <div class="final-stat-cell"><div class="final-stat-label" id="statTimeLbl">Time</div><div class="final-stat-val" id="endTime">0.0s</div></div>
+  </div>
+
+  <div class="save-status" id="saveStatus"></div>
+
+  <button class="next-player-btn" id="againBtn">▶ PLAY AGAIN</button>
+  <a class="box-open-btn" id="backToPledge" href="index.html" style="max-width:300px;margin:14px auto 0;">← Back</a>
+</div>
+
+<script>
+function $(id){return document.getElementById(id)}
+
+// ══════════════════════════════════════════════════════
+//  LANGUAGE — Puerto Rico, so Spanish is not an afterthought.
+//  The choice is remembered and shared with the challenge pages
+//  through the same localStorage key.
+// ══════════════════════════════════════════════════════
+var STR = {
+  en:{
+    demoWatch:'👀 Watch the chain…', demoTap:'Tap it back in order', demoHeld:'✅ Chain held!',
+    htpText:'How to play',
+    cObjective:'🎯 What to do',
+    cs1:'<b>Read the 1-3-1.</b> The zone lights up one spot at a time — same shape every round.',
+    cs2:'<b>Remember the order</b> — which one, then which one next.',
+    cs3:'<b>Beat it</b> — tap the spots back in the same order. Take as long as you like.',
+    cScoring:'⭐ Chain scoring',
+    cp1:'The chain grows by <b>one more circle</b> every round you get right.',
+    cp2:'One wrong tap <b>ends the run</b> — your score is the longest chain you held.',
+    cp3:'Each round is worth its own number — round 9 banks 9 points. So every round is worth more than the last.',
+    cTipTitle:'💡 Tip',
+    cTip:'There is no clock on your turn. Going slowly costs nothing, and rushing is how most runs end early.',
+    namePh:'Your name',
+    start:'▶ START', startOfficial:'▶ START OFFICIAL RUN', startPractice:'▶ PRACTICE RUN',
+    officialKick:'Official Run',
+    officialNote:'This run counts. Your sponsors pay on the points you score, and you only get one.',
+    alreadyRun:'Your official run is already in: <b>level {L}, {P} points</b>. You can keep practising, but this score is final.',
+    confirmOfficial:'This is your official run. Your sponsors pay on the points you score, and you only get one. Ready?',
+    back:'← Back', backToChallenge:'← Back to my Challenge page', home:'← Home',
+    lblLevel:'Level', lblPoints:'Points', lblTime:'Time',
+    getReady:'GET READY...', watch:'WATCH THE CHAIN', yourTurn:'YOUR TURN',
+    held:'✅ CHAIN HELD', broken:'CHAIN BROKEN',
+    labelPractice:'Practice Run · Longest Chain Held',
+    labelOfficial:'Official Run · Longest Chain Held',
+    playAgain:'▶ PLAY AGAIN', practiceAgain:'▶ PRACTICE AGAIN',
+    statPoints:'Points', statTime:'Time',
+    worthFree:'{P} points. One padrino at 25¢ a point would be giving {M} — ten of them, {T} for the program.',
+    practiceOnly:'Practice run.',
+    tryoutSaved:'✓ Saved to your team tryout.',
+    demoLeft:'Free demo — {N} of 3 tries left.',
+    demoOver:'Demo finished', demoTalk:'Bring this to my program →',
+    demoOverNote:'That is the demo. If your school or team runs Cada Punto, open your own link and play as much as you like.',
+    practiceCount:'Practice {D} of {N}. Go back and play again.',
+    practiceUnlocked:'✓ Practice done. Go back to your page to see what is next.',
+    worthLine:'That is {P} points. In a fundraiser, every padrino backing you at 25¢ a point would be giving {M}.',
+    tryoutAlready:'You have already used your run at this game.',
+    confirmOnce:'One attempt only — whatever you score is your score. Ready?',
+    tryoutFailed:'Could not save that to the tryout — try again.',
+    recording:'Recording your official run…',
+    recorded:'✓ Official run recorded — {P} points.',
+    wasAlready:'Your official run was already recorded. This one was practice.',
+    wrongLink:'This link cannot record an official run — ask your coach for your own link.',
+    noServer:'Could not reach the server — contact your coach before playing again.',
+    bestLine:'Your best practice run: <b>level {L}</b> · {P} points'
+  },
+  es:{
+    demoWatch:'👀 Observa la cadena…', demoTap:'Tócala de vuelta en orden', demoHeld:'✅ ¡Cadena aguantada!',
+    htpText:'Cómo jugar',
+    cObjective:'🎯 Qué hacer',
+    cs1:'<b>Lee el 1-3-1.</b> La zona se enciende punto por punto — la misma forma cada ronda.',
+    cs2:'<b>Recuerda el orden</b> — cuál primero, cuál después.',
+    cs3:'<b>Véncela</b> — toca los puntos de vuelta en el mismo orden. Tómate el tiempo que quieras.',
+    cScoring:'⭐ Puntuación en cadena',
+    cp1:'La cadena crece <b>un círculo más</b> cada ronda que aciertas.',
+    cp2:'Un toque equivocado <b>termina la corrida</b> — tu puntuación es la cadena más larga que aguantaste.',
+    cp3:'Cada ronda vale su propio número — la ronda 9 suma 9 puntos. Así que cada ronda vale más que la anterior.',
+    cTipTitle:'💡 Consejo',
+    cTip:'No hay reloj en tu turno. Ir despacio no cuesta nada, y apurarse es como terminan temprano la mayoría de las corridas.',
+    namePh:'Tu nombre',
+    start:'▶ EMPEZAR', startOfficial:'▶ EMPEZAR CORRIDA OFICIAL', startPractice:'▶ CORRIDA DE PRÁCTICA',
+    officialKick:'Corrida Oficial',
+    officialNote:'Esta corrida cuenta. Tus padrinos pagan por los puntos que anotes, y solo tienes una.',
+    alreadyRun:'Tu corrida oficial ya está hecha: <b>nivel {L}, {P} puntos</b>. Puedes seguir practicando, pero esa puntuación es final.',
+    confirmOfficial:'Esta es tu corrida oficial. Tus padrinos pagan por los puntos que anotes, y solo tienes una. ¿Listo?',
+    back:'← Atrás', backToChallenge:'← Volver a mi página del Reto', home:'← Inicio',
+    lblLevel:'Nivel', lblPoints:'Puntos', lblTime:'Tiempo',
+    getReady:'PREPÁRATE...', watch:'OBSERVA LA CADENA', yourTurn:'TU TURNO',
+    held:'✅ CADENA AGUANTADA', broken:'CADENA ROTA',
+    labelPractice:'Práctica · Cadena más larga',
+    labelOfficial:'Corrida Oficial · Cadena más larga',
+    playAgain:'▶ JUGAR OTRA VEZ', practiceAgain:'▶ PRACTICAR OTRA VEZ',
+    statPoints:'Puntos', statTime:'Tiempo',
+    worthFree:'{P} puntos. Un padrino a 25¢ por punto estaría dando {M} — diez de ellos, {T} para el programa.',
+    practiceOnly:'Corrida de práctica.',
+    tryoutSaved:'✓ Guardado en la prueba de tu equipo.',
+    demoLeft:'Demo gratis — te quedan {N} de 3 intentos.',
+    demoOver:'Demo terminado', demoTalk:'Quiero esto en mi programa →',
+    demoOverNote:'Hasta ahí llega el demo. Si tu escuela o equipo usa Cada Punto, abre tu propio enlace y juega todo lo que quieras.',
+    practiceCount:'Práctica {D} de {N}. Regresa y juega otra vez.',
+    practiceUnlocked:'✓ Práctica completa. Regresa a tu página para ver qué sigue.',
+    worthLine:'Son {P} puntos. En una recaudación, cada padrino que te apoye a 25¢ por punto estaría dando {M}.',
+    tryoutAlready:'Ya usaste tu corrida en este juego.',
+    confirmOnce:'Un solo intento — lo que anotes es tu puntuación. ¿Listo?',
+    tryoutFailed:'No se pudo guardar en la prueba — intenta otra vez.',
+    recording:'Guardando tu corrida oficial…',
+    recorded:'✓ Corrida oficial guardada — {P} puntos.',
+    wasAlready:'Tu corrida oficial ya estaba guardada. Esta fue práctica.',
+    wrongLink:'Este enlace no puede guardar una corrida oficial — pídele a tu entrenador tu propio enlace.',
+    noServer:'No se pudo conectar al servidor — habla con tu entrenador antes de jugar otra vez.',
+    bestLine:'Tu mejor práctica: <b>nivel {L}</b> · {P} puntos'
+  }
+};
+
+var LANG = 'en';
+try { LANG = localStorage.getItem('fc-lang') || ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es' : 'en'); } catch(e){}
+
+function T(key, vals){
+  var out = (STR[LANG] && STR[LANG][key]) || STR.en[key] || key;
+  if (vals) Object.keys(vals).forEach(function(k){
+    out = out.split('{'+k+'}').join(vals[k]);
+  });
+  return out;
+}
+
+function applyLang(){
+  // the instruction cards
+  ['cObjective','cScoring','cs1','cs2','cs3','cp1','cp2','cp3','cTipTitle','cTip','htpText']
+    .forEach(function(id){ var el=$(id); if(el) el.innerHTML = T(id); });
+  document.documentElement.lang = LANG;
+  $('obKick').textContent = T('officialKick');
+  $('lblLevel').textContent = T('lblLevel');
+  $('lblPoints').textContent = T('lblPoints');
+  $('lblTime').textContent = T('lblTime');
+  $('statPointsLbl').textContent = T('statPoints');
+  $('statTimeLbl').textContent = T('statTime');
+  $('againBtn').textContent = TRYOUT_PRACTICE ? T('practiceAgain') : T('playAgain');
+  $('langBtn').textContent = LANG === 'en' ? 'ES' : 'EN';
+  document.querySelector('.intro-back').textContent = (CHALLENGE_ID && PLAYER_ID) ? T('backToChallenge') : T('back');
+  document.querySelector('#controls .ctrl-btn').textContent = (CHALLENGE_ID && PLAYER_ID) ? T('backToChallenge') : T('home');
+  $('backToPledge').textContent = (CHALLENGE_ID && PLAYER_ID) ? T('backToChallenge') : T('back');
+  if (!$('bigStart').dataset.locked){
+    $('bigStart').textContent = IS_OFFICIAL ? T('startOfficial') : T('start');
+  }
+  if (!$('obNote').dataset.locked) $('obNote').textContent = T('officialNote');
+}
+
+function toggleLang(){
+  LANG = LANG === 'en' ? 'es' : 'en';
+  try { localStorage.setItem('fc-lang', LANG); } catch(e){}
+  applyLang();
+  loadBest();
+}
+
+var SB_URL='https://sdaphocueugzfvjovuxd.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
+
+// ══════════════════════════════════════════════════════
+//  PRACTICE vs OFFICIAL
+//
+//  Anyone can play this game, any number of times, and nothing is
+//  recorded. That is the point — a kid should arrive at their
+//  official run already warm.
+//
+//  An OFFICIAL run only exists when this page is opened from a
+//  player's own challenge link, carrying both the challenge and the
+//  player. It is written to challenge_runs, which has a unique
+//  constraint on (challenge_id, player_id) — so a second official
+//  run is refused by the database, not merely discouraged here.
+//
+//  POINTS — each level adds one more ball to the chain, so reaching
+//  level n means n(n+1)/2 individual taps were performed. That is
+//  the number sponsors pay against, and it accelerates: going from
+//  level 15 to 16 is worth 16 points, where level 1 to 2 was worth 2.
+// ══════════════════════════════════════════════════════
+var params = new URLSearchParams(window.location.search);
+var CHALLENGE_ID = params.get('c') || null;
+var PLAYER_ID = params.get('p') || null;
+var RUN_KEY = params.get('k');
+
+// A tryout run: the team is deciding which game to use, so the score
+// is kept per player per game on the campaign rather than on any
+// challenge. Nothing official, no run key.
+var TRYOUT = params.get('tryout');
+// A one-run competition: the first score stands, and the game says so
+// rather than quietly keeping the better of two.
+var TRYOUT_ONCE = params.get('once') === '1';
+// A warm-up inside a competition: counted, but never scored.
+var TRYOUT_PRACTICE = params.get('practice') === '1';
+
+// The page a student came from holds their session for this tab and
+// lets it go stale if nothing happens. Playing is something
+// happening, so the clock is kept fresh while they are here.
+if (TRYOUT) {
+  (function keepWarm(){
+    var touch = function(){
+      try {
+        var k = 'fc-sess-' + TRYOUT;
+        var raw = sessionStorage.getItem(k);
+        if (!raw) return;
+        var sess = JSON.parse(raw);
+        sess.t = Date.now();
+        sessionStorage.setItem(k, JSON.stringify(sess));
+      } catch(e){}
+    };
+    touch();
+    setInterval(touch, 30000);
+    document.addEventListener('visibilitychange', function(){
+      if (!document.hidden) touch();
+    });
+  })();
+}
+var GAME = 'fortress131';
+// An official run needs the player's own run key. Without it this is
+// practice, however the link was edited.
+var IS_OFFICIAL = !TRYOUT && !!(CHALLENGE_ID && PLAYER_ID && RUN_KEY && params.get('official') === '1');
+
+// ══════════════════════════════════════════════════════
+//  THE DEMO LIMIT
+//
+//  Anyone can try this from the site, but a visitor is not a student.
+//  A few rounds is enough to understand it; the programme itself is
+//  what a school licenses, and students in a campaign play without any
+//  limit at all.
+// ══════════════════════════════════════════════════════
+var DEMO_RUNS = 3;
+var DEMO_KEY = 'cp-demo-' + GAME;
+
+// A warm-up before signing up is part of a campaign, not a visitor
+// trying the site — it must never be refused, or a student cannot
+// join at all on a computer somebody else has already used.
+function isDemoPlay(){ return false; }   // juego libre: sin tope
+
+function demoRunsUsed(){
+  try { return parseInt(localStorage.getItem(DEMO_KEY) || '0', 10) || 0; }
+  catch(e){ return 0; }
+}
+function noteDemoRun(){
+  try { localStorage.setItem(DEMO_KEY, String(demoRunsUsed() + 1)); } catch(e){}
+}
+function demoRunsLeft(){ return Math.max(0, DEMO_RUNS - demoRunsUsed()); }
+
+// Shown in place of the start button once the tries are gone.
+function showDemoEnd(){
+  var box = $('screen-intro');
+  if (!box) return;
+
+  // Whoever hits this could be a student whose school runs a campaign,
+  // or a director deciding whether to. The first needs their own link;
+  // the second needs us. Say both, and send nobody to a sales page by
+  // surprise.
+  var btn = $('bigStart');
+  if (btn){
+    btn.textContent = T('demoOver');
+    btn.dataset.locked = '1';
+    btn.onclick = function(e){ if (e) e.preventDefault(); };
+    btn.style.opacity = '.45';
+    btn.style.cursor = 'default';
+  }
+
+  var line = $('bestLine');
+  if (line){
+    line.innerHTML =
+      '<span style="display:block;margin-bottom:10px;">' + T('demoOverNote') + '</span>' +
+      '<a href="mailto:gostardigital@gmail.com" style="display:inline-block;padding:11px 20px;border-radius:11px;' +
+        'border:1px solid var(--line);color:var(--paper);text-decoration:none;font-weight:800;">' +
+        T('demoTalk') + '</a>';
+  }
+}
+
+
+function pointsFor(level){ return level > 0 ? (level * (level + 1)) / 2 : 0; }
+
+// Keeps this player's best for this game in this campaign. Only ever
+// moves upward, so a bad run never lowers what the team is judged on.
+// Warming up. The database counts it and says whether the official
+// run has unlocked yet, so the player is told where they stand.
+function recordCompetitionPractice(finalLevel, status){
+  fetch(SB_URL + '/rest/v1/rpc/record_practice', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      p_campaign: TRYOUT, p_player: PLAYER_ID, p_game: GAME, p_level: finalLevel
+    })
+  })
+  .then(function(r){ if (!r.ok) throw new Error('practice'); return r.json(); })
+  .then(function(){
+    // The run is counted; the score above already says how it went,
+    // so there is nothing worth adding underneath it.
+    status.textContent = '';
+  })
+  .catch(function(e){
+    console.error('Practice:', e);
+    status.style.color = '#ff6b35';
+    status.textContent = T('tryoutFailed');
+  });
+}
+
+function recordTryout(finalLevel, status){
+  if (TRYOUT_PRACTICE) return recordCompetitionPractice(finalLevel, status);
+  var base = SB_URL + '/rest/v1/campaign_tryouts';
+  var headers = {
+    'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
+    'Content-Type': 'application/json', 'Prefer': 'return=representation'
+  };
+  var filter = '?campaign_id=eq.' + encodeURIComponent(TRYOUT)
+             + '&player_id=eq.' + encodeURIComponent(PLAYER_ID)
+             + '&game=eq.' + GAME;
+
+  fetch(base + filter + '&select=best_level,runs', {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(rows){
+    if (rows && rows.length){
+      var row = rows[0];
+      if (TRYOUT_ONCE){
+        // A score already exists and only one attempt is allowed, so
+        // nothing is written — the first run is the result.
+        status.style.color = '#ffd35a';
+        status.textContent = T('tryoutAlready');
+        return;
+      }
+      return fetch(base + filter, { method:'PATCH', headers:headers, body:JSON.stringify({
+        best_level: Math.max(row.best_level || 0, finalLevel),
+        runs: (row.runs || 0) + 1,
+        updated_at: new Date().toISOString()
+      })});
+    }
+    return fetch(base, { method:'POST', headers:headers, body:JSON.stringify({
+      campaign_id: TRYOUT, player_id: PLAYER_ID, game: GAME,
+      best_level: finalLevel, runs: 1
+    })});
+  })
+  .then(function(){
+    status.style.color = '#00D9A5';
+    status.innerHTML = T('tryoutSaved') +
+      '<span style="display:block;margin-top:6px;color:#8AA4BD;font-weight:700;">' +
+      T('worthLine').split('{P}').join(pointsFor(finalLevel))
+                   .split('{M}').join('$' + (pointsFor(finalLevel) * 0.25).toFixed(2)) +
+      '</span>';
+  })
+  .catch(function(e){
+    console.error('Tryout record:', e);
+    status.style.color = '#ff6b35';
+    status.textContent = T('tryoutFailed');
+  });
+}
+
+var BEST_KEY='fc-fortress131-best';
+var NUM_TARGETS=5;
+var LIGHT_MS=333;
+var GAP_MS=167;
+var LEVEL_PAUSE_MS=800;
+
+var TARGET_COLORS=['#ff1e3c','#ffd35a','#00D9A5','#3b82f6','#ff6b35'];
+
+// Five fixed positions, spread so no two sit close enough to be
+// confused with each other at a glance.
+
+// A basketball rather than a coloured dot: the same colour, with the
+// seams drawn over it. Built as an image so it scales with the ball
+// and costs nothing to draw.
+function ballArt(color){
+  var svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' +
+      '<defs><radialGradient id="g" cx="34%" cy="30%">' +
+        '<stop offset="0%" stop-color="#ffffff" stop-opacity=".45"/>' +
+        '<stop offset="55%" stop-color="' + color + '" stop-opacity="0"/>' +
+      '</radialGradient></defs>' +
+      '<circle cx="50" cy="50" r="49" fill="' + color + '"/>' +
+      '<circle cx="50" cy="50" r="49" fill="url(#g)"/>' +
+      '<g fill="none" stroke="rgba(0,0,0,.62)" stroke-width="3.4" stroke-linecap="round">' +
+        '<line x1="50" y1="1" x2="50" y2="99"/>' +
+        '<line x1="1" y1="50" x2="99" y2="50"/>' +
+        '<path d="M16,8 Q40,50 16,92"/>' +
+        '<path d="M84,8 Q60,50 84,92"/>' +
+      '</g>' +
+    '</svg>';
+  return 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+}
+
+// A true 1-3-1: one at the top, three across the middle, one at the
+// bottom. Three rows will not take the full-size ball on a landscape
+// board, so this formation plays with a smaller one — which also
+// makes it harder to read at a glance than the 2-1-2.
+// The 1-3-1 as cells of a 5x5, numbered left to right and top to
+// bottom: one at the top middle, three across the middle row, one at
+// the bottom middle.
+var SPOTS = [2, 10, 12, 14, 22];
+
+// Kept because the intro preview still lays its dots out by percentage.
+var LAYOUT=[
+  {x:50,y:10},
+  {x:10,y:50},{x:50,y:50},{x:90,y:50},
+  {x:50,y:90}
+];
+
+// ══════════════════════════════════════════════════════
+//  THE DEMONSTRATION
+//
+//  Runs on the intro screen only and shares nothing with the game —
+//  its own dots, its own timers. It uses the same five positions the
+//  real board uses, so the shape a student learns here is the shape
+//  they will play on. It stops the moment a run starts.
+// ══════════════════════════════════════════════════════
+var demoDots=[], demoTimers=[], demoOn=false;
+var DEMO_COLORS=['#ff1e3c','#ffd35a','#00D9A5','#3b82f6','#ff6b35'];
+
+function demoClearTimers(){ demoTimers.forEach(clearTimeout); demoTimers=[]; }
+function demoLater(fn, ms){ demoTimers.push(setTimeout(fn, ms)); }
+
+function buildDemo(){
+  var panel = $('demoPanel');
+  if (!panel) return;
+  panel.innerHTML=''; demoDots=[];
+  LAYOUT.forEach(function(pos,i){
+    var d=document.createElement('div');
+    d.className='demo-dot';
+    d.style.left=pos.x+'%';
+    d.style.top=pos.y+'%';
+    d.style.backgroundImage=ballArt(DEMO_COLORS[i]);
+    d.style.backgroundSize='100% 100%';
+    panel.appendChild(d);
+    demoDots.push(d);
+  });
+}
+
+function demoRound(){
+  if (!demoOn) return;
+
+  // A short chain, long enough to show that the order is the point.
+  var chain=[];
+  for (var i=0;i<3;i++) chain.push(Math.floor(Math.random()*demoDots.length));
+
+  var lbl=$('demoLabel');
+  demoDots.forEach(function(d){ d.classList.remove('lit','ok'); d.style.boxShadow=''; });
+  lbl.textContent=T('demoWatch'); lbl.className='demo-label';
+
+  chain.forEach(function(idx,i){
+    demoLater(function(){
+      if (!demoOn) return;
+      var d=demoDots[idx];
+      d.classList.add('lit');
+      d.style.boxShadow='0 0 26px '+DEMO_COLORS[idx];
+      setTimeout(function(){ d.classList.remove('lit'); d.style.boxShadow=''; }, 380);
+    }, 600 + i*620);
+  });
+
+  demoLater(function(){
+    if (!demoOn) return;
+    lbl.textContent=T('demoTap'); lbl.className='demo-label turn';
+  }, 600 + 3*620 + 200);
+
+  chain.forEach(function(idx,i){
+    demoLater(function(){
+      if (!demoOn) return;
+      demoDots[idx].classList.add('ok');
+      setTimeout(function(){ demoDots[idx].classList.remove('ok'); }, 420);
+    }, 600 + 3*620 + 700 + i*480);
+  });
+
+  demoLater(function(){
+    if (!demoOn) return;
+    lbl.textContent=T('demoHeld'); lbl.className='demo-label good';
+    $('demoPanel').classList.add('pulse');
+    setTimeout(function(){ var p=$('demoPanel'); if(p) p.classList.remove('pulse'); }, 500);
+  }, 600 + 3*620 + 700 + 3*480 + 150);
+
+  demoLater(demoRound, 600 + 3*620 + 700 + 3*480 + 1500);
+}
+
+function startDemo(){
+  if (demoOn) return;
+  demoOn = true;
+  buildDemo();
+  demoRound();
+}
+function stopDemo(){
+  demoOn = false;
+  demoClearTimers();
+}
+
+function toggleHtp(){
+  $('htpToggle').classList.toggle('open');
+  $('htpBody').classList.toggle('open');
+}
+
+var phase='idle';
+var sequence=[];
+var playerIdx=0;
+var level=0;
+var best=0;
+var timers=[];
+var targetEls=[];
+var currentPlayerName='';
+var runStartTime=0;
+
+// Set up the official framing before anything else, so a kid never
+// sees a practice screen when they came to perform.
+// Whether this was practice or official, a player who arrived from a
+// challenge page should land back on it — that is where their pledges,
+// their score and their official-run button live.
+// A student practising arrived from their own page, so their name is
+// already known. Asking for it again invites somebody to type a
+// different one and think they have changed who they are.
+(function nameFromTheLink(){
+  if (!(TRYOUT && PLAYER_ID)) return;
+  fetch(SB_URL + '/rest/v1/rpc/player_name', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
+               'Content-Type': 'application/json' },
+    body: JSON.stringify({ p_id: PLAYER_ID })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(rows){
+    if (!rows || !rows.length) return;
+    currentPlayerName = String(rows[0].name).slice(0, 20);
+    var shown = $('obPlayer');
+    if (shown) shown.textContent = rows[0].name;
+  })
+  .catch(function(){});
+})();
+
+(function setBackLink(){
+  if (TRYOUT){
+    var t = 'index.html' + encodeURIComponent(TRYOUT);
+    ['introBack','homeBtn','backToPledge'].forEach(function(id){
+      var el = $(id); if (el) el.href = t;
+    });
+    return;
+  }
+  if (CHALLENGE_ID && PLAYER_ID){
+    var back = 'index.html' + encodeURIComponent(CHALLENGE_ID) + '&p=' + encodeURIComponent(PLAYER_ID)
+             + (RUN_KEY ? '&k=' + encodeURIComponent(RUN_KEY) : '');
+    $('backToPledge').href = back;
+    $('backToPledge').textContent = T('backToChallenge');
+    document.querySelector('.intro-back').href = back;
+    document.querySelector('#controls .ctrl-btn').href = back;
+  }
+})();
+
+(function initOfficial(){
+  if (!IS_OFFICIAL) return;
+
+  $('officialBanner').style.display='block';
+  $('bigStart').className='big-btn official';
+  $('bigStart').textContent=T('startOfficial');
+  $('againBtn').style.display='none';
+
+  // Pull the player's name so they do not type it, and so the run is
+  // attributed to the roster rather than whatever they type.
+  fetch(SB_URL + '/rest/v1/rpc/player_name', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
+               'Content-Type': 'application/json' },
+    body: JSON.stringify({ p_id: PLAYER_ID })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(rows){
+    if (rows && rows.length){
+      currentPlayerName = rows[0].name;
+      $('obPlayer').textContent = rows[0].name;
+      currentPlayerName = String(rows[0].name).slice(0, 20);
+    }
+  })
+  .catch(function(){});
+
+  // If an official run already exists, say so rather than letting
+  // them play and then refusing the save.
+  fetch(SB_URL + '/rest/v1/challenge_runs?challenge_id=eq.' + encodeURIComponent(CHALLENGE_ID)
+        + '&player_id=eq.' + encodeURIComponent(PLAYER_ID) + '&select=level_reached,points', {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(rows){
+    if (rows && rows.length){
+      $('obNote').innerHTML = T('alreadyRun', { L: rows[0].level_reached, P: rows[0].points });
+      $('obNote').dataset.locked='1';
+      $('bigStart').className='big-btn';
+      $('bigStart').textContent=T('startPractice');
+      $('bigStart').dataset.locked='1';
+      IS_OFFICIAL = false;
+    }
+  })
+  .catch(function(){});
+})();
+
+function clrT(){timers.forEach(clearTimeout);timers=[]}
+function msg(t,c){var e=$('msg');e.textContent=t;e.className=c||'watch'}
+function flash(){var f=$('flash');f.style.background='rgba(12,127,196,.12)';f.style.opacity='1';setTimeout(function(){f.style.opacity='0'},100)}
+function ripple(x,y){var r=document.createElement('div');r.className='ripple';r.style.left=x+'px';r.style.top=y+'px';r.style.width='46px';r.style.height='46px';document.body.appendChild(r);setTimeout(function(){r.remove()},520)}
+
+function shuffle(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var tmp=a[i];a[i]=a[j];a[j]=tmp;
+  }
+  return a;
+}
+
+
+// Positions and colors are chosen once per run and then held. Every
+// later call only re-measures the court and moves the same balls to
+// match — a board a player is memorizing must never be reshuffled
+// under them by a rotation or the address bar sliding away.
+var boardPositions=null, boardColors=null;
+
+function newBoardArrangement(){
+  boardPositions=shuffle(LAYOUT);
+  boardColors=shuffle(TARGET_COLORS);
+}
+
+// The court is square and sized to the space left over once the top
+// bar and the controls have taken theirs — measuring the viewport
+// instead would push the home button off the bottom.
+function resizeCourt(){
+  var area = document.querySelector('.court-area');
+  var court = $('court');
+  if (!area || !court) return;
+  var size = Math.min(area.clientWidth, area.clientHeight);
+  if (size < 80) { requestAnimationFrame(resizeCourt); return; }
+  court.style.width = size + 'px';
+  court.style.height = size + 'px';
+}
+window.addEventListener('resize', resizeCourt);
+window.addEventListener('orientationchange', function(){ setTimeout(resizeCourt, 220); });
+if (window.visualViewport) window.visualViewport.addEventListener('resize', resizeCourt);
+
+function buildBoard(){
+  var court = $('court');
+  if (!court) return;
+
+  // Twenty-five cells, five of them in play. The grid does the
+  // arranging, so there is nothing to measure and nothing to position
+  // by hand — which is why this cannot land in the wrong place while
+  // the page is still settling.
+  court.innerHTML = '';
+  targetEls = [];
+
+  if(!boardColors) newBoardArrangement();
+  var colors = boardColors;
+
+  for (var c = 0; c < 25; c++){
+    var el = document.createElement('div');
+    var t = SPOTS.indexOf(c);
+
+    if (t === -1){
+      el.className = 'cell';
+    } else {
+      el.className = 'spot';
+      el.style.backgroundImage = ballArt(colors[t]);
+      el.style.color = colors[t];
+      (function(idx){
+        el.addEventListener('pointerdown', function(e){
+          e.preventDefault();
+          handleTargetTap(idx);
+        });
+      })(t);
+      targetEls[t] = el;
+    }
+    court.appendChild(el);
+  }
+
+
+  // Restore whatever the run was in the middle of.
+  targetEls.forEach(function(el){el.classList.toggle('ready',isReady)});
+  resizeCourt();
+}
+// The grid lays itself out, so a resize needs no rebuild — and
+// rebuilding mid-run would wipe whatever was lit.
+
+var audioCtx=null;
+function ensureAudio(){ if(!audioCtx){ try{audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){} } }
+function playThump(){
+  if(!audioCtx)return;
+  var now=audioCtx.currentTime;
+  var osc=audioCtx.createOscillator();
+  var oscGain=audioCtx.createGain();
+  osc.type='sine';
+  osc.frequency.setValueAtTime(130,now);
+  osc.frequency.exponentialRampToValueAtTime(46,now+0.1);
+  oscGain.gain.setValueAtTime(.001,now);
+  oscGain.gain.exponentialRampToValueAtTime(.85,now+0.006);
+  oscGain.gain.exponentialRampToValueAtTime(.001,now+0.16);
+  osc.connect(oscGain);oscGain.connect(audioCtx.destination);
+  osc.start(now);osc.stop(now+0.17);
+
+  var bufSize=Math.floor(audioCtx.sampleRate*0.035);
+  var buf=audioCtx.createBuffer(1,bufSize,audioCtx.sampleRate);
+  var data=buf.getChannelData(0);
+  for(var i=0;i<bufSize;i++){data[i]=(Math.random()*2-1)*(1-i/bufSize)}
+  var noise=audioCtx.createBufferSource();
+  noise.buffer=buf;
+  var noiseFilter=audioCtx.createBiquadFilter();
+  noiseFilter.type='lowpass';
+  noiseFilter.frequency.value=900;
+  var noiseGain=audioCtx.createGain();
+  noiseGain.gain.setValueAtTime(.22,now);
+  noiseGain.gain.exponentialRampToValueAtTime(.001,now+0.035);
+  noise.connect(noiseFilter);noiseFilter.connect(noiseGain);noiseGain.connect(audioCtx.destination);
+  noise.start(now);
+}
+
+function lightTarget(idx){targetEls[idx].classList.add('lit');playThump()}
+function unlightTarget(idx){targetEls[idx].classList.remove('lit')}
+
+// Whether the balls are currently accepting taps. Kept as state
+// rather than only as a class, because re-measuring the court rebuilds
+// the ball elements — and a rebuild landing during the player's turn
+// used to silently drop their ability to tap.
+var isReady=false;
+function setReady(on){
+  isReady=on;
+  targetEls.forEach(function(el){el.classList.toggle('ready',on)});
+}
+
+function startDrill(){
+  if(phase==='running')return;
+  stopDemo();
+  ensureAudio();
+  if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();
+  try{ if(!document.fullscreenElement && document.documentElement.requestFullscreen){ document.documentElement.requestFullscreen().catch(function(){}); } }catch(e){}
+  $('screen-intro').style.display='none';
+  $('screen-end').style.display='none';
+  $('screen-game').style.display='flex';
+
+  // Two frames, so the game screen is genuinely laid out before the
+  // court is measured. The countdown then gives another 2.4 seconds
+  // for fullscreen to settle, and buildBoard runs again at the end of
+  // it against the final box.
+  newBoardArrangement();
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      buildBoard();
+      showCountdownThen(function(){ buildBoard(); runDrill(); });
+    });
+  });
+}
+
+function showCountdownThen(cb){
+  $('countdown').style.display='flex';
+  var n=3;$('bigCount').textContent=n;
+  var iv=setInterval(function(){
+    n--;
+    if(n<=0){clearInterval(iv);$('countdown').style.display='none';cb()}
+    else{$('bigCount').textContent=n}
+  },800);
+}
+
+function runDrill(){
+  phase='running';sequence=[];playerIdx=0;level=0;
+  runStartTime=performance.now();
+  $('hLevel').textContent='0';$('hPoints').textContent='0';$('hTime').textContent='0.0';
+  msg(T('getReady'),'go');
+  timers.push(setTimeout(startLevel,900));
+  requestAnimationFrame(updateTimerDisplay);
+}
+function updateTimerDisplay(){
+  if(phase!=='running')return;
+  $('hTime').textContent=((performance.now()-runStartTime)/1000).toFixed(1);
+  requestAnimationFrame(updateTimerDisplay);
+}
+
+function startLevel(){
+  if(phase!=='running')return;
+  playerIdx=0;
+  sequence.push(Math.floor(Math.random()*NUM_TARGETS));
+  level=sequence.length;
+  $('hLevel').textContent=level;
+  setReady(false);
+  msg(T('watch'),'watch');
+  playSequence(0);
+}
+
+function playSequence(i){
+  if(phase!=='running')return;
+  if(i>=sequence.length){
+    setReady(true);
+    msg(T('yourTurn'),'go');
+    return;
+  }
+  var idx=sequence[i];
+  lightTarget(idx);
+  timers.push(setTimeout(function(){
+    unlightTarget(idx);
+    timers.push(setTimeout(function(){playSequence(i+1)},GAP_MS));
+  },LIGHT_MS));
+}
+
+function handleTargetTap(idx){
+  if(phase!=='running')return;
+  if(!targetEls[idx].classList.contains('ready'))return;
+
+  var rect=targetEls[idx].getBoundingClientRect();
+  ripple(rect.left+rect.width/2,rect.top+rect.height/2);flash();
+
+  if(idx===sequence[playerIdx]){
+    lightTarget(idx);
+    setTimeout(function(){unlightTarget(idx)},220);
+    playerIdx++;
+    if(playerIdx>=sequence.length){
+      setReady(false);
+      // Points only bank on a level actually held to the end.
+      $('hPoints').textContent = pointsFor(level);
+      msg(T('held'),'go');
+      timers.push(setTimeout(startLevel,LEVEL_PAUSE_MS));
+    }
+  }else{
+    targetEls[idx].classList.add('wrong');
+    endDrill();
+  }
+}
+
+function endDrill(){
+  if(phase==='done')return;
+  phase='done';clrT();setReady(false);
+  var court=$('court');
+  if(court) court.style.pointerEvents='none';
+
+  // The level being attempted when the run ended was never completed,
+  // so the score is the last level actually held. Same rule for
+  // practice and official, so a kid's practice number means something.
+  var finalLevel = Math.max(0, level - 1);
+  var finalTime=(performance.now()-runStartTime)/1000;
+
+  msg(T('broken'),'miss');
+  timers.push(setTimeout(function(){
+    showFinalScore(finalLevel,finalTime);
+  },700));
+}
+
+function showFinalScore(finalLevel,finalTime){
+  var points = pointsFor(finalLevel);
+
+  if(finalLevel>best){best=finalLevel;saveBest()}
+
+  $('endNum').textContent=finalLevel;
+  $('endPoints').textContent=points;
+  $('endTime').textContent=finalTime.toFixed(1)+'s';
+  $('screen-game').style.display='none';
+  $('screen-end').style.display='flex';
+
+  var status=$('saveStatus');
+
+  if(TRYOUT && PLAYER_ID){
+    $('endLabel').textContent=T('labelPractice');
+    status.style.color='#a7adba';
+    recordTryout(finalLevel, status);
+    return;
+  }
+
+  if(!IS_OFFICIAL){
+    $('endLabel').textContent=T('labelPractice');
+    status.style.color='#7d8ba3';
+
+    // Somebody playing from the site has just seen a number. This is
+    // the moment it means something — what that same run would have
+    // raised for a program.
+    if (isDemoPlay() && points > 0){
+      status.innerHTML = T('worthFree')
+        .split('{P}').join(points)
+        .split('{M}').join('$' + (points * 0.25).toFixed(2))
+        .split('{T}').join('$' + (points * 0.25 * 10).toFixed(2));
+    } else {
+      status.textContent=T('practiceOnly');
+    }
+
+    // A practice best is shown to sponsors on the pledge page, so it
+    // is kept per challenge and only ever moves upward. Free play
+    // outside a challenge records nothing at all.
+    if (CHALLENGE_ID && PLAYER_ID) recordPractice(finalLevel);
+    return;
+  }
+
+  $('endLabel').textContent=T('labelOfficial');
+  status.style.color='#a7adba';
+  status.textContent=T('recording');
+
+  // The run key is checked inside the database, so holding the public
+  // sponsor link is not enough to end anyone's official run.
+  fetch(SB_URL+'/rest/v1/rpc/record_official_run',{
+    method:'POST',
+    headers:{
+      'apikey':SB_KEY,
+      'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':'application/json'
+    },
+    body:JSON.stringify({
+      p_challenge:CHALLENGE_ID,
+      p_player:PLAYER_ID,
+      p_key:RUN_KEY,
+      p_level:finalLevel,
+      p_points:points,
+      p_time:Number(finalTime.toFixed(2)),
+      // which challenge this run belongs to — a student takes one run
+      // in each, and the three add up to their score
+      p_game:GAME
+    })
+  })
+  .then(function(r){
+    if(!r.ok) throw new Error('request failed');
+    return r.json();
+  })
+  .then(function(out){
+    if(out && out.ok){
+      status.style.color='#00D9A5';
+      status.textContent=T('recorded', { P: points });
+      IS_OFFICIAL=false;
+      return;
+    }
+    if(out && out.reason==='already'){
+      status.style.color='#38BDF8';
+      status.textContent=T('wasAlready');
+      IS_OFFICIAL=false;
+      return;
+    }
+    status.style.color='#ff6b35';
+    status.textContent=T('wrongLink');
+  })
+  .catch(function(e){
+    status.style.color='#ff6b35';
+    status.textContent=T('noServer');
+    console.error('Challenge run write — network error:',e);
+  });
+}
+
+// Keeps the highest practice level for this player in this
+// challenge. Upserts, then only overwrites when the new run is
+// actually better — so a bad run never lowers a posted best.
+function recordPractice(finalLevel){
+  var base = SB_URL + '/rest/v1/challenge_practice';
+  var headers = {
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+  var filter = '?challenge_id=eq.' + encodeURIComponent(CHALLENGE_ID)
+             + '&player_id=eq.' + encodeURIComponent(PLAYER_ID);
+
+  fetch(base + filter + '&select=best_level,runs', {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(rows){
+    if (rows && rows.length){
+      var row = rows[0];
+      return fetch(base + filter, {
+        method: 'PATCH',
+        headers: headers,
+        body: JSON.stringify({
+          best_level: Math.max(row.best_level || 0, finalLevel),
+          runs: (row.runs || 0) + 1,
+          updated_at: new Date().toISOString()
+        })
+      });
+    }
+    return fetch(base, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        challenge_id: CHALLENGE_ID,
+        player_id: PLAYER_ID,
+        best_level: finalLevel,
+        runs: 1
+      })
+    });
+  })
+  .catch(function(e){ console.error('Practice record:', e); });
+}
+
+function loadBest(){
+  best=0;
+  try{best=parseInt(localStorage.getItem(BEST_KEY)||'0',10)||0}catch(e){}
+  $('bestLine').innerHTML = best>0 ? T('bestLine', { L: best, P: pointsFor(best) }) : '';
+}
+function saveBest(){try{localStorage.setItem(BEST_KEY,String(best))}catch(e){}}
+
+
+function handleStartClick(){
+  if (TRYOUT_ONCE && !confirm(T('confirmOnce'))) return;
+  if(IS_OFFICIAL){
+    if(!confirm(T('confirmOfficial'))) return;
+    startDrill();
+    return;
+  }
+  if (isDemoPlay()){
+    if (demoRunsLeft() <= 0){ showDemoEnd(); return; }
+    noteDemoRun();
+  }
+  // The name comes from the student's own page when they arrive
+  // from it, and is simply not needed for free play.
+  startDrill();
+}
+
+$('againBtn').addEventListener('click',function(){
+  phase='idle';
+  $('screen-end').style.display='none';
+  $('screen-intro').style.display='flex';
+  loadBest();
+  startDemo();
+});
+
+applyLang();
+loadBest();
+startDemo();
+</script>
+</body>
+</html>
