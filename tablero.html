@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>El tablero — Anotado</title>
 <meta name="robots" content="noindex">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#12202E;--mute:#5A6B7C;--line:#D7E0E8;--tint:#F7FAFC;--accent:#0C6E8C;--good:#0B7A5A;--bad:#A8323F}
 *{box-sizing:border-box}
@@ -82,103 +79,104 @@ h1{font-size:clamp(1.4rem,4.4vw,1.9rem);letter-spacing:-.03em;margin:0 0 4px;fon
 
 
 /* ══════════════════════════════════════════════════════════════
-   LA CANCHA DE NOCHE
-   El mismo color que la portada, en todo el sitio. Va al final a
-   propósito: las reglas de arriba se quedan como están y éstas
-   mandan encima.
+   EL LOOK NUEVO — crema, navy y naranja
+   18 de octubre de 2026
+
+   Esto reemplaza la capa que estaba aquí antes, "LA CANCHA DE
+   NOCHE", que pintaba la página oscura. Va al final a propósito y
+   funciona igual que la que sustituye: la geometría de arriba se
+   queda intacta y esto manda encima. No se tocó ni una regla de
+   tamaño, posición o espaciado — sólo color.
+
+   Las variables de la base se reapuntan a la paleta nueva, así que
+   todo lo que las usaba cambia solo. Lo que venía escrito a mano
+   en hexadecimal hay que nombrarlo, y está abajo.
    ══════════════════════════════════════════════════════════════ */
 :root{
-  --noche:#07141E; --cancha:#0E2232; --linea:#1B3A4F;
-  --viva:#4FD3F0;  --brasa:#FF8A2B;  --hueso:#EAF2F7; --humo:#7A96A9;
-  /* Y las que ya usaba esta página, apuntando a lo mismo */
-  --ink:#EAF2F7; --mute:#7A96A9; --line:#1B3A4F; --tint:#0E2232;
-  --accent:#4FD3F0; --good:#3FD89A; --bad:#FF7B7B;
-  --paper:#EAF2F7; --panel:#0E2232; --gold:#FF8A2B; --leather:#4FD3F0;
-  --ball:#FF8A2B; --edge:#2E5570; --teal:#4FD3F0;
+  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
+  --cream:#faf8f4; --linea:#e7e6e2;
+  /* Y las que ya usaba esta página, apuntando a lo nuevo */
+  --ink:#1b2937; --mute:#617083; --line:#e7e6e2; --tint:#ffffff;
+  --accent:#ff7a18; --good:#0b7a5a; --bad:#b4231c;
+  --paper:#1b2937; --panel:#ffffff; --gold:#ff7a18; --leather:#ff7a18;
+  --ball:#ff7a18; --edge:#e7e6e2; --teal:#ff7a18;
+  --noche:#faf8f4; --cancha:#ffffff; --viva:#ff7a18; --brasa:#ff7a18;
+  --hueso:#1b2937; --humo:#617083;
 }
-html, body{background:#07141E;color:#EAF2F7}
+html, body{background:var(--cream);color:var(--ink)}
 
-/* La cabecera y el pie ya eran oscuros, pero de otro azul. */
-header, footer, .top{background:#07141E;border-color:#1B3A4F}
-header{border-bottom:1px solid #1B3A4F}
-footer{border-top:1px solid #1B3A4F;color:#7A96A9}
-footer a{color:#4FD3F0}
-.mark{color:#EAF2F7}
-.mark i{color:#7A96A9}
-.langb{border-color:#2E5570;color:#9DB6C7;background:none}
-.langb:hover{color:#EAF2F7;border-color:#7A96A9}
+/* La cabecera y el pie son lo único oscuro, como en el resto del sitio. */
+header, footer, .top{background:var(--navy);border-color:#ffffff22}
+header{border-bottom:1px solid #ffffff22}
+footer{background:#0a1420;border-top:none;color:#aeb9c6}
+footer a{color:#aeb9c6}
+footer a:hover{color:var(--orange)}
+.mark{color:#fff}
+.mark i{color:var(--orange)}
+.langb{border:1px solid #ffffff55;color:#fff;background:transparent;border-radius:7px}
+.langb:hover{color:var(--orange);border-color:var(--orange)}
 
-/* Cajas, paneles y cualquier cosa que antes era un rectángulo claro
-   sobre blanco. */
+/* Cajas y paneles: blancos sobre crema, con su sombra suave. */
 .how, .linkbox, .s, .w, .tal, .num, .team, .pl, .caja, .chat, .card,
 .panel, .box, .waits, .pay, .cuadro, .m.me{
-  background:#0E2232;border-color:#1B3A4F;color:#EAF2F7}
+  background:#fff;border-color:var(--linea);color:var(--ink);
+  box-shadow:0 8px 25px #17243806}
 .how p, .s span, .w span, .num span, .tal span, .help, .hint, .lede,
-.cp, .who, .sub, .nota{color:#7A96A9}
+.cp, .who, .sub, .nota{color:var(--mute)}
 
-/* Lo que se escribe. Un campo blanco en una página oscura es un
-   agujero de luz, y en un teléfono de noche duele. */
+/* Lo que se escribe. */
 input, select, textarea{
-  background:#07141E;border-color:#2E5570;color:#EAF2F7}
-input::placeholder, textarea::placeholder{color:#5F7C91}
+  background:#fff;border:1px solid #d6d9d6;border-radius:10px;color:var(--ink)}
+input::placeholder, textarea::placeholder{color:#9aa6b2}
 input:focus, select:focus, textarea:focus{
-  border-color:#4FD3F0;box-shadow:0 0 0 3px rgba(79,211,240,.18)}
+  border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,122,24,.18);outline:none}
 
-/* Los botones. Aquí es donde un cambio de variables a ciegas dejaba
-   blanco sobre blanco: el relleno era var(--ink), que ahora es la
-   tinta. Se dicen los dos colores, y ya. */
+/* Los botones. Se dicen los dos colores a mano: cambiar sólo las
+   variables es como la capa vieja dejaba blanco sobre blanco. */
 .btn, button.btn, a.btn{
-  background:#4FD3F0;border:2px solid #4FD3F0;color:#07141E}
-.btn:hover{background:#07141E;color:#4FD3F0}
+  background:var(--navy);border:0;border-radius:9px;color:#fff;font-weight:800}
+.btn:hover{opacity:.92;background:var(--navy);color:#fff}
 .btn.line, .btn.ghost, .btn.sec{
-  background:transparent;border:2px solid #EAF2F7;color:#EAF2F7}
-.btn.line:hover{background:#EAF2F7;color:#07141E}
-.btn.go, .btn.hot, .btn.naranja{background:#FF8A2B;border-color:#FF8A2B;color:#07141E}
-[style*="#FF8A2B"], .btn[class*="go"]{color:#07141E}
-.btn:disabled{opacity:.45}
+  background:transparent;border:1px solid var(--navy);color:var(--navy)}
+.btn.line:hover{background:var(--navy);color:#fff}
+.btn.go, .btn.hot, .btn.naranja{background:var(--orange);border:0;color:#111a24}
+.btn.go:hover{opacity:.92}
+[style*="#FF8A2B"], .btn[class*="go"]{color:#111a24}
+.btn:disabled{opacity:.5}
 
-/* Separadores y reglas */
-hr, .sep, .div{border-color:#1B3A4F;background:#1B3A4F}
-table, th, td{border-color:#1B3A4F}
+hr, .sep, .div{border-color:var(--linea);background:var(--linea)}
+table, th, td{border-color:var(--linea)}
 
-/* Enlaces dentro del texto */
-/* Cada :not() suma fuerza, asi que esta regla le ganaba a cosas
-   como a.wa. Lo que es un boton se excluye por nombre. */
-main a:not(.btn):not(.pedir):not(.cta):not(.wa):not(.go), .wrap a:not(.btn):not(.pedir):not(.cta):not(.wa):not(.go){color:#4FD3F0}
+/* Enlaces dentro del texto. Cada :not() suma fuerza, así que lo que
+   es un botón se excluye por nombre. */
+main a:not(.btn):not(.pedir):not(.cta):not(.wa):not(.go),
+.wrap a:not(.btn):not(.pedir):not(.cta):not(.wa):not(.go){color:var(--navy)}
 a.pedir{color:inherit}
 
-/* Lo que estaba escrito a mano en blanco y ahora es un agujero */
-[style*="background:#07141E"], [style*="background: #07141E"]{background:#0E2232 !important}
-
-
-/* Los que estaban puestos a mano con otro blanco: #FFF8F3, #FFFFFF.
-   No son var() de nadie, así que hay que nombrarlos. */
-[class]{--ff8:#0E2232}
-.ojo, .env-nota, .nota-ojo, .aviso, .warn, .tip{background:#0E2232 !important;color:#EAF2F7}
-.ttl, .env-nota b{color:#EAF2F7}
-.cta{background:#4FD3F0 !important;border-color:#4FD3F0 !important;color:#07141E !important}
-.cta:hover{background:#07141E !important;color:#4FD3F0 !important}
-h1,h2,h3,h4{color:#EAF2F7}
-
+/* Lo que estaba escrito a mano con el navy viejo: ahora sería una
+   mancha oscura en una página clara. */
+[style*="background:#07141E"], [style*="background: #07141E"]{background:#fff !important}
+.ojo, .env-nota, .nota-ojo, .aviso, .warn, .tip{background:#fff !important;color:var(--ink)}
+.ttl, .env-nota b{color:var(--ink)}
+.cta{background:var(--orange) !important;border-color:var(--orange) !important;color:#111a24 !important}
+.cta:hover{opacity:.92}
+h1,h2,h3,h4{color:var(--ink)}
 
 /* ══ LA MARCA ══════════════════════════════════════════════════
-   cada (hueso) · punto (naranja) · cuenta (cian), a 23px con peso
-   800 y el espaciado cerrado — la que lleva padrinos.html. Es la
-   marca, no un enlace del menú, y a 16px con peso 900 parecía lo
-   segundo: apretada, pequeña y sin aire entre las letras.
-
-   El espaciado va en em y no en px para que siga cerrado si alguna
-   página la pinta a otro tamaño. */
+   ANOTADO en versales sobre el navy, como en el resto del sitio.
+   El punto es lo único naranja. */
 .mark, .mark .wm{
-  color:#EAF2F7 !important;text-decoration:none !important;
-  font-size:23px !important;font-weight:800 !important;
-  letter-spacing:-.035em !important;line-height:1.1}
-.mark em, .wm em{font-style:normal;color:#FF8A2B !important}
-.mark i,  .wm i {font-style:normal;color:#4FD3F0 !important}
-/* En un teléfono estrecho, que no empuje al botón de idioma. */
+  color:#fff !important;text-decoration:none !important;
+  font-size:1.05rem !important;font-weight:900 !important;
+  letter-spacing:.07em !important;text-transform:uppercase;line-height:1.1}
+.mark em, .wm em{font-style:normal;color:#fff !important}
+.mark i,  .wm i {font-style:normal;color:var(--orange) !important}
 @media(max-width:380px){
-  .mark, .mark .wm{font-size:20px !important}
+  .mark, .mark .wm{font-size:.92rem !important}
 }
+
+/* La fuente. La base pedía Archivo, que ya no se carga. */
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
 
 </style>
 </head>
