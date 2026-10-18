@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>La plantilla — Anotado</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+/* ── El look nuevo: crema, navy y naranja ─────────────────────────
+   El mismo del resto del sitio. Cambia la piel; el marcado y el
+   guion se quedaron como estaban. */
+:root{
+  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
+  --cream:#faf8f4; --ink:#1b2937; --muted:#617083;
+  --linea:#e7e6e2; --bad:#b4231c; --good:#0b7a5a;
+}
+*{box-sizing:border-box}
+html{background:var(--cream)}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  line-height:1.55;-webkit-text-size-adjust:100%}
+.wrap{width:min(760px,calc(100% - 40px));margin:0 auto}
+.hide{display:none !important}
+
+header{background:var(--navy);color:#fff;border-bottom:1px solid #ffffff22;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 0}
+.mark{font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+  font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
+.mark em{font-style:normal;color:#fff}
+.mark i{font-style:normal;color:var(--orange)}
+@media(max-width:380px){ .mark{font-size:.92rem} }
+.hright{display:flex;align-items:center;gap:9px}
+.who{color:#c8d2dd;font-size:.8rem;font-weight:600;max-width:11ch;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.out,.langb{border:1px solid #ffffff55;background:transparent;color:#fff;
+  padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+.out:hover,.langb:hover{border-color:var(--orange);color:var(--orange)}
+
+main .wrap{padding:38px 0 46px}
+h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.1;letter-spacing:-.04em;margin:0 0 12px}
+h2{font-size:1.25rem;letter-spacing:-.025em;margin:34px 0 12px}
+.lede{color:var(--muted);margin:0 0 24px;max-width:56ch}
+.help,.cp,.sub,.nota{color:var(--muted);font-size:.88rem}
+label{display:block;font-weight:700;font-size:.9rem;margin:16px 0 6px}
+input[type=text],select,textarea{width:100%;padding:13px 14px;border:1px solid #d6d9d6;
+  border-radius:10px;background:#fff;color:var(--ink);font:inherit;font-size:1.02rem}
+textarea{min-height:120px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--orange);
+  box-shadow:0 0 0 3px rgba(255,122,24,.18)}
+
+/* ── La puerta del código ─────────────────────────────────────── */
+.gate{background:#fff;border:1px solid var(--linea);border-radius:16px;
+  padding:clamp(22px,5vw,32px);box-shadow:0 8px 25px #17243808}
+
+/* ── Botones ──────────────────────────────────────────────────── */
+.btn,.cta{display:inline-block;border:0;border-radius:9px;padding:14px 22px;
+  background:var(--navy);color:#fff;font:inherit;font-weight:800;font-size:1rem;
+  cursor:pointer;text-decoration:none;text-align:center}
+.btn.go,.cta{background:var(--orange);color:#111a24;width:100%;margin-top:18px}
+.btn.line{background:transparent;color:var(--navy);border:1px solid var(--navy)}
+.btn.line:hover{background:var(--navy);color:#fff}
+.btn:hover,.cta:hover{opacity:.92}
+.btn:disabled{opacity:.5;cursor:default}
+.msg{margin:12px 0 0;font-weight:700;font-size:.9rem;min-height:1.2em}
+.msg.bad{color:var(--bad)}
+
+/* ── La ventana de promesas ───────────────────────────────────── */
+.box{background:#fff;border:1px solid var(--linea);border-left:5px solid var(--orange);
+  border-radius:14px;padding:16px 18px;margin:0 0 20px;box-shadow:0 8px 25px #17243806}
+.box p{margin:0;color:var(--muted);font-size:.95rem}
+
+/* ── Los que esperan aprobación ───────────────────────────────── */
+.waits{background:#fff;border:1px solid rgba(255,122,24,.45);border-left:5px solid var(--orange);
+  border-radius:16px;padding:20px 22px;margin:0 0 22px;box-shadow:0 8px 25px #17243808}
+.waits b{display:block;color:var(--orange);font-size:.72rem;font-weight:800;
+  letter-spacing:.13em;text-transform:uppercase;margin-bottom:4px}
+.waits p{margin:0 0 12px;color:var(--muted);font-size:.93rem}
+.waits .plist{background:transparent;border:0;box-shadow:none;padding:0}
+
+/* ── La lista ─────────────────────────────────────────────────── */
+.plist{background:#fff;border:1px solid var(--linea);border-radius:16px;
+  overflow:hidden;box-shadow:0 8px 25px #17243808}
+.pl{display:flex;align-items:center;gap:12px;padding:14px 18px;
+  border-top:1px solid var(--linea)}
+.pl:first-child{border-top:none}
+.pl:last-child{border-bottom:none}
+.pl .nm{flex:1 1 auto;font-weight:700;font-size:1rem}
+.pl .nm small{display:block;color:var(--muted);font-weight:500;font-size:.82rem;margin-top:2px}
+.pl.off{opacity:.5}
+.pl.off .nm{text-decoration:line-through}
+.pl .act{display:flex;gap:7px;flex:0 0 auto}
+.pl .act button{border:1px solid var(--linea);background:var(--cream);color:var(--muted);
+  border-radius:8px;padding:8px 11px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
+.pl .act button:hover{border-color:var(--navy);color:var(--navy)}
+.pl .act button.on{background:var(--orange);border-color:var(--orange);color:#111a24}
+.pl .act button.del{color:var(--bad);border-color:#f0c9c5}
+
+/* ── Editar un nombre ─────────────────────────────────────────── */
+.ed{padding:14px 18px;background:var(--cream);border-top:1px solid var(--linea)}
+.ed .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ed .btns{display:flex;gap:9px;margin-top:11px}
+.ed .btns .btn{flex:1 1 auto;margin-top:0;padding:11px 14px;font-size:.92rem}
+@media(max-width:420px){ .ed .two{grid-template-columns:1fr} }
+
+/* ── El contador ──────────────────────────────────────────────── */
+.tally{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:0 0 22px}
+.tally.three{grid-template-columns:repeat(3,1fr)}
+.tal{background:#fff;border:1px solid var(--linea);border-radius:13px;
+  padding:14px 12px;text-align:center;box-shadow:0 8px 25px #17243806}
+.tal b{display:block;font-size:1.6rem;font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.tal span{display:block;color:var(--muted);font-size:.72rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
+.tal.wait b{color:var(--orange)}
+
+footer{background:#0a1420;color:#aeb9c6;padding:26px 0 calc(26px + env(safe-area-inset-bottom,0px));
+  text-align:center;font-size:.86rem}
+footer a{color:#aeb9c6;text-decoration:none}
+footer a:hover{color:var(--orange)}
+footer .f-dot{padding:0 8px;opacity:.45}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="index.html"><em>ANOTADO</em><i>.</i></a>
+    <div class="hright">
+      <span class="who hide" id="hwho"></span>
+      <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+      <button class="out hide" id="hout" onclick="salir()">Salir</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="gate" id="gate">
+      <h1 id="tH1"></h1>
+      <p class="lede" id="tLede"></p>
+      <label for="code" id="tCodeL"></label>
+      <input id="code" type="text" autocapitalize="characters" autocorrect="off"
+             spellcheck="false" enterkeyhint="go">
+      <button class="btn go" id="tGo" onclick="entrar(false)"></button>
+      <p class="msg" id="gm"></p>
+    </div>
+
+    <div id="app" class="hide">
+      <h1 id="tH1b"></h1>
+      <p class="lede" id="tLedeb"></p>
+
+      <div class="box">
+        <label for="camp" id="tCampL"></label>
+        <select id="camp" onchange="cambiar()"></select>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════
+           ESCRIBIR LOS NOMBRES VA PRIMERO
+
+           Estaba al final, debajo de la lista, como si apuntar a los
+           nenes fuera lo último. Es lo PRIMERO: un entrenador abre
+           esto con la plantilla vacía. Y es el camino corto de todo el
+           sistema — doce nombres los escribe en dos minutos la única
+           persona que de verdad quiere que esto pase y que además se
+           los sabe. Lo otro — mandar el enlace y que cada familia se
+           apunte sola — son doce casas que tienen que hacer algo, y
+           doce sitios donde se para.
+
+           Y lo que escribe el entrenador no hay que aprobarlo: lo
+           puso él. La cola de "esperando que digas que sí" sólo existe
+           para los que se apuntan solos.
+           ══════════════════════════════════════════════════════════ -->
+      <h2 id="tAddH"></h2>
+      <div class="box">
+        <label for="paste" id="tPasteL"></label>
+        <textarea id="paste" spellcheck="false"></textarea>
+        <label for="sq" id="tSqL" style="margin-top:11px"></label>
+        <input id="sq" type="text" maxlength="24">
+        <p class="help" id="tSqH"></p>
+        <button class="btn" id="tAdd" onclick="anadir()"></button>
+        <p class="msg" id="am"></p>
+      </div>
+
+      <div id="ventana"></div>
+      <div id="tally" class="tally"></div>
+      <div id="wait"></div>
+      <div id="plist"></div>
+      <p class="msg" id="lm"></p>
+
+      <a class="btn line" href="mi-equipo.html" id="tBack"></a>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="ayuda.html">Ayuda</a><span class="f-dot">·</span><a href="index.html">Anotado</a><span class="f-dot">·</span><a href="terms.html">Términos</a><span class="f-dot">·</span><a href="custodia.html">Dinero</a>
+  </div>
+</footer>
+
+<script>
+var SB='https://sdaphocueugzfvjovuxd.supabase.co';
+var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
+
+function rpc(name,args){
+  return fetch(SB+'/rest/v1/rpc/'+name,{
+    method:'POST',
+    headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(args||{})
+  }).then(function(r){ if(!r.ok) throw new Error('rpc '+r.status); return r.json() });
+}
+function $(id){ return document.getElementById(id) }
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,function(m){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]});
+}
+function trim(s){ return String(s==null?'':s).replace(/^\s+|\s+$/g,'') }
+
+var S={
+  es:{
+    h1:'La plantilla', lede:'Entra con tu código.',
+    codeL:'Tu código', go:'Entrar',
+    bad:'Ese código no sirve.', net:'No entró. Inténtalo otra vez.',
+    none:'Tu código no alcanza ningún equipo. Escríbenos.',
+    out:'Salir',
+    h1b:'Tu plantilla', ledeb:'Los nenes de este equipo. Añade, arregla un nombre, o saca a quien ya no está.',
+    campL:'División',
+    tIn:'en la lista', tOut:'fuera', tWait:'esperando',
+    waitH:'Esperando que digas que sí',
+    waitP:'Se apuntaron solos con el enlace del equipo. Hasta que no los apruebes no salen en la plantilla ni en el tablero.',
+    yes:'Aprobar', no:'Rechazar',
+    askNo:'¿Rechazar a {N}? Si se apuntó por error, desaparece.',
+    okYes:'{N} está en la plantilla.', okNo:'{N} fuera.',
+    empty:'Todavía no hay nadie. Escribe los nombres arriba — tú te los sabes, y así no hay que esperar por nadie.',
+    joined:'se apuntó solo',
+    noSquad:'sin escuadra',
+    edit:'Arreglar', take:'Sacar', back:'Devolver', save:'Guardar', cancel:'Dejarlo',
+    send:'Mandar', copied:'Copiado',
+    noReto:'Todavía no hay día de juego abierto, así que no hay enlace que mandar. Abre uno y los enlaces salen solos.',
+    cerrado:'El juego ya empezó: no entran promesas nuevas. Las que ya estaban siguen en pie.',
+    ventana:'Se promete hasta el {D} — después se juega.',
+    msgTxt:'{N} está en {E}. Este es su enlace — mándaselo a quien quieras que prometa por sus puntos. No se paga nada ahora: al acabar el juego sacamos la cuenta, y el padrino le paga al programa directo.',
+    del:'Borrar',
+    askDel:'¿Borrar a {N} para siempre? Esto no se deshace.',
+    gone:'{N} borrado.',
+    kept:'{N} tiene promesas, así que no se puede borrar. Se queda fuera de la lista.',
+    nmL:'Nombre', sqL:'Escuadra',
+    addH:'Añadir nombres',
+    pasteL:'Un nombre por línea',
+    sqL2:'Escuadra para todos estos',
+    sqH:'Opcional. Es lo mismo que escoge la familia al apuntarse — déjalo en blanco si todavía no hay escuadras.',
+    add:'Añadir a la plantilla',
+    addNone:'No salió ningún nombre de ahí.',
+    added:'{N} añadido.', addedN:'{N} añadidos.',
+    dup:' {N} ya estaba.', dupN:' {N} ya estaban.',
+    badN:' {N} no servía.', badNN:' {N} no servían.',
+    saved:'Guardado.',
+    errDup:'Ya hay alguien con ese nombre en este equipo.',
+    errName:'El nombre necesita al menos dos letras.',
+    errGone:'Ese ya no está en este equipo.',
+    askTake:'¿Sacar a {N} de la lista? No se borra — se queda abajo y lo puedes devolver.',
+    backTo:'← Mi equipo'
+  },
+  en:{
+    h1:'The roster', lede:'Sign in with your code.',
+    codeL:'Your code', go:'Enter',
+    bad:'That code does not work.', net:'That did not go through. Try again.',
+    none:'Your code does not reach any team. Write to us.',
+    out:'Sign out',
+    h1b:'Your roster', ledeb:'The children on this team. Add, fix a name, or take out whoever has left.',
+    campL:'Division',
+    tIn:'on the list', tOut:'out', tWait:'waiting',
+    waitH:'Waiting on you',
+    waitP:'They signed themselves up with the team link. Until you approve them they do not appear on the roster or on the board.',
+    yes:'Approve', no:'Decline',
+    askNo:'Decline {N}? If they signed up by mistake, they disappear.',
+    okYes:'{N} is on the roster.', okNo:'{N} declined.',
+    empty:'Nobody yet. Type the names above — you know them, and that way nobody has to wait.',
+    joined:'signed up on their own',
+    noSquad:'no squad',
+    edit:'Fix', take:'Take out', back:'Put back', save:'Save', cancel:'Leave it',
+    send:'Send', copied:'Copied',
+    noReto:'No game day is open yet, so there is no link to send. Open one and the links appear on their own.',
+    cerrado:'The game has started: no new pledges. The ones already made still stand.',
+    ventana:'Pledging is open until {D} — then they play.',
+    msgTxt:'{N} is on {E}. This is their link — send it to anyone you want pledging on their points. Nothing is paid now: when the game ends we calculate every total, and the padrino pays the program directly.',
+    del:'Delete',
+    askDel:'Delete {N} for good? This cannot be undone.',
+    gone:'{N} deleted.',
+    kept:'{N} has pledges, so they cannot be deleted. They stay off the list.',
+    nmL:'Name', sqL:'Squad',
+    addH:'Add names',
+    pasteL:'One name per line',
+    sqL2:'Squad for all of these',
+    sqH:'Optional. It is the same thing a family picks when they sign up — leave it blank if there are no squads yet.',
+    add:'Add to the roster',
+    addNone:'No names came out of that.',
+    added:'{N} added.', addedN:'{N} added.',
+    dup:' {N} was already there.', dupN:' {N} were already there.',
+    badN:' {N} was not usable.', badNN:' {N} were not usable.',
+    saved:'Saved.',
+    errDup:'Somebody on this team already has that name.',
+    errName:'A name needs at least two letters.',
+    errGone:'That one is no longer on this team.',
+    askTake:'Take {N} off the list? Nothing is deleted — they stay at the bottom and you can put them back.',
+    backTo:'← My team'
+  }
+};
+var LANG='es';
+try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
+  localStorage.getItem('fc-lang')||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en'); }catch(e){}
+function T(k,v){
+  var s=(S[LANG]&&S[LANG][k])||S.es[k]||'';
+  if(v)Object.keys(v).forEach(function(x){ s=s.split('{'+x+'}').join(v[x]) });
+  return s;
+}
+
+var CODE=null, BY=null, CAMPS=[], CID=null, PL=[], EDIT=null;
+/* El reto de esta división al que se le puede prometer ahora. Se
+   vuelve a preguntar cada vez que se cambia de división: cada una
+   tiene el suyo. */
+var RETO=null;
+
+try{ CODE = localStorage.getItem('cp_build') || localStorage.getItem('cp_code') || null; }catch(e){}
+function recordar(k){ try{ localStorage.setItem('cp_build',k) }catch(e){} }
+function olvidar(){ try{ localStorage.removeItem('cp_build') }catch(e){} }
+function salir(){ olvidar(); location.reload() }
+function say(e,t,c){ var x=$(e); if(x){ x.textContent=t||''; x.className='msg '+(c||'') } }
+
+function paintStatic(){
+  $('tH1').textContent=T('h1');
+  $('tLede').textContent=T('lede');
+  $('tCodeL').textContent=T('codeL');
+  $('tGo').textContent=T('go');
+  $('tH1b').textContent=T('h1b');
+  $('tLedeb').textContent=T('ledeb');
+  $('tCampL').textContent=T('campL');
+  $('tAddH').textContent=T('addH');
+  $('tPasteL').textContent=T('pasteL');
+  $('tSqL').textContent=T('sqL2');
+  $('tSqH').textContent=T('sqH');
+  $('tAdd').textContent=T('add');
+  $('tBack').textContent=T('backTo');
+  $('hout').textContent=T('out');
+  $('langBtn').textContent=LANG==='es'?'EN':'ES';
+  document.documentElement.lang=LANG;
+}
+function toggleLang(){
+  LANG=LANG==='es'?'en':'es';
+  try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG);
+       localStorage.setItem('fc-lang',LANG) }catch(e){}
+  paintStatic(); if(CID) pintar();
+}
+
+function entrar(auto){
+  var k = auto ? CODE : trim($('code').value);
+  if(!k || k.length<4) return say('gm',T('bad'),'bad');
+  say('gm','…');
+  rpc('builder_check',{p_code:k})
+    .then(function(r){
+      if(!r||!r.ok){ if(auto) olvidar(); return say('gm',T('bad'),'bad') }
+      CODE=k; BY=r.by; CAMPS=r.campaigns||[];
+      recordar(k); say('gm','');
+      $('gate').className='gate hide';
+      $('app').className='';
+      $('hwho').className='who'; $('hwho').textContent=BY;
+      $('hout').className='out';
+      arrancar();
+    })
+    .catch(function(e){ console.error(e); say('gm',T('net'),'bad') });
+}
+
+function arrancar(){
+  paintStatic();
+  if(!CAMPS.length){ $('app').innerHTML='<p class="help">'+esc(T('none'))+'</p>'; return }
+  $('camp').innerHTML=CAMPS.map(function(c){
+    return '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>' }).join('');
+  CID=CAMPS[0].id;
+  cargar();
+}
+
+/* Ojo: cargar() NO borra los mensajes. Antes lo hacía, y como cada
+   acción termina recargando la lista, el "3 añadidos" se borraba solo
+   medio segundo después de salir. Cada acción limpia el suyo cuando
+   empieza; cambiar de división limpia los dos. */
+function cambiar(){ say('lm',''); say('am',''); cargar() }
+
+function cargar(){
+  CID=$('camp').value||CID;
+  EDIT=null;
+  $('plist').innerHTML='<p class="help">…</p>';
+  RETO=null;
+  return rpc('cp_reto_vivo',{p_campaign:CID})
+    .then(function(r){ RETO=(r&&r.ok)?r:null })
+    .catch(function(){ RETO=null })
+    .then(function(){ return rpc('roster_list',{p_code:CODE,p_campaign:CID}) })
+    .then(function(r){
+      if(!r||!r.ok){ PL=[]; say('lm',T('bad'),'bad'); pintar(); return }
+      PL=r.players||[]; pintar();
+    })
+    .catch(function(e){ console.error(e); say('lm',T('net'),'bad') });
+}
+
+/* Tres estados, no dos: esperando, en la lista, y fuera. Los que
+   esperan van arriba y aparte — son lo único de esta página que pide
+   una decisión, y mezclados con los demás no se ven. */
+/* ══════════════════════════════════════════════════════════════════
+   EL ENLACE DE CADA NENE
+
+   Faltaba, y faltaba justo donde más duele. Cuando las familias se
+   apuntaban solas, cada una veía su enlace en pantalla al terminar.
+   Ahora que los nombres los escribe el entrenador — que es el camino
+   corto — nadie los ve: quedan doce nenes en una lista y ni un enlace
+   que mandar. O sea que se apuntaban y ahí se acababa todo, que es
+   peor que no apuntarlos.
+
+   Es el mismo enlace de siempre, armado con lo que la fila ya tiene:
+   la campaña, el id del nene y su escuadra si la hay.
+   ══════════════════════════════════════════════════════════════════ */
+function enlaceDe(p){
+  /* Lleva el RETO y el nene. Aquí se promete por los puntos de ESE
+     nene en su corrida, así que el enlace tiene que llevar el reto
+     abierto — no la campaña, que puede tener varios a lo largo del
+     año — y el nene, que es de quien se promete.
+
+     Null mientras no haya un reto abierto al que prometer. Eso
+     importa: armado a ciegas el enlace saldría con "undefined"
+     dentro y el entrenador lo repartiría a doce familias igual. */
+  if (!RETO || !RETO.hay || !RETO.open) return null;
+  return location.origin + '/prometer.html?c=' + RETO.challenge_id + '&p=' + p.id;
+}
+
+function cuandoCP(iso){
+  try {
+    var d = new Date(iso);
+    var loc = LANG === 'es' ? 'es-PR' : 'en-US';
+    return d.toLocaleDateString(loc, { weekday:'long', day:'numeric', month:'long' }) +
+           ' · ' + d.toLocaleTimeString(loc, { hour:'numeric', minute:'2-digit' });
+  } catch(e){ return '' }
+}
+
+/* Mandar por donde el entrenador ya habla. Si el teléfono trae el
+   menú de compartir, ése — sale WhatsApp y todo lo demás. Si no,
+   WhatsApp directo. Y si tampoco, se copia, que siempre queda. */
+function mandar(i){
+  var p=PL[i]; if(!p) return;
+  var enlace=enlaceDe(p);
+  if(!enlace) return say('lm', T(RETO&&RETO.hay ? 'cerrado' : 'noReto'), 'bad');
+  var equipo=(CAMPS.filter(function(c){ return c.id===CID })[0]||{}).name||'';
+  var txt=T('msgTxt').split('{N}').join(p.name).split('{E}').join(equipo)+'\n\n'+enlace;
+  try{
+    if(navigator.share){ navigator.share({text:txt}).catch(function(){}); return }
+  }catch(e){}
+  try{
+    window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank','noopener');
+    return;
+  }catch(e){}
+  try{ navigator.clipboard.writeText(enlace); say('lm',T('copied'),'ok') }catch(e){ say('lm',enlace) }
+}
+
+function pintar(){
+  /* En qué va el día de juego, antes que nada: de eso depende si los
+     botones de Mandar sirven para algo. */
+  var v=$('ventana');
+  if(v){
+    if(!RETO || !RETO.hay)      v.innerHTML='<p class="help">'+esc(T('noReto'))+'</p>';
+    else if(!RETO.open)         v.innerHTML='<p class="help">'+esc(T('cerrado'))+'</p>';
+    else                        v.innerHTML='<p class="help">'+
+      esc(T('ventana').split('{D}').join(cuandoCP(RETO.opens_at)))+'</p>';
+  }
+
+  var wait=PL.filter(function(p){ return p.state==='pending' });
+  var on  =PL.filter(function(p){ return p.state==='active' });
+  var off =PL.filter(function(p){ return p.state!=='pending' && p.state!=='active' });
+
+  $('tally').innerHTML=
+    (wait.length?'<div class="tal wait"><b>'+wait.length+'</b><span>'+esc(T('tWait'))+'</span></div>':'')+
+    '<div class="tal"><b>'+on.length+'</b><span>'+esc(T('tIn'))+'</span></div>'+
+    '<div class="tal"><b>'+off.length+'</b><span>'+esc(T('tOut'))+'</span></div>';
+  $('tally').className='tally'+(wait.length?' three':'');
+
+  $('wait').innerHTML = wait.length
+    ? '<div class="waits"><b>'+esc(T('waitH'))+'</b>'+
+      '<p>'+esc(T('waitP'))+'</p>'+
+      '<div class="plist">'+wait.map(function(p){
+        var i=PL.indexOf(p);
+        return '<div class="pl">'+
+          '<span class="nm">'+esc(p.name)+
+            '<small>'+esc(p.squad||T('noSquad'))+'</small></span>'+
+          '<span class="act">'+
+            '<button class="on" onclick="decidir('+i+',true)">'+esc(T('yes'))+'</button>'+
+            '<button onclick="decidir('+i+',false)">'+esc(T('no'))+'</button>'+
+          '</span>'+
+        '</div>';
+      }).join('')+'</div></div>'
+    : '';
+
+  var rest=on.concat(off);
+  if(!rest.length){ $('plist').innerHTML=wait.length?'':'<p class="help">'+esc(T('empty'))+'</p>'; return }
+
+  $('plist').innerHTML='<div class="plist">'+rest.map(function(p){
+    var i=PL.indexOf(p);
+    if(EDIT===p.id) return fila_edit(p,i);
+    var act = p.state==='active';
+    return '<div class="pl'+(act?'':' off')+'">'+
+      '<span class="nm">'+esc(p.name)+
+        '<small>'+esc(p.squad||T('noSquad'))+'</small></span>'+
+      '<span class="act">'+
+        (act
+          ? '<button class="on" onclick="mandar('+i+')">'+esc(T('send'))+'</button>'+
+            '<button onclick="abrir('+i+')">'+esc(T('edit'))+'</button>'+
+            '<button onclick="sacar('+i+')">'+esc(T('take'))+'</button>'
+          : '<button class="on" onclick="devolver('+i+')">'+esc(T('back'))+'</button>'+
+            '<button class="del" onclick="borrar('+i+')">'+esc(T('del'))+'</button>')+
+      '</span>'+
+    '</div>';
+  }).join('')+'</div>';
+}
+
+/* Borrar sólo se le ofrece a quien ya está fuera de la lista. Dos pasos
+   en vez de uno: sacar, y entonces borrar. Nadie borra a un nene activo
+   por darle al botón de al lado.
+
+   Y si tiene promesas encima, la base de datos no deja borrarlo — eso
+   está bien, porque esas promesas son dinero que alguien prometió. En
+   ese caso se queda fuera de la lista y se le dice al entrenador por
+   qué, en vez de enseñarle un error. */
+function borrar(i){
+  var p=PL[i]; if(!p) return;
+  if(!confirm(T('askDel',{N:p.name}))) return;
+  say('lm','…');
+  rpc('roster_remove',{p_code:CODE,p_campaign:CID,p_player:p.id})
+    .then(function(r){
+      if(!r||!r.ok) return say('lm',T('bad'),'bad');
+      var gone = r.state==='gone';
+      cargar().then(function(){
+        say('lm', gone?T('gone',{N:p.name}):T('kept',{N:p.name}), gone?'ok':'bad');
+      });
+    })
+    .catch(function(e){ console.error(e); say('lm',T('net'),'bad') });
+}
+
+function decidir(i,yes){
+  var p=PL[i]; if(!p) return;
+  if(!yes && !confirm(T('askNo',{N:p.name}))) return;
+  say('lm','…');
+  rpc('roster_decide',{p_code:CODE,p_campaign:CID,p_player:p.id,p_yes:yes})
+    .then(function(r){
+      if(!r||!r.ok) return say('lm',T('bad'),'bad');
+      cargar().then(function(){
+        say('lm', yes?T('okYes',{N:p.name}):T('okNo',{N:p.name}), 'ok');
+      });
+    })
+    .catch(function(e){ console.error(e); say('lm',T('net'),'bad') });
+}
+
+function fila_edit(p,i){
+  return '<div class="ed">'+
+    '<div class="two">'+
+      '<div><label for="e_nm">'+esc(T('nmL'))+'</label>'+
+        '<input id="e_nm" type="text" maxlength="60" value="'+esc(p.name)+'"></div>'+
+      '<div><label for="e_sq">'+esc(T('sqL'))+'</label>'+
+        '<input id="e_sq" type="text" maxlength="24" value="'+esc(p.squad||'')+'"></div>'+
+    '</div>'+
+    '<div class="btns">'+
+      '<button class="btn go" onclick="guardar('+i+')">'+esc(T('save'))+'</button>'+
+      '<button class="btn line" onclick="EDIT=null;pintar()">'+esc(T('cancel'))+'</button>'+
+    '</div>'+
+  '</div>';
+}
+
+function abrir(i){ EDIT=PL[i]?PL[i].id:null; pintar();
+  var e=$('e_nm'); if(e){ e.focus(); e.select() } }
+
+function guardar(i){
+  var p=PL[i]; if(!p) return;
+  var nm=trim(($('e_nm')||{}).value), sq=trim(($('e_sq')||{}).value);
+  if(nm.length<2) return say('lm',T('errName'),'bad');
+  say('lm','…');
+  rpc('roster_edit',{p_code:CODE,p_campaign:CID,p_player:p.id,p_name:nm,p_squad:sq})
+    .then(function(r){
+      if(!r||!r.ok){
+        var w=r&&r.reason;
+        return say('lm', w==='dup'?T('errDup') : w==='name'?T('errName')
+                       : w==='nothere'?T('errGone') : T('bad'), 'bad');
+      }
+      EDIT=null; say('lm',T('saved'),'ok'); cargar();
+    })
+    .catch(function(e){ console.error(e); say('lm',T('net'),'bad') });
+}
+
+function mover(i,on){
+  var p=PL[i]; if(!p) return;
+  say('lm','…');
+  rpc('roster_active',{p_code:CODE,p_campaign:CID,p_player:p.id,p_on:on})
+    .then(function(r){
+      if(!r||!r.ok) return say('lm',T('bad'),'bad');
+      say('lm',''); cargar();
+    })
+    .catch(function(e){ console.error(e); say('lm',T('net'),'bad') });
+}
+function sacar(i){
+  var p=PL[i]; if(!p) return;
+  if(!confirm(T('askTake',{N:p.name}))) return;
+  mover(i,false);
+}
+function devolver(i){ mover(i,true) }
+
+function anadir(){
+  var raw=trim($('paste').value);
+  if(!raw) return say('am',T('addNone'),'bad');
+  var names=raw.split('\n').map(function(ln){
+    return trim(trim(ln).replace(/^[0-9]+[.)\-\s]+/,''));
+  }).filter(function(n){ return n.length>=2 });
+  if(!names.length) return say('am',T('addNone'),'bad');
+
+  say('am','…');
+  rpc('roster_add',{p_code:CODE,p_campaign:CID,p_names:names,p_squad:trim($('sq').value)})
+    .then(function(r){
+      if(!r||!r.ok) return say('am',T('bad'),'bad');
+      $('paste').value='';
+      var m=(r.added===1?T('added',{N:r.added}):T('addedN',{N:r.added}));
+      if(r.skipped) m+=(r.skipped===1?T('dup',{N:r.skipped}):T('dupN',{N:r.skipped}));
+      if(r.bad)     m+=(r.bad===1?T('badN',{N:r.bad}):T('badNN',{N:r.bad}));
+      say('am',m,'ok');
+      cargar();
+    })
+    .catch(function(e){ console.error(e); say('am',T('net'),'bad') });
+}
+
+$('code').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){ e.preventDefault(); entrar(false) }
+});
+
+paintStatic();
+if(CODE) entrar(true);
+</script>
+</body>
+</html>
