@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Apadrina — Anotado</title>
 <meta name="robots" content="noindex,nofollow">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800;900&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════════════════════════════
    LA PÁGINA DEL PADRINO
@@ -131,6 +128,70 @@ button.volver:hover{color:var(--paper);border-color:var(--mute)}
   .mark, .mark .wm{font-size:20px !important}
 }
 
+/* ══════════════════════════════════════════════════════════════
+   EL LOOK NUEVO — crema, navy y naranja
+   18 de octubre de 2026
+
+   Esta página es la que abre un padrino cuando le llega el enlace,
+   así que tiene que parecerse al resto del sitio y no al juego.
+
+   Va al final y manda encima: la geometría de arriba no se toca.
+   Ojo con los nombres, que aquí están al revés de otras páginas —
+   --ink es el FONDO y --paper es el TEXTO — así que se cruzan.
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  --navy:#101c2a; --orange:#ff7a18; --cream:#faf8f4; --linea:#e7e6e2;
+  /* Cruzados a propósito: ink era el oscuro del fondo. */
+  --ink:#faf8f4; --paper:#1b2937;
+  --mute:#617083; --line:#e7e6e2; --panel:#ffffff;
+  --gold:#ff7a18; --green:#0b7a5a; --warn:#8a5a00;
+}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+
+/* La cabecera: sobre crema, la marca va en navy y el punto naranja. */
+header{border-bottom:1px solid var(--linea)}
+.mark, .mark .wm{color:var(--navy) !important}
+.mark em, .wm em{color:var(--navy) !important}
+.mark i, .wm i{color:var(--orange) !important}
+#lang{border:1px solid var(--linea);color:var(--mute);background:#fff;border-radius:7px}
+#lang:hover{border-color:var(--orange);color:var(--orange)}
+
+.kick{color:var(--orange)}
+h1 em{color:var(--orange)}
+.prog, .cuando, .ayuda, .trato{color:var(--mute)}
+
+/* Los paneles, blancos con su sombra. */
+.caja, .cuenta, .cerrado, .listo, .aviso{
+  background:#fff;border:1px solid var(--linea);border-radius:14px;
+  box-shadow:0 8px 25px #17243806;color:var(--paper)}
+.caja span, .caja div.tot span{color:var(--mute)}
+.caja b, .cuenta b{color:var(--paper)}
+
+/* Lo que se escribe. */
+.campo input, input{background:#fff;border:1px solid #d6d9d6;border-radius:10px;
+  color:var(--paper)}
+input::placeholder{color:#9aa6b2}
+input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,122,24,.18);outline:none}
+
+/* Las tarifas: fichas claras, y la escogida en naranja. */
+.tarifa{background:#fff;border:1px solid var(--linea);color:var(--paper)}
+.tarifa small{color:var(--mute)}
+.tarifa.on{background:var(--orange);border-color:var(--orange);color:#111a24}
+.tarifa.on small{color:#111a24}
+
+button.enviar{background:var(--orange);border:0;color:#111a24;border-radius:9px;font-weight:800}
+button.enviar:disabled{opacity:.5}
+button.volver{background:transparent;border:1px solid var(--navy);color:var(--navy);
+  border-radius:9px}
+button.volver:hover{background:var(--navy);color:#fff}
+
+.estado.mal{color:#b4231c}
+.estado.bien{color:var(--green)}
+.cerrado h2{color:var(--paper)}
+.cerrado p{color:var(--mute)}
+.listo .grande{color:var(--orange)}
+.pie, .pie a{color:var(--mute)}
+.pie a:hover{color:var(--orange)}
 </style>
 </head>
 <body>
