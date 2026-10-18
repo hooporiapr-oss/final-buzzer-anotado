@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Getting padrinos — Hooporia</title>
 <meta name="description" content="The team's score is the same for everyone on it. What is different is how many people you asked. Here is how to find padrinos, and what each one adds.">
+
+<!-- El icono y la imagen de compartir. og:image va en absoluto
+     a propósito: WhatsApp y los demás no resuelven rutas
+     relativas, y con una relativa la vista previa sale en
+     blanco igual que sin imagen. -->
+<link rel="icon" type="image/png" href="hooporia.png">
+<link rel="apple-touch-icon" href="hooporia.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hooporia">
+<meta property="og:image" content="https://hooporia.com/hooporia-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 /* ── El look nuevo: crema, navy y naranja ─────────────────────────
    El mismo del resto del sitio. Esta página es la más larga que lee
@@ -72,6 +86,21 @@ h1{font-size:clamp(2rem,6.2vw,3.1rem);font-weight:800;letter-spacing:-.045em;
   line-height:1.06;margin:0 0 .35em;max-width:22ch}
 h1 em{font-style:normal;color:var(--orange)}
 .lede{font-size:clamp(1.02rem,2.3vw,1.2rem);color:var(--muted);max-width:54ch;margin:0}
+
+/* La foto de la portada, aquí también y sólo aquí. Esta es la otra
+   página a la que alguien llega en frío: un nene le manda el enlace a
+   su abuela, y ella no ha visto la portada nunca. En las demás —las
+   hojas que se imprimen, los paneles de trabajo, y prometer.html, que
+   es donde se decide el dinero— no va, porque repetida en todas deja
+   de ser una foto y es papel pintado.
+
+   height:auto es obligatorio: el height="630" del <img> llega como
+   altura fija y aspect-ratio sólo manda cuando una de las dos medidas
+   es auto. Sin él se recorta un 7% por arriba, donde está el 21. */
+.foto{width:100%;height:auto;aspect-ratio:1200/630;object-fit:cover;
+  border-radius:14px;margin:26px 0 0;display:block;
+  box-shadow:0 22px 60px #0005;border:1px solid #ffffff1a;background:#1b2937}
+@media print{ .foto{display:none} }
 
 section{padding:clamp(32px,6vw,52px) 0;border-top:1px solid var(--linea)}
 h2{font-size:clamp(1.3rem,3.6vw,1.8rem);font-weight:800;letter-spacing:-.03em;
@@ -205,6 +234,11 @@ footer .f-dot{padding:0 8px;opacity:.45}
 <header><div class="wrap">
   <h1 data-t="h1">You score. <em>Your padrinos decide what every point is worth</em>.</h1>
   <p class="lede" data-t="lede">The score is the same for everybody on the team. What is different, player to player, is how many people you asked — and you can start that today, before you touch a ball.</p>
+  <!-- width y height para que el hueco esté reservado antes de que la
+       imagen baje y el texto no salte mientras se lee. -->
+  <img class="foto" src="hooporia-share.jpg" width="1200" height="630"
+       loading="lazy" decoding="async" id="foto"
+       alt="A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21">
 </div></header>
 
 <div class="wrap">
@@ -507,6 +541,14 @@ function paint(){
     if (!v) return;
     if (v.indexOf('<') !== -1) el.innerHTML = v; else el.textContent = v;
   });
+  /* El alt de la foto, aparte: data-t cambia textContent o innerHTML, y
+     el texto alternativo es un atributo. Con data-t se quedaría en
+     inglés para siempre — justo para quien lo necesita, que es la
+     persona que no ve la foto y la está oyendo en su idioma. */
+  var _f = document.getElementById('foto');
+  if (_f) _f.alt = lang === 'es'
+    ? 'Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21'
+    : 'A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21';
   document.getElementById('lang').textContent = lang === 'en' ? 'ES' : 'EN';
   document.getElementById('msgText').textContent = t('msgBody');
   document.getElementById('copiedNote').textContent = '';
