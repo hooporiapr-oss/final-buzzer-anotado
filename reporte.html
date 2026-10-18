@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>El reporte — Anotado</title>
+<title>El reporte — Hooporia</title>
 <meta name="robots" content="noindex,nofollow">
 <style>
 :root{
@@ -129,7 +129,7 @@ footer .f-dot{padding:0 8px;opacity:.45}
 
 <header>
   <div class="wrap bar">
-    <a class="mark" href="index.html"><em>ANOTADO</em><i>.</i></a>
+    <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
     <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
   </div>
 </header>
@@ -180,7 +180,7 @@ function rpc(fn, args){
 
 var S={
   es:{
-    titulo:'El reporte — Anotado',
+    titulo:'El reporte — Hooporia',
     h1:'El reporte del reto',
     lede:'Lo que se llevó cada padrino: su tarifa, su tope y lo que dio su promesa. Para imprimir o bajar.',
     codeL:'Tu código de entrenador',
@@ -199,7 +199,7 @@ var S={
     deN:'de {N}',
 
     /* Lo que este reporte NO dice, dicho antes de que lo busquen. */
-    nota:'Lo prometido no es lo recaudado. Aquí está lo que cada padrino prometió y lo que salió su promesa con los puntos de su jugador; el dinero lo recibe el programa directo, y Anotado no sabe quién pagó.',
+    nota:'Lo prometido no es lo recaudado. Aquí está lo que cada padrino prometió y lo que salió su promesa con los puntos de su jugador; el dinero lo recibe el programa directo, y Hooporia no sabe quién pagó.',
 
     hJugadores:'Por jugador',
     hPromesas:'Cada promesa',
@@ -214,11 +214,11 @@ var S={
     csv:'Bajar en hoja de cálculo',
     otro:'Ver otro reto',
     aMiEquipo:'← Mi equipo',
-    sello:'Reporte generado el {D} · Anotado · Gostar Digital LLC, Puerto Rico',
+    sello:'Reporte generado el {D} · Hooporia · Gostar Digital LLC, Puerto Rico',
     noJugo:'no jugó'
   },
   en:{
-    titulo:'The report — Anotado',
+    titulo:'The report — Hooporia',
     h1:'The challenge report',
     lede:'What each padrino came to: his rate, his cap, and what his pledge worked out to. To print or download.',
     codeL:'Your coach code',
@@ -236,7 +236,7 @@ var S={
     nJugaron:'played',
     deN:'of {N}',
 
-    nota:'Pledged is not collected. This is what each padrino pledged and what it came to against his player’s points; the money goes to the program directly, and Anotado does not know who paid.',
+    nota:'Pledged is not collected. This is what each padrino pledged and what it came to against his player’s points; the money goes to the program directly, and Hooporia does not know who paid.',
 
     hJugadores:'By player',
     hPromesas:'Every pledge',
@@ -251,7 +251,7 @@ var S={
     csv:'Download as a spreadsheet',
     otro:'See another challenge',
     aMiEquipo:'← My team',
-    sello:'Report generated {D} · Anotado · Gostar Digital LLC, Puerto Rico',
+    sello:'Report generated {D} · Hooporia · Gostar Digital LLC, Puerto Rico',
     noJugo:'did not play'
   }
 };
@@ -485,7 +485,7 @@ function bajarCSV(){
   var blob=new Blob(['﻿'+filas.join('\r\n')],{type:'text/csv;charset=utf-8'});
   var a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='anotado-'+(nom||'reporte')+'.csv';
+  a.download='hooporia-'+(nom||'reporte')+'.csv';
   document.body.appendChild(a); a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove() },0);
 }
