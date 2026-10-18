@@ -72,7 +72,7 @@ const PAGINAS = {
     en: [/From a run/, /the level he reached/, /a run key, which exists only/]
   },
   'cobro.html': {
-    es: [/Nosotros anotamos las promesas\. Tu programa cobra/, /Anotado no procesa pagos ni guarda dinero/,
+    es: [/Nosotros anotamos las promesas\. Tu programa cobra/, /Hooporia no procesa pagos ni guarda dinero/,
          /Al cerrar la ventana del evento/, /no tiene columna de pagado y no la va a tener/],
     en: [/We record the pledges\. Your program collects/, /processes no payments and holds no money/,
          /When the event window closes/, /no paid column and never will/]
