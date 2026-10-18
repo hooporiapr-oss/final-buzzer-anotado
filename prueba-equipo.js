@@ -4,7 +4,7 @@
    Es el único camino de conversión de la portada, así que lo que
    importa es que entre y que entre bien etiquetada: los dos
    productos escriben en bw_requests y sin la etiqueta una solicitud
-   de Anotado le llega al admin idéntica a una de Cada Punto.
+   de Hooporia le llega al admin idéntica a una de Cada Punto.
 
    Y que la licencia se acepte a mano. Sin el visto, no se manda.
    ════════════════════════════════════════════════════════════════ */
