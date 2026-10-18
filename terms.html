@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Terms of Use — Anotado</title>
+<meta name="robots" content="index,follow">
+<style>
+/* ── El look nuevo: crema, navy y naranja ─────────────────────────
+   El mismo del resto del sitio. Esto es un documento largo, así que
+   la tipografía manda: ancho de lectura corto, titulares que se
+   distinguen del cuerpo, y nada de cajas donde no hacen falta. */
+:root{
+  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
+  --cream:#faf8f4; --ink:#1b2937; --muted:#617083;
+  --linea:#e7e6e2;
+}
+*{box-sizing:border-box}
+html{background:var(--cream)}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  line-height:1.68;-webkit-text-size-adjust:100%}
+.wrap{width:min(680px,calc(100% - 40px));margin:0 auto}
+
+header{background:var(--navy);color:#fff;border-bottom:1px solid #ffffff22;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 0}
+.mark{font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+  font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
+.mark em{font-style:normal;color:#fff}
+.mark i{font-style:normal;color:var(--orange)}
+@media(max-width:380px){ .mark{font-size:.92rem} }
+.langb{border:1px solid #ffffff55;background:transparent;color:#fff;
+  padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+.langb:hover{border-color:var(--orange);color:var(--orange)}
+
+main .wrap{padding:44px 0 56px}
+h1{font-size:clamp(2rem,5.6vw,3rem);line-height:1.06;letter-spacing:-.045em;margin:0 0 10px}
+.updated{color:var(--muted);font-size:.86rem;margin:0 0 26px;
+  padding-bottom:20px;border-bottom:3px solid var(--navy)}
+.lead{font-size:1.1rem;color:var(--ink);margin:0 0 34px;max-width:58ch}
+
+/* ── Cada cláusula: el titular en naranja y pequeño, para que la
+   vista encuentre la sección sin que el titular grite. */
+h2{font-size:.8rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--orange);margin:38px 0 10px;padding-top:22px;border-top:1px solid var(--linea)}
+main h2:first-of-type{border-top:none;padding-top:0}
+p{margin:0 0 15px;color:var(--muted);max-width:62ch}
+strong,b{color:var(--ink);font-weight:750}
+ul{margin:0 0 15px;padding:0;list-style:none;max-width:62ch}
+li{position:relative;padding:9px 0 9px 22px;color:var(--muted);
+  border-top:1px solid var(--linea)}
+li:first-child{border-top:none}
+li::before{content:"";position:absolute;left:0;top:1.05em;
+  width:7px;height:7px;background:var(--orange);border-radius:2px}
+main a{color:var(--navy);font-weight:700;text-decoration:none;
+  border-bottom:2px solid rgba(255,122,24,.5)}
+main a:hover{border-bottom-color:var(--orange);color:var(--orange)}
+
+footer{background:#0a1420;color:#aeb9c6;padding:28px 0 calc(28px + env(safe-area-inset-bottom,0px));
+  text-align:center;font-size:.86rem}
+footer a{color:#aeb9c6;text-decoration:none}
+footer a:hover{color:var(--orange)}
+footer p{margin:0 0 7px;color:#aeb9c6;max-width:none}
+footer .f-co{color:#fff;font-weight:700}
+footer .f-what{margin:7px auto 0;font-size:.78rem;line-height:1.5;opacity:.75;max-width:54ch}
+footer .f-legal{margin:9px 0 0;font-size:.82rem}
+footer .f-dot{padding:0 8px;opacity:.45}
+
+@media print{
+  header,footer,.langb{display:none !important}
+  html,body{background:#fff;color:#000}
+  main .wrap{width:100%;padding:0}
+  h2{color:#000;border-top-color:#000}
+  p,li{color:#000}
+  main a{border-bottom:none;color:#000}
+  h2,li{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="index.html"><em>ANOTADO</em><i>.</i></a>
+    <button class="langb" id="langBtn" onclick="toggleLang()">ES</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap" id="app"></div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="f-co">© 2026 Gostar Digital LLC — Puerto Rico</p>
+<p class="f-what" id="fWhat"></p>
+<script>
+/* Lo que somos, dicho donde se ve: una herramienta que se cobra, no
+   una obra benéfica. Lee el mismo idioma guardado que el resto del
+   sitio, así que no hace falta cablearlo a cada sistema de traducción. */
+(function(){
+  var l = 'es';
+  try{ l = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+           localStorage.getItem('fc-lang') ||
+           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+  var el = document.getElementById('fWhat');
+  if (el) el.textContent = (l === 'es')
+    ? 'Anotado es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Anotado is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+})();
+</script>
+    <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+    <p class="f-legal">
+      <a href="terms.html">Terms</a><span class="f-dot">·</span><a href="custodia.html">Dinero</a><span class="f-dot">·</span><a href="privacy.html">Privacy</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+var BODY = {
+  en: `
+<h1>Terms of Use</h1>
+<p class="updated">Last updated 17 October 2026</p>
+
+<p class="lead">Anotado is operated by Gostar Digital LLC, a limited liability company in
+Puerto Rico. By using this site you agree to what follows. If you do not agree, please do not
+use it.</p>
+
+<h2>What Anotado does</h2>
+<p>Anotado is a pledge management system. A supporter — a <em>padrino</em> — pledges an amount
+for every point one player scores in his run of a scored basketball game. Anotado records that
+pledge, calculates what it comes to once the game has recorded the player's points, and shows the
+program what was pledged.</p>
+
+<p><strong>Anotado does not process, receive, hold, verify or collect any payment.</strong>
+Whatever a padrino pays, he pays the program directly, by whatever method the two of them agree.
+We are not a party to that payment, we do not know whether it was made, and the system has nowhere
+to record it.</p>
+
+<p>The score is recorded by the game, not by a person. A player's points are written as he plays,
+from his own run link, and the run key is verified inside the database — holding the public link is
+not enough to end another player's run. Each player gets one official run: the database refuses a
+second. Nobody at the program and nobody at Gostar Digital LLC enters a score by hand, and there is
+no mechanism by which either could change one.</p>
+
+<p>An event runs inside a window the program sets, which may be a single afternoon or several
+days. Players take their runs inside it, wherever they are. When the window closes, Anotado works
+out each pledge and sends every padrino one notice carrying the points scored and what their pledge
+came to. That notice contains no payment link, and no further message is sent to a padrino at any
+time — no reminders and no collection notices. The
+program receives the full pledge report, and the event is then closed.</p>
+
+<h2>A pledge is a voluntary contribution</h2>
+<p><strong>Nothing is won, and nothing is paid out to a padrino.</strong> A pledge is a voluntary
+contribution to the program. It is not a wager, a bet, a game of chance, an investment, or a
+purchase of goods or services. The amount varies with what is scored; the contribution is owed to
+the program either way, whatever that score turns out to be — and it is owed to the program, never
+to Gostar Digital LLC.</p>
+
+<h2>Taxes</h2>
+<p>Anotado is operated by Gostar Digital LLC, a for-profit company. We make no representation
+about how any pledge or payment is treated for tax purposes, and we do not issue tax receipts.
+Nothing on this site should be read as saying a pledge is a charitable donation or that it is
+deductible. A padrino who wants to know how a payment is treated should ask their own advisor,
+and a program is responsible for its own tax position.</p>
+
+<h2>What the program does with what it raises</h2>
+<p>The money raised belongs to the program the padrino chose. What that program does with it
+afterwards — including sharing part of it with its league, its school, or the program that
+brought it onto the platform — is its own decision and its own responsibility. Gostar Digital
+LLC takes no part in those arrangements, does not administer them, and charges nothing for
+them.</p>
+
+<h2>What a padrino agrees to</h2>
+<ul>
+  <li>A pledge is a commitment to pay the program once the game is over and the score is in.</li>
+  <li>Nothing is ever charged by Anotado. Payment is arranged directly with the program.</li>
+  <li>Pledging closes when the game begins. Nobody pledges knowing the score.</li>
+  <li>A padrino may set a maximum. The amount will never be worked out above it, however high
+      the score goes.</li>
+  <li>A game that is not played produces no amount, and the pledge is released.</li>
+  <li>Very small amounts are closed out. If the rate multiplied by the points comes to less than
+      fifty cents, the pledge is closed and nothing is owed.</li>
+</ul>
+
+<h2>Fees</h2>
+<p>Anotado is licensed per event: a fixed fee of $49 per team, per event, or $29 where the roster
+is under eight. It is paid by the organization for use of the software. It is not a share of what a
+program raises, it is not taken out of any pledge, and no padrino is ever charged anything by Gostar
+Digital LLC.</p>
+<p>Nothing is paid up front. The fee is invoiced when the event closes, after the notices have gone
+out and the final report is available, and is due within seven calendar days. If it is not paid, the
+license for that event lapses and its pledge data is removed from the platform; the program can
+download its own report at any time before that happens, and we pursue the fee no further.</p>
+
+<h2>What a program agrees to</h2>
+<ul>
+  <li>To enter true scores. Entering a score that did not happen is grounds for closing the
+      campaign.</li>
+  <li>To be accurate about what the money is for.</li>
+  <li>To hold any permission required to raise money on behalf of its school, club or league.</li>
+  <li>That it collects, holds and accounts for its own funds, and that Gostar Digital LLC takes
+      no part in that.</li>
+  <li>That it tells no padrino that Anotado processes, holds, verifies or guarantees any
+      payment.</li>
+</ul>
+
+<h2>Payments</h2>
+<p>There are none to describe here. Gostar Digital LLC operates no payment processing for pledges,
+receives no money from padrinos, holds no funds belonging to any program, and makes no payouts to
+anyone. A padrino pays the program; the program keeps its own record of what it received. What we
+do and do not do is set out in full in <a href="custodia.html">The money does not pass through
+us</a>, which a program accepts when it signs a team up.</p>
+
+<h2>Refunds</h2>
+<p>We take no payments, so we issue no refunds. If a padrino believes a pledge was recorded
+wrongly — the wrong rate, the wrong maximum, a game that never took place — he should write to us
+at the address below and we will correct the record. Anything concerning money already paid is
+between the padrino and the program.</p>
+
+<h2>The games</h2>
+<p>The Memory Basketball games — The Rebound, The Replay, The Recall and their head-to-head
+versions — are free to play, need no account, and record nothing. We may change or withdraw any of
+the games at any time.</p>
+
+<h2>What belongs to us</h2>
+<p>All software, text, wording, layouts, designs and the names Anotado, Anotado Cuenta and
+Memory Basketball are the property of Gostar Digital LLC. Nothing on this site grants any licence
+to copy, reproduce or reuse them. Content supplied by a program — its name, its list of
+participants, what they scored — remains that program's own.</p>
+
+<h2>What we do not promise</h2>
+<p>The site is provided as it is. We do not promise it will be uninterrupted or free of error, and
+we are not liable for any indirect or consequential loss arising from its use. Nothing here limits
+any liability that cannot lawfully be limited.</p>
+
+<h2>Minors</h2>
+<p>Players on a roster may be minors; they do not pledge and do not pay. Padrinos must be 18 or
+over. A program is responsible for any permission it needs before naming a player on a page.</p>
+
+<h2>Ending use</h2>
+<p>We may suspend or close a campaign that breaks these terms, misstates scores, or raises money
+for something other than what it says. Where we do, open pledges are cancelled and the program is
+told. If a license is not taken or is not renewed, pledge data is removed from the platform; before
+it is removed, the program may download its own list.</p>
+
+<h2>Law</h2>
+<p>These terms are governed by the laws of the Commonwealth of Puerto Rico, and any dispute
+belongs to its courts.</p>
+
+<h2>Changes</h2>
+<p>We may update these terms. The date at the top says when they last changed. Continuing to use
+the site after a change means accepting it.</p>
+
+<h2>Contact</h2>
+<p>Gostar Digital LLC<br>
+PO Box 1980-345, Loíza, Puerto Rico 00772<br>
+<a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+`,
+  es: `
+<h1>Términos de Uso</h1>
+<p class="updated">Última actualización: 17 de octubre de 2026</p>
+
+<p class="lead">Anotado es operado por Gostar Digital LLC, una compañía de responsabilidad
+limitada en Puerto Rico. Al usar este sitio aceptas lo que sigue. Si no estás de acuerdo, por
+favor no lo uses.</p>
+
+<h2>Qué hace Anotado</h2>
+<p>Anotado es un sistema de manejo de promesas. Un padrino promete una cantidad por cada punto
+que anota un equipo en un juego, o por cada punto que anota un participante en un día de juego del
+juego pautado. Anotado anota esa promesa, calcula lo que corresponde cuando entra el marcador
+final, y le enseña al programa lo prometido.</p>
+
+<p><strong>Anotado no procesa, no recibe, no guarda, no verifica y no cobra ningún pago.</strong>
+Lo que un padrino pague, se lo paga al programa directo, por el método que los dos acuerden. No
+somos parte de ese pago, no sabemos si se hizo, y el sistema no tiene dónde anotarlo.</p>
+
+<p>El marcador lo anota el juego, no una persona: los puntos de un jugador se escriben mientras
+juega, desde su propio enlace de corrida, y la clave de la corrida se verifica dentro de la base de
+datos — tener el enlace público no basta para cerrarle la corrida a otro. Cada jugador tiene una
+sola corrida oficial: la base de datos rechaza la segunda. Nadie en el programa y nadie en Gostar
+Digital LLC mete un marcador a mano, y no hay forma de que ninguno de los dos cambie uno.</p>
+
+<p>Un evento corre dentro de una ventana que pone el programa, que puede ser una sola tarde o
+varios días. Los jugadores hacen sus corridas dentro de ella, desde donde estén.
+Al cerrar la ventana, Anotado saca lo que dio cada promesa y le manda a cada padrino
+un solo aviso con los puntos anotados y su cantidad. Ese aviso no lleva enlace de pago, y a un padrino no
+se le vuelve a escribir en ningún momento — ni recordatorios ni avisos de cobro. El programa recibe
+el reporte completo de promesas, y ahí el evento queda cerrado.</p>
+
+<h2>Una promesa es una contribución voluntaria</h2>
+<p><strong>No se gana nada y no se le paga nada al padrino.</strong> Una promesa es una
+contribución voluntaria al programa. No es una apuesta, ni un juego de azar, ni una inversión, ni
+la compra de bienes o servicios. La cantidad varía con lo que se anote; la contribución se le debe
+al programa de todas formas, sea cual sea ese marcador — y se le debe al programa, nunca a Gostar
+Digital LLC.</p>
+
+<h2>Impuestos</h2>
+<p>Anotado lo opera Gostar Digital LLC, una empresa con fines de lucro. No hacemos ninguna
+afirmación sobre cómo se trata una promesa o un pago para efectos contributivos, y no emitimos
+recibos para impuestos. Nada en este sitio debe leerse como que una promesa es un donativo
+caritativo ni que es deducible. El padrino que quiera saber cómo se trata su pago debe
+consultarlo con su propio asesor, y cada programa responde por su propia situación
+contributiva.</p>
+
+<h2>Lo que hace el programa con lo recaudado</h2>
+<p>El dinero recaudado es del programa que el padrino escogió. Lo que ese programa haga
+después con él — incluido compartir parte con su liga, su escuela o el programa que lo
+trajo a la plataforma — es decisión suya y responsabilidad suya. Gostar Digital LLC no
+participa en esos acuerdos, no los administra y no cobra nada por ellos.</p>
+
+<h2>Lo que acepta un padrino</h2>
+<ul>
+  <li>Una promesa es un compromiso de pagarle al programa una vez acabado el juego y puesto el
+      marcador.</li>
+  <li>Anotado no le cobra nada, nunca. El pago se arregla directo con el programa.</li>
+  <li>Las promesas cierran cuando empieza el juego. Nadie promete sabiendo el marcador.</li>
+  <li>El padrino puede poner un máximo. La cantidad nunca se saca por encima de eso, suba lo que
+      suba el marcador.</li>
+  <li>Un juego que no se juega no da cantidad, y la promesa queda liberada.</li>
+  <li>Las cantidades muy pequeñas se cierran. Si la tarifa por los puntos da menos de cincuenta
+      centavos, la promesa se cierra y no se debe nada.</li>
+</ul>
+
+<h2>Cargos</h2>
+<p>Anotado se licencia por evento: un cargo fijo de $49 por equipo, por evento, o $29 cuando la
+plantilla tiene menos de ocho. Lo paga la organización por el uso del programa. No es una parte de
+lo que recauda nadie, no sale de ninguna promesa, y Gostar Digital LLC nunca le cobra nada a un
+padrino.</p>
+<p>No se paga nada por adelantado. El cargo se factura cuando cierra el evento, después de que
+salgan los avisos y quede el reporte final, y se paga dentro de siete días. Si no se paga, la
+licencia de ese evento caduca y sus datos de promesas se retiran de la plataforma; el programa
+puede bajarse su reporte en cualquier momento antes de eso, y nosotros no reclamamos el cargo más
+allá de ahí.</p>
+
+<h2>Lo que acepta un programa</h2>
+<ul>
+  <li>Registrar marcadores verdaderos. Registrar un marcador que no ocurrió es causa para cerrar
+      la campaña.</li>
+  <li>Ser exacto sobre para qué es el dinero.</li>
+  <li>Tener el permiso que haga falta para recaudar en nombre de su escuela, club o liga.</li>
+  <li>Que cobra, guarda y responde por su propio dinero, y que Gostar Digital LLC no participa en
+      eso.</li>
+  <li>Que no le dice a ningún padrino que Anotado procesa, guarda, verifica o garantiza un
+      pago.</li>
+</ul>
+
+<h2>Pagos</h2>
+<p>No hay ninguno que describir aquí. Gostar Digital LLC no opera procesamiento de pagos para
+estas promesas, no recibe dinero de ningún padrino, no guarda fondos de ningún programa y no le
+desembolsa a nadie. El padrino le paga al programa; el programa lleva su propio registro de lo que
+recibió. Lo que hacemos y lo que no está completo en <a href="custodia.html">El dinero no pasa por
+nosotros</a>, que el programa acepta al inscribir un equipo.</p>
+
+<h2>Reembolsos</h2>
+<p>No recibimos pagos, así que no hacemos reembolsos. Si un padrino cree que su promesa quedó mal
+anotada — la tarifa equivocada, el máximo equivocado, un juego que no se dio — debe escribirnos a
+la dirección de abajo y corregimos el registro. Todo lo que tenga que ver con dinero ya pagado es
+entre el padrino y el programa.</p>
+
+<h2>Los juegos</h2>
+<p>Los juegos de Memory Basketball — The Rebound, The Replay, The Recall y sus versiones uno
+contra uno — son gratis, no hace falta cuenta y no guardan nada. Podemos cambiar o retirar
+cualquiera de ellos en cualquier momento.</p>
+
+<h2>Lo que nos pertenece</h2>
+<p>Todo el programa, los textos, la redacción, los diseños y los nombres Anotado, Anotado
+Cuenta y Memory Basketball son propiedad de Gostar Digital LLC. Nada en este sitio da licencia
+para copiarlos, reproducirlos ni reutilizarlos. El contenido que pone un programa — su nombre, su
+lista de participantes, lo que anotaron — sigue siendo de ese programa.</p>
+
+<h2>Lo que no prometemos</h2>
+<p>El sitio se ofrece tal como está. No prometemos que esté siempre disponible ni libre de
+errores, y no respondemos por pérdidas indirectas que surjan de su uso. Nada aquí limita
+responsabilidades que la ley no permite limitar.</p>
+
+<h2>Menores</h2>
+<p>Los jugadores de una lista pueden ser menores; ellos no prometen ni pagan. Los padrinos tienen
+que ser mayores de 18. El programa es responsable de cualquier permiso que necesite antes de
+poner el nombre de un jugador en una página.</p>
+
+<h2>Terminar el uso</h2>
+<p>Podemos suspender o cerrar una campaña que incumpla estos términos, falsee marcadores, o
+recaude para algo distinto de lo que dice. Si lo hacemos, las promesas abiertas se cancelan y se le
+avisa al programa. Si la licencia no se toma o no se renueva, los datos de promesas se retiran de
+la plataforma; antes de retirarlos, el programa puede bajarse su propia lista.</p>
+
+<h2>Ley</h2>
+<p>Estos términos se rigen por las leyes del Estado Libre Asociado de Puerto Rico, y cualquier
+disputa corresponde a sus tribunales.</p>
+
+<h2>Cambios</h2>
+<p>Podemos actualizar estos términos. La fecha de arriba dice cuándo cambiaron por última vez.
+Seguir usando el sitio después de un cambio significa aceptarlo.</p>
+
+<h2>Contacto</h2>
+<p>Gostar Digital LLC<br>
+PO Box 1980-345, Loíza, Puerto Rico 00772<br>
+<a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+`
+};
+</script>
+
+<script>
+var LANG='en';
+try{ LANG = localStorage.getItem('cp-lang') ||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+
+function draw(){
+  document.documentElement.lang = LANG;
+  document.getElementById('app').innerHTML = BODY[LANG] || BODY.en;
+  document.getElementById('langBtn').textContent = LANG==='en' ? 'ES':'EN';
+  try{ document.querySelector('main').scrollTop = 0; }catch(e){}
+}
+function toggleLang(){
+  LANG = LANG==='en' ? 'es':'en';
+  try{ localStorage.setItem('cp-lang', LANG); }catch(e){}
+  draw();
+}
+draw();
+</script>
+</body>
+</html>
