@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Getting padrinos — Anotado</title>
+<meta name="description" content="Your score is one number. Your total is your score multiplied by how many padrinos you found. Here is how to find them, and how long you have.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#07141E;--panel:#0E2232;--line:#1B3A4F;--gold:#4FD3F0;--leather:#4FD3F0;--paper:#EAF2F7;--mute:#7A96A9;--teal:#4FD3F0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:Archivo,system-ui,sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{width:min(900px,92vw);margin:0 auto}
+
+/* The bar follows the page down, so the menu is always a tap
+   away rather than a scroll back to the top. */
+nav{position:sticky;top:0;z-index:70;background:var(--ink);border-bottom:1px solid var(--line)}
+.navin{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:14px}
+.mark{display:block;line-height:0;text-decoration:none}
+.mark img{display:block;height:34px;width:auto}
+@media(max-width:560px){.mark img{height:26px}}
+.navr{display:flex;align-items:center;gap:16px}
+.navr a{color:var(--mute);text-decoration:none;font-size:.9rem}
+@media(max-width:560px){.navr a{display:none}}
+
+/* ---------- the menu ---------- */
+.burger{
+  display:none;width:42px;height:42px;flex-shrink:0;
+  background:none;border:1px solid var(--line);border-radius:11px;
+  cursor:pointer;padding:0;position:relative;
+}
+.burger span{
+  position:absolute;left:11px;right:11px;height:2px;background:var(--paper);
+  border-radius:2px;transition:transform .22s,opacity .18s;
+}
+.burger span:nth-child(1){top:14px}
+.burger span:nth-child(2){top:20px}
+.burger span:nth-child(3){top:26px}
+.burger.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.burger.open span:nth-child(2){opacity:0}
+.burger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+.menu{display:none}
+@media(max-width:760px){
+  .navr a{display:none}
+  .burger{display:block}
+  .menu{
+    display:block;max-height:0;overflow:hidden;
+    border-top:0 solid var(--line);transition:max-height .3s ease-out;
+  }
+  .menu.open{max-height:420px;border-top-width:1px}
+  .menu a{
+    display:block;padding:15px 0;color:var(--paper);text-decoration:none;
+    font-size:1rem;font-weight:600;border-bottom:1px solid var(--line);
+  }
+  .menu a:last-child{border-bottom:none}
+  .menu a.mtalk{color:#E8B23A;font-weight:800}
+}
+#lang{background:none;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:5px 12px;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer}
+
+header{padding:clamp(44px,8vw,72px) 0 clamp(26px,4vw,34px)}
+h1{font-size:clamp(2rem,6.4vw,3.2rem);font-weight:800;letter-spacing:-.035em;line-height:1.05;margin:0 0 .35em;max-width:20ch}
+h1 em{font-style:normal;color:var(--gold)}
+.lede{font-size:clamp(1.02rem,2.3vw,1.2rem);color:#CFE3F2;max-width:52ch;margin:0}
+
+section{padding:clamp(32px,6vw,50px) 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(1.3rem,3.6vw,1.8rem);font-weight:800;letter-spacing:-.025em;margin:0 0 .5em;max-width:24ch}
+p{margin:0 0 1em;color:#CFE3F2;max-width:60ch}
+.mute{color:var(--mute)}
+b{color:var(--paper)}
+
+/* ---- the term, defined before the table that shows it ---- */
+.ppvdef{
+  background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.3);
+  border-radius:16px;padding:clamp(18px,3vw,24px);margin:20px 0 4px;
+}
+.ppvdef h3{font-size:1.05rem;font-weight:800;letter-spacing:-.01em;color:var(--gold);margin:0 0 .5em}
+.ppvdef p{margin:0 0 .7em;max-width:58ch}
+.ppvdef p:last-child{margin-bottom:0}
+
+/* ---- the multiplier, shown rather than explained ---- */
+.mult{background:var(--panel);border:1px solid rgba(34,211,238,.32);border-radius:18px;padding:clamp(18px,3vw,26px);margin:22px 0}
+.lhead,.mrow{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center}
+.lhead{padding:0 4px 10px;font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.lhead span:nth-child(2),.lhead span:last-child{text-align:right}
+.mrow{padding:12px 4px;border-bottom:1px solid var(--line)}
+.mrow:last-of-type{border-bottom:none}
+.mrow .n{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  border:2px solid var(--line);color:var(--mute);
+  font-size:.85rem;font-weight:800;display:grid;place-content:center;
+}
+.mrow .lbl{color:var(--mute);font-size:.95rem;min-width:0}
+.mrow .val{font-size:1.05rem;font-weight:800;color:var(--paper);text-align:right;white-space:nowrap;min-width:72px}
+.mrow .amt{font-size:1.25rem;font-weight:800;white-space:nowrap;text-align:right}
+.mrow.big .n{border-color:var(--gold);color:var(--gold)}
+.mrow.big .amt{color:var(--gold);font-size:1.5rem}
+.mrow.big .val{color:var(--gold);font-size:1.25rem}
+.mnote{color:var(--mute);font-size:.88rem;margin:14px 0 0;text-align:center}
+
+/* ---- the calculator ---- */
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,3.5vw,28px);margin:22px 0}
+.crow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+@media(max-width:700px){.crow{grid-template-columns:1fr}}
+label{display:block;font-size:.64rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:8px}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.val{font-size:1.4rem;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.val small{font-size:.75rem;font-weight:600;color:var(--mute);letter-spacing:0}
+.total{margin-top:22px;padding-top:20px;border-top:1px solid var(--line);text-align:center}
+.total .ppv{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.total .ppv span{display:block;color:var(--mute);font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin:0 0 4px}
+.total .ppv b{display:block;font-size:clamp(1.8rem,6vw,2.4rem);color:var(--paper);line-height:1}
+.total b{display:block;font-size:clamp(2.6rem,10vw,4rem);font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--gold)}
+.total span{display:block;color:var(--mute);font-size:.85rem;margin-top:6px}
+
+/* ---- the window ---- */
+.winlose{border:2px solid var(--ink);border-radius:4px;padding:15px 17px;margin:18px 0 0;
+  font-weight:700;background:var(--tint)}
+.window{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
+@media(max-width:760px){.window{grid-template-columns:1fr}}
+.wk{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;position:relative;padding-top:24px}
+.wk .tag{
+  position:absolute;top:-11px;left:18px;
+  background:var(--ink);border:1px solid rgba(34,211,238,.45);color:var(--gold);
+  font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  padding:3px 10px;border-radius:999px;
+}
+.wk.now{border-color:rgba(34,211,238,.45)}
+.wk b{display:block;font-size:1.02rem;margin-bottom:5px}
+.wk span{display:block;color:var(--mute);font-size:.92rem;line-height:1.5}
+
+/* ---- who to ask ---- */
+.ask{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:20px 0}
+@media(max-width:620px){.ask{grid-template-columns:1fr}}
+.ask div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 16px;font-size:.95rem}
+.ask div span{color:var(--mute);display:block;font-size:.85rem;margin-top:2px}
+
+/* ---- the message to copy ---- */
+.msgbox{background:#08111C;border:1px dashed rgba(34,211,238,.4);border-radius:14px;padding:18px 20px;margin:18px 0;color:#CFE3F2;font-size:.98rem;line-height:1.6}
+.copybtn{
+  display:inline-flex;align-items:center;justify-content:center;padding:13px 22px;border:none;border-radius:11px;
+  background:var(--gold);color:#04121A;font-family:inherit;font-weight:800;font-size:.9rem;
+  letter-spacing:.04em;text-transform:uppercase;cursor:pointer;
+}
+.copied{color:var(--teal);font-size:.9rem;font-weight:700;margin-left:12px}
+
+footer{border-top:1px solid var(--line);padding:24px 0 48px;text-align:center;color:var(--mute);font-size:.85rem}
+footer a{color:var(--mute)}
+
+/* ---------- the Anotado wordmark ---------- */
+.wm{font-family:Archivo,system-ui,sans-serif;font-weight:800;letter-spacing:-.035em;
+  color:#EAF2F7;line-height:1;white-space:nowrap;font-size:28px}
+.wm em{font-style:normal;color:#4FD3F0}
+.mark .wm{display:block}
+@media(max-width:560px){.mark .wm{font-size:23px}}
+
+/* the mark says the whole line now */
+.wm i{font-style:normal;color:var(--mute)}
+
+footer p{margin:0 0 7px}
+footer .f-co{font-weight:700}
+footer .f-nav{margin-top:12px}
+footer .f-legal{margin:7px 0 0;font-size:.8rem}
+footer .f-dot{padding:0 7px;opacity:.5}
+.f-what{margin:7px 0 0;font-size:.74rem;line-height:1.5;opacity:.72;max-width:52ch;
+  margin-left:auto;margin-right:auto}
+
+/* ══ LA MARCA ══════════════════════════════════════════════════
+   cada (hueso) · punto (naranja) · cuenta (cian), a 23px con peso
+   800 y el espaciado cerrado — la que lleva padrinos.html. Es la
+   marca, no un enlace del menú, y a 16px con peso 900 parecía lo
+   segundo: apretada, pequeña y sin aire entre las letras.
+
+   El espaciado va en em y no en px para que siga cerrado si alguna
+   página la pinta a otro tamaño. */
+.mark, .mark .wm{
+  color:#EAF2F7 !important;text-decoration:none !important;
+  font-size:23px !important;font-weight:800 !important;
+  letter-spacing:-.035em !important;line-height:1.1}
+.mark em, .wm em{font-style:normal;color:#FF8A2B !important}
+.mark i,  .wm i {font-style:normal;color:#4FD3F0 !important}
+/* En un teléfono estrecho, que no empuje al botón de idioma. */
+@media(max-width:380px){
+  .mark, .mark .wm{font-size:20px !important}
+}
+
+</style>
+</head>
+<body>
+
+<nav><div class="wrap navin">
+  <a class="mark" href="index.html"><span class="wm">cada&nbsp;<em>punto</em>&nbsp;<i>cuenta</i></span></a>
+  <div class="navr"><button id="lang" onclick="flip()">ES</button>
+    <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+<div class="menu" id="menu"><div class="wrap">
+  <a href="index.html" data-t="mHow">How it works</a>
+  <a href="jugador.html" data-t="mPlayer">I am a player</a>
+  <a href="padrinos.html" data-t="mPad">Getting padrinos</a><a class="mtalk" href="mailto:gostardigital@gmail.com" data-t="mTalk">Talk to us →</a>
+</div></div>
+</nav>
+
+<header><div class="wrap">
+  <h1 data-t="h1">You score. <em>Your padrinos decide what every point is worth</em>.</h1>
+  <p class="lede" data-t="lede">How many points you put up is down to how much you train. How much each one is worth is down to how many people you asked — and you can start that today, before you touch a ball.</p>
+</div></header>
+
+<div class="wrap">
+
+  <section>
+    <h2 data-t="h2value">Every padrino raises what your point is worth</h2>
+    <p data-t="valP">Each padrino pledges whatever they like, and their pledges add together. That total is what <b>one point</b> of yours is worth — and it goes up every time somebody says yes.</p>
+
+    <div class="ppvdef">
+      <h3 data-t="ppvH">Your Padrino Point Value</h3>
+      <p data-t="ppvD"><b>Every padrino's pledge, added together.</b> That is what one point of yours is worth. Ten cents from one, two dollars from another — it all goes into the same number, and the number only ever goes up.</p>
+      <p class="mute" data-t="ppvD2">It is the one thing you control completely. The score depends on the game; what a point is worth depends only on how many people you asked.</p>
+    </div>
+
+    <div class="mult">
+      <div class="lhead"><span data-t="vhWho">Who said yes</span><span data-t="vhVal">Your point is now worth</span><span data-t="vhRun">A nine-round run</span></div>
+      <div class="mrow"><span class="lbl" data-t="p1">Abuela · $1.00</span><span class="val">$1.00</span><span class="amt">$45.00</span></div>
+      <div class="mrow"><span class="lbl" data-t="p2">Your tía · 25¢</span><span class="val">$1.25</span><span class="amt">$56.25</span></div>
+      <div class="mrow"><span class="lbl" data-t="p3">A neighbour · 10¢</span><span class="val">$1.35</span><span class="amt">$60.75</span></div>
+      <div class="mrow"><span class="lbl" data-t="p4">Your coach · 50¢</span><span class="val">$1.85</span><span class="amt">$83.25</span></div>
+      <div class="mrow"><span class="lbl" data-t="p5">An uncle in Orlando · $2.00</span><span class="val">$3.85</span><span class="amt">$173.25</span></div>
+      <div class="mrow big"><span class="lbl" data-t="p6">Four more, whatever they chose · $1.15</span><span class="val">$5.00</span><span class="amt">$225.00</span></div>
+      <p class="mnote" data-t="vNote">Nine rounds the whole way down. Only the padrinos changed.</p>
+    </div>
+
+    <p data-t="valP2">This is the number to grow. Your score is the same however many padrinos you have, so <b>every padrino you find raises the value of every point you go on to score</b> — including the ones you have not scored yet.</p>
+  </section>
+
+  <section>
+    <h2 data-t="h2small">There is no amount too small to ask for</h2>
+    <p data-t="smallP">Ten cents a point is a real pledge. So is two dollars. People give what suits them, and none of them need to know what anyone else gave — they only see their own.</p>
+    <p data-t="smallP2">So do not decide for them. Ask everyone, let each one choose their own number, and watch what your point is worth climb.</p>
+  </section>
+
+  <section>
+    <h2 data-t="h2calc">Work out your own</h2>
+    <p data-t="calcP">Move the sliders and see what one game would be worth.</p>
+
+    <div class="calc">
+      <div class="crow">
+        <div>
+          <label data-t="lRounds">Points scored in the game</label>
+          <div class="val"><span id="vRounds">120</span> <small data-t="roundsWord">points</small></div>
+          <input type="range" id="rounds" min="30" max="250" value="120">
+        </div>
+        <div>
+          <label data-t="lPad">Padrinos you find</label>
+          <div class="val"><span id="vPad">10</span> <small data-t="padWord">padrinos</small></div>
+          <input type="range" id="pad" min="1" max="25" value="10">
+        </div>
+        <div>
+          <label data-t="lRate">Each pledges</label>
+          <div class="val">$<span id="vRate">0.25</span> <small data-t="perPoint">per point</small></div>
+          <input type="range" id="rate" min="5" max="100" step="5" value="25">
+        </div>
+      </div>
+
+      <div class="total">
+        <div class="ppv"><span data-t="ppvL">Your Padrino Point Value</span><b id="oPPV">$2.50</b></div>
+        <b id="oTotal">$112.50</b>
+        <span id="oSub"></span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-t="h2when">Every game, all season</h2>
+    <p data-t="whenP">There is no deadline to beat. A padrino picks a game, pledges, and pays after it is played — then picks another one if they want. Pledging on a game closes when that game starts, and the next game is already there.</p>
+
+    <div class="window">
+      <div class="wk now">
+        <span class="tag" data-t="wk1t">Before the game</span>
+        <b data-t="wk1h">Share your link</b>
+        <span data-t="wk1p">One link, as many people as you can reach. Each one picks the game they want and what they pledge.</span>
+      </div>
+      <div class="wk">
+        <span class="tag" data-t="wk2t">Game day</span>
+        <b data-t="wk2h">Play</b>
+        <span data-t="wk2p">Pledging on that game closes at tip-off. Nothing else to do — your coach enters the score afterwards.</span>
+      </div>
+      <div class="wk">
+        <span class="tag" data-t="wk3t">After</span>
+        <b data-t="wk3h">Everyone sees the result</b>
+        <span data-t="wk3p">Your padrinos get the score and what it came to. The next game is already on the board.</span>
+      </div>
+    </div>
+
+    <p class="winlose" data-t="winLose">There is nobody to lose to. You play against the chain, and your padrino pays on the points you scored — however the day goes.</p>
+  </section
+
+  <section>
+    <h2 data-t="h2who">Who to ask</h2>
+    <p data-t="whoP">A padrino is anyone who would be glad you asked. Most people find ten without leaving the family.</p>
+
+    <div class="ask">
+      <div data-t="a1">Parents, and both sets of grandparents</div>
+      <div data-t="a2">Aunts, uncles, older cousins</div>
+      <div data-t="a3">Godparents, and your parents' close friends</div>
+      <div data-t="a4">Neighbours you actually know</div>
+      <div data-t="a5">A coach, a teacher, a former teacher</div>
+      <div data-t="a6">Family who live far away — distance does not matter</div>
+      <div data-t="a7">A business your family knows — where your parents work, the shop on the corner</div>
+    </div>
+
+    <p class="mute" data-t="whoNote">The ones who live furthest away are often the quickest to say yes. They cannot come to anything, and this is something they can be part of.</p>
+  </section>
+
+  <section>
+    <h2 data-t="h2msg">Something to send</h2>
+    <p data-t="msgP">Paste your own link at the end and send it. Short works better than long.</p>
+
+    <div class="msgbox" id="msgText"></div>
+    <button class="copybtn" id="copyBtn" data-t="copy">Copy this</button>
+    <span class="copied" id="copiedNote"></span>
+  </section>
+
+</div>
+
+<footer><div class="wrap">
+  <p class="f-co">© 2026 Gostar Digital LLC — Puerto Rico</p>
+<p class="f-what" id="fWhat"></p>
+<script>
+/* Lo que somos, dicho donde se ve: una herramienta que se cobra, no
+   una obra benéfica. Lee el mismo idioma guardado que el resto del
+   sitio, así que no hace falta cablearlo a cada sistema de traducción. */
+(function(){
+  var l = 'es';
+  try{ l = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+           localStorage.getItem('fc-lang') ||
+           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+  var el = document.getElementById('fWhat');
+  if (el) el.textContent = (l === 'es')
+    ? 'Anotado es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Anotado is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+})();
+</script>
+  <p class="f-nav"><a href="https://gostardigital.com/?signin=coach" data-t="fSignin">Sign in</a></p>
+  <p class="f-legal">
+    <a href="terms.html" data-t="fTerms">Terms</a>
+    <span class="f-dot">·</span>
+    <a href="custodia.html">Dinero</a><span class="f-dot">·</span><a href="privacy.html" data-t="fPrivacy">Privacy</a>
+  </p>
+</div></footer>
+
+<script>
+function pointsFor(n){ return n > 0 ? (n * (n + 1)) / 2 : 0; }
+
+var T = {
+  en:{
+    winLose:'There is nobody to lose to. You play against the chain, and your padrino pays on the points you scored — however the day goes.',
+    mHow:'How it works', mPlayer:'I am a player', mPad:'Getting padrinos', mTalk:'Talk to us →',
+    h1:'You score. <em>Your padrinos decide what every point is worth</em>.',
+    lede:'How many points you put up is down to how much you train. How much each one is worth is down to how many people you asked — and you can start that today, before you touch a ball.',
+
+    h2value:'Every padrino raises what a point of yours is worth',
+    vhWho:'Who said yes',
+    p1:'Abuela · $1.00', p2:'Your tía · 25¢', p3:'A neighbour · 10¢',
+    p4:'Your coach · 50¢', p5:'An uncle in Orlando · $2.00',
+    p6:'Four more, whatever they chose · $1.15',
+    ppvH:'Your Padrino Point Value',
+    ppvD:'<b>Every padrino\u2019s pledge, added together.</b> That is what one point is worth. Ten cents from one, two dollars from another — it all goes into the same number, and the number only ever goes up.',
+    ppvD2:'It is the one part that is in your hands before you play. You set the score by training; you set what a point is worth by asking.',
+    valP:'Each padrino pledges whatever they like, and their pledges add together. That total is what <b>one point</b> is worth when you score it — and it goes up every time somebody says yes.',
+    vhWho:'Who said yes',
+    p1:'Abuela · $1.00', p2:'Your tía · 25¢', p3:'A neighbour · 10¢',
+    p4:'Your coach · 50¢', p5:'An uncle in Orlando · $2.00',
+    p6:'Four more, whatever they chose · $1.15',
+    vhVal:'Your point is now worth', vhRun:'A 120-point game',
+    vNote:'The same 120 points every time. Only the padrinos changed.',
+    valP2:'This is the number to grow. You score the same whether you found two padrinos or twenty, so <b>every padrino you find raises what each point you score is worth</b> — in this game and every one after it.',
+    smallP2:'So do not decide for them. Ask everyone, let each one choose their own number, and watch what a point is worth climb.',
+    h2small:'There is no amount too small to ask for',
+    smallP:'Ten cents a point is a real pledge. So is two dollars. People give what suits them, and none of them need to know what anyone else gave — they only see their own.',
+
+    h2calc:'Work out your own',
+    calcP:'Move the sliders and see what one game would be worth.',
+    lRounds:'Points scored in the game', roundsWord:'points',
+    lPad:'Padrinos you find', padWord:'padrinos',
+    lRate:'Each pledges', perPoint:'per point',
+    ppvL:'Your Padrino Point Value',
+    sub:'{P} points, at {V} a point',
+
+    h2when:'Every game, all season',
+    whenP:'There is no deadline to beat. A padrino picks a game, pledges, and pays after it is played — then picks another one if they want. Pledging on a game closes when that game starts, and the next game is already there.',
+    wk1t:'Before the game', wk1h:'Share your link',
+    wk1p:'One link, as many people as you can reach. Each one picks the game they want and what they pledge.',
+    wk2t:'Game day', wk2h:'Play',
+    wk2p:'Pledging on that game closes at tip-off. Nothing else to do — your coach enters the score afterwards.',
+    wk3t:'After', wk3h:'Everyone sees the result',
+    wk3p:'Your padrinos get the score and what it came to. The next game is already on the board.',
+
+    h2who:'Who to ask',
+    whoP:'A padrino is anyone who would be glad you asked. Most players find ten without leaving the family.',
+    a1:'Parents, and both sets of grandparents',
+    a2:'Aunts, uncles, older cousins',
+    a3:"Godparents, and your parents' close friends",
+    a4:'Neighbours you actually know',
+    a5:'A coach, a teacher, a former teacher',
+    a6:'Family who live far away — distance does not matter',
+    a7:'A business your family knows — where your parents work, the shop on the corner',
+    whoNote:'The ones who live furthest away are often the quickest to say yes. They cannot come to anything, and this is something they can be part of.',
+
+    h2msg:'Something to send',
+    msgP:'Paste your own link at the end and send it. Short works better than long.',
+    msgBody:"Hi — I'm playing a challenge to raise money for my program. You pledge whatever you like per point, even a quarter, and nothing is charged until after I take my run. Would you be one of my padrinos?",
+    copy:'Copy this', copied:'✓ Copied', fSignin:'Sign in', fTerms:'Terms', fPrivacy:'Privacy'
+  },
+  es:{
+    winLose:'No hay contra quién perder. Juegas contra la cadena, y tu padrino paga por los puntos que anotaste — salga como salga el día.',
+    mHow:'Cómo funciona', mPlayer:'Soy jugador', mPad:'Conseguir padrinos', mTalk:'Habla con nosotros →',
+    h1:'Tú anotas. <em>Tus padrinos deciden lo que vale cada punto</em>.',
+    lede:'Cuántos puntos anotas depende de cuánto entrenes. Cuánto vale cada uno depende de a cuánta gente le preguntaste — y eso lo puedes empezar hoy, antes de tocar una bola.',
+
+    h2value:'Cada padrino sube lo que vale un punto tuyo',
+    vhWho:'Quién dijo que sí',
+    p1:'Abuela · $1.00', p2:'Tu tía · 25¢', p3:'Un vecino · 10¢',
+    p4:'Tu entrenador · 50¢', p5:'Un tío en Orlando · $2.00',
+    p6:'Cuatro más, lo que escogieron · $1.15',
+    ppvH:'Tu Valor por Punto',
+    ppvD:'<b>La promesa de cada padrino, sumada.</b> Eso es lo que vale un punto. Diez centavos de uno, dos dólares de otro — todo va al mismo número, y ese número sólo sube.',
+    ppvD2:'Es lo único que está en tu mano antes de jugar. El marcador lo pones entrenando; lo que vale un punto lo pones preguntando.',
+    valP:'Cada padrino promete lo que quiera, y las promesas se suman. Ese total es lo que vale <b>un punto</b> cuando lo anotas tú — y sube cada vez que alguien dice que sí.',
+    vhWho:'Quién dijo que sí',
+    p1:'Abuela · $1.00', p2:'Tu tía · 25¢', p3:'Un vecino · 10¢',
+    p4:'Tu entrenador · 50¢', p5:'Un tío en Orlando · $2.00',
+    p6:'Cuatro más, lo que escogieron · $1.15',
+    vhVal:'Tu punto ahora vale', vhRun:'Un juego de 120 puntos',
+    vNote:'Los mismos 120 puntos siempre. Lo único que cambió fueron los padrinos.',
+    valP2:'Éste es el número que hay que subir. Tú anotas lo mismo tengas dos padrinos o veinte, así que <b>cada padrino que consigues sube lo que vale cada punto que anotes</b> — en este juego y en todos los que vengan.',
+    smallP2:'Así que no decidas por ellos. Pregúntale a todo el mundo, que cada uno escoja su número, y mira cómo sube lo que vale un punto.',
+    h2small:'No hay cantidad muy pequeña para pedir',
+    smallP:'Diez centavos por punto es una promesa de verdad. Dos dólares también. Cada quien da lo que le sirve, y ninguno necesita saber lo que dio otro — solo ve la suya.',
+
+    h2calc:'Saca la tuya',
+    calcP:'Mueve las barras y mira lo que valdría un juego.',
+    lRounds:'Puntos que se anotan en el juego', roundsWord:'puntos',
+    lPad:'Padrinos que consigues', padWord:'padrinos',
+    lRate:'Cada uno promete', perPoint:'por punto',
+    ppvL:'Tu Valor por Punto',
+    sub:'{P} puntos, a {V} el punto',
+
+    h2when:'Cada juego, toda la temporada',
+    whenP:'No hay fecha límite que correr. Un padrino escoge un juego, promete, y paga después de que se juegue — y si quiere, escoge otro. Las promesas de un juego cierran cuando empieza ese juego, y el próximo ya está puesto.',
+    wk1t:'Antes del juego', wk1h:'Comparte tu enlace',
+    wk1p:'Un enlace, a toda la gente que alcances. Cada uno escoge el juego que quiera y lo que promete.',
+    wk2t:'Día de juego', wk2h:'Juega',
+    wk2p:'Las promesas de ese juego cierran al saque. Nada más que hacer — tu coach pone el marcador después.',
+    wk3t:'Después', wk3h:'Todos ven el resultado',
+    wk3p:'Tus padrinos reciben el marcador y lo que salió. El próximo juego ya está en el tablero.',
+
+    h2who:'A quién pedirle',
+    whoP:'Un padrino es cualquiera que se alegre de que le preguntes. La mayoría consigue diez sin salir de la familia.',
+    a1:'Mamá y papá, y los abuelos de los dos lados',
+    a2:'Tías, tíos, primos mayores',
+    a3:'Tus padrinos de bautizo, y los amigos cercanos de tus papás',
+    a4:'Vecinos que de verdad conoces',
+    a5:'Un entrenador, un maestro, un maestro de antes',
+    a6:'Familia que vive lejos — la distancia no importa',
+    a7:'Un negocio que tu familia conozca — donde trabajan tus papás, la tienda de la esquina',
+    whoNote:'Los que viven más lejos suelen ser los más rápidos en decir sí. No pueden venir a nada, y esto es algo de lo que sí pueden ser parte.',
+
+    h2msg:'Algo para mandar',
+    msgP:'Pega tu propio enlace al final y mándalo. Corto funciona mejor que largo.',
+    msgBody:'Hola — estoy jugando un reto para recaudar para mi programa. Prometes lo que quieras por punto, aunque sean veinticinco centavos, y no se paga nada hasta después de mi corrida. ¿Serías uno de mis padrinos?',
+    copy:'Copiar esto', copied:'✓ Copiado', fSignin:'Acceder', fTerms:'Términos', fPrivacy:'Privacidad'
+  }
+};
+
+var lang = 'en';
+try { lang = localStorage.getItem('cfh_lang') || ((navigator.language||'').toLowerCase().startsWith('es') ? 'es' : 'en'); } catch(e){}
+function t(k){ return (T[lang] && T[lang][k]) || T.en[k] || k; }
+
+
+function toggleMenu(){
+  document.getElementById('burger').classList.toggle('open');
+  document.getElementById('menu').classList.toggle('open');
+}
+
+function paint(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach(function(el){
+    var v = t(el.getAttribute('data-t'));
+    if (!v) return;
+    if (v.indexOf('<') !== -1) el.innerHTML = v; else el.textContent = v;
+  });
+  document.getElementById('lang').textContent = lang === 'en' ? 'ES' : 'EN';
+  document.getElementById('msgText').textContent = t('msgBody');
+  document.getElementById('copiedNote').textContent = '';
+  update();
+}
+function flip(){
+  lang = lang === 'en' ? 'es' : 'en';
+  try { localStorage.setItem('cfh_lang', lang); } catch(e){}
+  paint();
+}
+
+function money(n){
+  return '$' + (n >= 1000 ? Math.round(n).toLocaleString()
+              : n >= 100 ? n.toFixed(0) : n.toFixed(2));
+}
+
+function update(){
+  var r = parseInt(document.getElementById('rounds').value, 10);
+  var n = parseInt(document.getElementById('pad').value, 10);
+  var rate = parseInt(document.getElementById('rate').value, 10) / 100;
+  var p = r;      // los puntos del marcador, tal cual
+
+  document.getElementById('vRounds').textContent = r;
+  document.getElementById('vPad').textContent = n;
+  document.getElementById('vRate').textContent = rate.toFixed(2);
+  document.getElementById('oPPV').textContent = money(rate * n);
+  document.getElementById('oTotal').textContent = money(p * rate * n);
+  document.getElementById('oSub').textContent =
+    t('sub').split('{P}').join(p).split('{V}').join(money(rate * n));
+}
+
+['rounds','pad','rate'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', update);
+});
+
+document.getElementById('copyBtn').addEventListener('click', function(){
+  var text = t('msgBody');
+  var done = function(){ document.getElementById('copiedNote').textContent = t('copied'); };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){ prompt(t('copy'), text); });
+  } else {
+    prompt(t('copy'), text);
+  }
+});
+
+paint();
+</script>
+</body>
+</html>
