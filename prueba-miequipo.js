@@ -4,7 +4,7 @@
    Lo que esta página tiene que acertar es el aviso de arriba. En
    Cada Punto era "este juego ya se jugó y le falta el marcador".
    Aquí eso no existe — el marcador lo anota el juego — y poner ese
-   aviso en Anotado sería pedirle al entrenador algo que no le toca.
+   aviso en Hooporia sería pedirle al entrenador algo que no le toca.
 
    Lo que de verdad cuesta dinero aquí es un nene que no hizo su
    corrida antes de que cierre la ventana: sus padrinos prometieron
@@ -122,9 +122,8 @@ const TABLERO = { ok:true, estado:'abierto', program:'Canóvanas BC', name:'Reto
   hrefs.some(h => h === 'tablero.html?camp=c-abierta') ? ok('al tablero, con la campaña')
     : mal('el enlace al tablero salió ' + JSON.stringify(hrefs));
   hrefs.some(h => h === 'plantilla.html') ? ok('a la plantilla') : mal('falta la plantilla');
-  // reporte.html todavía no existe en este repo: mejor sin enlace que
-  // con un 404.
-  not(hrefs.join(','), /reporte\.html/, 'sin enlace al reporte, que aún no existe aquí');
+  hrefs.some(h => h === 'reporte.html') ? ok('y al reporte, que ya existe')
+    : mal('falta el enlace al reporte');
   // Y cada enlace que sí hay tiene que existir en el repo.
   const fs2 = require('fs');
   const todos = await page.evaluate(() =>
