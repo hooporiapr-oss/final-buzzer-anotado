@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cómo cobras — Anotado</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Anotado">
+<meta property="og:title" content="Cómo cobras">
+<meta property="og:description" content="Cuando entra el marcador te entregamos la lista: cada padrino con su cantidad. De ahí cobras tú, por donde ya hablas con tu gente.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_PR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cómo cobras">
+<meta name="twitter:description" content="Cuando entra el marcador te entregamos la lista: cada padrino con su cantidad. De ahí cobras tú, por donde ya hablas con tu gente.">
+<meta name="description" content="Cuando entra el marcador te entregamos la lista: cada padrino con su cantidad. De ahí cobras tú, por donde ya hablas con tu gente.">
+<style>
+/* ── El look nuevo: crema, navy y naranja ─────────────────────────
+   El mismo que terms, privacy y custodia: esto es la cuarta hoja de
+   ese juego, no una pantalla de la aplicación. Un entrenador la
+   imprime y la pega en la pared del gimnasio.
+
+   Antes eran tres <style> apilados — el claro original, el oscuro
+   encima, y los parches del oscuro encima de ése. Uno solo. */
+:root{
+  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
+  --cream:#faf8f4; --ink:#1b2937; --muted:#617083;
+  --linea:#e7e6e2;
+}
+*{box-sizing:border-box}
+html{background:var(--cream)}
+body{margin:0;min-height:100dvh;display:flex;flex-direction:column;
+  background:var(--cream);color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  line-height:1.68;-webkit-text-size-adjust:100%}
+.wrap{width:min(680px,calc(100% - 40px));margin:0 auto}
+
+header{flex:0 0 auto;background:var(--navy);color:#fff;border-bottom:1px solid #ffffff22;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 0}
+.mark{font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+  font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
+.mark em{font-style:normal;color:#fff}
+.mark i{font-style:normal;color:var(--orange)}
+@media(max-width:380px){ .mark{font-size:.92rem} }
+.langb{border:1px solid #ffffff55;background:transparent;color:#fff;
+  padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+.langb:hover{border-color:var(--orange);color:var(--orange)}
+
+main{flex:1 1 auto}
+main .wrap{padding:44px 0 56px}
+
+/* ── La portada: el nombre una vez, en grande ─────────────────── */
+.rtop{margin:0 0 26px;padding-bottom:20px;border-bottom:3px solid var(--navy)}
+.kick{font-size:.74rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--orange);margin:0 0 10px}
+.rtop h1{font-size:clamp(1.9rem,5.2vw,2.7rem);line-height:1.08;letter-spacing:-.04em;margin:0 0 8px}
+.rtop .sub{color:var(--muted);margin:0;font-size:.86rem}
+.lede{font-size:1.08rem;color:var(--ink);margin:0 0 34px;max-width:58ch}
+
+/* ── El por qué de todo esto ──────────────────────────────────────
+   Va en caja y sin número: no es una cláusula, es la razón por la
+   que existen las cláusulas. */
+.porque{margin:0 0 36px;padding:22px 24px;background:#fff;
+  border:1px solid var(--linea);border-left:5px solid var(--orange);
+  border-radius:16px;box-shadow:0 8px 25px #17243808}
+.porque h2{margin:0 0 12px;padding:0;border:0;
+  font-size:.74rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--orange)}
+.porque p{margin:0 0 12px;color:var(--muted);max-width:58ch}
+.porque p:last-child{margin-bottom:0}
+.porque .golpe{font-size:1.1rem;font-weight:750;letter-spacing:-.02em;color:var(--ink)}
+/* El cierre, separado por una raya: la caja abre con lo que sabemos
+   nosotros y cierra con lo que hace el programa. */
+.porque .cierre{margin-top:16px;padding-top:15px;border-top:1px solid var(--linea)}
+
+h2{font-size:.8rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--orange);margin:38px 0 14px;padding-top:22px;border-top:1px solid var(--linea)}
+
+/* ── Los tres pasos ──────────────────────────────────────────────
+   Numerados por CSS: el orden es el contenido, y escribir "1." a
+   mano en el texto se desordena solo en cuanto se traduce. */
+.num{display:grid;gap:12px;margin:0 0 8px;counter-reset:paso}
+.num .s{position:relative;background:#fff;border:1px solid var(--linea);
+  border-radius:14px;padding:16px 18px 16px 54px;box-shadow:0 8px 25px #17243806}
+.num .s::before{counter-increment:paso;content:counter(paso);
+  position:absolute;left:18px;top:17px;width:24px;height:24px;border-radius:50%;
+  background:var(--orange);color:#111a24;font-size:.76rem;font-weight:900;
+  display:flex;align-items:center;justify-content:center}
+.num .s b{display:block;font-size:1rem;color:var(--ink);margin-bottom:3px}
+.num .s span{color:var(--muted);font-size:.94rem}
+
+/* ── La letra pequeña, que aquí es lo importante ──────────────── */
+.fine{background:#fff;border:1px solid var(--linea);border-radius:14px;
+  padding:16px 18px;margin:14px 0 0;box-shadow:0 8px 25px #17243806}
+.fine b{display:block;color:var(--orange);font-size:.72rem;font-weight:800;
+  letter-spacing:.13em;text-transform:uppercase;margin-bottom:5px}
+.fine p{margin:0;color:var(--muted);font-size:.94rem;max-width:60ch}
+.fine a{color:var(--navy);font-weight:700;text-decoration:none;
+  border-bottom:2px solid rgba(255,122,24,.5)}
+.fine a:hover{border-bottom-color:var(--orange);color:var(--orange)}
+
+/* ── Donde está escrito ──────────────────────────────────────── */
+.ackbox{margin:34px 0 0;padding:22px 24px;background:var(--navy);color:#fff;
+  border-radius:16px}
+.ackbox h2{margin:0 0 8px;padding:0;border:0;color:var(--orange)}
+.ackbox p{margin:0;color:#c8d2dd;font-size:.95rem;max-width:58ch}
+.ackbox a{display:inline-block;margin:14px 20px 0 0;color:#fff;font-weight:700;
+  font-size:.92rem;text-decoration:none;border-bottom:2px solid var(--orange)}
+.ackbox a:hover{color:var(--orange)}
+
+.pie{display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 0}
+.pie a,.pie button{flex:1 1 170px;border:1px solid var(--navy);border-radius:9px;
+  padding:13px 16px;background:transparent;color:var(--navy);
+  font:inherit;font-weight:800;font-size:.94rem;
+  text-align:center;text-decoration:none;cursor:pointer}
+.pie a:hover,.pie button:hover{background:var(--navy);color:#fff}
+
+footer{flex:0 0 auto;background:#0a1420;color:#aeb9c6;
+  padding:28px 0 calc(28px + env(safe-area-inset-bottom,0px));
+  text-align:center;font-size:.86rem}
+footer a{color:#aeb9c6;text-decoration:none}
+footer a:hover{color:var(--orange)}
+footer p{margin:0 0 7px}
+footer .f-co{color:#fff;font-weight:700}
+footer .f-what{margin:7px auto 0;font-size:.78rem;line-height:1.5;opacity:.75;max-width:54ch}
+footer .f-legal{margin:9px 0 0;font-size:.82rem}
+footer .f-dot{padding:0 8px;opacity:.45}
+
+/* ── Impresa ──────────────────────────────────────────────────────
+   Un entrenador la imprime y la pega en la pared. Antes esta regla
+   decía background:#07141E — el navy del look viejo — así que la
+   hoja salía negra y se bebía un cartucho. En papel: blanco.
+
+   Y la hoja tiene que decir de dónde salió: alguien la pega en la
+   pared, otro entrenador le saca una foto, y sin la dirección esa
+   foto no lleva a ningún sitio. */
+.pie-print{display:none}
+@media print{
+  header,footer,.pie,.langb{display:none !important}
+  html,body{background:#fff;color:#000}
+  main .wrap{width:100%;padding:0}
+  h1,h2,.kick,.porque h2,.fine b{color:#000}
+  p,li,.porque p,.fine p,.num .s span{color:#000}
+  .porque,.fine,.num .s,.ackbox{background:#fff;color:#000;
+    border:1px solid #000;box-shadow:none;break-inside:avoid}
+  .ackbox p,.ackbox a{color:#000}
+  .num .s::before{background:#000;color:#fff}
+  .rtop{border-bottom:2px solid #000}
+  a{text-decoration:none;color:#000;border-bottom:none}
+  .pie-print{display:block;margin-top:22px;padding-top:12px;
+    border-top:2px solid #000;font-size:.86rem;font-weight:700;
+    text-align:center;break-inside:avoid}
+  .pie-print span{display:block;font-weight:400;font-size:.8rem;margin-top:3px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="index.html"><em>ANOTADO</em><i>.</i></a>
+    <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+</header>
+
+<main><div class="wrap" id="app"></div></main>
+
+<footer>
+  <div class="wrap">
+    <p class="f-co">© 2026 Gostar Digital LLC · Puerto Rico</p>
+<p class="f-what" id="fWhat"></p>
+<script>
+(function(){
+  var l = 'es';
+  try{ l = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+           localStorage.getItem('fc-lang') ||
+           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+  var el = document.getElementById('fWhat');
+  if (el) el.textContent = (l === 'es')
+    ? 'Anotado es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Anotado is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+})();
+</script>
+    <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+    <p class="f-legal">
+      <a href="terms.html">Términos</a><span class="f-dot">·</span><a href="privacy.html">Privacidad</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+var LANG='es';
+try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') || localStorage.getItem('fc-lang') ||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+
+var S = {"es": {"kick": "Cómo cobras", "h1": "Nosotros anotamos las promesas. Tu programa cobra.", "sub": "Gostar Digital LLC · Anotado · octubre 2026", "lede": "Anotado no procesa pagos ni guarda dinero. Al cerrar la ventana del evento, el sistema saca lo que prometió cada padrino y te entrega la lista. De ahí en adelante cobras tú, por donde ya hablas con tu gente.", "porqueH": "Por qué esto te conviene", "porque1": "El dinero no espera por nosotros.", "porque2": "Si pasara por nuestras manos habría una fecha de pago, un corte y una cuenta ajena de por medio, y tú esperando por los tres. Así no: lo que te pagan te llega el mismo día, a tu propia cuenta, sin que nadie te lo tenga que remitir.", "porque3": "Y lo que se hacía cuesta arriba nunca fue cobrar — fue saber cuánto le toca a cada quien. Diez padrinos por jugador, a tarifas distintas, con topes distintos, sobre los puntos que anotó ese jugador y nadie más. Esa cuenta la hacemos nosotros, bien, cada vez.", "porqueCierre": "Nosotros manejamos las promesas. Tú manejas el dinero.", "pasosH": "Cómo se cobra un juego", "pasos": [["Imprime o baja la lista", "Cada padrino con su nombre y su cantidad, ya con el tope aplicado si mordió. La lista es tuya: imprímela, bájala, o pásala por donde quieras."], ["Cobra por donde ya cobras", "ATH Móvil, efectivo, o lo que use tu organización. El dinero te llega directo, el mismo día, a tu propia cuenta. Nosotros no estamos en el medio."], ["Marca tú quién pagó", "En tu libreta, en tu hoja, o en tu propia cuenta. El sistema no tiene columna de pagado y no la va a tener: lo que anotamos es lo prometido. A tus padrinos les mandamos los puntos y su cantidad al cerrar el evento, pero el cobro no lo tocamos."]], "fine1H": "Lo que no hacemos", "fine1P": "No procesamos pagos, no te pedimos número de cuenta, no guardamos dinero tuyo ni de nadie, y al padrino nunca le pedimos dinero: el aviso que le mandamos trae el resultado y su cantidad, sin enlace de pago y sin recordatorios. Si alguien te dice que Anotado cobra, está equivocado.", "fine2H": "Un detalle que ayuda", "fine2P": "Una cuenta ATH Móvil Business a nombre de la organización mantiene el dinero del programa separado del de una persona. No hace falta para usar Anotado — simplemente es más limpio a la hora de cuadrar.", "listaH": "Dónde está la lista", "listaP": "La lista sale del reporte del evento, al cerrar la ventana: cada padrino con su jugador, su tarifa, su tope y su total, para imprimir o bajar en una hoja de cálculo.", "listaA": "Abrir el reporte →", "dondeH": "Dónde está escrito", "dondeP": "Nada de esto depende de que nos creas. Está en los documentos que aceptas al inscribir un equipo.", "verD": "El dinero no pasa por nosotros →", "verT": "Términos de Uso →", "print": "Imprimir", "back": "← Anotado", "pieP": "gostardigital@gmail.com", "pieS": "Cómo cobras · Anotado · Gostar Digital LLC, Puerto Rico"}, "en": {"kick": "How you collect", "h1": "We record the pledges. Your program collects.", "sub": "Gostar Digital LLC · Anotado · October 2026", "lede": "Anotado processes no payments and holds no money. When the event window closes, the system works out what each padrino pledged and hands you the list. From there you collect, wherever you already talk to your people.", "porqueH": "Why this suits you", "porque1": "The money does not wait on us.", "porque2": "If it came through our hands there would be a payment date, a cut-off and somebody else’s account in between, and you waiting on all three. Not this way: what you are paid arrives the same day, in your own account, with nobody needing to remit it to you.", "porque3": "And the hard part was never collecting — it was knowing what each person owes. Ten padrinos per player, at different rates, with different caps, against the points that player scored and nobody else. We calculate it, correctly, every time.", "porqueCierre": "We manage the pledges. You manage the proceeds.", "pasosH": "How one game gets collected", "pasos": [["Print or download the list", "Every padrino with his name and his amount, with the cap already applied if it bit. The list is yours: print it, download it, or send it wherever you like."], ["Collect the way you already collect", "ATH Móvil, cash, or whatever your organization uses. The money reaches you directly, the same day, in your own account. We are not in the middle."], ["You mark who paid", "In your notebook, on your sheet, or in your own account. The system has no paid column and never will: what we record is what was pledged. We send your padrinos the points and their amount when the event closes, but the collecting we do not touch."]], "fine1H": "What we do not do", "fine1P": "We process no payments, we ask you for no account number, we hold no money of yours or anyone else’s, and we never ask a padrino for money: the notice we send carries the result and their amount, with no payment link and no reminders. If somebody tells you Anotado collects, they are mistaken.", "fine2H": "One detail that helps", "fine2P": "An ATH Móvil Business account in the organization’s name keeps the program’s money separate from a person’s. It is not required to use Anotado — it is simply cleaner when the time comes to square things up.", "listaH": "Where the list is", "listaP": "The list comes from the event report, when the window closes: every padrino with his player, his rate, his cap and his total, to print or download as a spreadsheet.", "listaA": "Open the report →", "dondeH": "Where this is written down", "dondeP": "None of it depends on taking our word for it. It is in the documents a program accepts when it signs a team up.", "verD": "The money does not pass through us →", "verT": "Terms of Use →", "print": "Print", "back": "← Anotado", "pieP": "gostardigital@gmail.com", "pieS": "How you collect · Anotado · Gostar Digital LLC, Puerto Rico"}};
+function T(k){ return (S[LANG] && S[LANG][k]) !== undefined ? S[LANG][k] : (S.en[k]||''); }
+function esc(s){ return String(s==null?'':s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toggleLang(){
+  LANG = (LANG === 'es') ? 'en' : 'es';
+  try{ localStorage.setItem('cfh_lang', LANG), localStorage.setItem('cp-lang', LANG),
+       localStorage.setItem('fc-lang', LANG); }catch(e){}
+  paint();
+}
+function paint(){
+  document.documentElement.lang = LANG;
+  document.getElementById('langBtn').textContent = (LANG === 'es') ? 'EN' : 'ES';
+  document.title = (LANG === 'es') ? 'C\u00f3mo cobras \u2014 Anotado'
+                                   : 'How you collect \u2014 Anotado';
+  var pasos = T('pasos'), ps = '';
+  for (var i=0;i<pasos.length;i++)
+    ps += '<div class="s"><b>' + esc(pasos[i][0]) + '</b><span>' + esc(pasos[i][1]) + '</span></div>';
+  var out =
+    '<div class="rtop">' +
+      '<p class="kick">' + esc(T('kick')) + '</p>' +
+      '<h1>' + esc(T('h1')) + '</h1>' +
+      '<p class="sub">' + esc(T('sub')) + '</p>' +
+    '</div>' +
+    '<p class="lede">' + esc(T('lede')) + '</p>' +
+    '<div class="porque">' +
+      '<h2>' + esc(T('porqueH')) + '</h2>' +
+      '<p class="golpe">' + esc(T('porque1')) + '</p>' +
+      '<p>' + esc(T('porque2')) + '</p>' +
+      '<p>' + esc(T('porque3')) + '</p>' +
+      '<p class="golpe cierre">' + esc(T('porqueCierre')) + '</p>' +
+    '</div>' +
+    '<h2>' + esc(T('pasosH')) + '</h2>' +
+    '<div class="num">' + ps + '</div>' +
+    /* El enlace va fuera de esc(): es nuestro, no del texto. */
+    /* Sin enlace: reporte.html todavía no existe en este repo, y un
+       404 desde la página que explica cómo cobras es peor que no
+       tener el enlace. Cuando el reporte exista, se vuelve a envolver
+       con su enlace: la cadena listaA ya está escrita y traducida. */
+    '<div class="fine"><b>' + esc(T('listaH')) + '</b><p>' + esc(T('listaP')) +
+      '</p></div>' +
+    '<div class="fine"><b>' + esc(T('fine1H')) + '</b><p>' + esc(T('fine1P')) + '</p></div>' +
+    '<div class="fine"><b>' + esc(T('fine2H')) + '</b><p>' + esc(T('fine2P')) + '</p></div>' +
+    '<div class="ackbox">' +
+      '<h2>' + esc(T('dondeH')) + '</h2>' +
+      '<p>' + esc(T('dondeP')) + '</p>' +
+      '<a href="custodia.html">' + esc(T('verD')) + '</a>' +
+      '<a href="terms.html">' + esc(T('verT')) + '</a>' +
+    '</div>' +
+    '<div class="pie">' +
+      '<button type="button" onclick="window.print()">' + esc(T('print')) + '</button>' +
+      '<a href="index.html">' + esc(T('back')) + '</a>' +
+    '</div>' +
+    '<p class="pie-print">' + esc(T('pieP')) + '<span>' + esc(T('pieS')) + '</span></p>';
+  document.getElementById('app').innerHTML = out;
+}
+paint();
+</script>
+</body>
+</html>
