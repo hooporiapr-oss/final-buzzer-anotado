@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>El tablero — Anotado</title>
+<title>El tablero — Hooporia</title>
 <meta name="robots" content="noindex">
 <style>
 :root{--ink:#12202E;--mute:#5A6B7C;--line:#D7E0E8;--tint:#F7FAFC;--accent:#0C6E8C;--good:#0B7A5A;--bad:#A8323F}
@@ -112,6 +112,10 @@ footer{background:#0a1420;border-top:none;color:#aeb9c6}
 footer a{color:#aeb9c6}
 footer a:hover{color:var(--orange)}
 .mark{color:#fff}
+/* El em va en blanco a propósito: arriba vale #4FD3F0, que servía
+   para la marca de tres palabras de Cada Punto y pintaría HOOPORIA
+   de azul. */
+.mark em{color:#fff}
 .mark i{color:var(--orange)}
 .langb{border:1px solid #ffffff55;color:#fff;background:transparent;border-radius:7px}
 .langb:hover{color:var(--orange);border-color:var(--orange)}
@@ -163,7 +167,7 @@ a.pedir{color:inherit}
 h1,h2,h3,h4{color:var(--ink)}
 
 /* ══ LA MARCA ══════════════════════════════════════════════════
-   ANOTADO en versales sobre el navy, como en el resto del sitio.
+   HOOPORIA en versales sobre el navy, como en el resto del sitio.
    El punto es lo único naranja. */
 .mark, .mark .wm{
   color:#fff !important;text-decoration:none !important;
@@ -184,7 +188,7 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
 
 <header>
   <div class="wrap bar">
-    <a class="mark" href="index.html">cada&nbsp;<em>punto</em>&nbsp;<i>cuenta</i></a>
+    <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
     <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
   </div>
 </header>
@@ -205,8 +209,8 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
            ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
   var el = document.getElementById('fWhat');
   if (el) el.textContent = (l === 'es')
-    ? 'Anotado es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
-    : 'Anotado is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+    ? 'Hooporia es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Hooporia is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
 })();</script>
     <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
   </div>
