@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>El dinero no pasa por nosotros — Anotado</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Anotado">
+<meta property="og:title" content="El dinero no pasa por nosotros">
+<meta property="og:description" content="Anotado es un sistema de manejo de promesas. Anotamos lo prometido y hacemos la cuenta; el dinero lo recibe el programa, directo.">
+<meta property="og:locale" content="es_PR">
+<!-- Sin og:url ni og:image: todavía no hay dominio ni imagen para
+     compartir, y una URL inventada da peor vista previa que ninguna.
+     Cuando el dominio esté, se añaden aquí y en el resto. -->
+<meta name="description" content="Anotado es un sistema de manejo de promesas. Anotamos lo prometido y hacemos la cuenta; el dinero lo recibe el programa, directo.">
+<style>
+/* ── El look nuevo: crema, navy y naranja ─────────────────────────
+   El mismo del resto del sitio. Antes esta pagina llevaba tres hojas
+   de estilo apiladas una encima de otra; ahora es una sola. El
+   marcado y el guion no se tocaron.
+
+   Se imprime: un entrenador la cuelga en la pared del gimnasio, asi
+   que al final hay reglas de @media print. */
+:root{
+  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
+  --cream:#faf8f4; --ink:#1b2937; --muted:#617083;
+  --linea:#e7e6e2; --bad:#b4231c; --good:#0b7a5a;
+}
+*{box-sizing:border-box}
+html{background:var(--cream)}
+body{margin:0;min-height:100dvh;display:flex;flex-direction:column;
+  background:var(--cream);color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  line-height:1.6;-webkit-text-size-adjust:100%}
+.wrap{width:min(720px,calc(100% - 40px));margin:0 auto}
+
+header{flex:0 0 auto;background:var(--navy);color:#fff;border-bottom:1px solid #ffffff22;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 0}
+.mark{font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+  font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
+.mark em{font-style:normal;color:#fff}
+.mark i{font-style:normal;color:var(--orange)}
+@media(max-width:380px){ .mark{font-size:.92rem} }
+.langb{border:1px solid #ffffff55;background:transparent;color:#fff;
+  padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+.langb:hover{border-color:var(--orange);color:var(--orange)}
+
+main{flex:1 1 auto;overflow-x:hidden}
+main .wrap{padding:40px 0 50px}
+
+/* ── La portada del documento ─────────────────────────────────── */
+.rtop{border-bottom:3px solid var(--navy);padding-bottom:20px;margin:0 0 28px}
+.kick{color:var(--orange);font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  font-size:.74rem;margin:0 0 10px}
+.rtop h1{font-size:clamp(1.9rem,5.4vw,2.9rem);line-height:1.08;letter-spacing:-.045em;margin:0 0 8px}
+.rtop .sub{color:var(--muted);margin:0;font-size:.92rem}
+.lede{color:var(--muted);margin:0 0 30px;max-width:58ch;font-size:1.06rem}
+
+/* ── El por qué: la caja que explica el modelo entero ─────────── */
+.porque{background:#fff;border:1px solid var(--linea);border-left:5px solid var(--orange);
+  border-radius:16px;padding:26px 28px;margin:0 0 34px;box-shadow:0 8px 25px #17243808}
+.porque h2{margin:0 0 14px;font-size:1.22rem;font-weight:900;letter-spacing:-.025em}
+.porque p{margin:0 0 13px;color:var(--muted);font-size:1rem}
+.porque p:last-child{margin-bottom:0}
+.porque .golpe{color:var(--ink);font-size:1.16rem;font-weight:800;letter-spacing:-.02em}
+.porque .cierre{margin-top:18px;padding-top:16px;border-top:1px solid var(--linea)}
+
+/* ── Las cláusulas, numeradas para poder citarlas ─────────────── */
+.sec{margin:0 0 30px}
+.sec h2{display:flex;gap:10px;align-items:baseline;margin:0 0 6px;
+  font-size:1.16rem;letter-spacing:-.025em}
+.sec h2 .n{flex:0 0 auto;color:var(--orange);font-weight:900}
+.sec .cab{color:var(--muted);margin:0 0 12px;font-size:.95rem}
+.sec ol,.sec ul{margin:0;padding:0;list-style:none;background:#fff;
+  border:1px solid var(--linea);border-radius:14px;box-shadow:0 8px 25px #17243806}
+.sec li{position:relative;padding:14px 20px 14px 58px;border-top:1px solid var(--linea);
+  font-size:.97rem;color:var(--muted)}
+.sec li:first-child{border-top:none}
+.sec li::before{content:attr(data-n);position:absolute;left:20px;top:14px;
+  font-weight:800;font-size:.8rem;color:var(--navy);font-variant-numeric:tabular-nums}
+.sec .cierre{margin:12px 0 0;font-size:.96rem;font-weight:750}
+
+/* ── Lo que acepta el programa ────────────────────────────────── */
+.ackbox{background:#fff;border:1px solid var(--linea);border-left:5px solid var(--navy);
+  border-radius:16px;padding:22px 24px;margin:36px 0 0;box-shadow:0 8px 25px #17243808}
+.ackbox h2{margin:0 0 8px;font-size:1.1rem;letter-spacing:-.02em}
+.ackbox p{margin:0;color:var(--muted);font-size:.96rem}
+.ackbox a{color:var(--navy);font-weight:800;text-decoration:none;
+  display:inline-block;margin:14px 20px 0 0;font-size:.92rem;
+  border-bottom:2px solid var(--orange);padding-bottom:2px}
+.ackbox a:hover{color:var(--orange)}
+
+/* ── El pie del documento ─────────────────────────────────────── */
+.pie{display:flex;gap:11px;flex-wrap:wrap;margin-top:32px}
+.pie a,.pie button{flex:1 1 180px;padding:14px 18px;border-radius:9px;
+  border:1px solid var(--navy);background:transparent;color:var(--navy);
+  font:inherit;font-weight:800;font-size:.95rem;text-align:center;
+  text-decoration:none;cursor:pointer}
+.pie a:hover,.pie button:hover{background:var(--navy);color:#fff}
+.pie a.solid{background:var(--navy);color:#fff}
+
+footer{flex:0 0 auto;background:#0a1420;color:#aeb9c6;
+  padding:26px 0 calc(26px + env(safe-area-inset-bottom,0px));
+  text-align:center;font-size:.86rem}
+footer a{color:#aeb9c6;text-decoration:none}
+footer a:hover{color:var(--orange)}
+.f-co{color:#fff;font-weight:700;margin:0 0 7px}
+.f-what{margin:7px auto 0;font-size:.78rem;line-height:1.5;opacity:.75;max-width:54ch}
+.f-legal{margin:9px 0 0;font-size:.82rem}
+.f-dot{padding:0 8px;opacity:.45}
+
+/* ── Impresa ──────────────────────────────────────────────────────
+   La hoja pegada en la pared tiene que decir de donde salio: alguien
+   le saca una foto, y sin la direccion esa foto no lleva a ningun
+   sitio. */
+.pie-print{display:none}
+@media print{
+  header,footer,.pie,.langb{display:none !important}
+  html,body{background:#fff;color:#000}
+  main .wrap{width:100%;padding:0}
+  .porque,.sec ol,.sec ul,.ackbox{box-shadow:none;background:#fff}
+  .porque,.ackbox{border-color:#000}
+  .sec{break-inside:avoid;page-break-inside:avoid}
+  .porque{break-inside:avoid}
+  .rtop{border-bottom:2px solid #000}
+  .porque p,.sec li,.ackbox p,.lede{color:#000}
+  a{text-decoration:none;color:#000}
+  .pie-print{display:block;margin-top:24px;padding-top:12px;
+    border-top:2px solid #000;font-size:.86rem;font-weight:700;
+    text-align:center;break-inside:avoid}
+  .pie-print span{display:block;font-weight:400;font-size:.8rem;margin-top:3px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="index.html"><em>ANOTADO</em><i>.</i></a>
+    <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+</header>
+
+<main><div class="wrap" id="app"></div></main>
+
+<footer>
+  <div class="wrap">
+    <p class="f-co">© 2026 Gostar Digital LLC · Puerto Rico</p>
+<p class="f-what" id="fWhat"></p>
+<script>
+(function(){
+  var l = 'es';
+  try{ l = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+           localStorage.getItem('fc-lang') ||
+           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+  var el = document.getElementById('fWhat');
+  if (el) el.textContent = (l === 'es')
+    ? 'Anotado es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Anotado is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+})();
+</script>
+    <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+    <p class="f-legal">
+      <a href="terms.html">Términos</a><span class="f-dot">·</span><a href="privacy.html">Privacidad</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+var LANG='es';
+try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') || localStorage.getItem('fc-lang') ||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+
+var S = {"es": {"kick": "Divulgación", "h1": "El dinero no pasa por nosotros", "sub": "Gostar Digital LLC · Anotado · octubre 2026", "lede": "Anotado es un sistema de manejo de promesas. Anotamos lo que se promete y hacemos la cuenta. Los puntos los anota el juego. El dinero lo recibe el programa, directo, sin pasar por aquí.", "porqueH": "Por qué el dinero no pasa por nosotros", "porque1": "Prometer es fácil. Calcular cada promesa es el trabajo.", "porque2": "Juntar promesas lo hace cualquiera. Lo que mata estas recaudaciones viene después: doscientas personas que prometieron doscientas cantidades distintas — $16.20, $6.45, $42.75 — cada una sacada de un marcador distinto. Esa cuenta a mano no la lleva nadie sin equivocarse.", "porque3": "Eso es lo que hacemos: la cuenta. Cada promesa queda anotada con su nombre, sus centavos por punto y su tope. Cuando un jugador termina su corrida, el juego anota sus puntos; el sistema saca lo que le corresponde a cada promesa suya y su total. El programa imprime esa lista y cobra como siempre ha cobrado.", "porque4": "El dinero no lo tocamos. No lo procesamos, no lo verificamos, no lo guardamos y no lo reclamamos. Lo que un padrino le pague a un programa es entre ellos dos — por ATH Móvil, en efectivo, o como acuerden. No somos parte de ese pago.", "porque5": "Y eso también le conviene al programa. Si el dinero pasara por nosotros habría una fecha, un corte y una cuenta ajena de por medio, y el programa estaría esperando por los tres. Así no espera por nada: lo que le pagan le llega el mismo día, a su propia cuenta.", "porqueCierre": "Nosotros manejamos las promesas. Usted maneja el dinero.", "s1h": "Quién recibe el dinero", "s1c": "El padrino le paga al programa. No hay un paso intermedio.", "s1": ["No recibimos dinero de nadie.", "El programa cobra como ya cobra: ATH Móvil, efectivo, o el método que use. Ese acuerdo es entre el padrino y el programa.", "No guardamos dinero de nadie, ni por un día. No somos banco, ni fideicomiso, ni custodio."], "s2h": "Qué hace Anotado", "s2c": "Anotar lo prometido y hacer la cuenta. Eso es el producto.", "s2": ["Guarda cada promesa con el nombre del padrino, los centavos por punto, y el tope si lo puso.", "Cuando el juego anota los puntos de un jugador, saca lo que corresponde a cada promesa suya, su total, y el total prometido del equipo.", "Enseña ese total y lo deja imprimir o bajar, para que el programa lo trabaje como quiera."], "s3h": "Lo que no hacemos", "s3c": "Dicho de frente, para que nadie se confunda.", "s3": ["No procesamos pagos y no le cobramos a nadie.", "No verificamos pagos. No sabemos quién pagó, y el sistema no tiene dónde anotarlo.", "No llevamos cuentas por cobrar y no perseguimos a ningún padrino. Al cerrar el evento le mandamos a cada padrino un aviso con los puntos y lo que dio su promesa — un aviso, y nada más: sin enlace de pago y sin recordatorios.", "No atendemos disputas de pago, ni contracargos, ni devoluciones."], "s4h": "Si hay un desacuerdo", "s4c": "Una promesa es entre el padrino y el programa.", "s4": ["Si un padrino dice que no prometió, o que prometió otra cosa, eso se resuelve entre él y el programa. Nosotros enseñamos lo que quedó anotado, y hasta ahí.", "Si el programa no recibe un pago, no hay nada que podamos retener, descontar ni reclamar: nunca tuvimos ese dinero.", "No somos parte de ningún acuerdo de pago y no garantizamos que una promesa se pague."], "s5h": "Lo que el programa puede ver", "s5c": "Lo prometido, al día. Nada que no sepamos.", "s5": ["El panel enseña cada promesa, su cantidad, el total por jugador y el total del equipo.", "El marcador lo anota el juego. Los puntos de cada jugador se escriben mientras juega, y la clave de la corrida se comprueba dentro de la base de datos: tener el enlace público no basta para cerrarle la corrida a otro. Nadie mete un marcador a mano.", "La lista se imprime y se baja en cualquier momento. Es del programa.", "No hay columna de pagado, ni de pendiente, ni de cobrado. El sistema no lo sabe."], "s6h": "Impuestos", "s6c": "Cada programa responde por su propia situación contributiva.", "s6": ["No hacemos ninguna afirmación sobre cómo se trata una promesa o un pago para efectos contributivos.", "No emitimos recibos para impuestos y no decimos que una promesa sea deducible.", "Lo que el programa le diga a sus padrinos sobre impuestos es del programa, y el programa responde por eso."], "s7h": "La licencia y los datos", "s7c": "La plataforma se licencia. La lista de promesas es del programa.", "s7": ["La plataforma se licencia por evento: $49 por equipo, por evento, o $29 si la plantilla tiene menos de ocho.", "No se paga nada por adelantado. El cargo se factura cuando cierra el evento y se paga dentro de siete días.", "El programa puede imprimir o bajar su reporte en cualquier momento.", "Si el cargo no se paga, la licencia de ese evento caduca y sus datos de promesas se retiran de la plataforma. No lo reclamamos más allá de ahí."], "ackH": "Lo que acepta el programa", "ackP": "Al inscribir un equipo, el programa marca que leyó y acepta esta divulgación, además de los Términos de Uso y la Política de Privacidad. Si algo de esto no le sirve a su programa, no lo inscriba — escríbanos y lo hablamos antes.", "verT": "Términos de Uso →", "verP": "Política de Privacidad →", "print": "Imprimir", "back": "← Anotado", "pieP": "gostardigital@gmail.com", "pieS": "El dinero no pasa por nosotros · Anotado · Gostar Digital LLC, Puerto Rico"}, "en": {"kick": "Disclosure", "h1": "The money does not pass through us", "sub": "Gostar Digital LLC · Anotado · October 2026", "lede": "Anotado is a pledge management system. We record what is pledged and calculate every total. The points are recorded by the game. The money goes to the program directly; it never passes through here.", "porqueH": "Why the money does not pass through us", "porque1": "Pledging is easy. Calculating every pledge is the work.", "porque2": "Anybody can gather pledges. What kills these fundraisers comes afterwards: two hundred people who pledged two hundred different amounts — $16.20, $6.45, $42.75 — each one worked out from a different score. Nobody keeps that count by hand without getting it wrong.", "porque3": "That is what we do: the count. Every pledge is recorded with its name, its cents per point and its cap. When a player finishes his run the game records his points; the system works out what each of his pledges comes to and his total. The program prints that list and collects the way it always has.", "porque4": "We do not touch the money. We do not process it, verify it, hold it or claim it. What a padrino pays a program is between the two of them — by ATH Móvil, in cash, or however they agree. We are not a party to that payment.", "porque5": "And that suits the program too. If the money came through us there would be a date, a cut-off and somebody else’s account in between, and the program would be waiting on all three. This way it waits for nothing: what it is paid arrives the same day, in its own account.", "porqueCierre": "We manage the pledges. You manage the proceeds.", "s1h": "Who receives the money", "s1c": "The padrino pays the program. There is no step in between.", "s1": ["We do not receive any money.", "The program collects the way it already collects: ATH Móvil, cash, or whatever method it uses. That arrangement is between the padrino and the program.", "We hold nobody’s money, not for a day. We are not a bank, not a trustee, not a custodian."], "s2h": "What Anotado does", "s2c": "Records what was pledged and calculates every total. That is the product.", "s2": ["Stores each pledge with the padrino’s name, the cents per point, and the cap if one was set.", "When the game records a player’s points, works out what each of his pledges comes to, his total, and the team’s total pledged.", "Shows that total and lets it be printed or downloaded, for the program to work with as it likes."], "s3h": "What we do not do", "s3c": "Said plainly, so nobody is confused.", "s3": ["We do not process payments and we do not bill anyone.", "We do not verify payments. We do not know who paid, and the system has nowhere to record it.", "We keep no receivables and we chase no padrino. When the event closes we send each padrino a notice with the points and what their pledge came to — a notice, and nothing more: no payment link and no reminders.", "We handle no payment disputes, no chargebacks, and no refunds."], "s4h": "If there is a disagreement", "s4c": "A pledge is between the padrino and the program.", "s4": ["If a padrino says he did not pledge, or pledged something else, that is settled between him and the program. We show what was recorded, and that is as far as it goes.", "If the program does not receive a payment, there is nothing for us to withhold, deduct or claim: we never had that money.", "We are not a party to any payment arrangement and we do not guarantee that a pledge will be paid."], "s5h": "What the program can see", "s5c": "What was pledged, up to date. Nothing we do not know.", "s5": ["The panel shows every pledge, its amount, each player’s total and the team’s total.", "The score is recorded by the game. Each player’s points are written as he plays, and the run key is checked inside the database: holding the public link is not enough to end somebody else’s run. Nobody enters a score by hand.", "The list prints and downloads at any time. It belongs to the program.", "There is no paid column, no outstanding column, no collected column. The system does not know."], "s6h": "Taxes", "s6c": "Each program is responsible for its own tax position.", "s6": ["We make no representation about how a pledge or a payment is treated for tax purposes.", "We do not issue tax receipts and we do not say a pledge is deductible.", "What a program tells its padrinos about taxes is the program’s own, and the program answers for it."], "s7h": "The license and the data", "s7c": "The platform is licensed. The pledge list belongs to the program.", "s7": ["The platform is licensed per event: $49 per team, per event, or $29 if the roster is under eight.", "Nothing is paid up front. The fee is invoiced when the event closes and is due within seven days.", "The program can print or download its report at any time.", "If the fee is not paid, that event’s license lapses and its pledge data is removed from the platform. We pursue it no further."], "ackH": "What the program accepts", "ackP": "When signing a team up, the program ticks that it has read and accepts this disclosure, along with the Terms of Use and the Privacy Policy. If any of this does not work for your program, do not sign up — write to us and we will talk it through first.", "verT": "Terms of Use →", "verP": "Privacy Policy →", "print": "Print", "back": "← Anotado", "pieP": "gostardigital@gmail.com", "pieS": "The money does not pass through us · Anotado · Gostar Digital LLC, Puerto Rico"}};
+function T(k){ return (S[LANG] && S[LANG][k]) !== undefined ? S[LANG][k] : (S.en[k]||''); }
+function esc(s){ return String(s==null?'':s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toggleLang(){
+  LANG = (LANG === 'es') ? 'en' : 'es';
+  try{ localStorage.setItem('cfh_lang', LANG), localStorage.setItem('cp-lang', LANG),
+       localStorage.setItem('fc-lang', LANG); }catch(e){}
+  paint();
+}
+function reglas(n, items){
+  var h = '<ol>';
+  for (var i=0;i<items.length;i++) h += '<li data-n="' + n + '.' + (i+1) + '">' + esc(items[i]) + '</li>';
+  return h + '</ol>';
+}
+function seccion(n){
+  return '<section class="sec">' +
+    '<h2><span class="n">' + n + '.</span> ' + esc(T('s'+n+'h')) + '</h2>' +
+    '<p class="cab">' + esc(T('s'+n+'c')) + '</p>' +
+    reglas(n, T('s'+n)) + '</section>';
+}
+function paint(){
+  document.documentElement.lang = LANG;
+  document.getElementById('langBtn').textContent = (LANG === 'es') ? 'EN' : 'ES';
+  document.title = (LANG === 'es') ? 'El dinero no pasa por nosotros \u2014 Anotado'
+                                   : 'The money does not pass through us \u2014 Anotado';
+  var out =
+    '<div class="rtop">' +
+      '<p class="kick">' + esc(T('kick')) + '</p>' +
+      '<h1>' + esc(T('h1')) + '</h1>' +
+      '<p class="sub">' + esc(T('sub')) + '</p>' +
+    '</div>' +
+    '<p class="lede">' + esc(T('lede')) + '</p>' +
+    /* El por que, antes del como. Las siete clausulas de abajo dicen
+       lo que hacemos y lo que no; esto dice por que el dinero lo
+       maneja el programa y no nosotros, que es la primera pregunta
+       que hace cualquiera al oir "manejo de promesas". Sin esta
+       parte, la pagina niega una custodia sin explicar el modelo. */
+    '<div class="porque">' +
+      '<h2>' + esc(T('porqueH')) + '</h2>' +
+      '<p class="golpe">' + esc(T('porque1')) + '</p>' +
+      '<p>' + esc(T('porque2')) + '</p>' +
+      '<p>' + esc(T('porque3')) + '</p>' +
+      '<p>' + esc(T('porque4')) + '</p>' +
+      '<p>' + esc(T('porque5')) + '</p>' +
+      '<p class="golpe cierre">' + esc(T('porqueCierre')) + '</p>' +
+    '</div>';
+  for (var n=1; n<=7; n++) out += seccion(n);
+  out +=
+    '<div class="ackbox">' +
+      '<h2>' + esc(T('ackH')) + '</h2>' +
+      '<p>' + esc(T('ackP')) + '</p>' +
+      '<a href="terms.html">' + esc(T('verT')) + '</a>' +
+      '<a href="privacy.html">' + esc(T('verP')) + '</a>' +
+    '</div>' +
+    '<div class="pie">' +
+      '<button type="button" onclick="window.print()">' + esc(T('print')) + '</button>' +
+      '<a href="index.html">' + esc(T('back')) + '</a>' +
+    '</div>' +
+    '<p class="pie-print">' + esc(T('pieP')) + '<span>' + esc(T('pieS')) + '</span></p>';
+  document.getElementById('app').innerHTML = out;
+}
+paint();
+</script>
+</body>
+</html>
