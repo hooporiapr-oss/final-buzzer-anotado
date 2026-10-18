@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Privacy Policy — Anotado</title>
+<meta name="robots" content="index,follow">
+<style>
+/* ── El look nuevo: crema, navy y naranja ─────────────────────────
+   El mismo de terms.html, porque son el mismo tipo de documento:
+   largo, leído de arriba abajo, y consultado por una cláusula
+   suelta. La tipografía manda. */
+:root{
+  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
+  --cream:#faf8f4; --ink:#1b2937; --muted:#617083;
+  --linea:#e7e6e2;
+}
+*{box-sizing:border-box}
+html{background:var(--cream)}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  line-height:1.68;-webkit-text-size-adjust:100%}
+.wrap{width:min(680px,calc(100% - 40px));margin:0 auto}
+
+header{background:var(--navy);color:#fff;border-bottom:1px solid #ffffff22;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 0}
+.mark{font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+  font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
+.mark em{font-style:normal;color:#fff}
+.mark i{font-style:normal;color:var(--orange)}
+@media(max-width:380px){ .mark{font-size:.92rem} }
+.langb{border:1px solid #ffffff55;background:transparent;color:#fff;
+  padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+.langb:hover{border-color:var(--orange);color:var(--orange)}
+
+main .wrap{padding:44px 0 56px}
+h1{font-size:clamp(2rem,5.6vw,3rem);line-height:1.06;letter-spacing:-.045em;margin:0 0 10px}
+.updated{color:var(--muted);font-size:.86rem;margin:0 0 26px;
+  padding-bottom:20px;border-bottom:3px solid var(--navy)}
+.lead{font-size:1.1rem;color:var(--ink);margin:0 0 34px;max-width:58ch}
+
+/* ── Cada cláusula: el titular en naranja y pequeño, para que la
+   vista encuentre la sección sin que el titular grite. */
+h2{font-size:.8rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--orange);margin:38px 0 10px;padding-top:22px;border-top:1px solid var(--linea)}
+main h2:first-of-type{border-top:none;padding-top:0}
+p{margin:0 0 15px;color:var(--muted);max-width:62ch}
+strong,b{color:var(--ink);font-weight:750}
+ul{margin:0 0 15px;padding:0;list-style:none;max-width:62ch}
+li{position:relative;padding:9px 0 9px 22px;color:var(--muted);
+  border-top:1px solid var(--linea)}
+li:first-child{border-top:none}
+li::before{content:"";position:absolute;left:0;top:1.05em;
+  width:7px;height:7px;background:var(--orange);border-radius:2px}
+main a{color:var(--navy);font-weight:700;text-decoration:none;
+  border-bottom:2px solid rgba(255,122,24,.5)}
+main a:hover{border-bottom-color:var(--orange);color:var(--orange)}
+
+footer{background:#0a1420;color:#aeb9c6;padding:28px 0 calc(28px + env(safe-area-inset-bottom,0px));
+  text-align:center;font-size:.86rem}
+footer a{color:#aeb9c6;text-decoration:none}
+footer a:hover{color:var(--orange)}
+footer p{margin:0 0 7px;color:#aeb9c6;max-width:none}
+footer .f-co{color:#fff;font-weight:700}
+footer .f-what{margin:7px auto 0;font-size:.78rem;line-height:1.5;opacity:.75;max-width:54ch}
+footer .f-legal{margin:9px 0 0;font-size:.82rem}
+footer .f-dot{padding:0 8px;opacity:.45}
+
+@media print{
+  header,footer,.langb{display:none !important}
+  html,body{background:#fff;color:#000}
+  main .wrap{width:100%;padding:0}
+  h2{color:#000;border-top-color:#000}
+  p,li{color:#000}
+  main a{border-bottom:none;color:#000}
+  h2,li{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="index.html"><em>ANOTADO</em><i>.</i></a>
+    <button class="langb" id="langBtn" onclick="toggleLang()">ES</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap" id="app"></div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="f-co">© 2026 Gostar Digital LLC — Puerto Rico</p>
+<p class="f-what" id="fWhat"></p>
+<script>
+/* Lo que somos, dicho donde se ve: una herramienta que se cobra, no
+   una obra benéfica. Lee el mismo idioma guardado que el resto del
+   sitio, así que no hace falta cablearlo a cada sistema de traducción. */
+(function(){
+  var l = 'es';
+  try{ l = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+           localStorage.getItem('fc-lang') ||
+           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+  var el = document.getElementById('fWhat');
+  if (el) el.textContent = (l === 'es')
+    ? 'Anotado es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Anotado is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+})();
+</script>
+    <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+    <p class="f-legal">
+      <a href="terms.html">Terms</a><span class="f-dot">·</span><a href="custodia.html">Dinero</a><span class="f-dot">·</span><a href="privacy.html">Privacy</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+var BODY = {
+  en: `
+<h1>Privacy Policy</h1>
+<p class="updated">Last updated 3 October 2026</p>
+
+<p class="lead">This explains what Anotado collects, why, and what we do with it. Anotado is
+operated by Gostar Digital LLC in Puerto Rico. Anotado is a pledge management system: we record
+what is pledged and calculate every total. We process no payments, so we collect no payment data at
+all.</p>
+
+<h2>What we collect</h2>
+<p><strong>From a padrino.</strong> Your name, your email address, the rate you pledge, any
+maximum you set, and the participant you pledged on. That is the whole record. You pay the program
+directly, by whatever method the two of you agree, and we are not a party to that payment.</p>
+<p><strong>From a program.</strong> The program's name, the coach's email, the window it sets for
+the event, and the roster of player names the program chooses to add.</p>
+<p><strong>From a run.</strong> For each player: the level he reached, the points that level is
+worth, how long the run took, and the time it was recorded. The game writes these itself. A run
+also carries a run key, which exists only so the database can tell a real run from a link somebody
+edited; it is not shown to anyone and it is of no use outside that check.</p>
+<p><strong>From anyone visiting.</strong> Nothing beyond what your browser sends in the ordinary
+course. We do not use advertising trackers and we do not sell anything about you.</p>
+
+<h2>What we never see</h2>
+<p>Anything to do with a payment. We process no payments and we use no payment processor, so there
+is no card number, no bank detail and no payment record anywhere on our systems. There is nothing
+of that kind to hold, lose or hand over. We also do not know who has paid: the system has nowhere
+to record it.</p>
+
+<h2>Why we hold it</h2>
+<ul>
+  <li>To work out what each pledge comes to when a game's score goes in.</li>
+  <li>To show a program its pledge list, and to let it print or download it.</li>
+  <li>To email a padrino their own pledge, and what it came to once the score was in.</li>
+  <li>To show the live board while a game day is open, and afterwards.</li>
+  <li>To answer you when you write to us.</li>
+</ul>
+
+<h2>What is public</h2>
+<p>The team board shows the program's name, the window of the event, the roster names the program
+entered, and each player's points once his run is in. Anyone holding the link can see it, while the
+window is open and after it closes.</p>
+
+<p><strong>It does not show a padrino's name, email, rate or amount, and it never shows money at
+all.</strong> A program's coach can see the pledges on their own campaign; nobody else can.</p>
+
+<h2>Players and minors</h2>
+<p>A roster holds a player's name, and nothing else — no address, no date of birth, no contact
+details. Players do not pledge and do not pay.</p>
+
+<p><strong>A participant's name and their score appear on the live board, which anyone with the
+link can open.</strong> A program decides who appears on its roster and is responsible for having
+any permission required to name a child and to show what that child scored. A program or a parent
+may ask us to remove a name, and we will do it — write to the address below.</p>
+
+<h2>Who else handles it</h2>
+<ul>
+  <li><strong>Supabase</strong> — stores the database.</li>
+  <li><strong>Resend</strong> — sends the emails.</li>
+  <li><strong>Render</strong> — hosts the site and the server.</li>
+</ul>
+<p>Each holds data only to do that job. We do not sell, rent or trade personal information to
+anyone, for any purpose.</p>
+
+<h2>Email</h2>
+<p>We email a padrino about their own pledge: that it was recorded, the score, and what the pledge
+came to. We send no bills, no invoices and no payment reminders — collecting is the program's, and
+the program does it its own way. We do not send marketing email and we do not add anyone to a
+list.</p>
+
+<h2>How long we keep it</h2>
+<p>Pledge records are kept while a campaign runs and while the organization's license is active.
+A roster is kept while the program's campaign exists. If the license is not renewed, the pledge
+data is removed from the platform; before it is removed, the program can download what is theirs.
+You may ask for your own records to be deleted.</p>
+
+<h2>Your choices</h2>
+<p>Write to us and you may ask what we hold about you, ask for it to be corrected, or ask for it
+to be deleted. We will answer.</p>
+
+<h2>What is stored on your device</h2>
+<p>We keep a small amount in your browser's own storage: your language choice, and — on a
+program's pages — who is signed in on that device. These are not advertising cookies and they are
+not shared with anyone. Clearing your browser data removes them.</p>
+
+<h2>Security</h2>
+<p>Connections are encrypted. No payment data ever reaches us, because we never ask for any.
+Access to pledge records requires a sign-in. No system is perfect, and we will tell affected people promptly if something goes wrong.</p>
+
+<h2>Changes</h2>
+<p>We may update this policy. The date at the top says when it last changed.</p>
+
+<h2>Contact</h2>
+<p>Gostar Digital LLC<br>
+PO Box 1980-345, Loíza, Puerto Rico 00772<br>
+<a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+`,
+  es: `
+<h1>Política de Privacidad</h1>
+<p class="updated">Última actualización: 3 de octubre de 2026</p>
+
+<p class="lead">Esto explica qué recoge Anotado, por qué, y qué hacemos con ello. Anotado es
+operado por Gostar Digital LLC en Puerto Rico. Anotado es un sistema de manejo de promesas:
+anotamos lo que se promete y hacemos la cuenta. No procesamos pagos, así que no recogemos ningún
+dato de pago.</p>
+
+<h2>Qué recogemos</h2>
+<p><strong>De un padrino.</strong> Tu nombre, tu correo, la tarifa que prometes, el máximo que
+pongas si pones uno, y el participante por el que prometiste. Ese es el registro completo. Tú le
+pagas al programa directo, por el método que ustedes dos acuerden, y nosotros no somos parte de
+ese pago.</p>
+<p><strong>De un programa.</strong> El nombre del programa, el correo del coach, la ventana que
+ponga para el evento, y la lista de nombres de jugadores que el programa decida añadir.</p>
+<p><strong>De una corrida.</strong> De cada jugador: el nivel que alcanzó, los puntos que vale ese
+nivel, cuánto duró la corrida, y la hora en que quedó anotada. Eso lo escribe el juego solo. Una
+corrida también lleva una clave, que existe nada más para que la base de datos distinga una corrida
+de verdad de un enlace que alguien editó; no se le enseña a nadie y no sirve para otra cosa.</p>
+<p><strong>De quien visita.</strong> Nada más allá de lo que manda tu navegador normalmente. No
+usamos rastreadores de publicidad y no vendemos nada sobre ti.</p>
+
+<h2>Lo que nunca vemos</h2>
+<p>Nada que tenga que ver con un pago. No procesamos pagos y no usamos ningún procesador, así que
+no hay número de tarjeta, ni dato de banco, ni registro de pago en ninguno de nuestros sistemas.
+No hay nada de eso que guardar, que perder ni que entregar. Tampoco sabemos quién pagó: el sistema
+no tiene dónde anotarlo.</p>
+
+<h2>Por qué lo guardamos</h2>
+<ul>
+  <li>Para sacar lo que le corresponde a cada promesa cuando entra el marcador del juego.</li>
+  <li>Para enseñarle al programa su lista de promesas, y dejarlo imprimirla o bajarla.</li>
+  <li>Para mandarle a un padrino su propia promesa, y lo que dio cuando entró el marcador.</li>
+  <li>Para mostrar el tablero en vivo mientras el día de juego está abierto, y después.</li>
+  <li>Para contestarte cuando nos escribes.</li>
+</ul>
+
+<h2>Qué es público</h2>
+<p>El tablero del equipo muestra el nombre del programa, la ventana del evento, los nombres de la
+lista que puso el programa, y los puntos de cada jugador cuando entre su corrida. Cualquiera que
+tenga el enlace puede verlo, mientras la ventana está abierta y después de que cierre.</p>
+
+<p><strong>No muestra el nombre, el correo, la tarifa ni la cantidad de ningún padrino, y no
+muestra dinero en absoluto.</strong> El coach del programa ve las promesas de su propia campaña;
+nadie más.</p>
+
+<h2>Jugadores y menores</h2>
+<p>Una lista guarda el nombre del jugador y nada más — sin dirección, sin fecha de nacimiento, sin
+datos de contacto. Los jugadores no prometen ni pagan.</p>
+
+<p><strong>El nombre de un participante y su marcador salen en el tablero en vivo, que puede abrir
+cualquiera que tenga el enlace.</strong> El programa decide quién aparece en su lista y es
+responsable de tener el permiso que haga falta para nombrar a un menor y para enseñar lo que ese
+menor anotó. Un programa o un padre puede pedirnos que quitemos un nombre, y lo hacemos — escriban
+a la dirección de abajo.</p>
+
+<h2>Quién más lo maneja</h2>
+<ul>
+  <li><strong>Supabase</strong> — guarda la base de datos.</li>
+  <li><strong>Resend</strong> — manda los correos.</li>
+  <li><strong>Render</strong> — aloja el sitio y el servidor.</li>
+</ul>
+<p>Cada uno guarda datos sólo para hacer ese trabajo. No vendemos, alquilamos ni intercambiamos
+información personal con nadie, para ningún fin.</p>
+
+<h2>Correo</h2>
+<p>Le escribimos a un padrino sobre su propia promesa: que quedó anotada, el marcador, y lo que
+dio la promesa. No mandamos facturas, ni cuentas, ni avisos de cobro — cobrar es del programa, y
+el programa lo hace a su manera. No mandamos correo de publicidad y no metemos a nadie en una
+lista.</p>
+
+<h2>Cuánto tiempo lo guardamos</h2>
+<p>Los registros de promesas se guardan mientras corre la campaña y mientras la licencia de la
+organización esté activa. Una lista se guarda mientras exista la campaña del programa. Si la
+licencia no se renueva, los datos de promesas se retiran de la plataforma; antes de retirarlos, el
+programa puede bajarse lo suyo. Puedes pedir que borremos tus registros.</p>
+
+<h2>Tus opciones</h2>
+<p>Escríbenos y puedes preguntar qué tenemos sobre ti, pedir que lo corrijamos, o pedir que lo
+borremos. Te contestamos.</p>
+
+<h2>Qué se guarda en tu aparato</h2>
+<p>Guardamos poco en el almacenamiento de tu navegador: tu idioma, y — en las páginas de un
+programa — quién entró en ese aparato. No son cookies de publicidad y no se comparten con nadie.
+Borrar los datos del navegador los elimina.</p>
+
+<h2>Seguridad</h2>
+<p>Las conexiones van cifradas. Ningún dato de pago nos llega, porque nunca pedimos ninguno. Ver
+los registros de promesas requiere entrar con credenciales. Ningún sistema es perfecto, y si algo sale mal avisamos pronto a
+quien le afecte.</p>
+
+<h2>Cambios</h2>
+<p>Podemos actualizar esta política. La fecha de arriba dice cuándo cambió por última vez.</p>
+
+<h2>Contacto</h2>
+<p>Gostar Digital LLC<br>
+PO Box 1980-345, Loíza, Puerto Rico 00772<br>
+<a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+`
+};
+</script>
+
+<script>
+var LANG='en';
+try{ LANG = localStorage.getItem('cp-lang') ||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+
+function draw(){
+  document.documentElement.lang = LANG;
+  document.getElementById('app').innerHTML = BODY[LANG] || BODY.en;
+  document.getElementById('langBtn').textContent = LANG==='en' ? 'ES':'EN';
+  try{ document.querySelector('main').scrollTop = 0; }catch(e){}
+}
+function toggleLang(){
+  LANG = LANG==='en' ? 'es':'en';
+  try{ localStorage.setItem('cp-lang', LANG); }catch(e){}
+  draw();
+}
+draw();
+</script>
+</body>
+</html>
