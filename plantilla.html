@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>La plantilla — Anotado</title>
+<title>La plantilla — Hooporia</title>
 <meta name="robots" content="noindex,nofollow">
 <style>
 /* ── El look nuevo: crema, navy y naranja ─────────────────────────
@@ -124,7 +124,7 @@ footer .f-dot{padding:0 8px;opacity:.45}
 
 <header>
   <div class="wrap bar">
-    <a class="mark" href="index.html"><em>ANOTADO</em><i>.</i></a>
+    <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
     <div class="hright">
       <span class="who hide" id="hwho"></span>
       <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
@@ -196,7 +196,7 @@ footer .f-dot{padding:0 8px;opacity:.45}
 
 <footer>
   <div class="wrap">
-    <a href="ayuda.html">Ayuda</a><span class="f-dot">·</span><a href="index.html">Anotado</a><span class="f-dot">·</span><a href="terms.html">Términos</a><span class="f-dot">·</span><a href="custodia.html">Dinero</a>
+    <a href="ayuda.html">Ayuda</a><span class="f-dot">·</span><a href="index.html">Hooporia</a><span class="f-dot">·</span><a href="terms.html">Términos</a><span class="f-dot">·</span><a href="custodia.html">Dinero</a>
   </div>
 </footer>
 
@@ -407,6 +407,24 @@ function cargar(){
 /* Tres estados, no dos: esperando, en la lista, y fuera. Los que
    esperan van arriba y aparte — son lo único de esta página que pide
    una decisión, y mezclados con los demás no se ven. */
+/* La carpeta donde vive esta página, con su barra al final.
+
+   Hace falta porque el enlace del padrino se arma entero —se manda
+   por WhatsApp, así que no puede ser relativo— y antes se armaba con
+   location.origin + '/prometer.html', o sea desde la raíz del
+   dominio.
+
+   Eso funciona mientras el sitio esté en la raíz. Servido en una
+   carpeta (cadapunto.com/anotathon/) el enlace apuntaría a
+   cadapunto.com/prometer.html, que EXISTE: es la copia vieja del
+   otro producto. No daría 404 — cargaría otra página parecida y
+   medio funcionaría, que se nota mucho más tarde y mucho peor.
+
+   Con la carpeta de la página actual sirve en los dos sitios. */
+function base(){
+  return location.origin + location.pathname.replace(/[^/]*$/, '');
+}
+
 /* ══════════════════════════════════════════════════════════════════
    EL ENLACE DE CADA NENE
 
@@ -430,7 +448,7 @@ function enlaceDe(p){
      importa: armado a ciegas el enlace saldría con "undefined"
      dentro y el entrenador lo repartiría a doce familias igual. */
   if (!RETO || !RETO.hay || !RETO.open) return null;
-  return location.origin + '/prometer.html?c=' + RETO.challenge_id + '&p=' + p.id;
+  return base() + 'prometer.html?c=' + RETO.challenge_id + '&p=' + p.id;
 }
 
 function cuandoCP(iso){
