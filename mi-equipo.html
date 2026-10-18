@@ -193,7 +193,7 @@ var S={
     stCerrada:'Ventana cerrada',
     cierraEl:'Cierra el {D}',
     aBoard:'Ver el tablero',
-    aRoster:'La plantilla',
+    aRoster:'La plantilla', aReport:'El reporte',
 
     stuck:'¿Algo no sale? <a href="ayuda.html">Ayuda del entrenador →</a>',
     fAyuda:'Ayuda'
@@ -220,7 +220,7 @@ var S={
     stCerrada:'Window closed',
     cierraEl:'Closes {D}',
     aBoard:'See the board',
-    aRoster:'The roster',
+    aRoster:'The roster', aReport:'The report',
 
     stuck:'Something will not work? <a href="ayuda.html">Coach help →</a>',
     fAyuda:'Help'
@@ -405,6 +405,7 @@ function pintar(){
       '<div class="acts">'+
         '<a class="fill" href="tablero.html?camp='+esc(c.id)+'">'+T('aBoard')+'</a>'+
         '<a class="wide" href="plantilla.html">'+T('aRoster')+'</a>'+
+        '<a class="wide" href="reporte.html">'+T('aReport')+'</a>'+
       '</div>'+
     '</div>';
   }).join('');
