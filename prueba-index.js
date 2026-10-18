@@ -1,0 +1,111 @@
+const { chromium } = require('/opt/node-tools/node_modules/playwright-core');
+const path = require('path');
+const FILE='file://'+path.resolve(__dirname,'index.html');
+let bad=0; const ok=m=>console.log('  ok   '+m); const mal=m=>{bad++;console.log('  MAL  '+m)};
+const has=(t,re,q)=>re.test(t)?ok(q):mal(q+'  (no '+re+')');
+const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
+(async()=>{
+  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',args:['--no-sandbox']});
+  const p=await b.newPage();
+  await p.route('**/*',r=>r.request().url().startsWith('file:')?r.continue():r.abort());
+  const errs=[]; p.on('pageerror',e=>errs.push(String(e).split('\n')[0]));
+  p.on('console',m=>{if(m.type()==='error')errs.push('console: '+m.text())});
+  await p.addInitScript(()=>{try{localStorage.setItem('cp-lang','es')}catch(e){}
+    try{Object.defineProperty(navigator,'language',{get:()=>'es-PR'})}catch(e){}});
+  await p.goto(FILE,{waitUntil:'domcontentloaded'});
+  await p.waitForTimeout(300);
+
+  console.log('\n1 · El español');
+  // innerText no ve lo plegado: los <details> del FAQ quedan fuera.
+  const leer=()=>p.evaluate(()=>document.body.innerText+'\n'+
+    (document.querySelector('.faq')?document.querySelector('.faq').textContent:''));
+  let t=await leer();
+  has(t,/Suena la chicharra\. ¿Cuánto anoté\?/,'el titular: la chicharra');
+  has(t,/Cada ronda vale más que la anterior/,'la escalada, que es lo que hace el número');
+  has(t,/Nada que vender, sin hojas de pedido/,'y que no hay nada que vender');
+  has(t,/La ronda nueve vale nueve puntos/,'la ronda nueve, en el paso dos');
+  has(t,/Una corrida cada uno/,'una corrida cada uno');
+  has(t,/el juego los anota mientras juega/,'el juego anota los puntos');
+  has(t,/en la cancha o en su casa/i,'se juega desde donde sea');
+  has(t,/Nosotros manejamos las promesas/,'la posición de la casa');
+  // .eyebrow va en mayúsculas por CSS, así que innerText la devuelve
+  // gritada. La caja la decide la hoja de estilo, no el texto.
+  has(t,/Baloncesto digital · Manejo de promesas/i,'la categoría, arriba');
+  has(t,/Ustedes manejan los fondos/,'y la otra mitad');
+
+  console.log('\n2 · Las dos tarjetas de jugar');
+  has(t,/Juégalo antes de seguir leyendo/,'la invitación a jugar');
+  has(t,/Scrimmage · 4 cuartos/i,'la tarjeta del scrimmage');
+  has(t,/Los cuatro cuartos completos/,'y qué es');
+  has(t,/Cada cuarto cuenta tu MEJOR corrida/,'cómo cuenta cada cuarto');
+  has(t,/Práctica libre/i,'la tarjeta de práctica');
+  has(t,/ninguno de los dos anota nada/,'y que ninguna anota nada');
+  has(t,/la base de datos rechaza la segunda/,'una sola corrida oficial, por la base de datos');
+  // Los dos enlaces tienen que existir de verdad en el repo.
+  const juegos = await p.evaluate(()=>[...document.querySelectorAll('.pcard a')].map(a=>a.getAttribute('href')));
+  const fs2 = require('fs'), pa = require('path');
+  for (const h of juegos){
+    fs2.existsSync(pa.resolve(__dirname, h))
+      ? ok('el enlace ' + h + ' existe en el repo')
+      : mal('el enlace ' + h + ' NO existe');
+  }
+  juegos.includes('fortress-vr.html') ? ok('el scrimmage apunta al juego de cuartos') : mal('falta fortress-vr.html');
+  juegos.includes('fortress.html') ? ok('la práctica apunta al juego suelto') : mal('falta fortress.html');
+
+  console.log('\n3 · El argumento grande');
+  has(t,/La recogida de fondos es el producto/,'la recogida es el producto');
+  has(t,/No hace falta un evento para correr una/,'y no hace falta un evento');
+  has(t,/necesita que pase algo primero/,'lo que necesitan las demás');
+  has(t,/Trae su propio evento/i,'trae su propio evento');
+  has(t,/ni temporada/,'y no tiene temporada');
+  has(t,/No sólo la plantilla/i,'no sólo la plantilla');
+  has(t,/un hermano, una mamá, un entrenador/,'quién más puede jugar');
+  has(t,/no es un cargo por persona|no un cargo por persona/,'la licencia no es por persona');
+
+  console.log('\n4 · El precio sale de un número');
+  has(t,/\$49 por equipo por evento/,'49 por equipo');
+  has(t,/\$29 si la plantilla tiene menos de 8/,'29 bajo ocho');
+  not(t,/\{A\}|\{B\}|\{N\}/,'sin plantillas sin rellenar');
+
+  console.log('\n3 · Nada de custodia, nada de impuestos');
+  has(t,/Anotado no recibe dinero de nadie/,'no recibe dinero de nadie');
+  has(t,/le paga al programa directo/,'el padrino paga al programa');
+  has(t,/Sin enlace de pago, y sin recordatorios/,'un aviso y nada más');
+  not(t,/deducib|deductib|impuesto/i,'ni una palabra de impuestos');
+  not(t,/cobrad|recaudad(?!o)/i,'ni cobrado');
+  not(t,/facebook|instagram/i,'ni redes');
+
+  console.log('\n4 · El inglés');
+  await p.click('#lang'); await p.waitForTimeout(150);
+  const en=await leer();
+  has(en,/Final buzzer\. What did I score\?/,'the grabber');
+  has(en,/Every round is worth more than the last/,'the escalation');
+  has(en,/Nothing to sell, no order forms/,'nothing to sell, spelled out');
+  has(en,/One run each/,'one run each');
+  has(en,/\$49 per team for the event/,'49 per team');
+  has(en,/\$29 if the roster is under 8/,'29 under eight');
+  has(en,/never receives money from anybody/,'never receives money');
+  not(en,/\{A\}|\{B\}|\{N\}/,'sin plantillas');
+  not(en,/\bdeductible\b|\btax\b/i,'ni impuestos');
+  const ti=await p.title();
+  has(ti,/Digital Basketball\. Every point is recorded\./,'el título, en inglés');
+  // Y que no se le haya pegado el nombre del otro producto.
+  not(ti,/Every point counts/i,'el título no lleva el nombre de Cada Punto');
+
+  console.log('\n5 · Los enlaces');
+  const hrefs=await p.evaluate(()=>[...document.querySelectorAll('a')].map(a=>a.getAttribute('href')));
+  for(const h of ['equipo.html','mi-equipo.html','ayuda.html','cobro.html','terms.html','privacy.html','custodia.html'])
+    hrefs.includes(h)?ok('a '+h):mal('falta '+h);
+  hrefs.some(h=>/cadapunto|prometer\.html/.test(h||''))?mal('enlaza fuera del producto'):ok('no enlaza a Cada Punto');
+
+  console.log('\n6 · La piel y los errores');
+  const src=await p.content();
+  has(src,/--orange:#ff7a18/,'el naranja');
+  has(src,/--cream:#faf8f4/,'la crema');
+  not(src,/(href|src|content)="[^"]*anotado(\.png|-share)/,'ningún atributo apunta a una imagen que no existe');
+  errs.length?errs.forEach(e=>mal(e)):ok('sin errores de página');
+
+  await b.close();
+  console.log('\n'+(bad===0?'✓ el índice de Anotado pasa':'✗ '+bad+' fallo(s)'));
+  process.exit(bad===0?0:1);
+})().catch(e=>{console.error(e);process.exit(1)});
