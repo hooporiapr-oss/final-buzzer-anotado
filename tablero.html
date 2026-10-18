@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>El tablero — Cada Punto</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#12202E;--mute:#5A6B7C;--line:#D7E0E8;--tint:#F7FAFC;--accent:#0C6E8C;--good:#0B7A5A;--bad:#A8323F}
+*{box-sizing:border-box}
+html{background:#07141E}
+body{margin:0;min-height:100dvh;display:flex;flex-direction:column;
+  font-family:Archivo,"Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--ink);
+  background:#07141E;line-height:1.55;-webkit-text-size-adjust:100%}
+.wrap{width:min(560px,93vw);margin:0 auto}
+
+header{flex:0 0 auto;background:#12202E;border-bottom:1px solid #0B1724;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+.mark{font-weight:900;font-size:1.05rem;color:#fff;text-decoration:none}
+.mark em{font-style:normal;color:#4FD3F0}
+.mark i{font-style:normal;color:#9FB3C4}
+.langb{border:1px solid #33465A;background:none;color:#C8D6E2;border-radius:999px;
+  padding:6px 13px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer}
+
+main{flex:1 1 auto;overflow-x:hidden}
+main .wrap{padding:clamp(20px,5vw,34px) 0 30px}
+
+footer{flex:0 0 auto;background:#12202E;color:#9FB3C4;border-top:1px solid #0B1724;
+  padding:15px 0 calc(15px + env(safe-area-inset-bottom,0px));text-align:center;font-size:.82rem}
+footer p{margin:0 0 7px}
+footer .f-co{color:#fff;font-weight:700}
+footer a{color:#4FD3F0;text-decoration:none}
+.f-what{margin:7px 0 0;font-size:.74rem;line-height:1.5;opacity:.72;max-width:52ch;
+  margin-left:auto;margin-right:auto}
+
+h1{font-size:clamp(1.4rem,4.4vw,1.9rem);letter-spacing:-.03em;margin:0 0 4px;font-weight:900;text-align:center}
+.lede{color:var(--mute);margin:0 0 6px;text-align:center}
+
+/* El estado de la ventana. Es lo primero que mira quien abre esto, así
+   que va arriba y se lee de un vistazo. */
+.estado{display:flex;align-items:center;justify-content:center;gap:9px;
+  margin:0 0 20px;font-size:.78rem;font-weight:900;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--mute)}
+.punto{width:9px;height:9px;border-radius:999px;background:var(--mute);flex:0 0 auto}
+.estado.vivo{color:var(--good)}
+.estado.vivo .punto{background:var(--good);animation:latir 1.6s ease-in-out infinite}
+@keyframes latir{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.estado.vivo .punto{animation:none}}
+
+.fila{display:grid;grid-template-columns:1.6rem 1fr auto;align-items:center;gap:10px;
+  padding:11px 0;border-bottom:1px solid var(--line)}
+.fila:first-of-type{border-top:1px solid var(--line)}
+.pos{font-size:.8rem;font-weight:900;color:var(--mute);text-align:right}
+.nm{font-weight:800;min-width:0}
+.nm small{display:block;font-weight:500;font-size:.74rem;color:var(--mute);
+  letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.tot{font-size:1.45rem;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.tot.cero{color:var(--line)}
+/* Quien va delante se ve sin tener que leer los números. */
+.fila.lider .tot{color:var(--good)}
+
+.qs{display:inline-flex;gap:4px;margin-top:3px}
+.q{min-width:1.45rem;padding:1px 4px;border-radius:3px;background:var(--tint);
+  border:1px solid var(--line);font-size:.7rem;font-weight:800;text-align:center;
+  color:var(--mute);font-variant-numeric:tabular-nums}
+.q.hecho{background:var(--ink);border-color:var(--ink);color:#fff}
+
+.resumen{display:flex;gap:10px;margin:22px 0 0}
+.caja{flex:1;border:2px solid var(--ink);border-radius:4px;padding:12px;text-align:center}
+.caja b{display:block;font-size:1.5rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.caja span{font-size:.64rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+
+.vacio{text-align:center;color:var(--mute);padding:26px 0}
+.btn{display:block;width:100%;padding:16px;border:2px solid var(--ink);border-radius:4px;
+  background:#07141E;color:var(--ink);font:inherit;font-weight:800;font-size:1.02rem;
+  cursor:pointer;text-align:center;text-decoration:none;margin-top:18px}
+.pie{margin-top:16px;text-align:center;font-size:.76rem;color:var(--mute)}
+
+
+/* ══════════════════════════════════════════════════════════════
+   LA CANCHA DE NOCHE
+   El mismo color que la portada, en todo el sitio. Va al final a
+   propósito: las reglas de arriba se quedan como están y éstas
+   mandan encima.
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  --noche:#07141E; --cancha:#0E2232; --linea:#1B3A4F;
+  --viva:#4FD3F0;  --brasa:#FF8A2B;  --hueso:#EAF2F7; --humo:#7A96A9;
+  /* Y las que ya usaba esta página, apuntando a lo mismo */
+  --ink:#EAF2F7; --mute:#7A96A9; --line:#1B3A4F; --tint:#0E2232;
+  --accent:#4FD3F0; --good:#3FD89A; --bad:#FF7B7B;
+  --paper:#EAF2F7; --panel:#0E2232; --gold:#FF8A2B; --leather:#4FD3F0;
+  --ball:#FF8A2B; --edge:#2E5570; --teal:#4FD3F0;
+}
+html, body{background:#07141E;color:#EAF2F7}
+
+/* La cabecera y el pie ya eran oscuros, pero de otro azul. */
+header, footer, .top{background:#07141E;border-color:#1B3A4F}
+header{border-bottom:1px solid #1B3A4F}
+footer{border-top:1px solid #1B3A4F;color:#7A96A9}
+footer a{color:#4FD3F0}
+.mark{color:#EAF2F7}
+.mark i{color:#7A96A9}
+.langb{border-color:#2E5570;color:#9DB6C7;background:none}
+.langb:hover{color:#EAF2F7;border-color:#7A96A9}
+
+/* Cajas, paneles y cualquier cosa que antes era un rectángulo claro
+   sobre blanco. */
+.how, .linkbox, .s, .w, .tal, .num, .team, .pl, .caja, .chat, .card,
+.panel, .box, .waits, .pay, .cuadro, .m.me{
+  background:#0E2232;border-color:#1B3A4F;color:#EAF2F7}
+.how p, .s span, .w span, .num span, .tal span, .help, .hint, .lede,
+.cp, .who, .sub, .nota{color:#7A96A9}
+
+/* Lo que se escribe. Un campo blanco en una página oscura es un
+   agujero de luz, y en un teléfono de noche duele. */
+input, select, textarea{
+  background:#07141E;border-color:#2E5570;color:#EAF2F7}
+input::placeholder, textarea::placeholder{color:#5F7C91}
+input:focus, select:focus, textarea:focus{
+  border-color:#4FD3F0;box-shadow:0 0 0 3px rgba(79,211,240,.18)}
+
+/* Los botones. Aquí es donde un cambio de variables a ciegas dejaba
+   blanco sobre blanco: el relleno era var(--ink), que ahora es la
+   tinta. Se dicen los dos colores, y ya. */
+.btn, button.btn, a.btn{
+  background:#4FD3F0;border:2px solid #4FD3F0;color:#07141E}
+.btn:hover{background:#07141E;color:#4FD3F0}
+.btn.line, .btn.ghost, .btn.sec{
+  background:transparent;border:2px solid #EAF2F7;color:#EAF2F7}
+.btn.line:hover{background:#EAF2F7;color:#07141E}
+.btn.go, .btn.hot, .btn.naranja{background:#FF8A2B;border-color:#FF8A2B;color:#07141E}
+[style*="#FF8A2B"], .btn[class*="go"]{color:#07141E}
+.btn:disabled{opacity:.45}
+
+/* Separadores y reglas */
+hr, .sep, .div{border-color:#1B3A4F;background:#1B3A4F}
+table, th, td{border-color:#1B3A4F}
+
+/* Enlaces dentro del texto */
+/* Cada :not() suma fuerza, asi que esta regla le ganaba a cosas
+   como a.wa. Lo que es un boton se excluye por nombre. */
+main a:not(.btn):not(.pedir):not(.cta):not(.wa):not(.go), .wrap a:not(.btn):not(.pedir):not(.cta):not(.wa):not(.go){color:#4FD3F0}
+a.pedir{color:inherit}
+
+/* Lo que estaba escrito a mano en blanco y ahora es un agujero */
+[style*="background:#07141E"], [style*="background: #07141E"]{background:#0E2232 !important}
+
+
+/* Los que estaban puestos a mano con otro blanco: #FFF8F3, #FFFFFF.
+   No son var() de nadie, así que hay que nombrarlos. */
+[class]{--ff8:#0E2232}
+.ojo, .env-nota, .nota-ojo, .aviso, .warn, .tip{background:#0E2232 !important;color:#EAF2F7}
+.ttl, .env-nota b{color:#EAF2F7}
+.cta{background:#4FD3F0 !important;border-color:#4FD3F0 !important;color:#07141E !important}
+.cta:hover{background:#07141E !important;color:#4FD3F0 !important}
+h1,h2,h3,h4{color:#EAF2F7}
+
+
+/* ══ LA MARCA ══════════════════════════════════════════════════
+   cada (hueso) · punto (naranja) · cuenta (cian), a 23px con peso
+   800 y el espaciado cerrado — la que lleva padrinos.html. Es la
+   marca, no un enlace del menú, y a 16px con peso 900 parecía lo
+   segundo: apretada, pequeña y sin aire entre las letras.
+
+   El espaciado va en em y no en px para que siga cerrado si alguna
+   página la pinta a otro tamaño. */
+.mark, .mark .wm{
+  color:#EAF2F7 !important;text-decoration:none !important;
+  font-size:23px !important;font-weight:800 !important;
+  letter-spacing:-.035em !important;line-height:1.1}
+.mark em, .wm em{font-style:normal;color:#FF8A2B !important}
+.mark i,  .wm i {font-style:normal;color:#4FD3F0 !important}
+/* En un teléfono estrecho, que no empuje al botón de idioma. */
+@media(max-width:380px){
+  .mark, .mark .wm{font-size:20px !important}
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="index.html">cada&nbsp;<em>punto</em>&nbsp;<i>cuenta</i></a>
+    <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap" id="app"><p class="lede">…</p></div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="f-co">© 2026 Gostar Digital LLC · Puerto Rico</p>
+<p class="f-what" id="fWhat"></p>
+<script>
+(function(){
+  var l = 'es';
+  try{ l = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+           localStorage.getItem('fc-lang') ||
+           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+  var el = document.getElementById('fWhat');
+  if (el) el.textContent = (l === 'es')
+    ? 'Cada Punto es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Cada Punto is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+})();</script>
+    <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+  </div>
+</footer>
+
+<script>
+var SB_URL='https://sdaphocueugzfvjovuxd.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
+
+function rpc(name, args){
+  return fetch(SB_URL + '/rest/v1/rpc/' + name, {
+    method:'POST',
+    headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify(args || {})
+  }).then(function(r){ if(!r.ok) throw new Error('rpc'); return r.json(); });
+}
+
+var S = {
+  es:{
+    h1:'El tablero',
+    antes:'Todavía no abre',
+    abierto:'En vivo',
+    cerrado:'Se acabó',
+    sinventana:'Sin día de juego',
+    abreA:'Abre el {D}',
+    cierraA:'Cierra el {D}',
+    cerroA:'Cerró el {D}',
+    sinWin:'Este reto no tiene día de juego puesto todavía.',
+    nadie:'Todavía no hay nadie en la plantilla.',
+    nadieJugo:'Todavía no ha jugado nadie.',
+    jugando:'jugando', listo:'los cuatro cuartos', sinJugar:'sin empezar',
+    deN:'{N} de 4 cuartos',
+    tPuntos:'puntos', tNenes:'han jugado', tCuartos:'cuartos puestos',
+    noLive:'Este reto no está abierto.',
+    err:'No se pudo cargar el tablero.',
+    recargar:'Volver a cargar',
+    auto:'Se actualiza solo cada 15 segundos.',
+    volver:'← Volver'
+  },
+  en:{
+    h1:'The board',
+    antes:'Not open yet',
+    abierto:'Live',
+    cerrado:'Finished',
+    sinventana:'No game day',
+    abreA:'Opens {D}',
+    cierraA:'Closes {D}',
+    cerroA:'Closed {D}',
+    sinWin:'This challenge has no game day set yet.',
+    nadie:'Nobody on the roster yet.',
+    nadieJugo:'Nobody has played yet.',
+    jugando:'playing', listo:'all four quarters', sinJugar:'not started',
+    deN:'{N} of 4 quarters',
+    tPuntos:'points', tNenes:'have played', tCuartos:'quarters in',
+    noLive:'This challenge is not open.',
+    err:'The board could not load.',
+    recargar:'Load it again',
+    auto:'Refreshes on its own every 15 seconds.',
+    volver:'← Back'
+  }
+};
+
+var LANG='es';
+try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') || localStorage.getItem('fc-lang') ||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+
+function T(k,v){
+  var s = (S[LANG] && S[LANG][k]) || S.es[k] || '';
+  if (v) Object.keys(v).forEach(function(x){ s = s.split('{'+x+'}').join(v[x]); });
+  return s;
+}
+function toggleLang(){
+  LANG = LANG==='es' ? 'en':'es';
+  try{ localStorage.setItem('cfh_lang', LANG), localStorage.setItem('cp-lang', LANG), localStorage.setItem('fc-lang', LANG); }catch(e){}
+  document.getElementById('langBtn').textContent = LANG==='es' ? 'EN':'ES';
+  pintar();
+}
+
+var PARAMS = new URLSearchParams(location.search);
+var CHALLENGE = PARAMS.get('c');
+/* Se puede llegar con el reto o con la campaña. El entrenador en
+   mi-equipo.html tiene campañas, no retos, y buscarle el reto allí
+   sería meterle una llamada más a una página que ya hace cinco.
+   Aquí es una línea. */
+var CAMPANA = PARAMS.get('camp');
+var D = null;          // lo último que contestó el servidor
+var timer = null;
+var app = document.getElementById('app');
+
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, function(m){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+  });
+}
+
+/* Sin punto al final: el español acaba la hora en "p. m." y las frases
+   que la usan ya traen el suyo. */
+function cuando(iso){
+  try {
+    var d = new Date(iso);
+    var loc = LANG === 'es' ? 'es-PR' : 'en-US';
+    return d.toLocaleDateString(loc, { weekday:'long', day:'numeric', month:'long' }) +
+           ' · ' + d.toLocaleTimeString(loc, { hour:'numeric', minute:'2-digit' });
+  } catch(e){ return '' }
+}
+
+function pintar(){
+  document.getElementById('langBtn').textContent = LANG==='es' ? 'EN':'ES';
+
+  if (!D){
+    app.innerHTML = '<p class="lede">…</p>';
+    return;
+  }
+  if (D.error){
+    app.innerHTML =
+      '<h1>' + T('h1') + '</h1>' +
+      '<p class="lede">' + esc(D.error) + '</p>' +
+      '<button class="btn" onclick="cargar()">' + T('recargar') + '</button>' +
+      '<a class="btn" href="index.html">' + T('volver') + '</a>';
+    return;
+  }
+
+  var nenes = D.nenes || [];
+  var jugaron = nenes.filter(function(n){ return (n.jugados||0) > 0 });
+  var cuartos = nenes.reduce(function(a,n){ return a + (n.jugados||0) }, 0);
+  var puntos  = nenes.reduce(function(a,n){ return a + (n.total||0) }, 0);
+  var tope    = jugaron.length ? Math.max.apply(null, jugaron.map(function(n){ return n.total||0 })) : 0;
+
+  var fecha = D.estado === 'antes'   ? T('abreA',   { D: cuando(D.opens_at) })
+            : D.estado === 'abierto' ? T('cierraA', { D: cuando(D.closes_at) })
+            : D.estado === 'cerrado' ? T('cerroA',  { D: cuando(D.closes_at) })
+            : T('sinWin');
+
+  var filas = nenes.map(function(n, i){
+    var hechos = {};
+    (n.cuartos || []).forEach(function(q){ hechos[q.q] = q.points });
+
+    var chips = '';
+    for (var q = 1; q <= 4; q++){
+      var hay = Object.prototype.hasOwnProperty.call(hechos, q);
+      chips += '<span class="q' + (hay ? ' hecho' : '') + '">' +
+               (hay ? hechos[q] : '·') + '</span>';
+    }
+
+    var pie = (n.jugados >= 4) ? T('listo')
+            : (n.jugados > 0)  ? T('deN', { N: n.jugados })
+            : T('sinJugar');
+
+    // Líder sólo si de verdad hay con qué comparar: con todo el mundo
+    // en cero, nadie va ganando.
+    var lider = tope > 0 && (n.total||0) === tope;
+
+    return '<div class="fila' + (lider ? ' lider' : '') + '">' +
+             '<span class="pos">' + (i + 1) + '</span>' +
+             '<span class="nm">' + esc(n.nombre) +
+               '<small>' + esc(pie) + '</small>' +
+               '<span class="qs">' + chips + '</span>' +
+             '</span>' +
+             '<span class="tot' + ((n.total||0) ? '' : ' cero') + '">' + (n.total||0) + '</span>' +
+           '</div>';
+  }).join('');
+
+  app.innerHTML =
+    '<h1>' + esc(D.program || T('h1')) + '</h1>' +
+    '<p class="lede">' + esc(D.name || '') + '</p>' +
+    '<div class="estado' + (D.estado === 'abierto' ? ' vivo' : '') + '">' +
+      '<span class="punto"></span>' + esc(T(D.estado || 'sinventana')) +
+    '</div>' +
+    (nenes.length
+      ? filas +
+        '<div class="resumen">' +
+          '<div class="caja"><b>' + puntos + '</b><span>' + esc(T('tPuntos')) + '</span></div>' +
+          '<div class="caja"><b>' + jugaron.length + '</b><span>' + esc(T('tNenes')) + '</span></div>' +
+          '<div class="caja"><b>' + cuartos + '</b><span>' + esc(T('tCuartos')) + '</span></div>' +
+        '</div>'
+      : '<p class="vacio">' + esc(T('nadie')) + '</p>') +
+    '<p class="pie">' + esc(fecha) + (D.estado === 'abierto' ? ' · ' + esc(T('auto')) : '') + '</p>';
+}
+
+function cargar(){
+  if (!CHALLENGE && CAMPANA){
+    return rpc('cp_reto_vivo', { p_campaign: CAMPANA })
+      .then(function(r){
+        if (!r || !r.ok || !r.hay){ D = { error: T('sinWin') }; pintar(); return; }
+        CHALLENGE = r.challenge_id;
+        return cargar();
+      })
+      .catch(function(){ if (!D){ D = { error: T('err') }; pintar(); } });
+  }
+  if (!CHALLENGE){ D = { error: T('noLive') }; pintar(); return; }
+  return rpc('cp_tablero', { p_challenge: CHALLENGE })
+    .then(function(r){
+      if (!r || !r.ok){ D = { error: T('noLive') }; pintar(); return; }
+      D = r;
+      pintar();
+      marcarPaso();
+    })
+    .catch(function(e){
+      console.error(e);
+      // Un fallo de red no borra lo que ya se estaba enseñando: en una
+      // cancha con mala señal eso sería la pantalla parpadeando en
+      // blanco cada quince segundos.
+      if (!D) { D = { error: T('err') }; pintar(); }
+    });
+}
+
+/* Sólo se repregunta mientras la ventana está abierta. Antes y después
+   el número no cambia, y un tablero cerrado no tiene por qué estar
+   pegándole a la base cada quince segundos para siempre. */
+function marcarPaso(){
+  if (timer){ clearInterval(timer); timer = null; }
+  if (D && D.estado === 'abierto'){
+    timer = setInterval(cargar, 15000);
+  }
+}
+
+/* Con el teléfono en el bolsillo no hace falta preguntar nada; al
+   volver a mirarlo, sí, y enseguida. */
+document.addEventListener('visibilitychange', function(){
+  if (document.visibilityState === 'visible' && D && D.estado === 'abierto') cargar();
+});
+
+cargar();
+</script>
+</body>
+</html>
