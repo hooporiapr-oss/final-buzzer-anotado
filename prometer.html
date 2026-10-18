@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Apadrina — Cada Punto</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   LA PÁGINA DEL PADRINO
+
+   Aquí llega alguien por un enlace que le mandó un nene — la mamá, el
+   tío, el vecino, el negocio de la esquina. Casi nunca sabe qué es
+   esto. Así que la página tiene UN trabajo: explicar el trato en diez
+   segundos y recoger la promesa sin hacerle una cuenta de cabeza.
+
+   El trato: el nene juega cuatro cuartos de cinco minutos, el juego
+   saca el marcador, y el padrino promete unos centavos por punto.
+
+   Tres cosas que esta página no hace, y son a propósito:
+
+   · No cobra nada, aquí ni después. Cada Punto no procesa pagos: el
+     padrino le paga al programa, directo, cuando el programa le diga.
+   · No deja prometer una vez empezado el juego. Después ya se sabe
+     cuánto anotó, y prometer sabiendo el resultado no es prometer.
+   · No esconde la cuenta. Se enseña el número con el marcador típico
+     delante, no en letra chica.
+   ══════════════════════════════════════════════════════════════════ */
+:root{--ink:#07141E;--paper:#EAF2F7;--mute:#7A96A9;--line:#1B3A4F;--panel:#0E2232;
+      --gold:#FF8A2B;--green:#4FD3F0;--warn:#FFC247}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--paper);
+  font-family:Archivo,"Helvetica Neue",Helvetica,Arial,sans-serif;line-height:1.6;
+  -webkit-text-size-adjust:100%}
+.wrap{width:min(560px,92vw);margin:0 auto;padding:0 0 60px}
+header{border-bottom:1px solid var(--line);margin:0 0 26px}
+.bar{display:flex;align-items:center;justify-content:space-between;
+  padding:calc(13px + env(safe-area-inset-top,0px)) 0 13px}
+.mark{font-weight:900;color:#fff;text-decoration:none;font-size:1rem}
+.mark em{font-style:normal;color:#4FD3F0}
+.mark i{font-style:normal;color:#7A96A9}
+#lang{border:1px solid var(--line);background:none;color:var(--mute);border-radius:999px;
+  padding:6px 13px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer}
+
+.kick{font-size:.68rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mute);margin:0 0 6px}
+h1{font-size:clamp(1.6rem,6.5vw,2.3rem);font-weight:900;letter-spacing:-.02em;
+  line-height:1.12;margin:0 0 4px}
+h1 em{font-style:normal;color:var(--gold)}
+.prog{color:var(--green);font-weight:900;font-size:.95rem;margin:0 0 16px}
+.trato{color:#C8D6E2;font-size:1rem;margin:0 0 6px}
+.cuando{color:var(--warn);font-weight:800;font-size:.86rem;margin:14px 0 0}
+
+.caja{display:flex;gap:3px;justify-content:center;margin:18px 0 6px;flex-wrap:wrap}
+.caja div{min-width:58px;padding:8px 5px;background:var(--panel);
+  border:1px solid var(--line);border-radius:5px;text-align:center}
+.caja div.tot{background:rgba(255,138,43,.13);border-color:rgba(255,138,43,.42)}
+.caja b{display:block;font-size:.55rem;font-weight:900;letter-spacing:.13em;
+  color:var(--mute);text-transform:uppercase}
+.caja span{display:block;font-size:1.2rem;font-weight:900;line-height:1.3}
+.caja div.tot span{color:var(--gold)}
+
+form{margin:26px 0 0}
+label{display:block;font-size:.72rem;font-weight:900;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--mute);margin:0 0 7px}
+.campo{margin:0 0 18px}
+input{width:100%;font:inherit;font-size:1rem;padding:13px;border:1px solid var(--line);
+  border-radius:7px;background:var(--panel);color:var(--paper)}
+input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.ayuda{color:var(--mute);font-size:.8rem;margin:7px 0 0}
+
+/* Los centavos por punto. Botones de verdad, no una lista. */
+.tarifas{display:flex;gap:8px;flex-wrap:wrap}
+.tarifa{flex:1 1 0;min-width:86px;background:var(--panel);color:var(--paper);
+  border:2px solid var(--line);border-radius:8px;padding:13px 6px;cursor:pointer;
+  font:inherit;font-weight:900;font-size:1.15rem;line-height:1.2}
+.tarifa small{display:block;font-size:.6rem;font-weight:900;letter-spacing:.1em;
+  color:var(--mute);text-transform:uppercase;margin-top:3px}
+.tarifa.on{border-color:var(--gold);background:rgba(255,138,43,.13);color:var(--gold)}
+.tarifa.on small{color:var(--gold)}
+
+.cuenta{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);
+  border-radius:7px;padding:14px 15px;margin:0 0 20px;font-size:.9rem;color:#C8D6E2}
+.cuenta b{color:#fff}
+.cuenta .tot{color:var(--gold);font-weight:900}
+
+button.enviar{width:100%;background:var(--gold);color:#0B1724;border:0;border-radius:8px;
+  font:inherit;font-weight:900;font-size:1.05rem;padding:16px;cursor:pointer;
+  box-shadow:0 8px 22px rgba(0,0,0,.38)}
+button.enviar:disabled{opacity:.5;cursor:default;box-shadow:none}
+.aviso{margin:16px 0 0;font-size:.82rem;color:var(--mute)}
+.estado{margin:16px 0 0;font-weight:800;font-size:.95rem;min-height:1.3em}
+.estado.mal{color:#FF5A4A}
+.estado.bien{color:var(--green)}
+
+.cerrado{background:var(--panel);border:1px solid var(--line);border-radius:9px;
+  padding:20px;text-align:center}
+.cerrado h2{font-size:1.1rem;font-weight:900;margin:0 0 8px}
+.cerrado p{color:var(--mute);font-size:.92rem}
+.listo{text-align:center;padding:30px 0}
+.listo .grande{font-size:clamp(2.6rem,12vw,4rem);font-weight:900;color:var(--green);
+  line-height:1;margin:0 0 10px}
+button.volver{margin:18px auto 0;display:block;background:none;color:var(--mute);
+  border:1px solid var(--line);border-radius:7px;font:inherit;font-weight:800;
+  font-size:.88rem;padding:11px 20px;cursor:pointer}
+button.volver:hover{color:var(--paper);border-color:var(--mute)}
+.pie{margin:34px 0 0;padding:18px 0 0;border-top:1px solid var(--line);
+  color:#5E7488;font-size:.78rem}
+.pie a{color:#5E7488}
+[hidden]{display:none !important}
+
+/* ══ LA MARCA ══════════════════════════════════════════════════
+   cada (hueso) · punto (naranja) · cuenta (cian), a 23px con peso
+   800 y el espaciado cerrado — la que lleva padrinos.html. Es la
+   marca, no un enlace del menú, y a 16px con peso 900 parecía lo
+   segundo: apretada, pequeña y sin aire entre las letras.
+
+   El espaciado va en em y no en px para que siga cerrado si alguna
+   página la pinta a otro tamaño. */
+.mark, .mark .wm{
+  color:#EAF2F7 !important;text-decoration:none !important;
+  font-size:23px !important;font-weight:800 !important;
+  letter-spacing:-.035em !important;line-height:1.1}
+.mark em, .wm em{font-style:normal;color:#FF8A2B !important}
+.mark i,  .wm i {font-style:normal;color:#4FD3F0 !important}
+/* En un teléfono estrecho, que no empuje al botón de idioma. */
+@media(max-width:380px){
+  .mark, .mark .wm{font-size:20px !important}
+}
+
+</style>
+</head>
+<body>
+
+<header><div class="wrap bar">
+  <a class="mark" href="index.html">cada&nbsp;<em>punto</em>&nbsp;<i>cuenta</i></a>
+  <button id="lang">EN</button>
+</div></header>
+
+<main class="wrap">
+  <p class="estado" id="cargando">…</p>
+
+  <div id="todo" hidden>
+    <p class="kick" id="kick"></p>
+    <h1 id="quien"></h1>
+    <p class="prog" id="programa"></p>
+    <p class="trato" id="trato"></p>
+    <p class="cuando" id="cuando"></p>
+
+    <div class="caja" id="caja" hidden></div>
+
+    <div id="cerrado" class="cerrado" hidden>
+      <h2 id="cerradoH"></h2>
+      <p id="cerradoP"></p>
+    </div>
+
+    <form id="form" hidden>
+      <div class="campo">
+        <label id="lTarifa"></label>
+        <div class="tarifas" id="tarifas"></div>
+        <p class="ayuda" id="ayudaTarifa"></p>
+      </div>
+
+      <div class="cuenta" id="cuenta"></div>
+
+      <div class="campo">
+        <label for="tope" id="lTope"></label>
+        <input id="tope" type="number" min="5" step="1" inputmode="numeric" placeholder="—">
+        <p class="ayuda" id="ayudaTope"></p>
+      </div>
+
+      <div class="campo">
+        <label for="nom" id="lNom"></label>
+        <input id="nom" type="text" autocomplete="name">
+      </div>
+
+      <div class="campo">
+        <label for="mail" id="lMail"></label>
+        <input id="mail" type="email" autocomplete="email" autocapitalize="off" spellcheck="false">
+        <p class="ayuda" id="ayudaMail"></p>
+      </div>
+
+      <button class="enviar" id="enviar" type="submit"></button>
+      <p class="estado" id="dice"></p>
+      <p class="aviso" id="aviso"></p>
+    </form>
+
+    <div id="listo" class="listo" hidden>
+      <div class="grande">✓</div>
+      <h2 id="listoH"></h2>
+      <p class="trato" id="listoP"></p>
+      <!-- Sin esto, el que se equivocó de correo o quiere cambiar la
+           tarifa no tiene vuelta: el formulario se escondió y la
+           única salida era recargar el enlace, que nadie adivina. -->
+      <button type="button" class="volver" id="volver"></button>
+    </div>
+
+    <p class="pie" id="pie"></p>
+  </div>
+</main>
+
+<script>
+(function(){
+'use strict';
+
+var SB_URL='https://sdaphocueugzfvjovuxd.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
+
+var S={
+ es:{
+  kick:'Te invitó a ser su padrino',
+  trato:'Juega cuatro cuartos de cinco minutos. Cada cuarto vale su mejor tirada, y los cuatro se suman. Tú prometes unos centavos por cada punto de ese total.',
+  cuandoAbre:'El juego es el {F}. Las promesas cierran cuando empieza.',
+  cuandoSin:'Todavía no hay fecha. Puedes prometer desde ahora.',
+  lTarifa:'¿Cuánto por punto?',
+  ayudaTarifa:'Un juego fuerte anda por los 150 puntos.',
+  lTope:'Tope (opcional)',
+  ayudaTope:'Tu promesa nunca sale por encima de esto, anote lo que anote. Mínimo $5.',
+  lNom:'Tu nombre',
+  lMail:'Tu correo',
+  ayudaMail:'Para que el programa sepa cómo buscarte después del juego. Nada más.',
+  enviar:'Prometer',
+  cuenta:'Si anota <b>{P} puntos</b>, tu promesa sería de <span class="tot">{A}</span> para el programa.',
+  cuentaTope:'Con tu tope de {C}, nunca más de <span class="tot">{M}</span>.',
+  aviso:'No se cobra nada ahora, ni aquí después. Al cerrar el juego te llega un aviso con el marcador y lo que dio tu promesa — sin enlace de pago — y le pagas directo al programa. Si el total sale por debajo de $5, la promesa se cierra y no se debe nada.',
+  mandando:'Mandando…',
+  malNom:'Escribe tu nombre.',
+  malMail:'Revisa el correo.',
+  malTope:'El tope mínimo es $5.',
+  malRed:'No se pudo. Revisa la conexión y vuelve a intentar.',
+  cerrada:'Las promesas ya cerraron',
+  cerradaP:'El juego ya empezó, así que esta promesa llega tarde. Pero quedan más días de juego — pídele el próximo enlace.',
+  jugado:'Esto es lo que hizo',
+  listoH:'Listo. Eres su padrino.',
+  listoP:'Al cerrar el juego te llega un aviso con el marcador y lo que dio tu promesa. Le pagas directo al programa — Cada Punto no te va a cobrar nada.',
+  volver:'Cambiar mi promesa',
+  otraVez:'Ya tenías una promesa para {N} — la actualizamos con lo que acabas de poner.',
+  noVa:'Este enlace no abre una promesa.',
+  total:'Tot',
+  pie:'Cada Punto es un sistema de manejo de promesas de Gostar Digital LLC. No procesamos pagos: le pagas al programa, directo.'
+ },
+ en:{
+  kick:'Invited you to be their padrino',
+  trato:'They play four five-minute quarters. Each quarter counts their best run, and the four add up. You pledge a few cents for every point of that total.',
+  cuandoAbre:'Game day is {F}. Pledges close when it starts.',
+  cuandoSin:'No date yet. You can pledge now.',
+  lTarifa:'How much per point?',
+  ayudaTarifa:'A strong game runs around 150 points.',
+  lTope:'Cap (optional)',
+  ayudaTope:'Your pledge never works out above this, whatever they score. Minimum $5.',
+  lNom:'Your name',
+  lMail:'Your email',
+  ayudaMail:'So the program knows how to reach you after the game. Nothing else.',
+  enviar:'Pledge',
+  cuenta:'If they score <b>{P} points</b>, your pledge comes to <span class="tot">{A}</span> for the program.',
+  cuentaTope:'With your {C} cap, never more than <span class="tot">{M}</span>.',
+  aviso:'Nothing is charged now, and nothing is charged here afterwards. When the game closes you get a notice with the score and what your pledge came to — no payment link — and you pay the program directly. If the total comes to less than $5, the pledge is closed out and nothing is owed.',
+  mandando:'Sending…',
+  malNom:'Enter your name.',
+  malMail:'Check the email.',
+  malTope:'The minimum cap is $5.',
+  malRed:'That did not go through. Check your connection and try again.',
+  cerrada:'Pledging has closed',
+  cerradaP:'The game has started, so this pledge is late. There will be other game days — ask them for the next link.',
+  jugado:'Here is what they did',
+  listoH:'Done. You are their padrino.',
+  listoP:'When the game closes you get a notice with the score and what your pledge came to. You pay the program directly — Cada Punto will never charge you anything.',
+  volver:'Change my pledge',
+  otraVez:'You already had a pledge for {N} — we updated it with what you just entered.',
+  noVa:'This link does not open a pledge.',
+  total:'Tot',
+  pie:'Cada Punto is a pledge management system from Gostar Digital LLC. We process no payments: you pay the program directly.'
+ }
+};
+var LANG='es';
+try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en') }catch(e){}
+function T(k){ return (S[LANG]&&S[LANG][k])||S.es[k] }
+function $(id){ return document.getElementById(id) }
+function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c] }) }
+
+var par=new URLSearchParams(location.search);
+var RETO=par.get('c'), JUGADOR=par.get('p');
+
+/* Ya no hay cargo que sumarle al padrino: Cada Punto se licencia al
+   programa por evento y al padrino no se le cobra nada. Lo
+   que se enseña es la promesa, y nada más. */
+/* Para la cuenta de ejemplo. No es una promesa de cuánto va a anotar:
+   es el único número honesto que tenemos para que el padrino sepa en
+   qué orden de magnitud se está metiendo. */
+var TIPICO=150;
+var TARIFAS=[0.05,0.10,0.20];
+var tarifa=0.05;
+
+function dinero(n){ return '$'+(Math.round(n*100)/100).toFixed(2) }
+
+function rpc(nombre, cuerpo, listo, falla){
+  fetch(SB_URL+'/rest/v1/rpc/'+nombre,{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(cuerpo)
+  }).then(function(r){ if(!r.ok) throw new Error('http '+r.status); return r.json() })
+    .then(listo).catch(function(e){ if(falla) falla(e) });
+}
+
+function pintarTarifas(){
+  var h='';
+  for(var i=0;i<TARIFAS.length;i++){
+    var t=TARIFAS[i], cent=Math.round(t*100);
+    h+='<button type="button" class="tarifa'+(t===tarifa?' on':'')+'" data-t="'+t+'">'+
+       cent+'¢<small>'+(LANG==='es'?'por punto':'per point')+'</small></button>';
+  }
+  $('tarifas').innerHTML=h;
+  var bs=$('tarifas').querySelectorAll('.tarifa');
+  for(var j=0;j<bs.length;j++) bs[j].onclick=function(){
+    tarifa=parseFloat(this.getAttribute('data-t'));
+    pintarTarifas(); pintarCuenta();
+  };
+}
+
+function pintarCuenta(){
+  var base=tarifa*TIPICO;
+  var txt=T('cuenta').replace('{P}',TIPICO).replace('{A}',dinero(base));
+  var tope=parseFloat($('tope').value);
+  if(tope>=5) txt+='<br>'+T('cuentaTope').replace('{C}',dinero(tope))
+                      .replace('{M}',dinero(tope));
+  $('cuenta').innerHTML=txt;
+}
+
+function fecha(iso){
+  try{
+    var d=new Date(iso);
+    return d.toLocaleDateString(LANG==='es'?'es-PR':'en-US',
+      {weekday:'long',day:'numeric',month:'long'})+', '+
+      d.toLocaleTimeString(LANG==='es'?'es-PR':'en-US',{hour:'numeric',minute:'2-digit'})
+      /* "2:52 p. m." ya trae su punto final; la frase le ponía otro. */
+      .replace(/\.$/,'');
+  }catch(e){ return '' }
+}
+
+function pintarCaja(cuartos, total){
+  var h='';
+  for(var q=1;q<=4;q++){
+    var c=null;
+    for(var i=0;i<cuartos.length;i++) if(cuartos[i].q===q) c=cuartos[i];
+    h+='<div><b>Q'+q+'</b><span>'+(c?c.points:'—')+'</span></div>';
+  }
+  h+='<div class="tot"><b>'+T('total')+'</b><span>'+total+'</span></div>';
+  $('caja').innerHTML=h; $('caja').hidden=false;
+}
+
+var ESTADO=null;
+
+function pintar(){
+  document.documentElement.lang=LANG;
+  $('lang').textContent=LANG==='es'?'EN':'ES';
+  if(!ESTADO) return;
+  $('kick').textContent=T('kick');
+  $('quien').textContent=ESTADO.name;
+  $('programa').textContent=ESTADO.program;
+  $('trato').textContent=T('trato');
+  $('cuando').textContent = ESTADO.opens_at
+    ? T('cuandoAbre').replace('{F}', fecha(ESTADO.opens_at))
+    : T('cuandoSin');
+  $('lTarifa').textContent=T('lTarifa');
+  $('ayudaTarifa').textContent=T('ayudaTarifa');
+  $('lTope').textContent=T('lTope');
+  $('ayudaTope').textContent=T('ayudaTope');
+  $('lNom').textContent=T('lNom');
+  $('lMail').textContent=T('lMail');
+  $('ayudaMail').textContent=T('ayudaMail');
+  $('enviar').textContent=T('enviar');
+  $('aviso').textContent=T('aviso');
+  $('pie').textContent=T('pie');
+  $('cerradoH').textContent=T('cerrada');
+  $('cerradoP').textContent=T('cerradaP');
+  $('listoH').textContent=T('listoH');
+  $('listoP').textContent=T('listoP');
+  $('volver').textContent=T('volver');
+  /* El marcador SÓLO cuando ya cerró. Abierta, un marcador hecho le
+     estaría diciendo a un padrino que el nene ya anotó — y de paso le
+     dejaría prometer sabiendo el resultado, que es justo lo que esta
+     página no hace. Pasa de verdad: basta con mover la ventana de un
+     reto que ya se jugó. */
+  if(!ESTADO.open && ESTADO.played) pintarCaja(ESTADO.quarters||[], ESTADO.total||0);
+  else $('caja').hidden=true;
+  pintarTarifas(); pintarCuenta();
+}
+
+$('lang').onclick=function(){
+  LANG=LANG==='es'?'en':'es';
+  try{ localStorage.setItem('cfh_lang',LANG); localStorage.setItem('cp-lang',LANG) }catch(e){}
+  pintar();
+};
+$('tope').oninput=pintarCuenta;
+
+function arrancar(){
+  if(!RETO||!JUGADOR){ $('cargando').textContent=T('noVa'); return }
+  rpc('cp_padrino_view',{p_challenge:RETO,p_player:JUGADOR}, function(d){
+    if(!d||!d.ok){ $('cargando').textContent=T('noVa'); return }
+    ESTADO=d;
+    $('cargando').hidden=true;
+    $('todo').hidden=false;
+    if(d.open){ $('form').hidden=false } else { $('cerrado').hidden=false }
+    pintar();
+  }, function(){
+    $('cargando').textContent=T('malRed');
+    setTimeout(arrancar, 4000);
+  });
+}
+
+$('form').onsubmit=function(ev){
+  ev.preventDefault();
+  var nom=$('nom').value.trim(), mail=$('mail').value.trim();
+  var tope=$('tope').value?parseFloat($('tope').value):null;
+  if(nom.length<2){ return decir(T('malNom'),'mal') }
+  if(mail.indexOf('@')<1 || mail.indexOf('.')<0){ return decir(T('malMail'),'mal') }
+  if(tope!==null && !(tope>=5)){ return decir(T('malTope'),'mal') }
+
+  $('enviar').disabled=true;
+  decir(T('mandando'),'');
+  rpc('cp_pledge',{p_challenge:RETO,p_player:JUGADOR,p_name:nom,p_email:mail,
+                   p_rate:tarifa,p_cap:tope,p_lang:LANG},
+    function(d){
+      $('enviar').disabled=false;
+      if(d&&d.ok){
+        $('form').hidden=true;
+        $('listo').hidden=false;
+        if(d.again) $('listoP').textContent=T('otraVez').replace('{N}',ESTADO.name);
+        return;
+      }
+      var r=(d&&d.reason)||'';
+      if(r==='closed'){ $('form').hidden=true; $('cerrado').hidden=false; return }
+      decir(r==='name'?T('malNom'):r==='email'?T('malMail'):
+            r==='cap'?T('malTope'):T('malRed'),'mal');
+    },
+    function(){ $('enviar').disabled=false; decir(T('malRed'),'mal') });
+};
+function decir(t,c){ var e=$('dice'); e.textContent=t; e.className='estado'+(c?' '+c:'') }
+
+/* Volver al formulario con todo como lo dejó. Mandar otra vez con el
+   mismo correo actualiza la promesa, no hace una segunda. */
+$('volver').onclick=function(){
+  $('listo').hidden=true;
+  $('form').hidden=false;
+  decir('','');
+  $('nom').focus();
+};
+
+pintar();
+arrancar();
+})();
+</script>
+</body>
+</html>
