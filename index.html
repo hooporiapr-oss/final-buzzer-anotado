@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101c2a">
-<title>Anotado | Digital Basketball. Every point is recorded.</title>
+<title>Hooporia | Digital Basketball. Every point is recorded.</title>
 <meta name="description" content="Pledge management for scored challenges. Each player takes his run, the game records his points, and every padrino is told what their pledge came to.">
 <!-- Sin og:image ni favicon todavía: apuntar a un archivo que no existe
      deja la vista previa de WhatsApp en blanco igual que no ponerla, y
-     además un 404 en cada carga. Cuando haya anotado.png y
-     anotado-share.jpg, se añaden aquí y en el resto de las páginas. -->
+     además un 404 en cada carga. Cuando haya hooporia.png y
+     hooporia-share.jpg, se añaden aquí y en el resto de las páginas. -->
 <style>
 /* La misma hoja que cadapunto.com. Son dos productos de la misma casa
    y tienen que parecerlo: crema, navy, naranja, Inter. */
@@ -112,7 +112,7 @@ button.lang{border:1px solid #ffffff55;background:transparent;color:white;paddin
 
 <header>
 <div class="wrap nav">
-<a class="brand" href="#top">ANOTADO<span>.</span></a>
+<a class="brand" href="#top">HOOPORIA<span>.</span></a>
 <nav class="navlinks">
 <a href="#play" data-i="navPlay">Play it</a>
 <a href="#how" data-i="navHow">How it works</a>
@@ -208,7 +208,7 @@ button.lang{border:1px solid #ffffff55;background:transparent;color:white;paddin
 <section class="promise wrap">
 <div class="eyebrow" data-i="promiseLabel">Our promise</div>
 <blockquote data-i="promise">We manage the pledges.<br><span class="orange">You manage the proceeds.</span></blockquote>
-<p class="fine" data-i="promiseDesc">Anotado is strictly a pledge management software provider. Organizations independently manage all proceeds.</p>
+<p class="fine" data-i="promiseDesc">Hooporia is strictly a pledge management software provider. Organizations independently manage all proceeds.</p>
 </section>
 
 <section class="section" id="faq" style="background:white">
@@ -226,7 +226,7 @@ button.lang{border:1px solid #ffffff55;background:transparent;color:white;paddin
 <p data-i="a3">${A} per team for the event, or ${B} if the roster is under {N}. It is free to set up and free to run; the licence is invoiced when the event closes and due within seven days.</p></details>
 
 <details><summary data-i="q4">Do you collect the money?</summary>
-<p data-i="a4">No. Anotado never receives money from anybody. Each padrino pays the program directly, by whatever the program already uses. We record what was pledged and calculate what each pledge came to — that is the whole of it.</p></details>
+<p data-i="a4">No. Hooporia never receives money from anybody. Each padrino pays the program directly, by whatever the program already uses. We record what was pledged and calculate what each pledge came to — that is the whole of it.</p></details>
 
 <details><summary data-i="q5">Do you contact our padrinos?</summary>
 <p data-i="a5">Once. When the window closes, each padrino gets one email with the points and their own total. There is no payment link in it and there are no reminders after it. Chasing a pledge is the program's business, not ours.</p></details>
@@ -246,7 +246,7 @@ button.lang{border:1px solid #ffffff55;background:transparent;color:white;paddin
 <footer>
 <div class="wrap">
 <div>
-<strong>ANOTADO</strong><br>
+<strong>HOOPORIA</strong><br>
 <span data-i="footer">We manage the pledges. You manage the proceeds.</span>
 </div>
 <nav class="flinks">
@@ -326,7 +326,7 @@ f6d:'Al cerrar la ventana, cada padrino recibe un solo correo. Sin enlace de pag
 
 promiseLabel:'Nuestra posición',
 promise:'Nosotros manejamos las promesas.<br><span class="orange">Ustedes manejan los fondos.</span>',
-promiseDesc:'Anotado es estrictamente un proveedor de software de manejo de promesas. Las organizaciones manejan sus fondos de forma independiente.',
+promiseDesc:'Hooporia es estrictamente un proveedor de software de manejo de promesas. Las organizaciones manejan sus fondos de forma independiente.',
 
 faqTitle:'Preguntas frecuentes',
 q1:'¿Quién anota el marcador?',
@@ -336,7 +336,7 @@ a2:'Sí. Corre en el navegador de un teléfono, una tableta o una computadora. U
 q3:'¿Cuánto cuesta?',
 a3:'${A} por equipo por evento, o ${B} si la plantilla tiene menos de {N}. Montarlo es gratis y correrlo es gratis; la licencia se factura al cerrar el evento y se paga dentro de siete días.',
 q4:'¿Ustedes cobran el dinero?',
-a4:'No. Anotado no recibe dinero de nadie. Cada padrino le paga al programa directo, por donde el programa ya cobra. Nosotros apuntamos lo prometido y calculamos lo que salió cada promesa — y eso es todo.',
+a4:'No. Hooporia no recibe dinero de nadie. Cada padrino le paga al programa directo, por donde el programa ya cobra. Nosotros apuntamos lo prometido y calculamos lo que salió cada promesa — y eso es todo.',
 q5:'¿Ustedes le escriben a nuestros padrinos?',
 a5:'Una vez. Al cerrar la ventana, cada padrino recibe un correo con los puntos y su propio total. No lleva enlace de pago y no hay recordatorios después. Perseguir una promesa es asunto del programa, no nuestro.',
 moreLink:'Más preguntas, contestadas completas &rarr;',
@@ -384,8 +384,8 @@ document.querySelectorAll('[data-i]').forEach(el=>{
 el.innerHTML=locale==='es'?(translations.es[el.dataset.i]||english[el.dataset.i]):english[el.dataset.i];
 });
 document.getElementById('lang').textContent=locale==='es'?'EN':'ES';
-document.title=locale==='es'?'Anotado | Baloncesto digital. Cada punto queda anotado.'
-                            :'Anotado | Digital Basketball. Every point is recorded.';
+document.title=locale==='es'?'Hooporia | Baloncesto digital. Cada punto queda anotado.'
+                            :'Hooporia | Digital Basketball. Every point is recorded.';
 }
 document.getElementById('lang').addEventListener('click',()=>{
 locale=locale==='en'?'es':'en';
