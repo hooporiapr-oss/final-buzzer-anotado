@@ -68,7 +68,7 @@ const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
   not(t,/\{A\}|\{B\}|\{N\}/,'sin plantillas sin rellenar');
 
   console.log('\n3 · Nada de custodia, nada de impuestos');
-  has(t,/Anotado no recibe dinero de nadie/,'no recibe dinero de nadie');
+  has(t,/Hooporia no recibe dinero de nadie/,'no recibe dinero de nadie');
   has(t,/le paga al programa directo/,'el padrino paga al programa');
   has(t,/Sin enlace de pago, y sin recordatorios/,'un aviso y nada más');
   not(t,/deducib|deductib|impuesto/i,'ni una palabra de impuestos');
@@ -102,10 +102,10 @@ const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
   const src=await p.content();
   has(src,/--orange:#ff7a18/,'el naranja');
   has(src,/--cream:#faf8f4/,'la crema');
-  not(src,/(href|src|content)="[^"]*anotado(\.png|-share)/,'ningún atributo apunta a una imagen que no existe');
+  not(src,/(href|src|content)="[^"]*hooporia(\.png|-share)/,'ningún atributo apunta a una imagen que no existe');
   errs.length?errs.forEach(e=>mal(e)):ok('sin errores de página');
 
   await b.close();
-  console.log('\n'+(bad===0?'✓ el índice de Anotado pasa':'✗ '+bad+' fallo(s)'));
+  console.log('\n'+(bad===0?'✓ el índice de Hooporia pasa':'✗ '+bad+' fallo(s)'));
   process.exit(bad===0?0:1);
 })().catch(e=>{console.error(e);process.exit(1)});
