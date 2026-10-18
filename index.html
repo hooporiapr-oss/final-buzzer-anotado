@@ -6,10 +6,20 @@
 <meta name="theme-color" content="#101c2a">
 <title>Hooporia | Digital Basketball. Every point is recorded.</title>
 <meta name="description" content="Pledge management for scored challenges. Each player takes his run, the game records his points, and every padrino is told what their pledge came to.">
-<!-- Sin og:image ni favicon todavía: apuntar a un archivo que no existe
-     deja la vista previa de WhatsApp en blanco igual que no ponerla, y
-     además un 404 en cada carga. Cuando haya hooporia.png y
-     hooporia-share.jpg, se añaden aquí y en el resto de las páginas. -->
+
+<!-- El icono y la imagen de compartir. og:image va en absoluto
+     a propósito: WhatsApp y los demás no resuelven rutas
+     relativas, y con una relativa la vista previa sale en
+     blanco igual que sin imagen. -->
+<link rel="icon" type="image/png" href="hooporia.png">
+<link rel="apple-touch-icon" href="hooporia.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hooporia">
+<meta property="og:image" content="https://hooporia.com/hooporia-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 /* La misma hoja que cadapunto.com. Son dos productos de la misma casa
    y tienen que parecerlo: crema, navy, naranja, Inter. */
@@ -29,17 +39,31 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22}
 .button{display:inline-block;text-decoration:none;border-radius:9px;padding:13px 20px;background:var(--orange);color:#111a24;font-weight:800;border:0;cursor:pointer}
 .button.secondary{background:transparent;color:white;border:1px solid #ffffff66}
 .hero{background:radial-gradient(circle at 85% 30%,#304459 0,transparent 45%),var(--navy);color:white;padding:94px 0 105px;overflow:hidden}
-.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:60px}
+.hero-grid{display:block}
 .eyebrow{color:var(--orange);font-weight:800;letter-spacing:.13em;text-transform:uppercase;font-size:.78rem}
 .hero h1{font-size:clamp(2.8rem,6vw,5.4rem);line-height:1.06;letter-spacing:-.055em;margin:18px 0 20px}
 .hero h1 em{font-style:normal;color:var(--orange)}
 .hero p{font-size:1.16rem;color:#d3dce6;max-width:610px}
 .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
-.ball{width:min(100%,360px);aspect-ratio:1;border-radius:50%;margin:auto;background:radial-gradient(circle at 33% 25%,#ffae59,var(--orange) 56%,#bd440b);box-shadow:0 30px 90px #0008,inset -25px -28px 50px #65270766;position:relative;overflow:hidden;transform:rotate(-20deg)}
-.ball:before,.ball:after{content:"";position:absolute;border:7px solid #3d251d;border-radius:50%}
-.ball:before{inset:-35% 34%}
-.ball:after{inset:34% -35%}
-.ball .line{position:absolute;background:#3d251d;width:120%;height:7px;top:50%;left:-10%}
+/* Aquí había una pelota dibujada en CSS, en una columna cuadrada al
+   lado del texto. La foto es apaisada —1200×630— y en esa columna
+   habría salido del tamaño de un sello, así que la portada pasa a una
+   sola columna y la imagen ocupa todo el ancho debajo del titular.
+   La pelota dibujada se quitó entera: dos balones en la misma
+   pantalla, uno de verdad y otro de mentira, es uno de más.
+
+   aspect-ratio con las medidas exactas para que el hueco esté
+   reservado antes de que la imagen cargue y el texto no dé un salto
+   cuando llegue.
+
+   El height:auto es obligatorio y no decorativo: el atributo
+   height="630" del <img> llega como altura fija, y aspect-ratio sólo
+   manda cuando una de las dos medidas es auto. Sin él, la caja queda
+   de 1120×630 en vez de 1120×588 y object-fit:cover recorta un 7% de
+   la foto — justo por arriba, donde está el 21. */
+.hero-foto{width:100%;height:auto;aspect-ratio:1200/630;object-fit:cover;border-radius:16px;
+  margin-top:38px;display:block;box-shadow:0 30px 90px #0006;
+  border:1px solid #ffffff1f;background:#1b2937}
 /* ── Las dos tarjetas de jugar ────────────────────────────────────
    Van pegadas al hero a propósito: el titular promete una chicharra
    y un número, y lo siguiente que se puede hacer es ir a buscarlo.
@@ -95,8 +119,7 @@ footer strong{color:white}
 button.lang{border:1px solid #ffffff55;background:transparent;color:white;padding:8px 10px;border-radius:7px;font-weight:700;cursor:pointer}
 @media(max-width:750px){
 .hero{padding:65px 0}
-.hero-grid{grid-template-columns:1fr}
-.ball{width:200px}
+.hero-foto{border-radius:12px;margin-top:28px}
 .steps,.feature-grid{grid-template-columns:1fr}
 .navlinks{gap:12px}
 .navlinks a{font-size:.8rem}
@@ -133,8 +156,13 @@ button.lang{border:1px solid #ffffff55;background:transparent;color:white;paddin
 <a class="button" href="equipo.html" data-i="register">Request Team Registration</a>
 <a class="button secondary" href="#play" data-i="learn">Play it now</a>
 </div>
+<!-- width y height van puestos para que el navegador reserve el hueco
+     antes de descargarla. Sin ellos el titular salta hacia arriba
+     cuando la imagen llega, justo mientras alguien lo está leyendo. -->
+<img class="hero-foto" src="hooporia-share.jpg" width="1200" height="630"
+     loading="eager" decoding="async" id="heroFoto"
+     alt="A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21">
 </div>
-<div class="ball" role="img" aria-label="Stylized orange basketball"><div class="line"></div></div>
 </div>
 </section>
 
@@ -383,6 +411,15 @@ document.documentElement.lang=locale;
 document.querySelectorAll('[data-i]').forEach(el=>{
 el.innerHTML=locale==='es'?(translations.es[el.dataset.i]||english[el.dataset.i]):english[el.dataset.i];
 });
+/* El alt de la foto. Va aquí y no con data-i porque eso cambia
+   innerHTML, y el texto alternativo de una imagen es un atributo:
+   con data-i se quedaría en inglés para siempre, que es justo la
+   persona a la que el alt le hace falta —alguien que no ve la foto y
+   la está oyendo en su idioma. */
+var _f=document.getElementById('heroFoto');
+if(_f) _f.alt = locale==='es'
+  ? 'Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21'
+  : 'A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21';
 document.getElementById('lang').textContent=locale==='es'?'EN':'ES';
 document.title=locale==='es'?'Hooporia | Baloncesto digital. Cada punto queda anotado.'
                             :'Hooporia | Digital Basketball. Every point is recorded.';
