@@ -230,12 +230,9 @@ function paint(){
     '<h2>' + esc(T('pasosH')) + '</h2>' +
     '<div class="num">' + ps + '</div>' +
     /* El enlace va fuera de esc(): es nuestro, no del texto. */
-    /* Sin enlace: reporte.html todavía no existe en este repo, y un
-       404 desde la página que explica cómo cobras es peor que no
-       tener el enlace. Cuando el reporte exista, se vuelve a envolver
-       con su enlace: la cadena listaA ya está escrita y traducida. */
+    /* El enlace va fuera de esc(): es nuestro, no del texto. */
     '<div class="fine"><b>' + esc(T('listaH')) + '</b><p>' + esc(T('listaP')) +
-      '</p></div>' +
+      ' <a href="reporte.html">' + esc(T('listaA')) + '</a></p></div>' +
     '<div class="fine"><b>' + esc(T('fine1H')) + '</b><p>' + esc(T('fine1P')) + '</p></div>' +
     '<div class="fine"><b>' + esc(T('fine2H')) + '</b><p>' + esc(T('fine2P')) + '</p></div>' +
     '<div class="ackbox">' +
