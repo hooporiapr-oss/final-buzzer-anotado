@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Mi enlace — Anotado</title>
+<title>Mi enlace — Hooporia</title>
 <meta name="robots" content="noindex">
 <style>
 :root{--ink:#12202E;--mute:#5A6B7C;--line:#D7E0E8;--tint:#F7FAFC;--accent:#0C6E8C;--good:#0B7A5A;--bad:#A8323F}
@@ -97,6 +97,10 @@ footer{background:#0a1420;border-top:none;color:#aeb9c6}
 footer a{color:#aeb9c6}
 footer a:hover{color:var(--orange)}
 .mark{color:#fff}
+/* El em va en blanco a propósito: arriba vale #4FD3F0, que servía
+   para la marca de tres palabras de Cada Punto y pintaría HOOPORIA
+   de azul. */
+.mark em{color:#fff}
 .mark i{color:var(--orange)}
 .langb{border:1px solid #ffffff55;color:#fff;background:transparent;border-radius:7px}
 .langb:hover{color:var(--orange);border-color:var(--orange)}
@@ -148,7 +152,7 @@ a.pedir{color:inherit}
 h1,h2,h3,h4{color:var(--ink)}
 
 /* ══ LA MARCA ══════════════════════════════════════════════════
-   ANOTADO en versales sobre el navy, como en el resto del sitio.
+   HOOPORIA en versales sobre el navy, como en el resto del sitio.
    El punto es lo único naranja. */
 .mark, .mark .wm{
   color:#fff !important;text-decoration:none !important;
@@ -169,7 +173,7 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
 
 <header>
   <div class="wrap bar">
-    <a class="mark" href="index.html">cada&nbsp;<em>punto</em>&nbsp;<i>cuenta</i></a>
+    <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
     <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
   </div>
 </header>
@@ -193,8 +197,8 @@ body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
            ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
   var el = document.getElementById('fWhat');
   if (el) el.textContent = (l === 'es')
-    ? 'Anotado es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
-    : 'Anotado is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+    ? 'Hooporia es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Hooporia is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
 })();
 </script>
     <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
@@ -248,7 +252,7 @@ var S = {
     noCampH:'Te falta el enlace de tu equipo',
     noCampP:'Esta página te da tu propio enlace de padrinos, pero tiene que venir del enlace que manda tu coach al grupo del equipo. Pídeselo.',
     backHome:'← Volver',
-    msg:'¡Apóyame en Anotado! Prometes unos centavos por cada punto que yo anote, y le pagas al programa directo después del juego.'
+    msg:'¡Apóyame en Hooporia! Prometes unos centavos por cada punto que yo anote, y le pagas al programa directo después del juego.'
   },
   en:{
     h1:'Your padrino link',
@@ -280,7 +284,7 @@ var S = {
     noCampH:'You need your team\u2019s link',
     noCampP:'This page gives you your own padrino link, but it has to come from the link your coach sends to the team group. Ask them for it.',
     backHome:'← Back',
-    msg:'Back me in Anotado! You pledge a few cents for every point I score, and you pay the program directly after the game.'
+    msg:'Back me in Hooporia! You pledge a few cents for every point I score, and you pay the program directly after the game.'
   }
 };
 
@@ -349,6 +353,24 @@ function bothLangs(){
   return S.es.msg + '\n\n' + S.en.msg;
 }
 
+/* La carpeta donde vive esta página, con su barra al final.
+
+   Hace falta porque el enlace del padrino se arma entero —se manda
+   por WhatsApp, así que no puede ser relativo— y antes se armaba con
+   location.origin + '/prometer.html', o sea desde la raíz del
+   dominio.
+
+   Eso funciona mientras el sitio esté en la raíz. Servido en una
+   carpeta (cadapunto.com/anotathon/) el enlace apuntaría a
+   cadapunto.com/prometer.html, que EXISTE: es la copia vieja del
+   otro producto. No daría 404 — cargaría otra página parecida y
+   medio funcionaría, que se nota mucho más tarde y mucho peor.
+
+   Con la carpeta de la página actual sirve en los dos sitios. */
+function base(){
+  return location.origin + location.pathname.replace(/[^/]*$/, '');
+}
+
 /* El enlace del padrino.
    Antes era scoreboard.html con la CAMPAÑA dentro: el padrino escogía
    un juego del calendario y prometía por los puntos del equipo. Ya no
@@ -362,7 +384,7 @@ function bothLangs(){
    lo repartiría igual. */
 function myLink(){
   if (!RETO || !RETO.hay || !RETO.open) return null;
-  return location.origin + '/prometer.html?c=' + RETO.challenge_id + '&p=' + ME.id;
+  return base() + 'prometer.html?c=' + RETO.challenge_id + '&p=' + ME.id;
 }
 
 /* La fecha en palabras. Sin punto al final a propósito: el español
