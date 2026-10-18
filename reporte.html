@@ -95,6 +95,17 @@ tfoot td{border-top:2px solid var(--navy);font-weight:900;background:var(--cream
 .vacio{padding:22px;text-align:center;color:var(--muted)}
 
 .acc{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0 0}
+
+/* El aviso lleva borde naranja y no gris como las otras tarjetas: lo
+   que hay dentro manda correos a gente de verdad y no se puede
+   deshacer, así que no debe parecerse a imprimir ni a bajar un CSV. */
+.aviso{border-left:3px solid var(--orange)}
+.aviso p{margin:0 0 12px;padding:0 18px}
+.aviso p:first-child{padding-top:18px}
+.aviso-n{font-size:1.05rem}
+.aviso-ojo{color:var(--muted);font-size:.9rem}
+.aviso-acc{display:flex;gap:10px;flex-wrap:wrap;padding:0 18px 18px}
+.aviso .msg{padding:0 18px 18px;margin:0}
 .acc .btn{flex:1 1 170px}
 
 footer{flex:0 0 auto;background:#0a1420;color:#aeb9c6;
@@ -110,7 +121,9 @@ footer .f-dot{padding:0 8px;opacity:.45}
    una foto de la hoja lleve a algún sitio. */
 .pie-print{display:none}
 @media print{
-  header,footer,.langb,.acc,.gate{display:none !important}
+  header,footer,.langb,.acc,.gate,.aviso{display:none !important}
+  /* El aviso no se imprime: es un botón, y en papel un botón es
+     una mancha de tinta que confunde. */
   html,body{background:#fff;color:#000}
   main .wrap{width:100%;padding:0}
   .kick,h3{color:#000}
@@ -215,7 +228,24 @@ var S={
     otro:'Ver otro reto',
     aMiEquipo:'← Mi equipo',
     sello:'Reporte generado el {D} · Hooporia · Gostar Digital LLC, Puerto Rico',
-    noJugo:'no jugó'
+    noJugo:'no jugó',
+
+    hAviso:'El aviso al padrino',
+    avisoQue:'Cuando mandes esto, cada padrino con promesa recibe UN correo: los puntos de su jugador, su tarifa, su tope si mordió, y lo que dio su promesa. Nada más. Sin enlace de pago, sin recordatorios, y diciéndole que te paga a ti directo.',
+    avisoCuantos:'{N} padrino(s) por avisar',
+    avisoNinguno:'No hay a quién avisar: o ya salieron todos, o ninguna promesa llegó a cincuenta centavos.',
+    avisoRevisa:'Revisa los números de arriba antes de mandar. Un correo no se puede retirar.',
+    avisoBoton:'Mandar los avisos',
+    avisoConfirma:'Mandar {N} correo(s) ahora',
+    avisoCancela:'No, todavía no',
+    avisoMandando:'Mandando…',
+    avisoHecho:'{N} aviso(s) mandado(s).',
+    avisoNada:'No salió ninguno.',
+    avisoFallo:'{N} no salió(eron). Las promesas siguen abiertas: puedes volver a pulsar y sale sólo lo que faltó.',
+    avisoCero:'{N} promesa(s) se cerraron sin aviso: su jugador no anotó, o la promesa no llegó a cincuenta centavos.',
+    avisoYa:'{N} ya estaba(n) avisada(s).',
+    avisoErrServidor:'No se pudo hablar con el servidor de avisos. No se mandó nada; vuelve a intentarlo.',
+    avisoErrCodigo:'El servidor no aceptó tu código. No se mandó nada.'
   },
   en:{
     titulo:'The report — Hooporia',
@@ -252,7 +282,24 @@ var S={
     otro:'See another challenge',
     aMiEquipo:'← My team',
     sello:'Report generated {D} · Hooporia · Gostar Digital LLC, Puerto Rico',
-    noJugo:'did not play'
+    noJugo:'did not play',
+
+    hAviso:'The padrino’s notice',
+    avisoQue:'When you send this, every padrino with a pledge gets ONE email: his player’s points, his rate, his cap if it bit, and what his pledge came to. Nothing else. No payment link, no reminders, and it tells him he pays you directly.',
+    avisoCuantos:'{N} padrino(s) to notify',
+    avisoNinguno:'Nobody to notify: either they have all gone out, or no pledge reached fifty cents.',
+    avisoRevisa:'Check the numbers above before sending. An email cannot be taken back.',
+    avisoBoton:'Send the notices',
+    avisoConfirma:'Send {N} email(s) now',
+    avisoCancela:'No, not yet',
+    avisoMandando:'Sending…',
+    avisoHecho:'{N} notice(s) sent.',
+    avisoNada:'None went out.',
+    avisoFallo:'{N} did not go out. Those pledges are still open: press again and only the ones that failed will be sent.',
+    avisoCero:'{N} pledge(s) closed with no notice: their player did not score, or the pledge did not reach fifty cents.',
+    avisoYa:'{N} had already been notified.',
+    avisoErrServidor:'Could not reach the notice server. Nothing was sent; try again.',
+    avisoErrCodigo:'The server did not accept your code. Nothing was sent.'
   }
 };
 
@@ -280,7 +327,18 @@ function fecha(iso){
   }catch(e){ return '' }
 }
 
-var CODE=null, RETOS=[], REP=null;
+var CODE=null, RETOS=[], REP=null, RETO=null;
+
+/* El resultado del último envío. Vive aquí fuera porque después de
+   mandar se vuelve a pedir el reporte —para que los estados salgan
+   al día— y eso repinta la página entera; si el mensaje viviera en el
+   DOM, el repintado se lo llevaría justo cuando hace falta leerlo. */
+var AVISO=null;
+
+/* Los avisos los manda el servidor, no la página: hace falta la clave
+   de Resend y la de servicio, y ninguna de las dos puede estar en un
+   fichero que se descarga. */
+var SERVER='https://basketball-money-payments.onrender.com';
 
 function toggleLang(){
   LANG = LANG==='es'?'en':'es';
@@ -353,7 +411,7 @@ function verReporte(){
   rpc('challenge_report',{p_code:CODE,p_challenge:id}).then(function(r){
     $('tGo').disabled=false;
     if(!r||!r.ok) throw new Error('rep');
-    REP=r;
+    REP=r; RETO=id;
     $('gate').classList.add('hide');
     $('out').classList.remove('hide');
     pintar();
@@ -367,6 +425,18 @@ function verReporte(){
 function pintar(){
   var r=REP, ch=r.challenge||{}, js=r.players||[], ps=r.pledges||[];
   var jugaron = js.filter(function(j){ return (j.puntos||0)>0 }).length;
+
+  /* Cuántos recibirían el aviso si se pulsa ahora: los que siguen
+     abiertos y llegan a cincuenta centavos.
+
+     Esta cuenta es para que el entrenador sepa a cuánta gente va a
+     escribir antes de pulsar; la de verdad la hace el servidor, que
+     es el único que escribe en la base. Si alguna vez las dos no
+     coinciden, la que manda es la del servidor y lo que se corrige
+     es esta línea. */
+  var porAvisar = ps.filter(function(p){
+    return p.estado==='open' && Math.round(Number(p.total||0)*100)>=50;
+  }).length;
 
   /* Por jugador. Los que no jugaron salen en gris y con un "no jugó"
      debajo del nombre: es el único problema que este reporte puede
@@ -437,6 +507,23 @@ function pintar(){
       : '<p class="vacio">'+esc(T('sinPromesas'))+'</p>') +
     '</div>'+
 
+    /* El aviso va DESPUÉS de las dos tablas a propósito: el
+       entrenador tiene que haber pasado por los números antes de
+       llegar al botón que los manda. */
+    '<h3>'+esc(T('hAviso'))+'</h3>'+
+    '<div class="card aviso">'+
+      '<p>'+esc(T('avisoQue'))+'</p>'+
+      (porAvisar
+        ? '<p class="aviso-n"><b>'+esc(T('avisoCuantos',{N:porAvisar}))+'</b></p>'+
+          '<p class="aviso-ojo">'+esc(T('avisoRevisa'))+'</p>'+
+          '<div class="aviso-acc" id="avisoAcc">'+
+            '<button class="btn" onclick="pedirConfirma()">'+esc(T('avisoBoton'))+'</button>'+
+          '</div>'
+        : '<p class="vacio">'+esc(T('avisoNinguno'))+'</p>')+
+      '<p class="msg'+(AVISO&&AVISO.mal?' bad':'')+'" id="avisoMsg">'+
+        esc(AVISO?AVISO.texto:'')+'</p>'+
+    '</div>'+
+
     '<div class="acc">'+
       '<button class="btn" onclick="window.print()">'+esc(T('imprimir'))+'</button>'+
       '<button class="btn line" onclick="bajarCSV()">'+esc(T('csv'))+'</button>'+
@@ -447,8 +534,73 @@ function pintar(){
     '<p class="pie-print">'+esc(T('sello',{D:fecha(r.generated)}))+'</p>';
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   MANDAR LOS AVISOS
+
+   Dos pulsaciones, no una. La primera enseña a cuánta gente se le va
+   a escribir y pide confirmación; la segunda manda. Un correo no se
+   retira, y el botón está al lado de «Imprimir» y «Bajar CSV», que no
+   hacen daño: sin el paso de confirmar, el que viene a imprimir se
+   lleva cincuenta correos por delante.
+
+   El servidor decide qué sale y qué no. Esta página sólo pide,
+   cuenta lo que pasó, y vuelve a pedir el reporte para que los
+   estados que se vean sean los de la base y no los que había antes.
+   ══════════════════════════════════════════════════════════════════ */
+function pedirConfirma(){
+  var n=$('avisoAcc'); if(!n) return;
+  var cuantos = (REP&&REP.pledges||[]).filter(function(p){
+    return p.estado==='open' && Math.round(Number(p.total||0)*100)>=50;
+  }).length;
+  n.innerHTML =
+    '<button class="btn" onclick="mandarAvisos()">'+esc(T('avisoConfirma',{N:cuantos}))+'</button>'+
+    '<button class="btn line" onclick="pintar()">'+esc(T('avisoCancela'))+'</button>';
+}
+
+function mandarAvisos(){
+  var n=$('avisoAcc'), m=$('avisoMsg');
+  if(!n||!CODE||!RETO) return;
+  n.innerHTML='<button class="btn" disabled>'+esc(T('avisoMandando'))+'</button>';
+  if(m){ m.className='msg'; m.textContent=T('avisoMandando') }
+
+  fetch(SERVER+'/challenge-notices',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({code:CODE,challenge_id:RETO})
+  }).then(function(res){
+    /* 403 es el código rechazado y se dice aparte: «no se pudo hablar
+       con el servidor» mandaría al entrenador a mirar su internet
+       cuando lo que pasa es que su código no abre ese reto. */
+    if(res.status===403) throw new Error('code');
+    if(!res.ok) throw new Error('server');
+    return res.json();
+  }).then(function(d){
+    if(!d||!d.ok) throw new Error('server');
+
+    var partes=[];
+    if(d.sent)    partes.push(T('avisoHecho',{N:d.sent}));
+    else          partes.push(T('avisoNada'));
+    if(d.zero)    partes.push(T('avisoCero',{N:d.zero}));
+    if(d.skipped) partes.push(T('avisoYa',{N:d.skipped}));
+    if(d.failed)  partes.push(T('avisoFallo',{N:d.failed}));
+
+    AVISO={texto:partes.join(' '), mal:!!d.failed};
+
+    /* Volver a pedir el reporte: los estados acaban de cambiar en la
+       base y la página tiene que enseñar ésos, no los de hace un
+       minuto. Si la recarga fallara, el mensaje se pinta igual —el
+       envío ya pasó y eso es lo que hay que contar. */
+    return rpc('challenge_report',{p_code:CODE,p_challenge:RETO})
+      .then(function(r){ if(r&&r.ok) REP=r; pintar(); })
+      .catch(function(){ pintar() });
+  }).catch(function(e){
+    AVISO={texto:(e&&e.message==='code')?T('avisoErrCodigo'):T('avisoErrServidor'), mal:true};
+    pintar();
+  });
+}
+
 function volver(){
-  REP=null;
+  REP=null; RETO=null; AVISO=null;
   $('out').classList.add('hide');
   $('out').innerHTML='';
   $('gate').classList.remove('hide');
