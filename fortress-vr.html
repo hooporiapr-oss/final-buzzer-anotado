@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Fortress en la cancha — Cada Punto</title>
+<title>Fortress en la cancha — Anotado</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -624,7 +624,7 @@ function construir(){
 
   dibujarCancha();
 
-  /* Las bolas. Naranja Cada Punto; la luz propia (emissive) es la que
+  /* Las bolas. Naranja Anotado; la luz propia (emissive) es la que
      sube cuando se encienden, así que empieza apagada. */
   var geo=new THREE.SphereGeometry(RADIO_GEO,28,20);
   for(var i=0;i<5;i++){
@@ -1300,7 +1300,7 @@ function pedirElGiro(){
 
    SI SE PIERDE EL PARÁMETRO al reconfigurar un casco, ese casco se
    queda sin el modo y parece roto. La dirección entera es:
-       https://cadapunto.com/fortress-vr.html?casco=1  */
+       fortress-vr.html?casco=1 (en el dominio donde esté servido)  */
 function pidenCasco(){
   try{ var v=new URLSearchParams(location.search).get('casco');
        return v==='1' || v==='si' || v==='yes' }catch(e){ return false }
