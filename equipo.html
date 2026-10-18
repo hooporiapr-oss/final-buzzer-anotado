@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Inscribe tu equipo — Anotado</title>
+<!-- La vista previa cuando alguien comparte el enlace: en vez de
+     un enlace pelado en un grupo de WhatsApp, sale el cartel. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Anotado">
+<meta property="og:title" content="Inscribe tu equipo — Anotado">
+<meta property="og:description" content="Tu equipo recauda con sus propios juegos. Los padrinos prometen por punto, tú pones el marcador, y cada dólar cobrado va al programa.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Anotado Cuenta — baloncesto">
+<meta property="og:locale" content="es_PR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Inscribe tu equipo — Anotado">
+<meta name="twitter:description" content="Tu equipo recauda con sus propios juegos. Los padrinos prometen por punto, tú pones el marcador, y cada dólar cobrado va al programa.">
+
+<meta name="description" content="Tu equipo recauda con sus propios juegos. Los padrinos prometen por punto, tú pones el marcador, y cada dólar cobrado va al programa.">
+<style>
+/* ── El look nuevo: crema, navy y naranja ─────────────────────────
+   El mismo de la portada y de mi-equipo. Cambia la piel; el marcado
+   y el guion se quedaron como estaban. */
+:root{
+  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
+  --cream:#faf8f4; --ink:#1b2937; --muted:#617083;
+  --linea:#e7e6e2; --bad:#b4231c; --good:#0b7a5a;
+}
+*{box-sizing:border-box}
+html{background:var(--cream)}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  line-height:1.55;-webkit-text-size-adjust:100%}
+.wrap{width:min(720px,calc(100% - 40px));margin:0 auto}
+
+header{background:var(--navy);color:#fff;border-bottom:1px solid #ffffff22;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 0}
+.mark{font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+  font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
+.mark em{font-style:normal;color:#fff}
+.mark i{font-style:normal;color:var(--orange)}
+@media(max-width:380px){ .mark{font-size:.92rem} }
+.langb{border:1px solid #ffffff55;background:transparent;color:#fff;
+  padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+.langb:hover{border-color:var(--orange);color:var(--orange)}
+
+main .wrap{padding:38px 0 48px}
+.kick{color:var(--orange);font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  font-size:.74rem;margin-bottom:10px}
+h1{font-size:clamp(1.9rem,5.4vw,2.9rem);line-height:1.08;letter-spacing:-.045em;margin:0 0 14px}
+h2{font-size:1.35rem;letter-spacing:-.028em;margin:38px 0 6px}
+.lede{color:var(--muted);margin:0 0 26px;max-width:56ch;font-size:1.05rem}
+.sub,.nota,.cp,.who{color:var(--muted)}
+
+/* ── Los pasos, en tarjetas blancas ───────────────────────────── */
+.how{display:grid;gap:14px;margin:0 0 30px;counter-reset:paso}
+.how .s{counter-increment:paso;position:relative;background:#fff;border:1px solid var(--linea);
+  border-radius:16px;padding:22px 24px 22px 60px;box-shadow:0 8px 25px #17243808}
+.how .s::before{content:counter(paso);position:absolute;left:22px;top:22px;
+  width:26px;height:26px;border-radius:50%;background:var(--orange);color:#111a24;
+  font-size:.8rem;font-weight:900;display:flex;align-items:center;justify-content:center}
+.how .s b{display:block;font-size:1.08rem;font-weight:800;letter-spacing:-.018em;margin-bottom:5px}
+.how .s span{color:var(--muted);font-size:.97rem}
+
+/* ── El formulario ────────────────────────────────────────────── */
+label{display:block;font-weight:700;font-size:.9rem;margin:18px 0 6px}
+input[type=text],input[type=email],input[type=tel]{
+  width:100%;padding:14px 15px;border:1px solid #d6d9d6;border-radius:10px;
+  background:#fff;color:var(--ink);font:inherit;font-size:1.02rem}
+input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,122,24,.18)}
+.hint{color:var(--muted);font-size:.84rem;margin:6px 0 0}
+.ok{display:flex;gap:11px;align-items:flex-start;margin:20px 0 0;
+  font-size:.9rem;color:var(--muted);line-height:1.45}
+.ok input{width:20px;height:20px;flex:0 0 20px;margin-top:2px;accent-color:var(--orange)}
+.ok a{color:var(--navy);font-weight:700}
+.ok span{cursor:pointer}
+
+.btn,.cta{display:inline-block;border:0;border-radius:9px;padding:15px 24px;
+  background:var(--orange);color:#111a24;font:inherit;font-weight:800;font-size:1.02rem;
+  cursor:pointer;text-decoration:none;text-align:center}
+.btn.go,.cta{width:100%;margin-top:22px}
+.btn.line{background:transparent;color:var(--navy);border:1px solid var(--navy);margin-top:14px}
+.btn.line:hover{background:var(--navy);color:#fff}
+.btn:hover,.cta:hover{opacity:.92}
+.btn:disabled{opacity:.5;cursor:default}
+.msg{margin:13px 0 0;font-weight:700;font-size:.9rem;min-height:1.2em}
+.msg.bad{color:var(--bad)} .msg.ok{color:var(--good)}
+
+/* ── La letra chiquita del dinero ─────────────────────────────── */
+.fine{background:#fff;border:1px solid var(--linea);border-left:5px solid var(--navy);
+  border-radius:16px;padding:20px 22px;margin:30px 0 0;box-shadow:0 8px 25px #17243808}
+.fine b{display:block;font-size:.74rem;font-weight:800;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--navy);margin-bottom:8px}
+.fine p{margin:0;color:var(--muted);font-size:.95rem}
+
+/* ── Lo que se ve al enviar ───────────────────────────────────── */
+.done{text-align:center;background:#fff;border:1px solid var(--linea);border-radius:16px;
+  padding:clamp(26px,6vw,40px);box-shadow:0 8px 25px #17243808}
+.done .tick{width:56px;height:56px;margin:0 auto 14px;border-radius:50%;
+  background:var(--orange);color:#111a24;font-size:1.7rem;font-weight:900;
+  display:flex;align-items:center;justify-content:center}
+.done .lede{margin-left:auto;margin-right:auto}
+
+footer{background:#0a1420;color:#aeb9c6;padding:26px 0 calc(26px + env(safe-area-inset-bottom,0px));
+  text-align:center;font-size:.86rem}
+footer a{color:#aeb9c6;text-decoration:none}
+footer a:hover{color:var(--orange)}
+.f-co{color:#fff;font-weight:700;margin:0 0 7px}
+.f-what{margin:7px auto 0;font-size:.78rem;line-height:1.5;opacity:.75;max-width:54ch}
+.f-dot{padding:0 8px;opacity:.45}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="index.html"><em>ANOTADO</em><i>.</i></a>
+    <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap" id="app"></div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="f-co">© 2026 Gostar Digital LLC · Puerto Rico</p>
+<p class="f-what" id="fWhat"></p>
+<script>
+/* Lo que somos, dicho donde se ve: una herramienta que se cobra, no
+   una obra benéfica. Lee el mismo idioma guardado que el resto del
+   sitio, así que no hace falta cablearlo a cada sistema de traducción. */
+(function(){
+  var l = 'es';
+  try{ l = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+           localStorage.getItem('fc-lang') ||
+           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+  var el = document.getElementById('fWhat');
+  if (el) el.textContent = (l === 'es')
+    ? 'Anotado es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Anotado is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+})();
+</script>
+    <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+    <p class="f-legal">
+      <a href="terms.html">Términos</a><span class="f-dot">·</span><a href="custodia.html">Dinero</a><span class="f-dot">·</span><a href="privacy.html">Privacidad</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+var SERVER='https://basketball-money-payments.onrender.com';
+var SB_URL='https://sdaphocueugzfvjovuxd.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
+
+function rpc(name, args){
+  return fetch(SB_URL + '/rest/v1/rpc/' + name, {
+    method:'POST',
+    headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify(args || {})
+  }).then(function(r){ if(!r.ok) throw new Error('rpc'); return r.json(); });
+}
+
+var S = {
+  es:{
+    kick:'Inscribe tu equipo',
+    h1:'Tus jugadores anotan. Tu programa cobra.',
+    lede:'Los padrinos prometen unos centavos por cada punto que anota un jugador en su corrida. El juego anota los puntos solo, así que nadie tiene que reportar un marcador ni que le crean, y cada padrino paga por lo que de verdad se anotó. No hay nada que vender, nada que repartir y nadie a quien juntar.',
+    s1b:'Antes de la ventana · Te abrimos la campaña.',
+    s1:'Nos escribes, te la montamos, y te damos tu código. Nadie se da de alta solo — las abrimos una por una, a mano, y nada sale al aire hasta que tú lo digas.',
+    s2b:'Antes de la ventana · Nos pasas tu plantilla y tu ventana.',
+    s2:'Los nombres de tu plantilla, y cuándo quieres la ventana abierta — una tarde en el gimnasio, o una semana con las familias jugando en su casa. Un evento es una ventana: si quieres correr otro después, es su propia campaña.',
+    s3b:'La ventana · Los padrinos prometen, los jugadores juegan.',
+    s3:'Mandas el enlace al grupo del equipo. Cada jugador tiene el suyo, y cada padrino escoge cuánto por punto y pone su tope si quiere. Un jugador puede conseguir padrinos y jugar dentro de la misma ventana, pero las promesas de un jugador cierran en el momento en que empieza su corrida oficial: prometer sabiendo el marcador no es prometer.',
+    s4b:'Al cerrar · Todos reciben el número.',
+    s4:'Cada jugador tiene una sola corrida oficial y la base de datos rechaza la segunda, así que el número es el número. La plataforma calcula el total de cada padrino con su tope aplicado si mordió, y a cada uno le llega su aviso con los puntos y su total — sin enlace de pago. A ti te queda la lista completa, para imprimir o bajar. Cobrar lo haces tú, por donde ya hablas con esa gente.',
+    formH:'Dinos de tu equipo',
+    teamL:'Nombre del equipo', teamPh:'Como lo conocen las familias',
+    progL:'Nombre del programa', progPh:'Lo que verán las familias',
+    nameL:'Tu nombre', namePh:'Nombre y apellido',
+    emailL:'Tu correo', emailPh:'Ahí te escribimos y por ahí entras',
+    phoneL:'Tu teléfono (opcional)', phonePh:'787…',
+    terms:'He leído y acepto los <a href="terms.html" target="_blank">Términos de Uso</a> y la <a href="privacy.html" target="_blank">Política de Privacidad</a>.',
+    errTerms:'Tienes que aceptar los términos para seguir.',
+    custody:'He leído <a href="custodia.html" target="_blank">que el dinero no pasa por ustedes</a>: Anotado no procesa ni guarda pagos, y el dinero lo cobra y lo maneja mi programa.',
+    errCustody:'Tienes que aceptar cómo funciona el dinero para seguir.',
+    lic:'Acepto la licencia por evento: <b>$49 por equipo y por evento</b>, o $29 si la plantilla tiene menos de ocho. No se paga nada por adelantado; se factura cuando el evento cierra y se paga dentro de siete días. Si no se paga, la licencia de ese evento caduca y los datos de promesas se retiran de la plataforma.',
+    errLic:'Tienes que aceptar la licencia y su cargo para seguir.',
+    go:'Inscribir mi equipo',
+    errTeam:'Escribe el nombre del equipo.',
+    errProg:'Escribe el nombre del programa.',
+    errWho:'Tu nombre y tu correo, por favor.',
+    errTaken:'Ese equipo ya tiene campaña. Escríbenos si crees que es un error.',
+    errPending:'Ya hay una petición para ese equipo. Te escribimos pronto.',
+    errGen:'No se pudo enviar. Intenta otra vez.',
+    doneH:'Recibido.',
+    doneP:'Te escribimos a {E} para confirmarlo y abrirte la campaña. Normalmente el mismo día.',
+    doneMore:'Mientras tanto, así se ve el tablero de un equipo el día que juega.',
+    seeBoard:'Ver un tablero',
+    fineH:'Lo que cuesta',
+    fineP:'Anotado se licencia <b>por evento</b>: $49 por equipo, por juego — $29 si la plantilla tiene menos de ocho. Se factura cuando cierra el evento y se paga dentro de siete días; nada por adelantado. No es un por ciento de nada, no sale de ninguna promesa, y a tus padrinos no les cobramos nada. Una cosa que conviene tener clara desde el principio: <b>lo prometido no es lo recaudado</b>. Nosotros anotamos lo prometido; lo que entre, y cuándo, depende de tu cobro — por eso un padrino que paga vale más que diez promesas apuntadas. Lo que recaudes es tuyo, incluido cualquier acuerdo que tengas con tu liga o con quien te trajo.'
+  },
+  en:{
+    kick:'Sign up your team',
+    h1:'Your players score. Your program gets paid.',
+    lede:'Padrinos pledge a few cents on every point a player scores in his run. The game records the points itself, so nobody has to report a score or be taken at his word, and each padrino pays on what was actually scored. Nothing to sell, nothing to deliver, nobody to gather.',
+    s1b:'Before the window · We open your campaign.',
+    s1:'You write to us, we set it up, and we give you your code. Nobody signs themselves up — we open them one at a time, by hand, and nothing goes live until you say so.',
+    s2b:'Before the window · You send us your roster and your window.',
+    s2:'Your roster, and when you want the window open — one afternoon in the gym, or a week with families playing at home. One event is one window: if you want to run another afterwards, that is its own campaign.',
+    s3b:'The window · Padrinos pledge, players play.',
+    s3:'You send the link to the team group. Each player gets his own link, each padrino picks how much a point and sets a cap if he wants one. A player can pledge-gather and play inside the same window, but pledging on a player closes the moment he starts his official run: pledging while knowing the score is not pledging.',
+    s4b:'When it closes · Everyone gets the number.',
+    s4:'Each player gets one official run and the database refuses a second, so the number is the number. The platform calculates each padrino’s total with his cap applied if it bit, and each one gets a notice with the points and his total — no payment link. You are left with the full list, to print or download. The collecting you do yourself, wherever you already talk to those people.',
+    formH:'Tell us about your team',
+    teamL:'Team name', teamPh:'As the families know it',
+    progL:'Program name', progPh:'What families will see',
+    nameL:'Your name', namePh:'First and last name',
+    emailL:'Your email', emailPh:'We write here, and you sign in with it',
+    phoneL:'Your phone (optional)', phonePh:'787…',
+    terms:'I have read and accept the <a href="terms.html" target="_blank">Terms of Use</a> and the <a href="privacy.html" target="_blank">Privacy Policy</a>.',
+    errTerms:'You have to accept the terms to continue.',
+    custody:'I have read <a href="custodia.html" target="_blank">that the money does not pass through you</a>: Anotado processes and holds no payments, and my program collects and manages the money itself.',
+    errCustody:'You have to accept how the money works to continue.',
+    lic:'I accept the per-event license: <b>$49 per team, per event</b>, or $29 where the roster is under eight. Nothing is paid up front; it is invoiced when the event closes and is due within seven days. If it is not paid, that event\u2019s license lapses and its pledge data is removed from the platform.',
+    errLic:'You have to accept the license and its fee to continue.',
+    go:'Sign up my team',
+    errTeam:'Write the team name.',
+    errProg:'Write the program name.',
+    errWho:'Your name and email, please.',
+    errTaken:'That team already has a campaign. Write to us if that seems wrong.',
+    errPending:'There is already a request for that team. We will be in touch.',
+    errGen:'That did not send. Try again.',
+    doneH:'Got it.',
+    doneP:'We will write to {E} to confirm and open your campaign. Usually the same day.',
+    doneMore:'Meanwhile, this is the board of a team already running.',
+    seeBoard:'See a board →',
+    fineH:'What it costs',
+    fineP:'Anotado is licensed <b>per event</b>: $49 per team, per game — $29 if the roster is under eight. It is invoiced when the event closes and due within seven days; nothing up front. It is not a percentage of anything, it does not come out of any pledge, and we charge your padrinos nothing. One thing worth having straight from the start: <b>pledged is not collected</b>. We record what was pledged; what comes in, and when, depends on your collecting \u2014 so one padrino who pays is worth more than ten pledges on a list. What you raise is yours, including any arrangement you have with your league or with whoever brought you in.'
+  }
+};
+
+var LANG='es';
+try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') || localStorage.getItem('fc-lang') ||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+
+function T(k,v){
+  var s = (S[LANG] && S[LANG][k]) || S.es[k] || '';
+  if (v) Object.keys(v).forEach(function(x){ s = s.split('{'+x+'}').join(v[x]); });
+  return s;
+}
+function toggleLang(){
+  LANG = LANG==='es' ? 'en':'es';
+  try{ localStorage.setItem('cfh_lang', LANG), localStorage.setItem('cp-lang', LANG), localStorage.setItem('fc-lang', LANG); }catch(e){}
+  document.getElementById('langBtn').textContent = LANG==='es' ? 'EN':'ES';
+  draw();
+}
+
+var app = document.getElementById('app');
+var SENT = null;
+
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"\']/g, function(m){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+  });
+}
+
+function draw(){
+  if (SENT){
+    app.innerHTML =
+      '<div class="done">' +
+        '<div class="tick">✓</div>' +
+        '<h1>' + T('doneH') + '</h1>' +
+        '<p class="lede">' + T('doneP', { E: esc(SENT) }) + '</p>' +
+        '<p class="lede">' + T('doneMore') + '</p>' +
+        /* El id es la campana de demostracion que scoreboard.html
+           reconoce como tal y anuncia en la propia pagina. */
+        '<a class="btn line" href="scoreboard.html?c=8d0d1f66-29a8-4406-90f2-3c3cf9479d55" ' +
+          'target="_blank" rel="noopener">' + T('seeBoard') + '</a>' +
+      '</div>';
+    return;
+  }
+
+  app.innerHTML =
+    '<div class="kick">' + T('kick') + '</div>' +
+    '<h1>' + T('h1') + '</h1>' +
+    '<p class="lede">' + T('lede') + '</p>' +
+
+    '<div class="how">' +
+      '<div class="s"><b>' + T('s1b') + '</b><span>' + T('s1') + '</span></div>' +
+      '<div class="s"><b>' + T('s2b') + '</b><span>' + T('s2') + '</span></div>' +
+      '<div class="s"><b>' + T('s3b') + '</b><span>' + T('s3') + '</span></div>' +
+      '<div class="s"><b>' + T('s4b') + '</b><span>' + T('s4') + '</span></div>' +
+    '</div>' +
+
+    '<h2>' + T('formH') + '</h2>' +
+    '<label for="tm">' + T('teamL') + '</label>' +
+    '<input id="tm" type="text" maxlength="60" placeholder="' + T('teamPh') + '" ' +
+      'autocapitalize="words" enterkeyhint="next">' +
+    '<label for="pg">' + T('progL') + '</label>' +
+    '<input id="pg" type="text" maxlength="60" placeholder="' + T('progPh') + '" ' +
+      'autocapitalize="words" autocomplete="organization" enterkeyhint="next">' +
+    '<label for="nm">' + T('nameL') + '</label>' +
+    '<input id="nm" type="text" maxlength="60" placeholder="' + T('namePh') + '" ' +
+      'autocomplete="name" autocapitalize="words" enterkeyhint="next">' +
+    '<label for="em">' + T('emailL') + '</label>' +
+    '<input id="em" type="email" maxlength="80" placeholder="' + T('emailPh') + '" ' +
+      'autocomplete="email" autocapitalize="off" spellcheck="false" enterkeyhint="next">' +
+    '<label for="ph">' + T('phoneL') + '</label>' +
+    '<input id="ph" type="tel" maxlength="25" placeholder="' + T('phonePh') + '" ' +
+      'autocomplete="tel" enterkeyhint="done">' +
+
+    '<div class="ok">' +
+      '<input id="lc" type="checkbox">' +
+      '<span onclick="document.getElementById(\'lc\').click()">' + T('lic') + '</span>' +
+    '</div>' +
+    '<div class="ok">' +
+      '<input id="cu" type="checkbox">' +
+      '<span onclick="document.getElementById(\'cu\').click()">' + T('custody') + '</span>' +
+    '</div>' +
+    '<div class="ok">' +
+      '<input id="tc" type="checkbox">' +
+      '<span onclick="document.getElementById(\'tc\').click()">' + T('terms') + '</span>' +
+    '</div>' +
+    '<button class="btn" onclick="send()">' + T('go') + '</button>' +
+    '<p class="msg" id="msg"></p>' +
+
+    '<div class="fine"><b>' + T('fineH') + '</b><p>' + T('fineP') + '</p></div>';
+}
+
+function say(t,c){
+  var el = document.getElementById('msg');
+  if (el){ el.textContent = t; el.className = 'msg ' + (c||''); }
+}
+
+function send(){
+  var team  = (document.getElementById('tm').value || '').trim();
+  var prog  = (document.getElementById('pg').value || '').trim();
+  var name  = (document.getElementById('nm').value || '').trim();
+  var email = (document.getElementById('em').value || '').trim();
+  var phone = (document.getElementById('ph').value || '').trim();
+
+  if (!team) return say(T('errTeam'), 'bad');
+  if (!prog) return say(T('errProg'), 'bad');
+  if (!name || email.indexOf('@') === -1) return say(T('errWho'), 'bad');
+
+  /* La licencia primero: es la unica casilla que lleva un numero
+     dentro, y facturarle a alguien que nunca lo vio seria nuestro
+     problema, no suyo. */
+  var lc = document.getElementById('lc');
+  if (!lc || !lc.checked) return say(T('errLic'), 'bad');
+
+  var cu = document.getElementById('cu');
+  if (!cu || !cu.checked) return say(T('errCustody'), 'bad');
+
+  var ok = document.getElementById('tc');
+  if (!ok || !ok.checked) return say(T('errTerms'), 'bad');
+
+  say('…');
+  rpc('bw_request_team', {
+    p_team: team, p_program: prog, p_name: name, p_email: email,
+    p_phone: phone, p_terms: true, p_custody: true
+  })
+  .then(function(r){
+    if (!r || !r.ok){
+      if (r && r.reason === 'taken')   return say(T('errTaken'), 'bad');
+      if (r && r.reason === 'pending') return say(T('errPending'), 'bad');
+      return say(T('errGen'), 'bad');
+    }
+    SENT = email;
+    draw();
+
+    /* De qué producto es esta solicitud. Los dos productos escriben
+       en bw_requests, y sin esto una inscripción de Anotado le llega
+       al admin idéntica a una de Anotado.
+
+       Va después de draw() y en best-effort a propósito: el
+       entrenador ya vio que entró, y si request_product no existe
+       todavía en la base —el SQL es anotado-producto.sql— lo único
+       que pasa es que la etiqueta no se pone. La inscripción no se
+       cae por esto. */
+    rpc('request_product', { p_email: email, p_product: 'anotado' })
+      .catch(function(e){ console.error('request_product', e) });
+
+    /* El acuse de la licencia, guardado. Va aparte y despues de que
+       la solicitud entro: si esto falla, el equipo ya quedo inscrito
+       igual. El correo al admin lo lleva tambien, asi que el acuse
+       existe en dos sitios y no en ninguno. */
+    rpc('license_record', { p_email: email, p_by: name, p_terms: T('lic') })
+      .catch(function(e){ console.error('license_record', e) });
+
+    fetch(SERVER + '/team-signup', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ team: team, program: prog, coach: name,
+                             email: email, phone: phone,
+                             /* Quien acepto la licencia, cuando, y
+                                que decia exactamente la version que
+                                vio. Si algun dia se discute una
+                                factura, esto es lo que hay. */
+                             license: { accepted: true, by: name,
+                                        at: new Date().toISOString(),
+                                        terms: T('lic') } })
+    }).catch(function(e){ console.error('notice', e); });
+    try{ var _m = document.querySelector('main'); if (_m) _m.scrollTop = 0; window.scrollTo(0, 0); }catch(e){}
+  })
+  .catch(function(e){ console.error(e); say(T('errGen'), 'bad'); });
+}
+
+document.getElementById('langBtn').textContent = LANG==='es' ? 'EN':'ES';
+draw();
+</script>
+</body>
+</html>
