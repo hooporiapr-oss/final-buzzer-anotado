@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>El reporte — Anotado</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{
+  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
+  --cream:#faf8f4; --ink:#1b2937; --muted:#617083;
+  --linea:#e7e6e2; --bad:#b4231c; --good:#0b7a5a;
+}
+*{box-sizing:border-box}
+html{background:var(--cream)}
+body{margin:0;min-height:100dvh;display:flex;flex-direction:column;
+  background:var(--cream);color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  line-height:1.55;-webkit-text-size-adjust:100%}
+.wrap{width:min(880px,calc(100% - 40px));margin:0 auto}
+.hide{display:none !important}
+
+header{flex:0 0 auto;background:var(--navy);color:#fff;border-bottom:1px solid #ffffff22;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 0}
+.mark{font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+  font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
+.mark em{font-style:normal;color:#fff}
+.mark i{font-style:normal;color:var(--orange)}
+@media(max-width:380px){ .mark{font-size:.92rem} }
+.langb{border:1px solid #ffffff55;background:transparent;color:#fff;
+  padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+.langb:hover{border-color:var(--orange);color:var(--orange)}
+
+main{flex:1 1 auto}
+main .wrap{padding:38px 0 46px}
+h1{font-size:clamp(1.7rem,4.6vw,2.4rem);line-height:1.12;letter-spacing:-.04em;margin:0 0 10px}
+.lede{color:var(--muted);margin:0 0 24px;max-width:58ch}
+
+/* ── La puerta ──────────────────────────────────────────────────── */
+.gate{background:#fff;border:1px solid var(--linea);border-radius:16px;
+  padding:clamp(22px,5vw,32px);box-shadow:0 8px 25px #17243808}
+label{display:block;font-weight:700;font-size:.9rem;margin:16px 0 6px}
+label:first-of-type{margin-top:0}
+input[type=text],select{width:100%;padding:13px 14px;border:1px solid #d6d9d6;
+  border-radius:10px;background:#fff;color:var(--ink);font:inherit;font-size:1.02rem}
+input:focus,select:focus{outline:none;border-color:var(--orange);
+  box-shadow:0 0 0 3px rgba(255,122,24,.18)}
+.help{color:var(--muted);font-size:.86rem;margin:5px 0 0}
+.btn{display:inline-block;border:0;border-radius:9px;padding:14px 22px;
+  background:var(--navy);color:#fff;font:inherit;font-weight:800;font-size:1rem;
+  cursor:pointer;text-decoration:none;text-align:center}
+.btn.go{background:var(--orange);color:#111a24;width:100%;margin-top:18px}
+.btn.line{background:transparent;color:var(--navy);border:1px solid var(--navy)}
+.btn.line:hover{background:var(--navy);color:#fff}
+.btn:disabled{opacity:.5;cursor:default}
+.msg{margin:12px 0 0;font-weight:700;font-size:.9rem;min-height:1.2em}
+.msg.bad{color:var(--bad)}
+
+/* ── La portada del reporte ─────────────────────────────────────── */
+.rtop{margin:0 0 24px;padding-bottom:18px;border-bottom:3px solid var(--navy)}
+.kick{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--orange);margin:0 0 8px}
+.rtop h2{font-size:clamp(1.4rem,4vw,2rem);letter-spacing:-.035em;margin:0 0 6px}
+.rtop .sub{color:var(--muted);margin:0;font-size:.9rem}
+
+/* ── Los tres números ───────────────────────────────────────────── */
+.tally{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 10px}
+.tal{background:#fff;border:1px solid var(--linea);border-radius:13px;
+  padding:15px 12px;text-align:center;box-shadow:0 8px 25px #17243806}
+.tal b{display:block;font-size:1.6rem;font-weight:900;letter-spacing:-.03em;line-height:1.1;
+  font-variant-numeric:tabular-nums}
+.tal span{display:block;color:var(--muted);font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
+.tal.plata b{color:var(--orange)}
+@media(max-width:460px){ .tally{grid-template-columns:1fr} }
+
+.nota{margin:12px 0 0;color:var(--muted);font-size:.86rem;max-width:62ch}
+
+h3{font-size:.78rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);margin:34px 0 10px}
+
+/* ── Las tablas ─────────────────────────────────────────────────── */
+.card{background:#fff;border:1px solid var(--linea);border-radius:14px;
+  overflow:hidden;box-shadow:0 8px 25px #17243808}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:11px 14px;border-top:1px solid var(--linea)}
+thead th{border-top:none;background:var(--cream);font-size:.68rem;font-weight:800;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.nm{font-weight:700}
+td.nm small{display:block;font-weight:500;color:var(--muted);font-size:.82rem}
+tbody tr.cero td{color:var(--muted)}
+tfoot td{border-top:2px solid var(--navy);font-weight:900;background:var(--cream)}
+.vacio{padding:22px;text-align:center;color:var(--muted)}
+
+.acc{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0 0}
+.acc .btn{flex:1 1 170px}
+
+footer{flex:0 0 auto;background:#0a1420;color:#aeb9c6;
+  padding:26px 0 calc(26px + env(safe-area-inset-bottom,0px));
+  text-align:center;font-size:.86rem}
+footer a{color:#aeb9c6;text-decoration:none}
+footer a:hover{color:var(--orange)}
+footer .f-dot{padding:0 8px;opacity:.45}
+
+/* ── Impreso ──────────────────────────────────────────────────────
+   Un entrenador lo imprime y lo archiva, o lo lleva a una reunión.
+   En papel: blanco, sin sombras, y con la dirección al pie para que
+   una foto de la hoja lleve a algún sitio. */
+.pie-print{display:none}
+@media print{
+  header,footer,.langb,.acc,.gate{display:none !important}
+  html,body{background:#fff;color:#000}
+  main .wrap{width:100%;padding:0}
+  .kick,h3{color:#000}
+  .tal,.card{box-shadow:none;border:1px solid #000;background:#fff}
+  .tal b,.tal.plata b{color:#000}
+  thead th,tfoot td{background:#fff}
+  .nota{color:#000}
+  table{font-size:.86rem}
+  tr,.tal{break-inside:avoid}
+  .pie-print{display:block;margin-top:20px;padding-top:10px;border-top:2px solid #000;
+    font-size:.8rem;text-align:center;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="index.html"><em>ANOTADO</em><i>.</i></a>
+    <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div id="gate" class="gate">
+      <h1 id="tH1"></h1>
+      <p class="lede" id="tLede"></p>
+
+      <label for="code" id="tCodeL"></label>
+      <input id="code" type="text" autocapitalize="characters" autocorrect="off"
+             spellcheck="false" enterkeyhint="go">
+      <p class="help" id="tCodeH"></p>
+
+      <div id="pick" class="hide">
+        <label for="reto" id="tRetoL"></label>
+        <select id="reto"></select>
+      </div>
+
+      <button class="btn go" id="tGo" onclick="seguir()"></button>
+      <p class="msg" id="gm"></p>
+    </div>
+
+    <div id="out" class="hide"></div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="mi-equipo.html" id="fMine">Mi equipo</a><span class="f-dot">·</span><a href="ayuda.html" id="fHelp">Ayuda</a><span class="f-dot">·</span><a href="cobro.html" id="fCobro">Cómo cobras</a>
+  </div>
+</footer>
+
+<script>
+var SB='https://sdaphocueugzfvjovuxd.supabase.co';
+var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
+
+function rpc(fn, args){
+  return fetch(SB+'/rest/v1/rpc/'+fn,{
+    method:'POST',
+    headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(args||{})
+  }).then(function(r){ if(!r.ok) throw new Error('rpc '+r.status); return r.json() });
+}
+
+var S={
+  es:{
+    titulo:'El reporte — Anotado',
+    h1:'El reporte del reto',
+    lede:'Lo que se llevó cada padrino: su tarifa, su tope y lo que dio su promesa. Para imprimir o bajar.',
+    codeL:'Tu código de entrenador',
+    codeH:'El mismo que usas en Mi equipo.',
+    retoL:'El reto',
+    go:'Ver el reporte',
+    goNext:'Buscar mis retos',
+    errCode:'Ese código no entra. Fíjate que no se haya pegado un espacio.',
+    errNone:'Tu código no alcanza ningún reto todavía.',
+    errGen:'No se pudo. Intenta otra vez.',
+
+    kick:'Reporte del reto',
+    nPromesas:'promesas',
+    nPrometido:'prometido',
+    nJugaron:'jugaron',
+    deN:'de {N}',
+
+    /* Lo que este reporte NO dice, dicho antes de que lo busquen. */
+    nota:'Lo prometido no es lo recaudado. Aquí está lo que cada padrino prometió y lo que salió su promesa con los puntos de su jugador; el dinero lo recibe el programa directo, y Anotado no sabe quién pagó.',
+
+    hJugadores:'Por jugador',
+    hPromesas:'Cada promesa',
+    thJugador:'Jugador', thPuntos:'Puntos', thCuartos:'Cuartos',
+    thPromesasN:'Promesas', thTotal:'Total',
+    thPadrino:'Padrino', thCorreo:'Correo', thTarifa:'Por punto', thTope:'Tope',
+    sinTope:'—',
+    sinPromesas:'Este reto no tiene promesas.',
+    totalFila:'Total prometido',
+
+    imprimir:'Imprimir',
+    csv:'Bajar en hoja de cálculo',
+    otro:'Ver otro reto',
+    aMiEquipo:'← Mi equipo',
+    sello:'Reporte generado el {D} · Anotado · Gostar Digital LLC, Puerto Rico',
+    noJugo:'no jugó'
+  },
+  en:{
+    titulo:'The report — Anotado',
+    h1:'The challenge report',
+    lede:'What each padrino came to: his rate, his cap, and what his pledge worked out to. To print or download.',
+    codeL:'Your coach code',
+    codeH:'The same one you use at My team.',
+    retoL:'The challenge',
+    go:'See the report',
+    goNext:'Find my challenges',
+    errCode:'That code does not go in. Check a space did not come along with it.',
+    errNone:'Your code does not reach any challenge yet.',
+    errGen:'That did not work. Try again.',
+
+    kick:'Challenge report',
+    nPromesas:'pledges',
+    nPrometido:'pledged',
+    nJugaron:'played',
+    deN:'of {N}',
+
+    nota:'Pledged is not collected. This is what each padrino pledged and what it came to against his player’s points; the money goes to the program directly, and Anotado does not know who paid.',
+
+    hJugadores:'By player',
+    hPromesas:'Every pledge',
+    thJugador:'Player', thPuntos:'Points', thCuartos:'Quarters',
+    thPromesasN:'Pledges', thTotal:'Total',
+    thPadrino:'Padrino', thCorreo:'Email', thTarifa:'Per point', thTope:'Cap',
+    sinTope:'—',
+    sinPromesas:'This challenge has no pledges.',
+    totalFila:'Total pledged',
+
+    imprimir:'Print',
+    csv:'Download as a spreadsheet',
+    otro:'See another challenge',
+    aMiEquipo:'← My team',
+    sello:'Report generated {D} · Anotado · Gostar Digital LLC, Puerto Rico',
+    noJugo:'did not play'
+  }
+};
+
+var LANG='es';
+try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+            localStorage.getItem('fc-lang') ||
+            ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+
+function T(k,v){
+  var s=(S[LANG]&&S[LANG][k])||S.es[k]||'';
+  if(v) Object.keys(v).forEach(function(x){ s=s.split('{'+x+'}').join(v[x]) });
+  return s;
+}
+function $(id){ return document.getElementById(id) }
+function esc(t){ return String(t==null?'':t)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+function money(n){ return '$'+Number(n||0).toFixed(2) }
+function fecha(iso){
+  if(!iso) return '';
+  try{
+    var d=new Date(iso);
+    if(isNaN(d.getTime())) return '';
+    return d.toLocaleDateString(LANG==='es'?'es-PR':'en-US',
+      {day:'numeric',month:'long',year:'numeric'});
+  }catch(e){ return '' }
+}
+
+var CODE=null, RETOS=[], REP=null;
+
+function toggleLang(){
+  LANG = LANG==='es'?'en':'es';
+  try{ localStorage.setItem('cfh_lang',LANG);
+       localStorage.setItem('cp-lang',LANG);
+       localStorage.setItem('fc-lang',LANG); }catch(e){}
+  estatico();
+  if(RETOS.length) llenarRetos();
+  if(REP) pintar();
+}
+
+function estatico(){
+  document.documentElement.lang=LANG;
+  document.title=T('titulo');
+  $('langBtn').textContent=(LANG==='es')?'EN':'ES';
+  $('tH1').textContent=T('h1');
+  $('tLede').textContent=T('lede');
+  $('tCodeL').textContent=T('codeL');
+  $('tCodeH').textContent=T('codeH');
+  $('tRetoL').textContent=T('retoL');
+  $('tGo').textContent = RETOS.length ? T('go') : T('goNext');
+  $('fMine').textContent=(LANG==='es')?'Mi equipo':'My team';
+  $('fHelp').textContent=(LANG==='es')?'Ayuda':'Help';
+  $('fCobro').textContent=(LANG==='es')?'Cómo cobras':'How you collect';
+}
+
+/* Dos pasos con el mismo botón: primero el código trae los retos,
+   después el reto escogido trae el reporte. Un paso menos que
+   pedirle al entrenador que aprete dos veces para lo mismo. */
+function seguir(){
+  var m=$('gm'); m.className='msg'; m.textContent='';
+  if(RETOS.length) return verReporte();
+
+  var k=($('code').value||'').trim();
+  if(!k) return;
+  $('tGo').disabled=true;
+
+  rpc('challenge_list',{p_code:k}).then(function(r){
+    $('tGo').disabled=false;
+    if(!r||!r.ok) throw new Error('bad');
+    CODE=k;
+    RETOS=r.challenges||[];
+    if(!RETOS.length) throw new Error('none');
+    llenarRetos();
+    $('pick').classList.remove('hide');
+    $('tGo').textContent=T('go');
+  }).catch(function(e){
+    $('tGo').disabled=false;
+    m.className='msg bad';
+    m.textContent = (e&&e.message==='none') ? T('errNone')
+                  : (e&&e.message==='bad')  ? T('errCode') : T('errGen');
+  });
+}
+
+function llenarRetos(){
+  $('reto').innerHTML = RETOS.map(function(x){
+    var f = fecha(x.closes_at||x.opens_at);
+    var n = (x.promesas||0) + ' ' + T('nPromesas');
+    return '<option value="'+esc(x.id)+'">'+
+             esc(x.campana)+' · '+esc(x.reto)+
+             (f?' · '+esc(f):'')+' · '+esc(n)+
+           '</option>';
+  }).join('');
+}
+
+function verReporte(){
+  var id=$('reto').value;
+  if(!id) return;
+  $('tGo').disabled=true;
+  rpc('challenge_report',{p_code:CODE,p_challenge:id}).then(function(r){
+    $('tGo').disabled=false;
+    if(!r||!r.ok) throw new Error('rep');
+    REP=r;
+    $('gate').classList.add('hide');
+    $('out').classList.remove('hide');
+    pintar();
+    try{ window.scrollTo(0,0) }catch(e){}
+  }).catch(function(){
+    $('tGo').disabled=false;
+    var m=$('gm'); m.className='msg bad'; m.textContent=T('errGen');
+  });
+}
+
+function pintar(){
+  var r=REP, ch=r.challenge||{}, js=r.players||[], ps=r.pledges||[];
+  var jugaron = js.filter(function(j){ return (j.puntos||0)>0 }).length;
+
+  /* Por jugador. Los que no jugaron salen en gris y con un "no jugó"
+     debajo del nombre: es el único problema que este reporte puede
+     enseñar y esconderlo no lo arregla. */
+  var fJ = js.length ? js.map(function(j){
+    var cero = !(j.puntos>0);
+    return '<tr'+(cero?' class="cero"':'')+'>'+
+      '<td class="nm">'+esc(j.nombre)+(cero?'<small>'+esc(T('noJugo'))+'</small>':'')+'</td>'+
+      '<td class="num">'+(j.puntos||0)+'</td>'+
+      '<td class="num">'+(j.cuartos||0)+'</td>'+
+      '<td class="num">'+(j.promesas||0)+'</td>'+
+      '<td class="num">'+money(j.total)+'</td>'+
+    '</tr>';
+  }).join('') : '';
+
+  var fP = ps.length ? ps.map(function(p){
+    return '<tr'+(!(p.total>0)?' class="cero"':'')+'>'+
+      '<td class="nm">'+esc(p.padrino)+'<small>'+esc(p.jugador)+'</small></td>'+
+      '<td>'+esc(p.correo||'')+'</td>'+
+      '<td class="num">'+money(p.tarifa)+'</td>'+
+      '<td class="num">'+(p.tope!=null?money(p.tope):T('sinTope'))+'</td>'+
+      '<td class="num">'+(p.puntos||0)+'</td>'+
+      '<td class="num">'+money(p.total)+'</td>'+
+    '</tr>';
+  }).join('') : '';
+
+  $('out').innerHTML =
+    '<div class="rtop">'+
+      '<p class="kick">'+esc(T('kick'))+'</p>'+
+      '<h2>'+esc(ch.name||'')+'</h2>'+
+      '<p class="sub">'+esc(r.campaign||'')+
+        (ch.closes_at?' · '+esc(fecha(ch.closes_at)):'')+
+        (ch.game?' · '+esc(ch.game):'')+'</p>'+
+    '</div>'+
+
+    '<div class="tally">'+
+      '<div class="tal plata"><b>'+money(r.pledged)+'</b><span>'+esc(T('nPrometido'))+'</span></div>'+
+      '<div class="tal"><b>'+(r.count||0)+'</b><span>'+esc(T('nPromesas'))+'</span></div>'+
+      '<div class="tal"><b>'+jugaron+'</b><span>'+esc(T('nJugaron'))+' '+
+        esc(T('deN',{N:js.length}))+'</span></div>'+
+    '</div>'+
+    '<p class="nota">'+esc(T('nota'))+'</p>'+
+
+    '<h3>'+esc(T('hJugadores'))+'</h3>'+
+    '<div class="card">'+ (fJ ?
+      '<table><thead><tr>'+
+        '<th>'+esc(T('thJugador'))+'</th>'+
+        '<th class="num">'+esc(T('thPuntos'))+'</th>'+
+        '<th class="num">'+esc(T('thCuartos'))+'</th>'+
+        '<th class="num">'+esc(T('thPromesasN'))+'</th>'+
+        '<th class="num">'+esc(T('thTotal'))+'</th>'+
+      '</tr></thead><tbody>'+fJ+'</tbody></table>'
+      : '<p class="vacio">'+esc(T('sinPromesas'))+'</p>') +
+    '</div>'+
+
+    '<h3>'+esc(T('hPromesas'))+'</h3>'+
+    '<div class="card">'+ (fP ?
+      '<table><thead><tr>'+
+        '<th>'+esc(T('thPadrino'))+'</th>'+
+        '<th>'+esc(T('thCorreo'))+'</th>'+
+        '<th class="num">'+esc(T('thTarifa'))+'</th>'+
+        '<th class="num">'+esc(T('thTope'))+'</th>'+
+        '<th class="num">'+esc(T('thPuntos'))+'</th>'+
+        '<th class="num">'+esc(T('thTotal'))+'</th>'+
+      '</tr></thead><tbody>'+fP+'</tbody>'+
+      '<tfoot><tr><td colspan="5">'+esc(T('totalFila'))+'</td>'+
+        '<td class="num">'+money(r.pledged)+'</td></tr></tfoot></table>'
+      : '<p class="vacio">'+esc(T('sinPromesas'))+'</p>') +
+    '</div>'+
+
+    '<div class="acc">'+
+      '<button class="btn" onclick="window.print()">'+esc(T('imprimir'))+'</button>'+
+      '<button class="btn line" onclick="bajarCSV()">'+esc(T('csv'))+'</button>'+
+      '<button class="btn line" onclick="volver()">'+esc(T('otro'))+'</button>'+
+      '<a class="btn line" href="mi-equipo.html">'+esc(T('aMiEquipo'))+'</a>'+
+    '</div>'+
+
+    '<p class="pie-print">'+esc(T('sello',{D:fecha(r.generated)}))+'</p>';
+}
+
+function volver(){
+  REP=null;
+  $('out').classList.add('hide');
+  $('out').innerHTML='';
+  $('gate').classList.remove('hide');
+  $('gm').textContent='';
+}
+
+/* El CSV se arma aquí, en el navegador: no hace falta un servidor
+   para pegar comas, y así la lista no sale de la máquina del
+   entrenador para volver convertida. */
+function bajarCSV(){
+  var r=REP; if(!r) return;
+  function q(v){ return '"'+String(v==null?'':v).split('"').join('""')+'"' }
+  var filas=[[T('thPadrino'),T('thCorreo'),T('thJugador'),T('thTarifa'),
+              T('thTope'),T('thPuntos'),T('thTotal')].map(q).join(',')];
+  (r.pledges||[]).forEach(function(p){
+    filas.push([p.padrino,p.correo,p.jugador,
+                Number(p.tarifa||0).toFixed(2),
+                p.tope!=null?Number(p.tope).toFixed(2):'',
+                p.puntos||0,
+                Number(p.total||0).toFixed(2)].map(q).join(','));
+  });
+  filas.push('');
+  filas.push([T('totalFila'),'','','','','',Number(r.pledged||0).toFixed(2)].map(q).join(','));
+
+  /* El nombre del fichero sin acentos ni eñes: "Canóvanas" salía
+     "canvanas" en algunos sistemas, porque la tilde se cae y se lleva
+     la letra. Se descomponen y se tiran las marcas. */
+  var nom=((r.challenge&&r.challenge.name)||r.campaign||'reporte')
+    .normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').toLowerCase();
+
+  /* El BOM va delante a propósito: sin él Excel abre un CSV en UTF-8
+     y enseña "CanÃ³vanas". */
+  var blob=new Blob(['﻿'+filas.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='anotado-'+(nom||'reporte')+'.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove() },0);
+}
+
+$('code').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){ e.preventDefault(); seguir() }
+});
+
+estatico();
+</script>
+</body>
+</html>
