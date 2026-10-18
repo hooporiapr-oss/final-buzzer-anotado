@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mi enlace — Cada Punto</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#12202E;--mute:#5A6B7C;--line:#D7E0E8;--tint:#F7FAFC;--accent:#0C6E8C;--good:#0B7A5A;--bad:#A8323F}
+*{box-sizing:border-box}
+html{background:#07141E}
+/* El teclado del teléfono no achica la página, achica lo que se ve de
+   ella. Con el alto clavado en 100dvh y el scroll metido en <main>, el
+   campo enfocado se iba debajo del teclado. Rodando la página entera,
+   el navegador sí puede subirlo. */
+body{margin:0;min-height:100dvh;display:flex;flex-direction:column;
+  font-family:Archivo,"Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--ink);
+  background:#07141E;line-height:1.55;-webkit-text-size-adjust:100%}
+.wrap{width:min(560px,93vw);margin:0 auto}
+
+header{flex:0 0 auto;background:#12202E;border-bottom:1px solid #0B1724;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+.mark{font-weight:900;font-size:1.05rem;color:#fff;text-decoration:none}
+.mark em{font-style:normal;color:#4FD3F0}
+.mark i{font-style:normal;color:#9FB3C4}
+.langb{border:1px solid #33465A;background:none;color:#C8D6E2;border-radius:999px;
+  padding:6px 13px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer}
+
+main{flex:1 1 auto;overflow-x:hidden}
+main .wrap{padding:clamp(20px,5vw,34px) 0 30px}
+
+footer{flex:0 0 auto;background:#12202E;color:#9FB3C4;border-top:1px solid #0B1724;
+  padding:15px 0 calc(15px + env(safe-area-inset-bottom,0px));text-align:center;font-size:.82rem}
+footer p{margin:0 0 7px}
+footer .f-co{color:#fff;font-weight:700}
+footer a{color:#4FD3F0;text-decoration:none}
+
+.crest{display:block;max-height:72px;max-width:160px;margin:0 auto 14px;object-fit:contain}
+h1{font-size:clamp(1.4rem,4.4vw,1.9rem);letter-spacing:-.03em;margin:0 0 6px;font-weight:900;text-align:center}
+.lede{color:var(--mute);margin:0 0 22px;text-align:center}
+
+label{display:block;font-size:.85rem;font-weight:700;margin:14px 0 5px}
+input,select{width:100%;padding:14px;border:2px solid var(--ink);border-radius:4px;
+  background:#07141E;color:var(--ink);font:inherit;font-size:1.05rem}
+input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(12,110,140,.15)}
+.btn{display:block;width:100%;padding:16px;border:2px solid var(--ink);border-radius:4px;
+  background:var(--ink);color:#fff;font:inherit;font-weight:800;font-size:1.02rem;
+  cursor:pointer;text-align:center;text-decoration:none;margin-top:16px}
+.btn.line{background:#07141E;color:var(--ink);margin-top:10px}
+.msg{margin-top:12px;font-weight:700;font-size:.92rem;min-height:1.2em;text-align:center}
+.msg.bad{color:var(--bad)}
+.msg.ok{color:var(--good)}
+
+.done .tick{font-size:2.6rem;text-align:center;line-height:1;margin-bottom:8px}
+.linkbox{border:2px solid var(--ink);border-radius:4px;background:var(--tint);
+  padding:14px;margin:16px 0 0;word-break:break-all;font-size:.86rem;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.how{border-left:4px solid var(--accent);background:var(--tint);padding:14px 16px;margin:20px 0 0}
+.how b{display:block;margin-bottom:4px}
+.how p{margin:0;font-size:.93rem;color:var(--mute)}
+.f-what{margin:7px 0 0;font-size:.74rem;line-height:1.5;opacity:.72;max-width:52ch;
+  margin-left:auto;margin-right:auto}
+
+
+/* ══════════════════════════════════════════════════════════════
+   LA CANCHA DE NOCHE
+   El mismo color que la portada, en todo el sitio. Va al final a
+   propósito: las reglas de arriba se quedan como están y éstas
+   mandan encima.
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  --noche:#07141E; --cancha:#0E2232; --linea:#1B3A4F;
+  --viva:#4FD3F0;  --brasa:#FF8A2B;  --hueso:#EAF2F7; --humo:#7A96A9;
+  /* Y las que ya usaba esta página, apuntando a lo mismo */
+  --ink:#EAF2F7; --mute:#7A96A9; --line:#1B3A4F; --tint:#0E2232;
+  --accent:#4FD3F0; --good:#3FD89A; --bad:#FF7B7B;
+  --paper:#EAF2F7; --panel:#0E2232; --gold:#FF8A2B; --leather:#4FD3F0;
+  --ball:#FF8A2B; --edge:#2E5570; --teal:#4FD3F0;
+}
+html, body{background:#07141E;color:#EAF2F7}
+
+/* La cabecera y el pie ya eran oscuros, pero de otro azul. */
+header, footer, .top{background:#07141E;border-color:#1B3A4F}
+header{border-bottom:1px solid #1B3A4F}
+footer{border-top:1px solid #1B3A4F;color:#7A96A9}
+footer a{color:#4FD3F0}
+.mark{color:#EAF2F7}
+.mark i{color:#7A96A9}
+.langb{border-color:#2E5570;color:#9DB6C7;background:none}
+.langb:hover{color:#EAF2F7;border-color:#7A96A9}
+
+/* Cajas, paneles y cualquier cosa que antes era un rectángulo claro
+   sobre blanco. */
+.how, .linkbox, .s, .w, .tal, .num, .team, .pl, .caja, .chat, .card,
+.panel, .box, .waits, .pay, .cuadro, .m.me{
+  background:#0E2232;border-color:#1B3A4F;color:#EAF2F7}
+.how p, .s span, .w span, .num span, .tal span, .help, .hint, .lede,
+.cp, .who, .sub, .nota{color:#7A96A9}
+
+/* Lo que se escribe. Un campo blanco en una página oscura es un
+   agujero de luz, y en un teléfono de noche duele. */
+input, select, textarea{
+  background:#07141E;border-color:#2E5570;color:#EAF2F7}
+input::placeholder, textarea::placeholder{color:#5F7C91}
+input:focus, select:focus, textarea:focus{
+  border-color:#4FD3F0;box-shadow:0 0 0 3px rgba(79,211,240,.18)}
+
+/* Los botones. Aquí es donde un cambio de variables a ciegas dejaba
+   blanco sobre blanco: el relleno era var(--ink), que ahora es la
+   tinta. Se dicen los dos colores, y ya. */
+.btn, button.btn, a.btn{
+  background:#4FD3F0;border:2px solid #4FD3F0;color:#07141E}
+.btn:hover{background:#07141E;color:#4FD3F0}
+.btn.line, .btn.ghost, .btn.sec{
+  background:transparent;border:2px solid #EAF2F7;color:#EAF2F7}
+.btn.line:hover{background:#EAF2F7;color:#07141E}
+.btn.go, .btn.hot, .btn.naranja{background:#FF8A2B;border-color:#FF8A2B;color:#07141E}
+[style*="#FF8A2B"], .btn[class*="go"]{color:#07141E}
+.btn:disabled{opacity:.45}
+
+/* Separadores y reglas */
+hr, .sep, .div{border-color:#1B3A4F;background:#1B3A4F}
+table, th, td{border-color:#1B3A4F}
+
+/* Enlaces dentro del texto */
+/* Cada :not() suma fuerza, asi que esta regla le ganaba a cosas
+   como a.wa. Lo que es un boton se excluye por nombre. */
+main a:not(.btn):not(.pedir):not(.cta):not(.wa):not(.go), .wrap a:not(.btn):not(.pedir):not(.cta):not(.wa):not(.go){color:#4FD3F0}
+a.pedir{color:inherit}
+
+/* Lo que estaba escrito a mano en blanco y ahora es un agujero */
+[style*="background:#07141E"], [style*="background: #07141E"]{background:#0E2232 !important}
+
+
+/* Los que estaban puestos a mano con otro blanco: #FFF8F3, #FFFFFF.
+   No son var() de nadie, así que hay que nombrarlos. */
+[class]{--ff8:#0E2232}
+.ojo, .env-nota, .nota-ojo, .aviso, .warn, .tip{background:#0E2232 !important;color:#EAF2F7}
+.ttl, .env-nota b{color:#EAF2F7}
+.cta{background:#4FD3F0 !important;border-color:#4FD3F0 !important;color:#07141E !important}
+.cta:hover{background:#07141E !important;color:#4FD3F0 !important}
+h1,h2,h3,h4{color:#EAF2F7}
+
+
+/* ══ LA MARCA ══════════════════════════════════════════════════
+   cada (hueso) · punto (naranja) · cuenta (cian), a 23px con peso
+   800 y el espaciado cerrado — la que lleva padrinos.html. Es la
+   marca, no un enlace del menú, y a 16px con peso 900 parecía lo
+   segundo: apretada, pequeña y sin aire entre las letras.
+
+   El espaciado va en em y no en px para que siga cerrado si alguna
+   página la pinta a otro tamaño. */
+.mark, .mark .wm{
+  color:#EAF2F7 !important;text-decoration:none !important;
+  font-size:23px !important;font-weight:800 !important;
+  letter-spacing:-.035em !important;line-height:1.1}
+.mark em, .wm em{font-style:normal;color:#FF8A2B !important}
+.mark i,  .wm i {font-style:normal;color:#4FD3F0 !important}
+/* En un teléfono estrecho, que no empuje al botón de idioma. */
+@media(max-width:380px){
+  .mark, .mark .wm{font-size:20px !important}
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="index.html">cada&nbsp;<em>punto</em>&nbsp;<i>cuenta</i></a>
+    <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap" id="app"><p class="lede">…</p></div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="f-co">© 2026 Gostar Digital LLC · Puerto Rico</p>
+<p class="f-what" id="fWhat"></p>
+<script>
+/* Lo que somos, dicho donde se ve: una herramienta que se cobra, no
+   una obra benéfica. Lee el mismo idioma guardado que el resto del
+   sitio, así que no hace falta cablearlo a cada sistema de traducción. */
+(function(){
+  var l = 'es';
+  try{ l = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+           localStorage.getItem('fc-lang') ||
+           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+  var el = document.getElementById('fWhat');
+  if (el) el.textContent = (l === 'es')
+    ? 'Cada Punto es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Cada Punto is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+})();
+</script>
+    <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+  </div>
+</footer>
+
+<script>
+var SB_URL='https://sdaphocueugzfvjovuxd.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
+
+function rpc(name, args){
+  return fetch(SB_URL + '/rest/v1/rpc/' + name, {
+    method:'POST',
+    headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify(args || {})
+  }).then(function(r){ if(!r.ok) throw new Error('rpc'); return r.json(); });
+}
+
+var S = {
+  es:{
+    h1:'Tu enlace de padrinos',
+    lede:'Pon tu nombre y tu categoría. Te damos un enlace para mandarle a tu familia — lo que prometan queda apuntado a tu nombre.',
+    nameL:'Tu nombre', namePh:'Nombre y apellido',
+    squadL:'Tu categoría o equipo', squadPh:'Mini, Juniors, Senior Silver…',
+    squadPick:'Escoge tu escuadra', squadOther:'Otra — la escribo yo',
+    go:'Dame mi enlace',
+    errName:'Escribe tu nombre completo.',
+    errGen:'No se pudo. Intenta otra vez.',
+    doneH:'Listo, {N}',
+    doneP:'Este es tu enlace. Mándaselo a tu familia por WhatsApp.',
+    cierra:'Se promete hasta el {D} — después se juega.',
+    noRetoH:'Tu nombre ya está, {N}',
+    noRetoP:'Todavía no hay día de juego abierto. En cuanto tu entrenador abra uno, aquí mismo sale tu enlace para mandárselo a tu familia — guarda esta página.',
+    cerradoH:'Ya cerraron las promesas, {N}',
+    cerradoP:'Tu juego ya empezó, así que no entran promesas nuevas. Las que te hicieron antes siguen en pie.',
+    backH:'Ya estabas en la lista, {N}',
+    waitH:'Apuntado, {N}',
+    waitP:'Falta que tu entrenador lo apruebe. En cuanto lo haga, este mismo enlace es el tuyo para mandárselo a tu familia — guárdalo.',
+    share:'Mandar por WhatsApp',
+    copy:'Copiar el enlace',
+    copied:'✓ Copiado',
+    seeBoard:'Ver el tablero del equipo',
+    howH:'Cómo funciona',
+    howP:'Quien abra tu enlace promete unos centavos por cada punto que anotes TÚ en tus cuatro cuartos. Promete antes de que empiece tu juego; cuando termina, sacamos la cuenta según lo que anotaste de verdad y tu padrino le paga al programa directo. Todo va al programa.',
+    /* Lo que hay que decirle a un nene ANTES de que mande el enlace.
+       Si no, se lo manda a treinta amigos, le prometen un montón de
+       centavos que nadie va a pagar, y el que se queda mal al cerrar
+       es él. Un padrino es un adulto que paga, no un nombre más. */
+    quienH:'A quién mandarlo',
+    quienP:'A los adultos que de verdad van a pagar después: mami, papi, abuela, tus tíos, los vecinos, el negocio de la esquina. Esto no es un concurso de a cuánta gente se lo mandas. Al final sólo cuenta lo que el programa cobra de verdad — veinte promesas que nadie paga no suman nada, y dos que sí, sí.',
+    noCampH:'Te falta el enlace de tu equipo',
+    noCampP:'Esta página te da tu propio enlace de padrinos, pero tiene que venir del enlace que manda tu coach al grupo del equipo. Pídeselo.',
+    backHome:'← Volver',
+    msg:'¡Apóyame en Cada Punto! Prometes unos centavos por cada punto que yo anote, y le pagas al programa directo después del juego.'
+  },
+  en:{
+    h1:'Your padrino link',
+    lede:'Put your name and your squad. We give you a link to send your family — whatever they pledge is credited to you.',
+    nameL:'Your name', namePh:'First and last name',
+    squadL:'Your squad or category', squadPh:'Mini, Juniors, Senior Silver…',
+    squadPick:'Pick your squad', squadOther:'Other \u2014 let me type it',
+    go:'Give me my link',
+    errName:'Write your full name.',
+    errGen:'That did not work. Try again.',
+    doneH:'Done, {N}',
+    doneP:'This is your link. Send it to your family on WhatsApp.',
+    cierra:'Pledging is open until {D} — then you play.',
+    noRetoH:'You\u2019re on the roster, {N}',
+    noRetoP:'No game day is open yet. The moment your coach opens one, your link shows up right here to send your family \u2014 keep this page.',
+    cerradoH:'Pledging has closed, {N}',
+    cerradoP:'Your game has started, so no new pledges can come in. The ones already made still stand.',
+    backH:'You were already on the roster, {N}',
+    waitH:'Signed up, {N}',
+    waitP:'Your coach has to approve it. As soon as he does, this same link is yours to send your family \u2014 keep it.',
+    share:'Send on WhatsApp',
+    copy:'Copy the link',
+    copied:'✓ Copied',
+    seeBoard:'See the team board',
+    howH:'How it works',
+    howP:'Whoever opens your link pledges a few cents for every point YOU score across your four quarters. They pledge before your game starts; when it ends we work out what their pledge comes to on what you actually scored, and they pay the program directly. All of it goes to the program.',
+    quienH:'Who to send it to',
+    quienP:'The adults who will actually pay afterwards: mom, dad, grandma, your aunts and uncles, the neighbours, the shop on the corner. This is not a contest to see how many people you send it to. In the end only what the program actually collects counts — twenty pledges nobody pays add up to nothing, and two that do add up.',
+    noCampH:'You need your team\u2019s link',
+    noCampP:'This page gives you your own padrino link, but it has to come from the link your coach sends to the team group. Ask them for it.',
+    backHome:'← Back',
+    msg:'Back me in Cada Punto! You pledge a few cents for every point I score, and you pay the program directly after the game.'
+  }
+};
+
+var LANG='es';
+try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') || localStorage.getItem('fc-lang') ||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+
+function T(k,v){
+  var s = (S[LANG] && S[LANG][k]) || S.es[k] || '';
+  if (v) Object.keys(v).forEach(function(x){ s = s.split('{'+x+'}').join(v[x]); });
+  return s;
+}
+function toggleLang(){
+  LANG = LANG==='es' ? 'en':'es';
+  try{ localStorage.setItem('cfh_lang', LANG), localStorage.setItem('cp-lang', LANG), localStorage.setItem('fc-lang', LANG); }catch(e){}
+  document.getElementById('langBtn').textContent = LANG==='es' ? 'EN':'ES';
+  draw();
+}
+
+var PARAMS = new URLSearchParams(location.search);
+var CAMPAIGN = PARAMS.get('c');
+var WANT_SQUAD = PARAMS.get('d') || null;   // la categoría del juego que tocó
+var BOARD = null, ME = null;
+/* El reto al que se le puede prometer ahora mismo, que lo dice el
+   servidor. Null hasta que contesta. */
+var RETO = null;
+/* Los nombres de escuadra que ya existen en la campaña. Antes esto
+   salía sólo de las notas de los juegos, así que un programa recién
+   montado — sin juegos todavía — no ofrecía ninguna y cada familia
+   escribía la suya. De ahí salen "Mini", "mini" y "MINI" como tres
+   escuadras distintas. */
+var SQUADS = [];
+var app = document.getElementById('app');
+
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"\']/g, function(m){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+  });
+}
+
+// Las escuadras que de verdad existen en el calendario, sacadas de
+// la nota de cada juego igual que en el tablero.
+function divs(){
+  var out = [];
+  function add(d){
+    d = String(d || '').trim();
+    if (!d) return;
+    for (var i = 0; i < out.length; i++){
+      if (out[i].toLowerCase() === d.toLowerCase()) return;
+    }
+    out.push(d);
+  }
+  SQUADS.forEach(add);
+  if (BOARD && BOARD.games){
+    BOARD.games.forEach(function(g){
+      if (g.status === 'cancelled') return;
+      add(String(g.note || '').split('·')[0]);
+    });
+  }
+  return out;
+}
+
+// Los dos idiomas en el mismo mensaje: el español primero, porque
+// es donde está el equipo, y el inglés para la familia de afuera.
+function bothLangs(){
+  return S.es.msg + '\n\n' + S.en.msg;
+}
+
+/* El enlace del padrino.
+   Antes era scoreboard.html con la CAMPAÑA dentro: el padrino escogía
+   un juego del calendario y prometía por los puntos del equipo. Ya no
+   hay calendario — hay un reto con su ventana, y se promete por los
+   puntos de ESTE nene. Así que lleva el RETO, no la campaña, y el reto
+   hay que preguntárselo al servidor porque una campaña tiene varios a
+   lo largo del año.
+
+   Devuelve null cuando no hay ninguno al que prometer. Eso importa:
+   armado a ciegas, el enlace saldría con "undefined" dentro y el nene
+   lo repartiría igual. */
+function myLink(){
+  if (!RETO || !RETO.hay || !RETO.open) return null;
+  return location.origin + '/prometer.html?c=' + RETO.challenge_id + '&p=' + ME.id;
+}
+
+/* La fecha en palabras. Sin punto al final a propósito: el español
+   acaba la hora en "p. m." y la frase que la usa lleva un guión
+   después, no otro punto. */
+function cuando(iso){
+  try {
+    var d = new Date(iso);
+    var loc = LANG === 'es' ? 'es-PR' : 'en-US';
+    return d.toLocaleDateString(loc, { weekday:'long', day:'numeric', month:'long' }) +
+           ' · ' + d.toLocaleTimeString(loc, { hour:'numeric', minute:'2-digit' });
+  } catch(e){ return '' }
+}
+
+function draw(){
+  if (!CAMPAIGN){
+    app.innerHTML =
+      '<h1>' + T('noCampH') + '</h1>' +
+      '<p class="lede">' + T('noCampP') + '</p>' +
+        '<div class="how"><b>' + T('howH') + '</b><p>' + T('howP') + '</p></div>' +
+      '<a class="btn line" href="index.html">' + T('backHome') + '</a>';
+    return;
+  }
+
+  var crest = (BOARD && BOARD.logo)
+    ? '<img class="crest" src="' + esc(BOARD.logo) + '" alt="" onerror="this.style.display=\'none\'">'
+    : '';
+  var team = (BOARD && BOARD.campaign) ? '<p class="lede" style="margin-bottom:6px">' + esc(BOARD.campaign) + '</p>' : '';
+
+  if (ME){
+    var link = myLink();
+
+    /* Sin enlace no se enseña un enlace. Son dos casos distintos y el
+       nene necesita saber cuál: todavía no hay día de juego, o ya
+       empezó y las promesas cerraron. Una página que no los distingue
+       lo manda a pedir promesas que nadie puede hacer. */
+    if (!link){
+      var yaAbrio = !!(RETO && RETO.hay);
+      app.innerHTML =
+        crest + team +
+        '<div class="done">' +
+          '<div class="tick">\u2026</div>' +
+          '<h1>' + T(yaAbrio ? 'cerradoH' : 'noRetoH', { N: esc(ME.name) }) + '</h1>' +
+          '<p class="lede">' + T(yaAbrio ? 'cerradoP' : 'noRetoP') + '</p>' +
+        '<div class="how"><b>' + T('howH') + '</b><p>' + T('howP') + '</p></div>' +
+        '</div>';
+      return;
+    }
+
+    app.innerHTML =
+      crest + team +
+      '<div class="done">' +
+        '<div class="tick">' + (ME.waiting ? '\u2026' : '\u2713') + '</div>' +
+        '<h1>' + T(ME.waiting ? 'waitH' : ME.existing ? 'backH' : 'doneH',
+                   { N: esc(ME.name) }) + '</h1>' +
+        '<p class="lede">' + T(ME.waiting ? 'waitP' : 'doneP') + '</p>' +
+        '<div class="linkbox">' + esc(link) + '</div>' +
+        '<a class="btn" href="https://wa.me/?text=' +
+          encodeURIComponent(bothLangs() + '\n\n' + link) + '">' + T('share') + '</a>' +
+        '<button class="btn line" onclick="copyLink()">' + T('copy') + '</button>' +
+        /* La hora de cierre, porque es lo que decide si vale la pena
+           mandarlo hoy o no. */
+        '<p class="lede" style="margin:14px 0 0">' +
+          esc(T('cierra', { D: cuando(RETO.opens_at) })) + '</p>' +
+        '<p class="msg" id="msg"></p>' +
+        '<div class="how"><b>' + T('quienH') + '</b><p>' + T('quienP') + '</p></div>' +
+        '<div class="how"><b>' + T('howH') + '</b><p>' + T('howP') + '</p></div>' +
+      '</div>';
+    return;
+  }
+
+  app.innerHTML =
+    crest + team +
+    '<h1>' + T('h1') + '</h1>' +
+    '<p class="lede">' + T('lede') + '</p>' +
+    '<label for="nm">' + T('nameL') + '</label>' +
+    '<input id="nm" type="text" maxlength="60" placeholder="' + T('namePh') + '" autocomplete="name">' +
+    /* La escuadra sólo se pregunta si el programa tiene escuadras: ahí
+       es un toque en una lista y la familia sabe cuál es. Cuando no
+       las hay, antes salía un cuadro en blanco pidiendo que se la
+       inventaran — una pregunta que un papá no puede contestar y que
+       frena el único paso que hay. Si no hay lista, no se pregunta:
+       el entrenador la pone después si hace falta.
+       join() ya aguanta que el campo no exista. */
+    (divs().length
+      ? '<label for="sq">' + T('squadL') + '</label>' +
+        '<select id="sq" onchange="otra()">' +
+          '<option value="">' + T('squadPick') + '</option>' +
+          divs().map(function(d){
+            var on = WANT_SQUAD && d.toLowerCase() === WANT_SQUAD.trim().toLowerCase();
+            return '<option value="' + esc(d) + '"' + (on ? ' selected' : '') + '>' +
+                   esc(d) + '</option>';
+          }).join('') +
+          '<option value="__otra">' + T('squadOther') + '</option>' +
+        '</select>' +
+        '<input id="sqx" type="text" maxlength="30" style="display:none;margin-top:8px" ' +
+          'placeholder="' + T('squadPh') + '">'
+      : '') +
+    '<button class="btn" onclick="join()">' + T('go') + '</button>' +
+    '<p class="msg" id="msg"></p>';
+}
+
+function say(t,c){
+  var el = document.getElementById('msg');
+  if (el){ el.textContent = t; el.className = 'msg ' + (c||''); }
+}
+
+function join(){
+  var name = (document.getElementById('nm').value || '').trim();
+  var sel = document.getElementById('sq');
+  var squad = ((sel && sel.value) || '').trim();
+  if (squad === '__otra'){
+    var x = document.getElementById('sqx');
+    squad = ((x && x.value) || '').trim();
+  }
+  if (name.length < 2) return say(T('errName'), 'bad');
+
+  say('…');
+  rpc('join_roster', { p_campaign: CAMPAIGN, p_name: name, p_squad: squad })
+    .then(function(r){
+      if (!r || !r.ok) return say(T('errGen'), 'bad');
+      ME = r;
+      ME.squad = squad;          // para que su enlace filtre por ella
+      try { localStorage.setItem('cp-me-' + CAMPAIGN, JSON.stringify(ME)); } catch(e){}
+      draw();
+    })
+    .catch(function(e){ console.error(e); say(T('errGen'), 'bad'); });
+}
+
+/* "Otra" enseña el cuadrito para escribirla. Hace falta: un programa
+   que monta una escuadra nueva a mitad de temporada no puede quedarse
+   fuera por no estar en la lista. */
+function otra(){
+  var sel = document.getElementById('sq'), x = document.getElementById('sqx');
+  if (!sel || !x) return;
+  var on = sel.value === '__otra';
+  x.style.display = on ? 'block' : 'none';
+  if (on) x.focus();
+}
+
+function copyLink(){
+  var link = myLink();
+  if (!link) return;
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(link).then(function(){ say(T('copied'), 'ok'); })
+      .catch(function(){ say(link); });
+    return;
+  }
+  say(link);
+}
+
+// Si ya se añadió en este teléfono, no hace falta otra vez.
+//
+// Pero lo guardado dice cómo estaba el día que se apuntó, no cómo está
+// hoy. Si se guarda "esperando" y nunca se vuelve a mirar, el papá ve
+// "falta que tu entrenador lo apruebe" para siempre — también después
+// de que el entrenador lo aprobó. Así que al abrir se pregunta.
+try {
+  var saved = JSON.parse(localStorage.getItem('cp-me-' + CAMPAIGN) || 'null');
+  if (saved && saved.id) { ME = saved; ME.existing = true; }
+} catch(e){}
+
+function refrescar(){
+  if (!ME || !ME.id) return;
+  rpc('player_state', { p_id: ME.id })
+    .then(function(r){
+      if (!r || !r.ok){
+        // Lo rechazaron, o ya no está. Que vuelva a empezar.
+        ME = null;
+        try { localStorage.removeItem('cp-me-' + CAMPAIGN); } catch(e){}
+        draw();
+        return;
+      }
+      ME.name    = r.name || ME.name;
+      ME.waiting = (r.state === 'pending');
+      try { localStorage.setItem('cp-me-' + CAMPAIGN, JSON.stringify(ME)); } catch(e){}
+      draw();
+    })
+    .catch(function(){ /* sin red se queda con lo guardado */ });
+}
+refrescar();
+
+document.getElementById('langBtn').textContent = LANG==='es' ? 'EN':'ES';
+
+if (CAMPAIGN){
+  rpc('campaign_squads', { p_campaign: CAMPAIGN })
+    .then(function(r){ SQUADS = Array.isArray(r) ? r : []; })
+    .catch(function(){ SQUADS = []; })
+    .then(function(){ return rpc('game_board', { p_campaign: CAMPAIGN }); })
+    .then(function(b){ BOARD = b; return rpc('cp_reto_vivo', { p_campaign: CAMPAIGN }); })
+    /* Que falle esto no deja al nene sin página: se queda sin enlace,
+       que es exactamente lo que hay que enseñar cuando no se sabe. */
+    .then(function(r){ RETO = (r && r.ok) ? r : null; draw(); })
+    .catch(function(e){ console.error(e); draw(); });
+} else {
+  draw();
+}
+</script>
+</body>
+</html>
