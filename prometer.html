@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Apadrina — Anotado</title>
+<title>Apadrina — Hooporia</title>
 <meta name="robots" content="noindex,nofollow">
 <style>
 /* ══════════════════════════════════════════════════════════════════
@@ -19,7 +19,7 @@
 
    Tres cosas que esta página no hace, y son a propósito:
 
-   · No cobra nada, aquí ni después. Anotado no procesa pagos: el
+   · No cobra nada, aquí ni después. Hooporia no procesa pagos: el
      padrino le paga al programa, directo, cuando el programa le diga.
    · No deja prometer una vez empezado el juego. Después ya se sabe
      cuánto anotó, y prometer sabiendo el resultado no es prometer.
@@ -121,8 +121,16 @@ button.volver:hover{color:var(--paper);border-color:var(--mute)}
   color:#EAF2F7 !important;text-decoration:none !important;
   font-size:23px !important;font-weight:800 !important;
   letter-spacing:-.035em !important;line-height:1.1}
-.mark em, .wm em{font-style:normal;color:#FF8A2B !important}
-.mark i,  .wm i {font-style:normal;color:#4FD3F0 !important}
+/* Aquí había dos reglas para el color de la marca —em naranja, i
+   azul— que venían de la marca de tres palabras de Cada Punto, donde
+   el naranja caía sobre "punto" y el azul sobre "cuenta". Quitadas:
+   no pintaban nada, porque más abajo la piel de documento las gana
+   con !important, y dejar reglas muertas que dicen un color distinto
+   del que se ve es cómo se pierde media hora.
+
+   El color de la marca en esta página se decide en un solo sitio, el
+   bloque de la cabecera: sobre crema, el nombre en navy y el punto
+   naranja. Si hay que cambiarlo, es ahí. */
 /* En un teléfono estrecho, que no empuje al botón de idioma. */
 @media(max-width:380px){
   .mark, .mark .wm{font-size:20px !important}
@@ -197,7 +205,7 @@ button.volver:hover{background:var(--navy);color:#fff}
 <body>
 
 <header><div class="wrap bar">
-  <a class="mark" href="index.html">cada&nbsp;<em>punto</em>&nbsp;<i>cuenta</i></a>
+  <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
   <button id="lang">EN</button>
 </div></header>
 
@@ -296,12 +304,12 @@ var S={
   cerradaP:'El juego ya empezó, así que esta promesa llega tarde. Pero quedan más días de juego — pídele el próximo enlace.',
   jugado:'Esto es lo que hizo',
   listoH:'Listo. Eres su padrino.',
-  listoP:'Al cerrar el juego te llega un aviso con el marcador y lo que dio tu promesa. Le pagas directo al programa — Anotado no te va a cobrar nada.',
+  listoP:'Al cerrar el juego te llega un aviso con el marcador y lo que dio tu promesa. Le pagas directo al programa — Hooporia no te va a cobrar nada.',
   volver:'Cambiar mi promesa',
   otraVez:'Ya tenías una promesa para {N} — la actualizamos con lo que acabas de poner.',
   noVa:'Este enlace no abre una promesa.',
   total:'Tot',
-  pie:'Anotado es un sistema de manejo de promesas de Gostar Digital LLC. No procesamos pagos: le pagas al programa, directo.'
+  pie:'Hooporia es un sistema de manejo de promesas de Gostar Digital LLC. No procesamos pagos: le pagas al programa, directo.'
  },
  en:{
   kick:'Invited you to be their padrino',
@@ -328,12 +336,12 @@ var S={
   cerradaP:'The game has started, so this pledge is late. There will be other game days — ask them for the next link.',
   jugado:'Here is what they did',
   listoH:'Done. You are their padrino.',
-  listoP:'When the game closes you get a notice with the score and what your pledge came to. You pay the program directly — Anotado will never charge you anything.',
+  listoP:'When the game closes you get a notice with the score and what your pledge came to. You pay the program directly — Hooporia will never charge you anything.',
   volver:'Change my pledge',
   otraVez:'You already had a pledge for {N} — we updated it with what you just entered.',
   noVa:'This link does not open a pledge.',
   total:'Tot',
-  pie:'Anotado is a pledge management system from Gostar Digital LLC. We process no payments: you pay the program directly.'
+  pie:'Hooporia is a pledge management system from Gostar Digital LLC. We process no payments: you pay the program directly.'
  }
 };
 var LANG='es';
@@ -347,7 +355,7 @@ function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){
 var par=new URLSearchParams(location.search);
 var RETO=par.get('c'), JUGADOR=par.get('p');
 
-/* Ya no hay cargo que sumarle al padrino: Anotado se licencia al
+/* Ya no hay cargo que sumarle al padrino: Hooporia se licencia al
    programa por evento y al padrino no se le cobra nada. Lo
    que se enseña es la promesa, y nada más. */
 /* Para la cuenta de ejemplo. No es una promesa de cuánto va a anotar:
