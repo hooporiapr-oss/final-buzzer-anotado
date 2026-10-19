@@ -8,6 +8,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800;900&display=swap" rel="stylesheet">
+
+<!-- El icono y la imagen de compartir. og:image va en absoluto
+     a propósito: WhatsApp y los demás no resuelven rutas
+     relativas, y con una relativa la vista previa sale en
+     blanco igual que sin imagen. -->
+<link rel="icon" type="image/png" href="hooporia.png">
+<link rel="apple-touch-icon" href="hooporia.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hooporia">
+<meta property="og:image" content="https://hooporia.com/hooporia-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 /* ══════════════════════════════════════════════════════════════════
    FORTRESS EN LA CANCHA — CASCO, TELÉFONO Y COMPUTADORA
@@ -171,10 +185,18 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;display:block;
 #lang{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:12;
   border:1px solid #33465A;background:rgba(11,23,36,.6);color:#C8D6E2;border-radius:999px;
   padding:7px 14px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer}
+/* Volver a la portada. Enfrente del botón de idioma, con su misma
+   pinta, y sólo se ve cuando hay algo que leer: en la portada y en
+   la pantalla de final. Mientras se juega no está, que un toque sin
+   querer en una esquina no se lleve una corrida oficial. */
+#atras{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;z-index:12;
+  border:1px solid #33465A;background:rgba(11,23,36,.6);color:#C8D6E2;border-radius:999px;
+  padding:7px 14px;font:inherit;font-size:.72rem;font-weight:800;text-decoration:none}
 </style>
 </head>
 <body>
 
+<a id="atras" href="index.html">&larr; Inicio</a>
 <button id="lang">EN</button>
 
 <div id="hud" hidden>
@@ -308,7 +330,8 @@ var S={
     guardando:'Guardando el cuarto…',
     noGuardo:'No se pudo guardar. Revisa la conexión y vuelve a abrir tu enlace.',
     mejorTanda:'Tu mejor cadena de la tanda',
-    siguienteBtn:'Siguiente jugador'
+    siguienteBtn:'Siguiente jugador',
+    atras:'← Inicio'
   },
   en:{
     p:'The chain grows by one each round. Watch where the balls light up '+
@@ -376,7 +399,8 @@ var S={
     guardando:'Saving the quarter…',
     noGuardo:'Could not save. Check your connection and reopen your link.',
     mejorTanda:'Your best chain this round',
-    siguienteBtn:'Next player'
+    siguienteBtn:'Next player',
+    atras:'← Home'
   }
 };
 var LANG='es';
@@ -393,6 +417,7 @@ try{ HAY_FINO=!!(window.matchMedia&&matchMedia('(pointer:fine)').matches) }catch
 function pintarTextos(){
   document.documentElement.lang=LANG;
   $('lang').textContent=LANG==='es'?'EN':'ES';
+  $('atras').textContent=T('atras');
   $('tapaP').textContent=T('p');
   $('go').textContent=T('go');
   $('tapaS').textContent=(pidenCasco()&&hayGiro())?T('sCabeza')
@@ -440,6 +465,24 @@ $('lang').onclick=function(){
   try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG) }catch(e){}
   pintarTextos(); pintarHud();
 };
+
+/* ── Cuándo se ve el botón de volver ──────────────────────────────
+   Se ve si está abierta la portada o la pantalla de final, y no se
+   ve jugando. Se mira el estado de las capas en vez de apagarlo a
+   mano en cada sitio porque la portada y el final se encienden y se
+   apagan en una docena de puntos del fichero: el que se olvide de
+   uno deja el enlace encima del juego, que es justo lo que no
+   queremos. Así no hay nada que recordar. */
+(function botonAtras(){
+  var atras=$('atras'), tapa=$('tapa'), fin=$('fin');
+  function ver(){ atras.style.display=(!tapa.hidden||!fin.hidden)?'':'none' }
+  if(window.MutationObserver){
+    var o=new MutationObserver(ver);
+    o.observe(tapa,{attributes:true,attributeFilter:['hidden']});
+    o.observe(fin ,{attributes:true,attributeFilter:['hidden']});
+  }
+  ver();
+})();
 
 // ══════════════════════════════════════════════════════════════════
 //  LA ZONA SE MUEVE COMO SE MUEVE DE VERDAD
