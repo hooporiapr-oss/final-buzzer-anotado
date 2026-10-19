@@ -62,8 +62,8 @@ const url = (f, q) => 'file://' + path.resolve(__dirname, f) + (q || '');
     try { return require('fs').existsSync(p) ? p : null } catch (e) { return null }
   })();
 
-  async function abrir(f, q, lang) {
-    const p = await b.newPage({ viewport: { width: 430, height: 760 } });
+  async function abrir(f, q, lang, vista) {
+    const p = await b.newPage({ viewport: vista || { width: 430, height: 844 } });
     p.fuera = [];
     await p.route('**/*', r => {
       const u = r.request().url();
@@ -240,6 +240,56 @@ const url = (f, q) => 'file://' + path.resolve(__dirname, f) + (q || '');
        'y devuelve a la portada del tablero igual que el otro');
     eq(err.length, 0, 'sin errores' + (err.length ? ': ' + err[0] : ''));
     await p.close();
+  }
+
+  // ── 1b-ter · La foto de la portada ─────────────────────────────
+  console.log('\n1b-ter · la foto de la marca en la portada del tablero\n');
+  {
+    const p = await abrir('fortress-vr.html');
+    const foto = await p.evaluate(() => {
+      const el = document.getElementById('tapaFoto');
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      const go = document.getElementById('go').getBoundingClientRect();
+      return { src: el.getAttribute('src'),
+               ancho: Math.round(r.width), alto: Math.round(r.height),
+               proporcion: r.width / r.height,
+               alt: el.alt,
+               // El botón de empezar tiene que seguir cabiendo.
+               botonALaVista: go.bottom <= innerHeight && go.top >= 0 };
+    });
+    if (!foto) { mal('no hay foto en la portada del tablero'); }
+    else {
+      eq(foto.src, 'hooporia-share.jpg', 'es nuestra imagen de compartir');
+      /* Lo que de verdad se comprueba: que la caja tenga la
+         proporción del fichero. El atributo height="630" del <img>
+         llega como alto fijo y, sin height:auto, aspect-ratio no
+         manda: la caja sale cuadrada de más, el object-fit:cover
+         recorta por arriba y se lleva el 21 — que es el número que
+         cuenta la historia entera. Un recorte así no da error en
+         ninguna parte; sólo desaparece lo importante. */
+      eq(Math.abs(foto.proporcion - 1200 / 630) < 0.02, true,
+         'y se ve entera, sin recortar el 21 (' + foto.ancho + '×' + foto.alto + ')');
+      eq(foto.botonALaVista, true, 'sin empujar el botón de empezar fuera de la pantalla');
+      eq(foto.alt, 'Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21',
+         'con su alt en español');
+    }
+    await p.click('#lang');
+    await p.waitForTimeout(80);
+    eq(await p.$eval('#tapaFoto', e => /A kid shoots at sunset/.test(e.alt)), true,
+       'y en inglés el alt cambia — es un atributo, no texto de la etiqueta');
+    await p.close();
+
+    /* En pantalla baja —un teléfono tumbado, el casco— la foto
+       sobra: lo que hace falta ahí es el botón. */
+    const bajo = await abrir('fortress-vr.html', '', 'es', { width: 740, height: 420 });
+    eq(await bajo.$eval('#tapaFoto', e => getComputedStyle(e).display), 'none',
+       'en una pantalla baja la foto se quita sola');
+    eq(await bajo.evaluate(() => {
+      const r = document.getElementById('go').getBoundingClientRect();
+      return r.bottom <= innerHeight && r.top >= 0;
+    }), true, 'y el botón de empezar sigue a la vista');
+    await bajo.close();
   }
 
   // ── 1c · Y en una corrida oficial, no ──────────────────────────
