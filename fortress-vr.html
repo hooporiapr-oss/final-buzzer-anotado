@@ -192,6 +192,17 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;display:block;
 #atras{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;z-index:12;
   border:1px solid #33465A;background:rgba(11,23,36,.6);color:#C8D6E2;border-radius:999px;
   padding:7px 14px;font:inherit;font-size:.72rem;font-weight:800;text-decoration:none}
+/* Y el de abajo, el que no sale del tablero: devuelve a la portada
+   de ESTA página, que es de donde salen los dos juegos. Centrado
+   abajo, que es donde la mano ya está. */
+#volver{position:fixed;left:50%;transform:translateX(-50%);
+  bottom:calc(9px + env(safe-area-inset-bottom,0px));z-index:12;
+  border:1px solid #33465A;background:rgba(11,23,36,.82);color:#C8D6E2;
+  border-radius:999px;padding:9px 18px;font:inherit;font-size:.72rem;
+  font-weight:800;cursor:pointer}
+/* Con el botón puesto, la pista sube: si no, el texto de "tu mejor"
+   le queda justo debajo y se leen como una sola cosa. */
+body.conVolver #pista{bottom:calc(50px + env(safe-area-inset-bottom,0px))}
 </style>
 </head>
 <body>
@@ -214,6 +225,7 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;display:block;
      de pintado. -->
 <div id="mira" hidden><i></i></div>
 <div id="crudo" hidden></div>
+<button id="volver" hidden></button>
 
 <div class="capa" id="tapa">
   <h1>Fortress <em>en la cancha</em></h1>
@@ -331,7 +343,8 @@ var S={
     noGuardo:'No se pudo guardar. Revisa la conexión y vuelve a abrir tu enlace.',
     mejorTanda:'Tu mejor cadena de la tanda',
     siguienteBtn:'Siguiente jugador',
-    atras:'← Inicio'
+    atras:'← Inicio',
+    volver:'← Volver al tablero'
   },
   en:{
     p:'The chain grows by one each round. Watch where the balls light up '+
@@ -400,7 +413,8 @@ var S={
     noGuardo:'Could not save. Check your connection and reopen your link.',
     mejorTanda:'Your best chain this round',
     siguienteBtn:'Next player',
-    atras:'← Home'
+    atras:'← Home',
+    volver:'← Back to the board'
   }
 };
 var LANG='es';
@@ -418,6 +432,7 @@ function pintarTextos(){
   document.documentElement.lang=LANG;
   $('lang').textContent=LANG==='es'?'EN':'ES';
   $('atras').textContent=T('atras');
+  $('volver').textContent=T('volver');
   $('tapaP').textContent=T('p');
   $('go').textContent=T('go');
   $('tapaS').textContent=(pidenCasco()&&hayGiro())?T('sCabeza')
@@ -466,21 +481,51 @@ $('lang').onclick=function(){
   pintarTextos(); pintarHud();
 };
 
-/* ── Cuándo se ve el botón de volver ──────────────────────────────
-   Se ve si está abierta la portada o la pantalla de final, y no se
-   ve jugando. Se mira el estado de las capas en vez de apagarlo a
-   mano en cada sitio porque la portada y el final se encienden y se
-   apagan en una docena de puntos del fichero: el que se olvide de
-   uno deja el enlace encima del juego, que es justo lo que no
-   queremos. Así no hay nada que recordar. */
-(function botonAtras(){
-  var atras=$('atras'), tapa=$('tapa'), fin=$('fin');
-  function ver(){ atras.style.display=(!tapa.hidden||!fin.hidden)?'':'none' }
+/* ── Los dos botones de volver, y cuándo se ve cada uno ───────────
+   Son dos cosas distintas en dos momentos distintos.
+
+   · #atras, arriba, SALE del tablero: se va a la portada del sitio.
+     Se ve cuando hay algo que leer —la portada de este tablero o la
+     pantalla de final— y no se ve jugando.
+
+   · #volver, abajo, NO sale a ningún sitio: devuelve a la portada
+     de esta misma página, que es de donde salen los dos juegos (la
+     práctica y el scrimmage). Y por eso no es un enlace: recargar
+     la página sería volver a bajar three.js y perder la tanda. Se
+     ve justo al revés que el otro, mientras se juega.
+
+   Jugando, pero sólo en esos dos juegos abiertos. En una corrida
+   oficial no está: esa corrida es una sola en la vida de ese reto y
+   un toque en una esquina no se la puede llevar. Con el casco
+   puesto tampoco, que ahí no hay dónde tocar.
+
+   Los dos se atan al estado de las capas en vez de apagarse a mano
+   en cada sitio: la portada, el final y el marcador se encienden y
+   se apagan en una docena de puntos del fichero, y el que se olvide
+   de uno deja un botón encima del juego. Así no hay nada que
+   recordar. */
+(function botonesVolver(){
+  var atras=$('atras'), volver=$('volver'),
+      tapa=$('tapa'), fin=$('fin'), hud=$('hud');
+  function ver(){
+    atras.style.display=(!tapa.hidden||!fin.hidden)?'':'none';
+    var jugando=!hud.hidden && MODO!=='cabeza' && !JUEGO;
+    volver.hidden=!jugando;
+    document.body.classList.toggle('conVolver', jugando);
+  }
   if(window.MutationObserver){
     var o=new MutationObserver(ver);
-    o.observe(tapa,{attributes:true,attributeFilter:['hidden']});
-    o.observe(fin ,{attributes:true,attributeFilter:['hidden']});
+    [tapa,fin,hud].forEach(function(el){
+      o.observe(el,{attributes:true,attributeFilter:['hidden']});
+    });
   }
+  volver.onclick=function(){
+    volverAPortada();
+    /* El de idioma se esconde al arrancar la tanda. Si vuelve la
+       portada, vuelve él: es la única pantalla donde se usa. */
+    $('lang').style.display='';
+    ver();
+  };
   ver();
 })();
 
