@@ -83,6 +83,27 @@ const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
   has(t,/\$29 si la plantilla tiene menos de 8/,'29 bajo ocho');
   not(t,/\{A\}|\{B\}|\{N\}/,'sin plantillas sin rellenar');
 
+  /* Y, sobre todo, que se VEA. Esto se mira en innerText a secas,
+     sin pegarle el texto del acordeón — que es justo lo que leer()
+     hace y lo que dejaba pasar el fallo. El precio estuvo sólo
+     dentro de un <details> plegado ("¿Cuánto cuesta?", tercera de
+     cinco), así que las tres líneas de arriba pasaban mientras en la
+     página no se leía un número por ningún lado. Visible es que se
+     lea sin abrir nada. */
+  console.log('\n4b · Y el precio se ve sin abrir nada');
+  const aLaVista = () => p.evaluate(()=>document.body.innerText);
+  let v = await aLaVista();
+  has(v,/\$49/,'el 49 se lee con la página como la encuentra cualquiera');
+  has(v,/\$29/,'y el 29 también');
+  has(v,/Un precio por evento/,'con su titular');
+  has(v,/Nada por adelantado/,'nada por adelantado');
+  has(v,/Se factura cuando cierra el evento/,'cuándo se factura');
+  has(v,/caduca/,'y qué pasa si no se paga');
+  not(v,/\{A\}|\{B\}|\{N\}/,'sin plantillas sin rellenar');
+  const alPrecio = await p.evaluate(()=>
+    [...document.querySelectorAll('.navlinks a')].some(a=>a.getAttribute('href')==='#precio'));
+  alPrecio ? ok('y el menú de arriba lleva hasta él') : mal('el menú no lleva al precio');
+
   console.log('\n3 · Nada de custodia, nada de impuestos');
   has(t,/Hooporia no recibe dinero de nadie/,'no recibe dinero de nadie');
   has(t,/le paga al programa directo/,'el padrino paga al programa');
@@ -101,6 +122,10 @@ const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
   has(en,/\$49 per team for the event/,'49 per team');
   has(en,/\$29 if the roster is under 8/,'29 under eight');
   has(en,/never receives money from anybody/,'never receives money');
+  const ven = await aLaVista();
+  has(ven,/\$49/,'the price reads in English too, nothing to open');
+  has(ven,/One price for the event/,'with its heading');
+  has(ven,/Nothing up front/,'and nothing up front');
   not(en,/\{A\}|\{B\}|\{N\}/,'sin plantillas');
   not(en,/\bdeductible\b|\btax\b/i,'ni impuestos');
   const ti=await p.title();
