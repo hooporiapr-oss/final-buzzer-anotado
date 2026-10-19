@@ -404,9 +404,18 @@ function escoger(id){
 $('camp').onchange = function(){ escoger(this.value) };
 $('recargar').onclick = cargarCampanas;
 
+var tCodigo = null;
 $('codigoUso').oninput = function(){
   CODE = (this.value || '').trim();
   try { if (CAMP) localStorage.setItem('hoo-code-' + CAMP.id, CODE) } catch(e){}
+
+  /* La plantilla se cargaba sólo al abrir el reto, y el código casi
+     siempre se escribe después: se pegaba el código y la plantilla
+     seguía diciendo que hacía falta el código. Se vuelve a pedir
+     aquí, con un respiro para no mandar una llamada por tecla. */
+  if (tCodigo) clearTimeout(tCodigo);
+  if (!CAMP || !RETO || !codigo()) return;
+  tCodigo = setTimeout(cargarPlantilla, 400);
 };
 
 // ── Campaña nueva ────────────────────────────────────────────────
@@ -477,14 +486,15 @@ $('crearCodigo').onclick = function(){
 
   /* El código se arma aquí y se enseña una vez: la base sólo guarda
      su hash, así que si no se copia ahora no se recupera nunca. */
-  var codigo = 'HOO-' + Math.random().toString(36).slice(2,8).toUpperCase();
+  var recien = 'HOO-' + Math.random().toString(36).slice(2,8).toUpperCase();
   di('mCodigo', '…');
-  rpc('bw_code_add', { p_label: label, p_code: codigo, p_campaign: CAMP.id, p_build: true })
+  rpc('bw_code_add', { p_label: label, p_code: recien, p_campaign: CAMP.id, p_build: true })
     .then(function(){
       $('cLabel').value = ''; $('nuevoCodigo').classList.add('oculto');
-      $('codigoUso').value = CODE = codigo;
-      try { localStorage.setItem('hoo-code-' + CAMP.id, codigo) } catch(e){}
-      di('mCodigo', 'Created: ' + codigo + ' — copy it now, it is never shown again.', 'ok');
+      /* Se escribe en la caja, que es de donde codigo() lo lee. */
+      $('codigoUso').value = CODE = recien;
+      try { localStorage.setItem('hoo-code-' + CAMP.id, recien) } catch(e){}
+      di('mCodigo', 'Created: ' + recien + ' — copy it now, it is never shown again.', 'ok');
       cargarCodigos();
     })
     .catch(function(e){ di('mCodigo', 'Could not create it' + porque(e), 'mal') });
@@ -499,7 +509,10 @@ function aLocal(iso){
 }
 function cuando(iso){
   if (!iso) return '—';
-  return new Date(iso).toLocaleString('es-PR', { day:'numeric', month:'short',
+  /* El admin es en inglés. La fecha también: 'es-PR' imprimía
+     "19 nov, 3:20 p. m." en una pantalla que no tiene una palabra
+     más en español. */
+  return new Date(iso).toLocaleString('en-US', { day:'numeric', month:'short',
                                                  hour:'numeric', minute:'2-digit' });
 }
 /* Lo que impide una ventana imposible. La base tiene su guardia
@@ -572,7 +585,7 @@ function abrirReto(id){
   if (!RETO) return;
   $('detalle').innerHTML =
     '<section class="caja"><h2>' + esc(RETO.name) + '</h2>' +
-    '<p class="sub">The Fortress — scrimmage, 4 cuartos</p>' +
+    '<p class="sub">The Fortress — scrimmage, 4 quarters</p>' +
 
     '<label>Game window</label><div class="fila">' +
       '<div><input type="datetime-local" id="dAbre" value="' + aLocal(RETO.opens_at) + '"></div>' +
@@ -661,14 +674,31 @@ function conectarCopias(raiz){
   });
 }
 
+/* EL CÓDIGO SE LEE DE LA CAJA, SIEMPRE.
+
+   El navegador devuelve el texto de un input al recargar la página,
+   pero devolverlo no es escribirlo: no salta el evento 'input'. Así
+   que la caja se veía llena, CODE estaba vacío, y la plantilla
+   pedía el código que ya estaba puesto. Guardar el valor en una
+   variable y confiar en ella es la trampa; la caja es lo único que
+   no miente. */
+function codigo(){
+  var v = ($('codigoUso').value || '').trim();
+  if (v !== CODE) {
+    CODE = v;
+    try { if (CAMP) localStorage.setItem('hoo-code-' + CAMP.id, v) } catch(e){}
+  }
+  return v;
+}
+
 // ── La plantilla ─────────────────────────────────────────────────
 var PL = [];
 function cargarPlantilla(){
-  if (!CODE) {
+  if (!codigo()) {
     $('plantilla').innerHTML = '<p class="vacio">Put this campaign&rsquo;s code in the box above to see the roster.</p>';
     return;
   }
-  rpc('roster_list', { p_code: CODE, p_campaign: CAMP.id })
+  rpc('roster_list', { p_code: codigo(), p_campaign: CAMP.id })
     .then(function(r){
       if (!r || !r.ok) { PL = []; return di('mPl', 'That code does not work for this campaign' + porque(r), 'mal') }
       PL = r.players || []; di('mPl', '');
@@ -737,7 +767,7 @@ function pintarPlantilla(){
 
 function decidir(id, si){
   di('mPl', '…');
-  rpc('roster_decide', { p_code: CODE, p_campaign: CAMP.id, p_player: id, p_yes: si })
+  rpc('roster_decide', { p_code: codigo(), p_campaign: CAMP.id, p_player: id, p_yes: si })
     .then(function(r){
       if (!r || !r.ok) return di('mPl', 'Could not do it' + porque(r), 'mal');
       di('mPl', si ? 'In.' : 'Out.', 'ok');
@@ -748,9 +778,9 @@ function decidir(id, si){
 
 // ── El reporte ───────────────────────────────────────────────────
 function verReporte(){
-  if (!CODE) return di('mRep', 'The campaign code is required.', 'mal');
+  if (!codigo()) return di('mRep', 'The campaign code is required.', 'mal');
   di('mRep', '…');
-  rpc('challenge_report', { p_code: CODE, p_challenge: RETO.id })
+  rpc('challenge_report', { p_code: codigo(), p_challenge: RETO.id })
     .then(function(r){
       if (!r || !r.ok) return di('mRep', 'Could not do it' + porque(r), 'mal');
       di('mRep', '');
@@ -779,11 +809,11 @@ function verReporte(){
 }
 
 function mandarAvisos(){
-  if (!CODE) return di('mRep', 'The campaign code is required.', 'mal');
+  if (!codigo()) return di('mRep', 'The campaign code is required.', 'mal');
   if (!confirm('Send the notice to every padrino on this challenge.\n\nOne each, with the points and their total. No payment link, no reminders. This cannot be undone.'))
     return;
   di('mRep', '…');
-  servidor('/challenge-notices', { code: CODE, challenge_id: RETO.id })
+  servidor('/challenge-notices', { code: codigo(), challenge_id: RETO.id })
     .then(function(r){
       if (r.codigo === 404) return di('mRep', 'The Hooporia server does not have that route yet (' + SERVIDOR + ').', 'mal');
       if (r.codigo !== 200) return di('mRep', 'They were not sent' + porque(r.cuerpo), 'mal');
