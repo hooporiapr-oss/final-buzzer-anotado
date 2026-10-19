@@ -600,7 +600,7 @@ function abrirReto(id){
     '</section>' +
 
     '<section class="caja"><h2>Roster</h2>' +
-    '<p class="sub">They sign themselves up with the link. You say yes.</p>' +
+    '<p class="sub">Who signed up, and who the program has let in. The coach decides; you watch.</p>' +
     '<div id="plantilla"><p class="vacio">…</p></div>' +
     '<p class="m" id="mPl"></p></section>' +
 
@@ -648,8 +648,15 @@ function guardarReto(){
    nada, sin decir por qué. */
 function pintarEnlaces(){
   var alta = SITIO + '/jugador.html?c=' + CAMP.id;
+  /* La página del entrenador no lleva parámetros: entra con su
+     código y encuentra sus campañas sola. Así el enlace es uno para
+     todos los programas y no hay nada que pegar mal. */
+  var suya = SITIO + '/plantilla.html';
   var h = '<label style="margin-top:18px">Links</label>' +
-    fila('For players to sign themselves up', alta, 'Send it to the group. Anybody you approve can take a run.');
+    fila('For players to sign themselves up', alta,
+         'Send it to the group. Anyone the coach approves can take a run.') +
+    fila('For the coach — the roster', suya,
+         'Where the program approves who signed up. They enter with their code.');
   if (!RETO.live || !RETO.opens_at || !RETO.closes_at) {
     h += '<p class="aviso">The pledge and play links appear once the challenge is live and its window is set.</p>';
   }
@@ -707,18 +714,29 @@ function cargarPlantilla(){
     .catch(function(e){ di('mPl', 'Could not read the roster' + porque(e), 'mal') });
 }
 
+/* QUIÉN APRUEBA.
+
+   Aquí no. Aprobar a un jugador es trabajo del programa, no del
+   licenciante: el que conoce a la gente es el entrenador, y el que
+   responde si se cuela alguien es él también. La página del
+   entrenador —plantilla.html— ya lo hace entero: aprueba, rechaza,
+   renombra, pone escuadra y saca a quien sobre.
+
+   Este bloque mira, no toca. Si el admin aprobara también, habría
+   dos sitios donde se decide lo mismo, y un día no coincidirían. */
 function pintarPlantilla(){
   var esperan = PL.filter(function(p){ return p.state === 'pending' });
   var dentro  = PL.filter(function(p){ return p.state === 'active' });
   var h = '';
   if (esperan.length) {
-    h += '<p class="sub" style="margin:10px 0 0"><b>Waiting on you</b></p>' +
-      esperan.map(function(p, i){
+    h += '<p class="sub" style="margin:10px 0 0"><b>Waiting on the program</b> &middot; ' +
+      esperan.length + '</p>' +
+      esperan.map(function(p){
         return '<div class="item"><span><b>' + esc(p.name) + '</b><small>' +
-          esc(p.squad || 'no squad') + '</small></span><span style="display:flex;gap:6px">' +
-          '<button class="sm" data-si="' + esc(p.id) + '">Yes</button>' +
-          '<button class="q sm" data-no="' + esc(p.id) + '">No</button></span></div>';
-      }).join('');
+          esc(p.squad || 'no squad') + '</small></span></div>';
+      }).join('') +
+      '<p class="sub" style="margin:8px 0 0">The coach approves these on the roster page &mdash; ' +
+      'the link is up in <b>Links</b>.</p>';
   }
   h += dentro.length
     ? '<p class="sub" style="margin:14px 0 0"><b>In</b> · ' + dentro.length + '</p>' +
@@ -739,10 +757,6 @@ function pintarPlantilla(){
   $('plantilla').innerHTML = h;
 
   var raiz = $('plantilla');
-  Array.prototype.forEach.call(raiz.querySelectorAll('[data-si]'), function(b){
-    b.onclick = function(){ decidir(b.getAttribute('data-si'), true) } });
-  Array.prototype.forEach.call(raiz.querySelectorAll('[data-no]'), function(b){
-    b.onclick = function(){ decidir(b.getAttribute('data-no'), false) } });
   /* El enlace de jugar lleva la llave de la corrida, y esa llave hay
      que pedirla: con el enlace público no basta para cerrarle la
      corrida a otro, que es justo lo que la protege. */
@@ -763,17 +777,6 @@ function pintarPlantilla(){
     };
   });
   conectarCopias(raiz);
-}
-
-function decidir(id, si){
-  di('mPl', '…');
-  rpc('roster_decide', { p_code: codigo(), p_campaign: CAMP.id, p_player: id, p_yes: si })
-    .then(function(r){
-      if (!r || !r.ok) return di('mPl', 'Could not do it' + porque(r), 'mal');
-      di('mPl', si ? 'In.' : 'Out.', 'ok');
-      cargarPlantilla();
-    })
-    .catch(function(e){ di('mPl', 'Could not do it' + porque(e), 'mal') });
 }
 
 // ── El reporte ───────────────────────────────────────────────────
