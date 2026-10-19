@@ -208,7 +208,31 @@ function rpc(name,args){
     method:'POST',
     headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json'},
     body:JSON.stringify(args||{})
-  }).then(function(r){ if(!r.ok) throw new Error('rpc '+r.status); return r.json() });
+  }).then(function(r){
+    if (r.ok) return r.json();
+    /* El cuerpo de un error de PostgREST trae el porqué —message,
+       hint, details— y tirarlo era lo que convertía cada fallo en
+       una visita al editor de SQL: la página sabía exactamente qué
+       había pasado y enseñaba "no se pudo". Se lee antes de lanzar. */
+    return r.text().then(function(t){
+      var d = {}; try { d = JSON.parse(t) } catch(x){}
+      var e = new Error(d.message || d.hint || t || ('rpc ' + r.status));
+      e.detalle = d.details || d.hint || '';
+      e.codigo  = d.code || r.status;
+      throw e;
+    });
+  });
+
+/* El porqué, cuando lo hay. Un mensaje amable que no dice nada manda
+   a alguien a buscar en la base; el mismo mensaje con la razón
+   detrás se arregla solo. Se recorta: esto es una línea de aviso, no
+   un registro. */
+function porque(x){
+  if (!x) return '';
+  var r = (typeof x === 'string') ? x
+        : (x.why || x.error || x.message || x.hint || x.detalle || '');
+  return r ? ' — ' + String(r).slice(0, 160) : '';
+}
 }
 function $(id){ return document.getElementById(id) }
 function esc(s){
@@ -364,7 +388,7 @@ function entrar(auto){
       $('hout').className='out';
       arrancar();
     })
-    .catch(function(e){ console.error(e); say('gm',T('net'),'bad') });
+    .catch(function(e){ console.error(e); say('gm', T('net') + porque(e), 'bad') });
 }
 
 function arrancar(){
@@ -395,7 +419,7 @@ function cargar(){
       if(!r||!r.ok){ PL=[]; say('lm',T('bad'),'bad'); pintar(); return }
       PL=r.players||[]; pintar();
     })
-    .catch(function(e){ console.error(e); say('lm',T('net'),'bad') });
+    .catch(function(e){ console.error(e); say('lm', T('net') + porque(e), 'bad') });
 }
 
 /* Tres estados, no dos: esperando, en la lista, y fuera. Los que
@@ -546,13 +570,13 @@ function borrar(i){
   say('lm','…');
   rpc('roster_remove',{p_code:CODE,p_campaign:CID,p_player:p.id})
     .then(function(r){
-      if(!r||!r.ok) return say('lm',T('bad'),'bad');
+      if (!r || !r.ok) return say('lm', T('bad') + porque(r), 'bad');
       var gone = r.state==='gone';
       cargar().then(function(){
         say('lm', gone?T('gone',{N:p.name}):T('kept',{N:p.name}), gone?'ok':'bad');
       });
     })
-    .catch(function(e){ console.error(e); say('lm',T('net'),'bad') });
+    .catch(function(e){ console.error(e); say('lm', T('net') + porque(e), 'bad') });
 }
 
 function decidir(i,yes){
@@ -561,12 +585,12 @@ function decidir(i,yes){
   say('lm','…');
   rpc('roster_decide',{p_code:CODE,p_campaign:CID,p_player:p.id,p_yes:yes})
     .then(function(r){
-      if(!r||!r.ok) return say('lm',T('bad'),'bad');
+      if (!r || !r.ok) return say('lm', T('bad') + porque(r), 'bad');
       cargar().then(function(){
         say('lm', yes?T('okYes',{N:p.name}):T('okNo',{N:p.name}), 'ok');
       });
     })
-    .catch(function(e){ console.error(e); say('lm',T('net'),'bad') });
+    .catch(function(e){ console.error(e); say('lm', T('net') + porque(e), 'bad') });
 }
 
 function fila_edit(p,i){
@@ -601,7 +625,7 @@ function guardar(i){
       }
       EDIT=null; say('lm',T('saved'),'ok'); cargar();
     })
-    .catch(function(e){ console.error(e); say('lm',T('net'),'bad') });
+    .catch(function(e){ console.error(e); say('lm', T('net') + porque(e), 'bad') });
 }
 
 function mover(i,on){
@@ -609,10 +633,10 @@ function mover(i,on){
   say('lm','…');
   rpc('roster_active',{p_code:CODE,p_campaign:CID,p_player:p.id,p_on:on})
     .then(function(r){
-      if(!r||!r.ok) return say('lm',T('bad'),'bad');
+      if (!r || !r.ok) return say('lm', T('bad') + porque(r), 'bad');
       say('lm',''); cargar();
     })
-    .catch(function(e){ console.error(e); say('lm',T('net'),'bad') });
+    .catch(function(e){ console.error(e); say('lm', T('net') + porque(e), 'bad') });
 }
 function sacar(i){
   var p=PL[i]; if(!p) return;
