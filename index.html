@@ -44,7 +44,9 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22}
 .hero h1{font-size:clamp(2.8rem,6vw,5.4rem);line-height:1.06;letter-spacing:-.055em;margin:18px 0 20px}
 .hero h1 em{font-style:normal;color:var(--orange)}
 .hero p{font-size:1.16rem;color:#d3dce6;max-width:610px}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+/* Centrados: debajo va la foto a todo el ancho, así que los botones
+   hacen de puente entre el texto y ella. */
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;justify-content:center}
 /* Aquí había una pelota dibujada en CSS, en una columna cuadrada al
    lado del texto. La foto es apaisada —1200×630— y en esa columna
    habría salido del tamaño de un sello, así que la portada pasa a una
@@ -73,7 +75,8 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22}
    corrida sin reto, sin llave y sin official=1 no cuenta. Se deja
    como grid de una columna y con ancho máximo para que no se
    estire a lo ancho de la página. */
-.play{display:grid;grid-template-columns:1fr;gap:18px;margin-top:36px;max-width:620px}
+.play{display:grid;grid-template-columns:1fr;gap:18px;margin-top:36px;max-width:620px;
+  margin-left:auto;margin-right:auto}
 /* Centrada desde que es la única. Con dos tarjetas lado a lado el
    texto alineado a la izquierda hacía de columna y ayudaba a
    compararlas; sola, esa alineación la deja descolgada a un lado de
@@ -89,7 +92,10 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22}
 .pcard .button{align-self:center;margin-top:20px}
 .pcard .button.quiet{background:transparent;color:var(--navy);border:1px solid var(--navy)}
 .pcard .button.quiet:hover{background:var(--navy);color:white}
-.playnote{color:var(--muted);margin:22px 0 0;max-width:62ch}
+/* Centrada bajo la tarjeta, y con el mismo eje: con el texto a la
+   izquierda y la tarjeta en medio, la nota tiraba de la vista hacia
+   un lado justo debajo de algo centrado. */
+.playnote{color:var(--muted);margin:22px auto 0;max-width:62ch;text-align:center}
 @media(max-width:750px){.play{grid-template-columns:1fr}}
 .section{padding:84px 0}
 .section h2{font-size:clamp(2rem,4vw,3rem);line-height:1.14;letter-spacing:-.035em;margin:8px 0 18px}
