@@ -131,7 +131,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
         <div><label for="nQuien">Program contact</label>
              <input id="nQuien" placeholder="First and last name"></div>
         <div><label for="nCorreo">Their email</label>
-             <input id="nCorreo" type="email" placeholder="entrenador@programa.com"></div>
+             <input id="nCorreo" type="email" placeholder="coach@program.com"></div>
       </div>
       <div class="btns"><button id="crearCamp">Create campaign</button>
                         <button class="q" id="cancelarCamp">Cancel</button></div>
@@ -315,11 +315,20 @@ $('mandar').onclick = function(){
   var correo = ($('correo').value || '').trim();
   if (!correo) return di('mEntrar', 'Enter your email.', 'mal');
   di('mEntrar', '…');
-  fetch(SB_URL + '/auth/v1/otp', {
+  /* A dónde vuelve el enlace del correo va en la QUERY, no en el
+     cuerpo. GoTrue lee redirect_to de la URL; un email_redirect_to
+     metido en el JSON lo descarta sin decir nada, y entonces manda
+     al Site URL del proyecto — que es gostardigital.com, el admin
+     viejo. De ahí venía el viaje al admin equivocado.
+
+     Y la dirección va escrita entera, no sacada de location: así el
+     enlace vuelve SIEMPRE al admin, desde cualquier página que se
+     pida. */
+  var vuelta = encodeURIComponent(SITIO + '/admin.html');
+  fetch(SB_URL + '/auth/v1/otp?redirect_to=' + vuelta, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', apikey: SB_KEY },
-    body: JSON.stringify({ email: correo, create_user: false,
-                           options: { email_redirect_to: location.href.split('#')[0] } })
+    body: JSON.stringify({ email: correo, create_user: false })
   }).then(function(r){ return r.ok ? {} : leerError(r) })
     .then(function(){ di('mEntrar', 'Sent. Open the link in this same browser.', 'ok') })
     .catch(function(e){ di('mEntrar', 'Could not send it' + porque(e), 'mal') });
@@ -516,7 +525,7 @@ function cargarRetos(){
               (sinVentana ? ' · no window, nobody can play' : '') +
               '</small></span><span style="display:flex;gap:7px;align-items:center">' +
               '<span class="pill' + (r.live ? ' on' : '') + '">' + (r.live ? 'live' : 'off') + '</span>' +
-              '<button class="q sm" data-reto="' + esc(r.id) + '">Abrir</button></span></div>';
+              '<button class="q sm" data-reto="' + esc(r.id) + '">Open</button></span></div>';
           }).join('')
         : '<p class="vacio">No challenges in this campaign yet.</p>';
       Array.prototype.forEach.call($('retos').querySelectorAll('[data-reto]'), function(b){
@@ -571,24 +580,24 @@ function abrirReto(id){
     '</div>' +
     '<label style="font-weight:400;margin-top:12px"><input type="checkbox" id="dVivo"' +
       (RETO.live ? ' checked' : '') + '>Live</label>' +
-    '<div class="btns"><button id="dGuardar">Guardar</button></div>' +
+    '<div class="btns"><button id="dGuardar">Save</button></div>' +
     '<p class="m" id="mDet"></p>' +
 
     '<div id="enlaces"></div>' +
     '</section>' +
 
-    '<section class="caja"><h2>Plantilla</h2>' +
+    '<section class="caja"><h2>Roster</h2>' +
     '<p class="sub">They sign themselves up with the link. You say yes.</p>' +
     '<div id="plantilla"><p class="vacio">…</p></div>' +
     '<p class="m" id="mPl"></p></section>' +
 
-    '<section class="caja"><h2>Reporte y avisos</h2>' +
+    '<section class="caja"><h2>Report and notices</h2>' +
     '<p class="sub">What was pledged, and the notice each padrino gets when it closes.</p>' +
     '<div class="btns"><button class="q" id="verReporte">See the report</button>' +
       '<button class="q" id="mandarAvisos">Send the notices</button></div>' +
     '<p class="m" id="mRep"></p><div id="reporte"></div></section>' +
 
-    '<section class="caja"><h2>Licencia</h2>' +
+    '<section class="caja"><h2>Licence</h2>' +
     '<p class="sub">$49 per event, $29 if the roster is under eight. No pledges, no fee.</p>' +
     '<div class="btns"><button class="q" id="verLic">See what it would cost</button></div>' +
     '<p class="m" id="mLic"></p><div id="licencia"></div></section>';
@@ -639,7 +648,7 @@ function fila(titulo, url, nota){
   return '<div class="item"><span style="min-width:0"><b>' + esc(titulo) + '</b>' +
     (nota ? '<small>' + esc(nota) + '</small>' : '') +
     '<div class="enl">' + esc(url) + '</div></span>' +
-    '<button class="q sm" data-copiar="' + esc(url) + '">Copiar</button></div>';
+    '<button class="q sm" data-copiar="' + esc(url) + '">Copy</button></div>';
 }
 function conectarCopias(raiz){
   Array.prototype.forEach.call(raiz.querySelectorAll('[data-copiar]'), function(b){
@@ -693,7 +702,7 @@ function pintarPlantilla(){
           (prometer ? '<div class="enl">padrinos: ' + esc(prometer) + '</div>' : '') +
           '</span><span style="display:flex;gap:6px;flex-wrap:wrap">' +
           (prometer ? '<button class="q sm" data-copiar="' + esc(prometer) + '">Padrinos</button>' : '') +
-          (jugar ? '<button class="q sm" data-jugar="' + esc(p.id) + '">Jugar</button>' : '') +
+          (jugar ? '<button class="q sm" data-jugar="' + esc(p.id) + '">Play</button>' : '') +
           '</span></div>';
       }).join('')
     : (esperan.length ? '' : '<p class="vacio">Nobody has signed up yet.</p>');
@@ -753,7 +762,7 @@ function verReporte(){
           '<div><b>$' + Number(r.pledged || 0).toFixed(2) + '</b><span>prometido</span></div>' +
         '</div>' +
         (prom.length
-          ? '<table><tr><th>Padrino</th><th>Jugador</th><th class="n">Puntos</th>' +
+          ? '<table><tr><th>Padrino</th><th>Player</th><th class="n">Points</th>' +
             '<th class="n">Total</th><th>State</th></tr>' +
             prom.map(function(p){
               return '<tr><td>' + esc(p.padrino) + '<br><small style="color:var(--muted)">' +
@@ -806,7 +815,7 @@ function verLicencia(confirmar){
                    ' to ' + d.program_email + '.', 'ok');
         $('licencia').innerHTML = d.url
           ? '<div class="item"><span><b>The invoice</b></span>' +
-            '<a href="' + esc(d.url) + '" target="_blank" rel="noopener"><button class="q sm">Abrir en Stripe</button></a></div>'
+            '<a href="' + esc(d.url) + '" target="_blank" rel="noopener"><button class="q sm">Open in Stripe</button></a></div>'
           : '';
         return;
       }
