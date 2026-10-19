@@ -200,7 +200,41 @@ for (const f of archivos){
   }
 }
 
+/* ── Que las imágenes de marca estén, y existan ──────────────────
+   Una página puede nombrar a Hooporia perfectamente y seguir saliendo
+   en blanco cuando un entrenador la manda por WhatsApp. Esto mira las
+   dos cosas que deciden eso: que cada página apunte al icono y a la
+   imagen de compartir, y que los dos ficheros existan de verdad.
+
+   La de compartir se exige en ABSOLUTO: WhatsApp y los demás no
+   resuelven rutas relativas, así que una relativa da exactamente la
+   misma vista previa en blanco que no poner nada — y pasaría
+   cualquier prueba que sólo mirara si la etiqueta está. */
+const IMAGENES = ['hooporia.png', 'hooporia-share.jpg'];
+console.log('');
+for (const img of IMAGENES){
+  fs.existsSync(path.join(__dirname, img))
+    ? ok(img + ' existe')
+    : mal(img + ' NO existe, y las páginas lo nombran');
+}
+for (const f of archivos){
+  const s = fs.readFileSync(path.join(__dirname, f), 'utf8');
+  const icono = /<link[^>]+rel="icon"[^>]+href="hooporia\.png"/.test(s);
+  const abs   = /og:image"[^>]+content="https:\/\/hooporia\.com\/hooporia-share\.jpg"/.test(s);
+  const rel   = /og:image"[^>]+content="(?!https?:)/.test(s);
+  /* La imagen de compartir se exige donde compartir el enlace tiene
+     sentido. Una página marcada noindex —el admin— no se manda por
+     WhatsApp ni sale en una búsqueda: está detrás de una sesión y
+     sólo entra quien ya sabe que existe. El icono de pestaña sí se
+     le pide, que ése se ve en cuanto se abre. */
+  const privada = /<meta[^>]+name="robots"[^>]+noindex/.test(s);
+  if (!icono)              mal(f + ': sin icono de pestaña');
+  else if (rel)            mal(f + ': og:image en relativo, la vista previa saldría en blanco');
+  else if (!abs && !privada) mal(f + ': sin og:image absoluta');
+}
+if (!fallos) ok('cada página lleva su icono, y las públicas su imagen de compartir');
+
 console.log('\n' + (fallos === 0
-  ? '✓ todas las páginas dicen Hooporia y ninguna nombra otra marca'
+  ? '✓ todas las páginas dicen Hooporia, nombran sus imágenes y ninguna nombra otra marca'
   : '✗ ' + fallos + ' página(s) con problema de marca'));
 process.exit(fallos === 0 ? 0 : 1);
