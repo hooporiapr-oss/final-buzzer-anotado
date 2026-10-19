@@ -68,15 +68,25 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22}
    Van pegadas al hero a propósito: el titular promete una chicharra
    y un número, y lo siguiente que se puede hacer es ir a buscarlo.
    Explicar la recogida de fondos viene después. */
-.play{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:36px}
+/* Una sola tarjeta desde que se quitó la de práctica: el otro
+   tablero no se enseña, y el del scrimmage ya deja practicar —una
+   corrida sin reto, sin llave y sin official=1 no cuenta. Se deja
+   como grid de una columna y con ancho máximo para que no se
+   estire a lo ancho de la página. */
+.play{display:grid;grid-template-columns:1fr;gap:18px;margin-top:36px;max-width:620px}
+/* Centrada desde que es la única. Con dos tarjetas lado a lado el
+   texto alineado a la izquierda hacía de columna y ayudaba a
+   compararlas; sola, esa alineación la deja descolgada a un lado de
+   su propia caja. */
 .pcard{background:white;border:1px solid #e7e6e2;border-radius:16px;padding:28px;
-  box-shadow:0 8px 25px #17243808;display:flex;flex-direction:column}
+  box-shadow:0 8px 25px #17243808;display:flex;flex-direction:column;
+  align-items:center;text-align:center}
 .pcard.hot{border-color:rgba(255,122,24,.55)}
 .pcard .tag{color:var(--orange);font-weight:900;font-size:.72rem;
   letter-spacing:.14em;text-transform:uppercase}
 .pcard h3{font-size:1.45rem;letter-spacing:-.03em;margin:12px 0 8px}
 .pcard p{color:var(--muted);margin:0;flex:1 1 auto}
-.pcard .button{align-self:flex-start;margin-top:20px}
+.pcard .button{align-self:center;margin-top:20px}
 .pcard .button.quiet{background:transparent;color:var(--navy);border:1px solid var(--navy)}
 .pcard .button.quiet:hover{background:var(--navy);color:white}
 .playnote{color:var(--muted);margin:22px 0 0;max-width:62ch}
@@ -170,7 +180,7 @@ button.lang{border:1px solid #ffffff55;background:transparent;color:white;paddin
 <div class="wrap">
 <div class="eyebrow" data-i="playLabel">Try it now</div>
 <h2 data-i="playTitle">Play it before you read another word.</h2>
-<p class="intro" data-i="playDesc">Both of these are the real game, open to anybody, and neither one records a thing. Nothing to sign up for.</p>
+<p class="intro" data-i="playDesc">This is the real game, open to anybody, and nothing you do here is recorded. Nothing to sign up for.</p>
 <div class="play">
 
 <article class="pcard hot">
@@ -180,15 +190,8 @@ button.lang{border:1px solid #ffffff55;background:transparent;color:white;paddin
 <a class="button" href="fortress-vr.html" data-i="pScrimGo">Play the scrimmage</a>
 </article>
 
-<article class="pcard">
-<div class="tag" data-i="pPracTag">Practice</div>
-<h3 data-i="pPracH">Free practice</h3>
-<p data-i="pPracP">One run, as many times as you want. This is where a player gets warm — arriving cold at the run that counts is how a good player ends up with a small number.</p>
-<a class="button quiet" href="fortress.html" data-i="pPracGo">Open practice</a>
-</article>
-
 </div>
-<p class="playnote" data-i="playNote">The only thing practice is missing is the score being recorded. A run only counts when a player opens it from his own padrino link, and the database refuses a second one — so nobody gets two tries at the number their padrinos are backing.</p>
+<p class="playnote" data-i="playNote">The only thing missing here is the score being recorded. A run only counts when a player opens it from his own padrino link, and the database refuses a second one — so nobody gets two tries at the number their padrinos are backing.</p>
 </div>
 </section>
 
@@ -313,16 +316,12 @@ learn:'Juégalo ahora',
 
 playLabel:'Pruébalo ahora',
 playTitle:'Juégalo antes de seguir leyendo.',
-playDesc:'Los dos son el juego de verdad, abiertos para cualquiera, y ninguno de los dos anota nada. Sin registrarse.',
+playDesc:'Éste es el juego de verdad, abierto para cualquiera, y aquí no se anota nada. Sin registrarse.',
 pScrimTag:'Scrimmage · 4 cuartos',
 pScrimH:'Los cuatro cuartos completos',
 pScrimP:'Cuatro cuartos de cinco minutos. Cada cuarto cuenta tu MEJOR corrida de ese cuarto, y los cuatro se suman en un solo número al sonar la chicharra. Entre cuartos practicas lo que quieras.',
 pScrimGo:'Jugar el scrimmage',
-pPracTag:'Práctica',
-pPracH:'Práctica libre',
-pPracP:'Una corrida, las veces que quieras. Aquí es donde un jugador se calienta — llegar frío a la corrida que cuenta es como un buen jugador termina con un número chiquito.',
-pPracGo:'Abrir la práctica',
-playNote:'Lo único que le falta a la práctica es que el marcador quede anotado. Una corrida cuenta sólo cuando el jugador la abre desde su propio enlace de padrinos, y la base de datos rechaza la segunda — así nadie tiene dos intentos al número que sus padrinos están respaldando.',
+playNote:'Lo único que falta aquí es que el marcador quede anotado. Una corrida cuenta sólo cuando el jugador la abre desde su propio enlace de padrinos, y la base de datos rechaza la segunda — así nadie tiene dos intentos al número que sus padrinos están respaldando.',
 processLabel:'Un reto que abres cuando quieras',
 processTitle:'Tres pasos. Una corrida cada uno.',
 processDesc:'Sin fecha en el calendario de nadie más. Tú pones la ventana, los jugadores juegan dentro de ella, y se cierra sola.',
