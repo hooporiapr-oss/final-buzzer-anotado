@@ -5,6 +5,7 @@ const FILE='file://'+path.resolve(__dirname,'index.html');
 let bad=0; const ok=m=>console.log('  ok   '+m); const mal=m=>{bad++;console.log('  MAL  '+m)};
 const has=(t,re,q)=>re.test(t)?ok(q):mal(q+'  (no '+re+')');
 const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
+const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n         vino:     '+a);
 (async()=>{
   const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',args:['--no-sandbox']});
   const p=await b.newPage();
@@ -95,14 +96,43 @@ const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
   let v = await aLaVista();
   has(v,/\$49/,'el 49 se lee con la página como la encuentra cualquiera');
   has(v,/\$29/,'y el 29 también');
-  has(v,/Un precio por evento/,'con su titular');
+  has(v,/El cargo llega después del resultado/,'con su titular, que es el argumento');
   has(v,/Nada por adelantado/,'nada por adelantado');
   has(v,/Se factura cuando cierra el evento/,'cuándo se factura');
   has(v,/caduca/,'y qué pasa si no se paga');
+
+  /* Sin promesas, sin cargo. Es una promesa que se hace, así que
+     tiene que leerse en la página —no sólo en los términos— y tiene
+     que decir PROMESAS y no PAGOS: el cargo se debe cuando hay
+     promesas anotadas y reporte, haya pagado un padrino o no. Si
+     esto se escribiera como "hasta que te paguen", sería mentira y
+     además sonaría a que el dinero pasa por aquí. */
+  has(v,/Sin promesas, sin cargo/,'la promesa, dicha en la página');
+  has(v,/no recoge ni una promesa no se factura/,'y qué significa exactamente');
+  not(v,/hasta que te paguen|cuando cobres|de lo que recaudes/i,
+      'y en ningún sitio dice que se pague con lo recaudado');
   not(v,/\{A\}|\{B\}|\{N\}/,'sin plantillas sin rellenar');
   const alPrecio = await p.evaluate(()=>
     [...document.querySelectorAll('.navlinks a')].some(a=>a.getAttribute('href')==='#precio'));
   alPrecio ? ok('y el menú de arriba lleva hasta él') : mal('el menú no lleva al precio');
+
+  /* Y el botón de inscribir, dentro de la sección: es donde alguien
+     decide, y hasta ahora había que seguir bajando para encontrarlo.
+     Se comprueba que esté DENTRO de #precio y que lleve texto — un
+     data-i repetido pinta bien sólo si la llave existe en las dos
+     tablas, y si no, el botón sale vacío sin dar error. */
+  const btn = await p.evaluate(()=>{
+    const a = document.querySelector('#precio a.button');
+    return a ? { href:a.getAttribute('href'), texto:a.textContent.trim() } : null;
+  });
+  if (!btn) mal('la sección del precio no lleva el botón de inscribir');
+  else {
+    btn.href==='equipo.html' ? ok('el botón del precio va a equipo.html')
+                             : mal('el botón del precio va a '+btn.href);
+    /^Solicitar registro de equipo$/.test(btn.texto)
+      ? ok('con su texto en español → '+btn.texto)
+      : mal('el botón salió con el texto "'+btn.texto+'"');
+  }
 
   console.log('\n3 · Nada de custodia, nada de impuestos');
   has(t,/Hooporia no recibe dinero de nadie/,'no recibe dinero de nadie');
@@ -124,8 +154,14 @@ const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
   has(en,/never receives money from anybody/,'never receives money');
   const ven = await aLaVista();
   has(ven,/\$49/,'the price reads in English too, nothing to open');
-  has(ven,/One price for the event/,'with its heading');
+  has(ven,/The invoice comes after the results do/,'with its heading');
   has(ven,/Nothing up front/,'and nothing up front');
+  has(ven,/No pledges, no fee/,'the promise, in English');
+  eqTexto(await p.$eval('#precio a.button', e=>e.textContent.trim()),
+          'Request Team Registration', 'and the button says it in English too');
+  has(ven,/records no pledges is never invoiced/,'and what it means');
+  not(ven,/out of what you raise|once you have been paid/i,
+      'and nowhere does it say the fee comes out of what was raised');
   not(en,/\{A\}|\{B\}|\{N\}/,'sin plantillas');
   not(en,/\bdeductible\b|\btax\b/i,'ni impuestos');
   const ti=await p.title();
