@@ -66,6 +66,19 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
   not(txt, /Cada Punto/,                       'sin el nombre del otro producto');
   not(txt, /deducib|impuesto/i,                'ni una palabra de impuestos');
 
+  /* El paso dos pedía la plantilla: "nos pasas tu plantilla". Aquí
+     nadie manda listas — el jugador se da de alta solo con el enlace
+     de la campaña y el entrenador aprueba. Pedirle los nombres al
+     entrenador es trabajo que el producto le quita, así que
+     prometerlo en la página y luego no pedírselo no era un error
+     bonito: era la página contando otro producto. */
+  has(txt, /se dan de alta solos/,             'los jugadores se dan de alta solos');
+  has(txt, /No nos mandas ninguna lista/,      'y se dice que no se manda ninguna lista');
+  has(txt, /tú apruebas quién queda dentro/,   'con el entrenador aprobando');
+  has(txt, /no tiene que ser sólo el equipo/,  'y abierto a más que la plantilla');
+  not(txt, /[Nn]os pasas tu plantilla|[Mm]ándanos|[Pp]ásanos (tu|la) plantilla/,
+      'y en ningún sitio se le piden los nombres al entrenador');
+
   di('2 · La licencia no se puede saltar');
   await page.evaluate(() => {
     const v = { team:'Canóvanas 15U', prog:'Canóvanas Basketball Club',
