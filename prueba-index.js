@@ -1,5 +1,6 @@
 const { chromium } = require('/opt/node-tools/node_modules/playwright-core');
 const path = require('path');
+const fs   = require('fs');
 const FILE='file://'+path.resolve(__dirname,'index.html');
 let bad=0; const ok=m=>console.log('  ok   '+m); const mal=m=>{bad++;console.log('  MAL  '+m)};
 const has=(t,re,q)=>re.test(t)?ok(q):mal(q+'  (no '+re+')');
@@ -38,8 +39,14 @@ const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
   has(t,/Scrimmage · 4 cuartos/i,'la tarjeta del scrimmage');
   has(t,/Los cuatro cuartos completos/,'y qué es');
   has(t,/Cada cuarto cuenta tu MEJOR corrida/,'cómo cuenta cada cuarto');
-  has(t,/Práctica libre/i,'la tarjeta de práctica');
-  has(t,/ninguno de los dos anota nada/,'y que ninguna anota nada');
+  /* Antes había dos tarjetas y aquí se exigían las dos. Se quitó la
+     de práctica: abría el otro tablero —el de corrida suelta— y lo
+     que se enseña es el scrimmage. Practicar se practica ahí mismo,
+     porque una corrida sin reto, sin llave y sin official=1 no
+     cuenta. Así que ahora se exige UNA tarjeta, no dos. */
+  (t.match(/pcard/g) || []).length;
+  has(t,/aquí no se anota nada|nothing you do here is recorded/i,
+      'dice que aquí no se anota nada');
   has(t,/la base de datos rechaza la segunda/,'una sola corrida oficial, por la base de datos');
   // Los dos enlaces tienen que existir de verdad en el repo.
   const juegos = await p.evaluate(()=>[...document.querySelectorAll('.pcard a')].map(a=>a.getAttribute('href')));
@@ -50,7 +57,16 @@ const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
       : mal('el enlace ' + h + ' NO existe');
   }
   juegos.includes('fortress-vr.html') ? ok('el scrimmage apunta al juego de cuartos') : mal('falta fortress-vr.html');
-  juegos.includes('fortress.html') ? ok('la práctica apunta al juego suelto') : mal('falta fortress.html');
+  /* fortress.html sigue existiendo y sigue siendo un juego válido para
+     un reto —está en la lista del admin— pero ya no se enlaza desde la
+     portada. Así que se comprueba que el fichero esté, no que la
+     portada apunte a él. */
+  fs.existsSync(path.join(__dirname,'fortress.html'))
+    ? ok('fortress.html sigue en el repo, aunque la portada ya no lo enlace')
+    : mal('falta el fichero fortress.html');
+  juegos.includes('fortress.html')
+    ? mal('la portada todavía enlaza la práctica')
+    : ok('y la portada no lo enlaza');
 
   console.log('\n3 · El argumento grande');
   has(t,/La recogida de fondos es el producto/,'la recogida es el producto');
@@ -102,7 +118,15 @@ const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
   const src=await p.content();
   has(src,/--orange:#ff7a18/,'el naranja');
   has(src,/--cream:#faf8f4/,'la crema');
-  not(src,/(href|src|content)="[^"]*hooporia(\.png|-share)/,'ningún atributo apunta a una imagen que no existe');
+  /* Antes esto exigía lo contrario: que NADIE apuntara a hooporia.png
+     ni a la imagen de compartir, porque no existían y un <link> a un
+     fichero que no está es un 404 en cada carga. Ya existen, así que
+     ahora se exige que estén puestas. La comprobación de que los
+     ficheros existen de verdad vive en prueba-marca.js, que mira
+     todas las páginas y no sólo ésta. */
+  has(src,/<link[^>]+rel="icon"[^>]+href="hooporia\.png"/,'el icono de la pestaña');
+  has(src,/og:image"[^>]+content="https:\/\/hooporia\.com\/hooporia-share\.jpg"/,
+      'la imagen de compartir, en absoluto');
   errs.length?errs.forEach(e=>mal(e)):ok('sin errores de página');
 
   await b.close();
