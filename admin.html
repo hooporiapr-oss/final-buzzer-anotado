@@ -93,18 +93,18 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 
 <header><div class="wrap bar">
   <div class="marca">HOOPORIA<span>.</span><small>ADMIN</small></div>
-  <button class="q sm oculto" id="salir" style="color:#fff;border-color:#ffffff55">Salir</button>
+  <button class="q sm oculto" id="salir" style="color:#fff;border-color:#ffffff55">Sign out</button>
 </div></header>
 
 <main class="wrap">
 
 <!-- ── Entrar ──────────────────────────────────────────────────── -->
 <section id="entrar" class="caja">
-  <h2>Entrar</h2>
-  <p class="sub">Te mandamos un enlace al correo. Sólo entran los correos que están en app_admins.</p>
-  <label for="correo">Tu correo</label>
+  <h2>Sign in</h2>
+  <p class="sub">We email you a link. Only addresses listed in app_admins can get in.</p>
+  <label for="correo">Your email</label>
   <input id="correo" type="email" autocomplete="email" placeholder="gostardigital@gmail.com">
-  <div class="btns"><button id="mandar">Mándame el enlace</button></div>
+  <div class="btns"><button id="mandar">Email me the link</button></div>
   <p class="m" id="mEntrar"></p>
 </section>
 
@@ -112,71 +112,71 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 <div id="panel" class="oculto">
 
   <section class="caja">
-    <h2>Campaña</h2>
-    <p class="sub">Un programa. Todo lo de abajo es de la campaña que escojas aquí.</p>
+    <h2>Campaign</h2>
+    <p class="sub">One program. Everything below belongs to whichever campaign you pick here.</p>
     <select id="camp"></select>
     <div class="btns">
-      <button class="q sm" id="verNueva">+ Nueva campaña</button>
-      <button class="q sm" id="recargar">Recargar</button>
+      <button class="q sm" id="verNueva">+ New campaign</button>
+      <button class="q sm" id="recargar">Reload</button>
     </div>
 
     <div id="nueva" class="oculto" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
-      <label for="nNombre">Nombre de la campaña</label>
+      <label for="nNombre">Campaign name</label>
       <input id="nNombre" placeholder="Diamantes de Arecibo">
       <!-- El contacto del programa no es decoración: es a quien va la
            factura de la licencia y quien sale en el aviso del padrino
            como "quien te dirá cómo pagar". Sin correo aquí, la
            licencia no se puede facturar y el aviso sale más pobre. -->
       <div class="fila">
-        <div><label for="nQuien">Contacto del programa</label>
-             <input id="nQuien" placeholder="Nombre y apellido"></div>
-        <div><label for="nCorreo">Su correo</label>
+        <div><label for="nQuien">Program contact</label>
+             <input id="nQuien" placeholder="First and last name"></div>
+        <div><label for="nCorreo">Their email</label>
              <input id="nCorreo" type="email" placeholder="entrenador@programa.com"></div>
       </div>
-      <div class="btns"><button id="crearCamp">Crear campaña</button>
-                        <button class="q" id="cancelarCamp">Cancelar</button></div>
+      <div class="btns"><button id="crearCamp">Create campaign</button>
+                        <button class="q" id="cancelarCamp">Cancel</button></div>
       <p class="m" id="mCamp"></p>
     </div>
   </section>
 
   <section class="caja" id="secCodigo">
-    <h2>El código</h2>
-    <p class="sub">Con él entras a la plantilla y al reporte. Se guarda cifrado: se ve una vez, al crearlo.</p>
+    <h2>The code</h2>
+    <p class="sub">It opens the roster and the report. Stored hashed, so you see it once, when you make it.</p>
     <div id="codigos"></div>
-    <div class="btns"><button class="q sm" id="verCodigo">+ Nuevo código</button></div>
+    <div class="btns"><button class="q sm" id="verCodigo">+ New code</button></div>
     <div id="nuevoCodigo" class="oculto" style="margin-top:12px">
-      <label for="cLabel">Para quién es</label>
-      <input id="cLabel" placeholder="Entrenador Díaz">
-      <div class="btns"><button id="crearCodigo">Crear</button></div>
+      <label for="cLabel">Who it is for</label>
+      <input id="cLabel" placeholder="Coach Diaz">
+      <div class="btns"><button id="crearCodigo">Create</button></div>
     </div>
     <p class="m" id="mCodigo"></p>
-    <label for="codigoUso" style="margin-top:16px">Código en uso</label>
-    <input id="codigoUso" placeholder="Pega aquí el código de esta campaña">
-    <p class="sub" style="margin-top:5px">Hace falta para la plantilla, el reporte y los avisos. Se queda guardado en este navegador.</p>
+    <label for="codigoUso" style="margin-top:16px">Code in use</label>
+    <input id="codigoUso" placeholder="Paste this campaign&rsquo;s code here">
+    <p class="sub" style="margin-top:5px">Needed for the roster, the report and the notices. Kept in this browser.</p>
   </section>
 
   <section class="caja">
-    <h2>Retos</h2>
-    <p class="sub">Un reto es un evento: su ventana, sus promesas, su licencia.</p>
+    <h2>Challenges</h2>
+    <p class="sub">A challenge is one event: its window, its pledges, its licence.</p>
     <div id="retos"></div>
-    <div class="btns"><button class="q sm" id="verReto">+ Nuevo reto</button></div>
+    <div class="btns"><button class="q sm" id="verReto">+ New challenge</button></div>
 
     <div id="nuevoReto" class="oculto" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
-      <label for="rNombre">Nombre del reto</label>
-      <input id="rNombre" placeholder="Scrimmage de noviembre">
+      <label for="rNombre">Challenge name</label>
+      <input id="rNombre" placeholder="November scrimmage">
       <!-- El juego no se escoge. Hooporia tiene un tablero y es el de
            cuatro cuartos: es el único que guarda cuarto a cuarto, y
            es el que la portada enseña. -->
-      <p class="aviso">Juego: <b>The Fortress — scrimmage, 4 cuartos</b>. Es el único tablero de Hooporia.</p>
+      <p class="aviso">Game: <b>The Fortress — scrimmage, 4 quarters</b>. It is the only board Hooporia has.</p>
       <div class="fila">
-        <div><label for="rAbre">Abre</label><input id="rAbre" type="datetime-local"></div>
-        <div><label for="rCierra">Cierra</label><input id="rCierra" type="datetime-local"></div>
+        <div><label for="rAbre">Opens</label><input id="rAbre" type="datetime-local"></div>
+        <div><label for="rCierra">Closes</label><input id="rCierra" type="datetime-local"></div>
       </div>
-      <p class="sub" style="margin-top:6px">Las promesas cierran en cuanto la ventana abre. Deja un rato antes de que abra para que a los padrinos les dé tiempo.</p>
+      <p class="sub" style="margin-top:6px">Pledging closes the moment the window opens. Leave a gap before it opens so padrinos have time.</p>
       <label style="font-weight:400;margin-top:12px">
-        <input type="checkbox" id="rVivo" checked>Vivo — jugadores y padrinos ven sus enlaces</label>
-      <div class="btns"><button id="crearReto">Crear reto</button>
-                        <button class="q" id="cancelarReto">Cancelar</button></div>
+        <input type="checkbox" id="rVivo" checked>Live — players and padrinos can see their links</label>
+      <div class="btns"><button id="crearReto">Create challenge</button>
+                        <button class="q" id="cancelarReto">Cancel</button></div>
       <p class="m" id="mReto"></p>
     </div>
   </section>
@@ -303,7 +303,7 @@ function servidor(ruta, cuerpo){
       });
     });
   }).catch(function(e){
-    return { codigo: 0, cuerpo: { error: 'No se pudo llegar al servidor de Hooporia (' +
+    return { codigo: 0, cuerpo: { error: 'Could not reach the Hooporia server (' +
              SERVIDOR + ')' + porque(e) } };
   });
 }
@@ -313,7 +313,7 @@ function servidor(ruta, cuerpo){
 // ══════════════════════════════════════════════════════════════════
 $('mandar').onclick = function(){
   var correo = ($('correo').value || '').trim();
-  if (!correo) return di('mEntrar', 'Pon tu correo.', 'mal');
+  if (!correo) return di('mEntrar', 'Enter your email.', 'mal');
   di('mEntrar', '…');
   fetch(SB_URL + '/auth/v1/otp', {
     method: 'POST',
@@ -321,8 +321,8 @@ $('mandar').onclick = function(){
     body: JSON.stringify({ email: correo, create_user: false,
                            options: { email_redirect_to: location.href.split('#')[0] } })
   }).then(function(r){ return r.ok ? {} : leerError(r) })
-    .then(function(){ di('mEntrar', 'Mandado. Abre el enlace desde este mismo navegador.', 'ok') })
-    .catch(function(e){ di('mEntrar', 'No se pudo mandar' + porque(e), 'mal') });
+    .then(function(){ di('mEntrar', 'Sent. Open the link in this same browser.', 'ok') })
+    .catch(function(e){ di('mEntrar', 'Could not send it' + porque(e), 'mal') });
 };
 
 /* Supabase devuelve el token en el fragmento de la URL. Se recoge y
@@ -355,7 +355,7 @@ function arrancar(){
   rpc('is_admin', {})
     .then(function(ok){
       if (ok !== true) {
-        di('mEntrar', 'Ese correo no está en app_admins, así que no puede entrar aquí.', 'mal');
+        di('mEntrar', 'That address is not in app_admins, so it cannot get in here.', 'mal');
         cerrarSesion(); return;
       }
       $('entrar').classList.add('oculto');
@@ -364,7 +364,7 @@ function arrancar(){
       cargarCampanas();
     })
     .catch(function(e){
-      di('mEntrar', 'No se pudo comprobar la sesión' + porque(e), 'mal');
+      di('mEntrar', 'Could not check the session' + porque(e), 'mal');
     });
 }
 
@@ -378,10 +378,10 @@ function cargarCampanas(){
       var s = $('camp');
       s.innerHTML = CAMPS.length
         ? CAMPS.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>' }).join('')
-        : '<option value="">— todavía no hay ninguna —</option>';
+        : '<option value="">— none yet —</option>';
       escoger(CAMPS.length ? CAMPS[0].id : null);
     })
-    .catch(function(e){ di('mCamp', 'No se pudieron leer las campañas' + porque(e), 'mal') });
+    .catch(function(e){ di('mCamp', 'Could not read the campaigns' + porque(e), 'mal') });
 }
 
 function escoger(id){
@@ -408,8 +408,8 @@ $('crearCamp').onclick = function(){
   var nombre = ($('nNombre').value || '').trim();
   var quien  = ($('nQuien').value || '').trim();
   var correo = ($('nCorreo').value || '').trim();
-  if (!nombre) return di('mCamp', 'Ponle nombre.', 'mal');
-  if (!correo) return di('mCamp', 'Hace falta el correo del contacto: es a quien se le factura la licencia y quien sale en el aviso del padrino.', 'mal');
+  if (!nombre) return di('mCamp', 'Give it a name.', 'mal');
+  if (!correo) return di('mCamp', 'The contact email is required: it is who the licence is billed to, and who appears in the padrino notice.', 'mal');
 
   di('mCamp', '…');
   var slug = nombre.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')
@@ -420,25 +420,25 @@ $('crearCamp').onclick = function(){
         admin_code: 'ADMIN-' + Math.random().toString(36).slice(2,11).toUpperCase() } })
     .then(function(rows){
       var c = rows && rows[0];
-      if (!c) throw new Error('la base no devolvió la campaña');
+      if (!c) throw new Error('the database did not return the campaign');
       /* El entrenador, CON correo. El admin viejo creaba esta fila
          sin él, y por eso licencia_calculo no encontraba a quién
          facturarle y el aviso salía sin contacto. */
       return rest('coaches', { method:'POST', body:{
-          campaign_id: c.id, name: quien || 'Contacto', email: correo } })
+          campaign_id: c.id, name: quien || 'Contact', email: correo } })
         .then(function(){ return c });
     })
     .then(function(c){
       $('nNombre').value = ''; $('nQuien').value = ''; $('nCorreo').value = '';
       $('nueva').classList.add('oculto');
-      di('mCamp', 'Creada.', 'ok');
+      di('mCamp', 'Created.', 'ok');
       return rest('campaigns?product=eq.anotado&select=*&order=created_at.desc')
         .then(function(rows){ CAMPS = rows || [];
           $('camp').innerHTML = CAMPS.map(function(x){
             return '<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>' }).join('');
           escoger(c.id); });
     })
-    .catch(function(e){ di('mCamp', 'No se pudo crear' + porque(e), 'mal') });
+    .catch(function(e){ di('mCamp', 'Could not create it' + porque(e), 'mal') });
 };
 
 // ── Códigos ──────────────────────────────────────────────────────
@@ -449,22 +449,22 @@ function cargarCodigos(){
       $('codigos').innerHTML = mios.length
         ? mios.map(function(r){
             return '<div class="item"><span><b>' + esc(r.label) + '</b>' +
-              '<small>' + (r.build ? 'puede armar el calendario' : 'sólo marcadores') +
-              (r.used ? ' · usado ' + new Date(r.used).toLocaleDateString() : ' · sin usar') +
+              '<small>' + (r.build ? 'can build the schedule' : 'scores only') +
+              (r.used ? ' · used ' + new Date(r.used).toLocaleDateString() : ' · never used') +
               '</small></span>' +
               '<span class="pill' + (r.active ? ' on' : '') + '">' +
-              (r.active ? 'activo' : 'apagado') + '</span></div>';
+              (r.active ? 'active' : 'off') + '</span></div>';
           }).join('')
-        : '<p class="vacio">Esta campaña no tiene código todavía.</p>';
+        : '<p class="vacio">This campaign has no code yet.</p>';
     })
-    .catch(function(e){ di('mCodigo', 'No se pudieron leer los códigos' + porque(e), 'mal') });
+    .catch(function(e){ di('mCodigo', 'Could not read the codes' + porque(e), 'mal') });
 }
 
 $('verCodigo').onclick = function(){ $('nuevoCodigo').classList.toggle('oculto') };
 $('crearCodigo').onclick = function(){
-  if (!CAMP) return di('mCodigo', 'Escoge una campaña primero.', 'mal');
+  if (!CAMP) return di('mCodigo', 'Pick a campaign first.', 'mal');
   var label = ($('cLabel').value || '').trim();
-  if (!label) return di('mCodigo', '¿Para quién es?', 'mal');
+  if (!label) return di('mCodigo', 'Who is it for?', 'mal');
 
   /* El código se arma aquí y se enseña una vez: la base sólo guarda
      su hash, así que si no se copia ahora no se recupera nunca. */
@@ -475,10 +475,10 @@ $('crearCodigo').onclick = function(){
       $('cLabel').value = ''; $('nuevoCodigo').classList.add('oculto');
       $('codigoUso').value = CODE = codigo;
       try { localStorage.setItem('hoo-code-' + CAMP.id, codigo) } catch(e){}
-      di('mCodigo', 'Creado: ' + codigo + ' — cópialo ahora, no se vuelve a ver.', 'ok');
+      di('mCodigo', 'Created: ' + codigo + ' — copy it now, it is never shown again.', 'ok');
       cargarCodigos();
     })
-    .catch(function(e){ di('mCodigo', 'No se pudo crear' + porque(e), 'mal') });
+    .catch(function(e){ di('mCodigo', 'Could not create it' + porque(e), 'mal') });
 };
 
 // ── Retos ────────────────────────────────────────────────────────
@@ -497,10 +497,10 @@ function cuando(iso){
    (closes_at > opens_at) desde que una quedó al revés y cerró todas
    las promesas en cero; esto lo dice con palabras antes. */
 function ventanaMal(abre, cierra, vivo){
-  if (vivo && !(abre && cierra)) return 'Pon la ventana: vivo y sin ventana es que los enlaces siguen sin hacer nada.';
-  if ((abre && !cierra) || (cierra && !abre)) return 'Pon las dos horas, la de abrir y la de cerrar.';
+  if (vivo && !(abre && cierra)) return 'Set the window: live with no window means the links still do nothing.';
+  if ((abre && !cierra) || (cierra && !abre)) return 'Set both ends, opens and closes.';
   if (abre && cierra && new Date(cierra) <= new Date(abre))
-    return 'La de cerrar tiene que ser después de la de abrir. Ojo con AM/PM: las 12:30 AM son de madrugada.';
+    return 'Closes has to be after opens. Watch AM/PM: 12:30 AM is the middle of the night.';
   return null;
 }
 
@@ -513,27 +513,27 @@ function cargarRetos(){
             var sinVentana = !r.opens_at || !r.closes_at;
             return '<div class="item"><span><b>' + esc(r.name) + '</b><small>' +
               cuando(r.opens_at) + ' → ' + cuando(r.closes_at) +
-              (sinVentana ? ' · sin ventana, no puede jugar nadie' : '') +
+              (sinVentana ? ' · no window, nobody can play' : '') +
               '</small></span><span style="display:flex;gap:7px;align-items:center">' +
-              '<span class="pill' + (r.live ? ' on' : '') + '">' + (r.live ? 'vivo' : 'apagado') + '</span>' +
+              '<span class="pill' + (r.live ? ' on' : '') + '">' + (r.live ? 'live' : 'off') + '</span>' +
               '<button class="q sm" data-reto="' + esc(r.id) + '">Abrir</button></span></div>';
           }).join('')
-        : '<p class="vacio">Todavía no hay retos en esta campaña.</p>';
+        : '<p class="vacio">No challenges in this campaign yet.</p>';
       Array.prototype.forEach.call($('retos').querySelectorAll('[data-reto]'), function(b){
         b.onclick = function(){ abrirReto(b.getAttribute('data-reto')) };
       });
     })
-    .catch(function(e){ di('mReto', 'No se pudieron leer los retos' + porque(e), 'mal') });
+    .catch(function(e){ di('mReto', 'Could not read the challenges' + porque(e), 'mal') });
 }
 
 $('verReto').onclick = function(){ $('nuevoReto').classList.toggle('oculto') };
 $('cancelarReto').onclick = function(){ $('nuevoReto').classList.add('oculto') };
 
 $('crearReto').onclick = function(){
-  if (!CAMP) return di('mReto', 'Escoge una campaña primero.', 'mal');
+  if (!CAMP) return di('mReto', 'Pick a campaign first.', 'mal');
   var nombre = ($('rNombre').value || '').trim();
   var abre = $('rAbre').value, cierra = $('rCierra').value, vivo = $('rVivo').checked;
-  if (!nombre) return di('mReto', 'Ponle nombre.', 'mal');
+  if (!nombre) return di('mReto', 'Give it a name.', 'mal');
   var problema = ventanaMal(abre, cierra, vivo);
   if (problema) return di('mReto', problema, 'mal');
 
@@ -548,11 +548,11 @@ $('crearReto').onclick = function(){
     .then(function(rows){
       $('rNombre').value = ''; $('rAbre').value = ''; $('rCierra').value = '';
       $('nuevoReto').classList.add('oculto');
-      di('mReto', 'Creado.', 'ok');
+      di('mReto', 'Created.', 'ok');
       cargarRetos();
       if (rows && rows[0]) abrirReto(rows[0].id);
     })
-    .catch(function(e){ di('mReto', 'No se pudo crear' + porque(e), 'mal') });
+    .catch(function(e){ di('mReto', 'Could not create it' + porque(e), 'mal') });
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -565,12 +565,12 @@ function abrirReto(id){
     '<section class="caja"><h2>' + esc(RETO.name) + '</h2>' +
     '<p class="sub">The Fortress — scrimmage, 4 cuartos</p>' +
 
-    '<label>Ventana</label><div class="fila">' +
+    '<label>Game window</label><div class="fila">' +
       '<div><input type="datetime-local" id="dAbre" value="' + aLocal(RETO.opens_at) + '"></div>' +
       '<div><input type="datetime-local" id="dCierra" value="' + aLocal(RETO.closes_at) + '"></div>' +
     '</div>' +
     '<label style="font-weight:400;margin-top:12px"><input type="checkbox" id="dVivo"' +
-      (RETO.live ? ' checked' : '') + '>Vivo</label>' +
+      (RETO.live ? ' checked' : '') + '>Live</label>' +
     '<div class="btns"><button id="dGuardar">Guardar</button></div>' +
     '<p class="m" id="mDet"></p>' +
 
@@ -578,19 +578,19 @@ function abrirReto(id){
     '</section>' +
 
     '<section class="caja"><h2>Plantilla</h2>' +
-    '<p class="sub">Se dan de alta solos con el enlace. Tú dices que sí.</p>' +
+    '<p class="sub">They sign themselves up with the link. You say yes.</p>' +
     '<div id="plantilla"><p class="vacio">…</p></div>' +
     '<p class="m" id="mPl"></p></section>' +
 
     '<section class="caja"><h2>Reporte y avisos</h2>' +
-    '<p class="sub">Lo prometido, y el aviso que cada padrino recibe al cerrar.</p>' +
-    '<div class="btns"><button class="q" id="verReporte">Ver el reporte</button>' +
-      '<button class="q" id="mandarAvisos">Mandar los avisos</button></div>' +
+    '<p class="sub">What was pledged, and the notice each padrino gets when it closes.</p>' +
+    '<div class="btns"><button class="q" id="verReporte">See the report</button>' +
+      '<button class="q" id="mandarAvisos">Send the notices</button></div>' +
     '<p class="m" id="mRep"></p><div id="reporte"></div></section>' +
 
     '<section class="caja"><h2>Licencia</h2>' +
-    '<p class="sub">$49 por evento, $29 si la plantilla tiene menos de ocho. Sin promesas, sin cargo.</p>' +
-    '<div class="btns"><button class="q" id="verLic">Ver qué se cobraría</button></div>' +
+    '<p class="sub">$49 per event, $29 if the roster is under eight. No pledges, no fee.</p>' +
+    '<div class="btns"><button class="q" id="verLic">See what it would cost</button></div>' +
     '<p class="m" id="mLic"></p><div id="licencia"></div></section>';
 
   $('dGuardar').onclick = guardarReto;
@@ -612,12 +612,12 @@ function guardarReto(){
     .then(function(rows){
       /* Una PATCH que RLS no deja pasar no da error: contesta con una
          lista vacía. Por eso se mira lo que vuelve. */
-      if (!rows || !rows.length) return di('mDet', 'No se guardó nada. ¿Sigues con la sesión abierta?', 'mal');
+      if (!rows || !rows.length) return di('mDet', 'Nothing was saved. Are you still signed in?', 'mal');
       RETO = rows[0];
-      di('mDet', 'Guardado.', 'ok');
+      di('mDet', 'Saved.', 'ok');
       cargarRetos(); pintarEnlaces();
     })
-    .catch(function(e){ di('mDet', 'No se pudo guardar' + porque(e), 'mal') });
+    .catch(function(e){ di('mDet', 'Could not save it' + porque(e), 'mal') });
 }
 
 /* ── Los enlaces ──────────────────────────────────────────────────
@@ -626,10 +626,10 @@ function guardarReto(){
    nada, sin decir por qué. */
 function pintarEnlaces(){
   var alta = SITIO + '/jugador.html?c=' + CAMP.id;
-  var h = '<label style="margin-top:18px">Enlaces</label>' +
-    fila('Para que se den de alta', alta, 'Mándalo al grupo. Cualquiera que apruebes puede correr.');
+  var h = '<label style="margin-top:18px">Links</label>' +
+    fila('For players to sign themselves up', alta, 'Send it to the group. Anybody you approve can take a run.');
   if (!RETO.live || !RETO.opens_at || !RETO.closes_at) {
-    h += '<p class="aviso">Los enlaces de prometer y de jugar salen cuando el reto está vivo y con su ventana puesta.</p>';
+    h += '<p class="aviso">The pledge and play links appear once the challenge is live and its window is set.</p>';
   }
   $('enlaces').innerHTML = h;
   conectarCopias($('enlaces'));
@@ -646,8 +646,8 @@ function conectarCopias(raiz){
     b.onclick = function(){
       var u = b.getAttribute('data-copiar');
       if (navigator.clipboard) navigator.clipboard.writeText(u).then(function(){
-        b.textContent = 'Copiado'; setTimeout(function(){ b.textContent = 'Copiar' }, 1400);
-      }); else prompt('Cópialo:', u);
+        b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy' }, 1400);
+      }); else prompt('Copy this:', u);
     };
   });
 }
@@ -656,16 +656,16 @@ function conectarCopias(raiz){
 var PL = [];
 function cargarPlantilla(){
   if (!CODE) {
-    $('plantilla').innerHTML = '<p class="vacio">Pon el código de esta campaña arriba para ver la plantilla.</p>';
+    $('plantilla').innerHTML = '<p class="vacio">Put this campaign&rsquo;s code in the box above to see the roster.</p>';
     return;
   }
   rpc('roster_list', { p_code: CODE, p_campaign: CAMP.id })
     .then(function(r){
-      if (!r || !r.ok) { PL = []; return di('mPl', 'El código no sirve para esta campaña' + porque(r), 'mal') }
+      if (!r || !r.ok) { PL = []; return di('mPl', 'That code does not work for this campaign' + porque(r), 'mal') }
       PL = r.players || []; di('mPl', '');
       pintarPlantilla();
     })
-    .catch(function(e){ di('mPl', 'No se pudo leer la plantilla' + porque(e), 'mal') });
+    .catch(function(e){ di('mPl', 'Could not read the roster' + porque(e), 'mal') });
 }
 
 function pintarPlantilla(){
@@ -673,30 +673,30 @@ function pintarPlantilla(){
   var dentro  = PL.filter(function(p){ return p.state === 'active' });
   var h = '';
   if (esperan.length) {
-    h += '<p class="sub" style="margin:10px 0 0"><b>Esperando que digas que sí</b></p>' +
+    h += '<p class="sub" style="margin:10px 0 0"><b>Waiting on you</b></p>' +
       esperan.map(function(p, i){
         return '<div class="item"><span><b>' + esc(p.name) + '</b><small>' +
-          esc(p.squad || 'sin categoría') + '</small></span><span style="display:flex;gap:6px">' +
-          '<button class="sm" data-si="' + esc(p.id) + '">Sí</button>' +
+          esc(p.squad || 'no squad') + '</small></span><span style="display:flex;gap:6px">' +
+          '<button class="sm" data-si="' + esc(p.id) + '">Yes</button>' +
           '<button class="q sm" data-no="' + esc(p.id) + '">No</button></span></div>';
       }).join('');
   }
   h += dentro.length
-    ? '<p class="sub" style="margin:14px 0 0"><b>Dentro</b> · ' + dentro.length + '</p>' +
+    ? '<p class="sub" style="margin:14px 0 0"><b>In</b> · ' + dentro.length + '</p>' +
       dentro.map(function(p){
         var prometer = (RETO.live && RETO.opens_at)
           ? SITIO + '/prometer.html?c=' + RETO.id + '&p=' + p.id : null;
         var jugar = (RETO.live && RETO.opens_at)
           ? SITIO + '/fortress-vr.html?c=' + RETO.id + '&p=' + p.id + '&official=1' : null;
         return '<div class="item"><span style="min-width:0"><b>' + esc(p.name) + '</b>' +
-          '<small>' + esc(p.squad || 'sin categoría') + '</small>' +
+          '<small>' + esc(p.squad || 'no squad') + '</small>' +
           (prometer ? '<div class="enl">padrinos: ' + esc(prometer) + '</div>' : '') +
           '</span><span style="display:flex;gap:6px;flex-wrap:wrap">' +
           (prometer ? '<button class="q sm" data-copiar="' + esc(prometer) + '">Padrinos</button>' : '') +
           (jugar ? '<button class="q sm" data-jugar="' + esc(p.id) + '">Jugar</button>' : '') +
           '</span></div>';
       }).join('')
-    : (esperan.length ? '' : '<p class="vacio">Nadie se ha dado de alta todavía.</p>');
+    : (esperan.length ? '' : '<p class="vacio">Nobody has signed up yet.</p>');
   $('plantilla').innerHTML = h;
 
   var raiz = $('plantilla');
@@ -714,13 +714,13 @@ function pintarPlantilla(){
       rpc('get_run_key', { p_player: id })
         .then(function(k){
           var llave = (k && (k.run_key || k.key)) || k;
-          if (!llave || typeof llave !== 'string') throw new Error('no vino la llave');
+          if (!llave || typeof llave !== 'string') throw new Error('the key did not come back');
           var u = SITIO + '/fortress-vr.html?c=' + RETO.id + '&p=' + id + '&k=' + llave + '&official=1';
           if (navigator.clipboard) navigator.clipboard.writeText(u);
-          b.textContent = 'Copiado'; di('mPl', u, 'ok');
+          b.textContent = 'Copied'; di('mPl', u, 'ok');
         })
-        .catch(function(e){ b.textContent = 'Jugar'; b.disabled = false;
-                            di('mPl', 'No se pudo armar el enlace de jugar' + porque(e), 'mal') });
+        .catch(function(e){ b.textContent = 'Play'; b.disabled = false;
+                            di('mPl', 'Could not build the play link' + porque(e), 'mal') });
     };
   });
   conectarCopias(raiz);
@@ -730,20 +730,20 @@ function decidir(id, si){
   di('mPl', '…');
   rpc('roster_decide', { p_code: CODE, p_campaign: CAMP.id, p_player: id, p_yes: si })
     .then(function(r){
-      if (!r || !r.ok) return di('mPl', 'No se pudo' + porque(r), 'mal');
-      di('mPl', si ? 'Dentro.' : 'Fuera.', 'ok');
+      if (!r || !r.ok) return di('mPl', 'Could not do it' + porque(r), 'mal');
+      di('mPl', si ? 'In.' : 'Out.', 'ok');
       cargarPlantilla();
     })
-    .catch(function(e){ di('mPl', 'No se pudo' + porque(e), 'mal') });
+    .catch(function(e){ di('mPl', 'Could not do it' + porque(e), 'mal') });
 }
 
 // ── El reporte ───────────────────────────────────────────────────
 function verReporte(){
-  if (!CODE) return di('mRep', 'Hace falta el código de la campaña.', 'mal');
+  if (!CODE) return di('mRep', 'The campaign code is required.', 'mal');
   di('mRep', '…');
   rpc('challenge_report', { p_code: CODE, p_challenge: RETO.id })
     .then(function(r){
-      if (!r || !r.ok) return di('mRep', 'No se pudo' + porque(r), 'mal');
+      if (!r || !r.ok) return di('mRep', 'Could not do it' + porque(r), 'mal');
       di('mRep', '');
       var jug = r.players || [], prom = r.pledges || [];
       $('reporte').innerHTML =
@@ -754,7 +754,7 @@ function verReporte(){
         '</div>' +
         (prom.length
           ? '<table><tr><th>Padrino</th><th>Jugador</th><th class="n">Puntos</th>' +
-            '<th class="n">Total</th><th>Estado</th></tr>' +
+            '<th class="n">Total</th><th>State</th></tr>' +
             prom.map(function(p){
               return '<tr><td>' + esc(p.padrino) + '<br><small style="color:var(--muted)">' +
                 esc(p.correo) + '</small></td><td>' + esc(p.jugador) + '</td>' +
@@ -763,25 +763,25 @@ function verReporte(){
                 '<td><span class="pill' + (p.estado === 'sent' ? ' on' : '') + '">' +
                 esc(p.estado) + '</span></td></tr>';
             }).join('') + '</table>'
-          : '<p class="vacio">Todavía no hay promesas en este reto.</p>') +
+          : '<p class="vacio">No pledges on this challenge yet.</p>') +
         '<p class="sub" style="margin-top:12px">Lo prometido no es lo recaudado. Cobrar lo hace el programa.</p>';
     })
-    .catch(function(e){ di('mRep', 'No se pudo' + porque(e), 'mal') });
+    .catch(function(e){ di('mRep', 'Could not do it' + porque(e), 'mal') });
 }
 
 function mandarAvisos(){
-  if (!CODE) return di('mRep', 'Hace falta el código de la campaña.', 'mal');
-  if (!confirm('Mandar el aviso a cada padrino de este reto.\n\nUno por padrino, con sus puntos y su total. Sin enlace de pago y sin recordatorios. No se puede deshacer.'))
+  if (!CODE) return di('mRep', 'The campaign code is required.', 'mal');
+  if (!confirm('Send the notice to every padrino on this challenge.\n\nOne each, with the points and their total. No payment link, no reminders. This cannot be undone.'))
     return;
   di('mRep', '…');
   servidor('/challenge-notices', { code: CODE, challenge_id: RETO.id })
     .then(function(r){
-      if (r.codigo === 404) return di('mRep', 'El servidor de Hooporia no tiene esa ruta todavía (' + SERVIDOR + ').', 'mal');
-      if (r.codigo !== 200) return di('mRep', 'No se mandaron' + porque(r.cuerpo), 'mal');
+      if (r.codigo === 404) return di('mRep', 'The Hooporia server does not have that route yet (' + SERVIDOR + ').', 'mal');
+      if (r.codigo !== 200) return di('mRep', 'They were not sent' + porque(r.cuerpo), 'mal');
       var d = r.cuerpo || {};
-      di('mRep', 'Mandados: ' + (d.sent || 0) +
-        (d.skipped ? ' · saltados ' + d.skipped : '') +
-        (d.failed ? ' · fallaron ' + d.failed : ''), d.failed ? 'mal' : 'ok');
+      di('mRep', 'Sent: ' + (d.sent || 0) +
+        (d.skipped ? ' · skipped ' + d.skipped : '') +
+        (d.failed ? ' · failed ' + d.failed : ''), d.failed ? 'mal' : 'ok');
       verReporte();
     });
 }
@@ -792,20 +792,20 @@ function verLicencia(confirmar){
   servidor('/licencia', { challenge_id: RETO.id, confirmar: confirmar })
     .then(function(r){
       var d = r.cuerpo || {};
-      if (r.codigo === 404) return di('mLic', 'El servidor de Hooporia no tiene esa ruta todavía (' + SERVIDOR + ').', 'mal');
+      if (r.codigo === 404) return di('mLic', 'The Hooporia server does not have that route yet (' + SERVIDOR + ').', 'mal');
       if (r.codigo === 422 && d.error === 'sin_promesas')
-        return di('mLic', 'Este reto no recogió ni una promesa, así que no hay nada que facturar. Sin promesas, sin cargo.', 'ok');
+        return di('mLic', 'This challenge recorded no pledges, so there is nothing to invoice. No pledges, no fee.', 'ok');
       if (r.codigo === 422 && d.error === 'sin_correo')
-        return di('mLic', 'Esta campaña no tiene correo de contacto, así que no hay a quién facturarle.', 'mal');
+        return di('mLic', 'This campaign has no contact email, so there is nobody to invoice.', 'mal');
       if (r.codigo === 409)
-        return di('mLic', 'Este reto ya tiene licencia. Un evento se factura una sola vez.', 'ok');
-      if (r.codigo !== 200) return di('mLic', 'No se pudo' + porque(d), 'mal');
+        return di('mLic', 'This challenge already has a licence. An event is invoiced once.', 'ok');
+      if (r.codigo !== 200) return di('mLic', 'Could not do it' + porque(d), 'mal');
 
       if (confirmar) {
-        di('mLic', 'Facturada. Stripe le mandó $' + (d.amount_cents/100).toFixed(2) +
-                   ' a ' + d.program_email + '.', 'ok');
+        di('mLic', 'Invoiced. Stripe emailed $' + (d.amount_cents/100).toFixed(2) +
+                   ' to ' + d.program_email + '.', 'ok');
         $('licencia').innerHTML = d.url
-          ? '<div class="item"><span><b>La factura</b></span>' +
+          ? '<div class="item"><span><b>The invoice</b></span>' +
             '<a href="' + esc(d.url) + '" target="_blank" rel="noopener"><button class="q sm">Abrir en Stripe</button></a></div>'
           : '';
         return;
@@ -817,14 +817,14 @@ function verLicencia(confirmar){
         '<div><b>' + d.roster + '</b><span>en plantilla</span></div>' +
         '<div><b>' + d.promesas + '</b><span>promesas</span></div></div>' +
         '<p class="sub" style="margin-top:10px">Se le factura a ' + esc(d.program_email) +
-        ', y se paga en ' + d.dias + ' días.</p>' +
+        ', due in ' + d.dias + ' days.</p>' +
         (d.modo === 'live'
-          ? '<p class="aviso"><b>Modo producción.</b> Al confirmar sale una factura de verdad, por correo, a un cliente de verdad.</p>'
-          : '<p class="aviso">Modo de prueba (' + esc(d.modo) + '). No se mueve dinero de verdad.</p>') +
-        '<div class="btns"><button id="facturar">Facturar la licencia</button></div>';
+          ? '<p class="aviso"><b>Live mode.</b> Confirming sends a real invoice, by email, to a real customer.</p>'
+          : '<p class="aviso">Test mode (' + esc(d.modo) + '). No real money moves.</p>') +
+        '<div class="btns"><button id="facturar">Invoice the licence</button></div>';
       $('facturar').onclick = function(){
-        if (confirm('Facturar $' + (d.amount_cents/100).toFixed(2) + ' a ' + d.program_email + '.' +
-                    (d.modo === 'live' ? '\n\nMODO PRODUCCIÓN — es una factura de verdad.' : '')))
+        if (confirm('Invoice $' + (d.amount_cents/100).toFixed(2) + ' a ' + d.program_email + '.' +
+                    (d.modo === 'live' ? '\n\nLIVE MODE — this is a real invoice.' : '')))
           verLicencia(true);
       };
     });
