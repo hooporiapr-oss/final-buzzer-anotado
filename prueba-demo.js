@@ -252,6 +252,36 @@ console.log('\n6 · El juego devuelve la puntuación\n');
   await pag.close();
 }
 
+// ── 7 · El reloj del cuarto ───────────────────────────────────────
+console.log('\n7 · El cuarto dura lo que toca en cada sitio\n');
+for (const [q, esperaba, qué] of [
+    ['?demo=1', '1:00', 'en demostración'],
+    ['', '1:00', 'en un scrimmage desde la portada'],
+    /* Y lo que de verdad importa: que &demo=1 colado en un enlace
+       oficial no acorte el cuarto de un nene que tiene padrinos
+       detrás. Anotaría menos de lo que le toca y no se notaría
+       hasta el reporte. */
+    ['?c=11111111-1111-1111-1111-111111111111&p=22222222-2222-2222-2222-222222222222' +
+     '&k=xxxx&official=1&demo=1', '5:00', 'con &demo=1 colado en un enlace oficial']]) {
+  const pag = await navegador.newPage({ viewport: { width: 390, height: 800 } });
+  pag.on('pageerror', () => {});
+  await pag.route('**/three.min.js', (ruta) =>
+    ruta.fulfill({ path: '/opt/node-tools/vendor/three.min.js',
+                   contentType: 'application/javascript' }));
+  await pag.goto('file://' + path.join(AQUI, 'fortress-vr.html') + q);
+  await pag.waitForTimeout(700);
+  await pag.locator('#goAmistoso').click();
+  await pag.waitForTimeout(600);
+
+  /* Se lee el reloj en pantalla y no la constante: lo que importa es
+     lo que ve el entrenador, y entre la constante y el reloj hay
+     tres sitios donde el número se podía quedar en cinco. */
+  const reloj = (await pag.locator('#reloj').textContent() || '').trim();
+  if (reloj.indexOf(esperaba) === 0) ok(qué + ' el cuarto marca ' + reloj);
+  else mal(qué + ' el reloj marca «' + reloj + '» y esperaba ' + esperaba);
+  await pag.close();
+}
+
 await navegador.close();
 console.log('\n' + (fallos === 0
   ? '✓ la cuenta cuadra, el viaje cierra y no deja rastro'
