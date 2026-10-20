@@ -626,7 +626,13 @@ function abrirReto(id){
     '<p class="sub">What was pledged. Sending the notices also invoices the licence &mdash; that is the moment the results are given.</p>' +
     '<div class="btns"><button class="q" id="verReporte">See the report</button>' +
       '<button class="q" id="mandarAvisos">Send the notices &amp; invoice</button></div>' +
-    '<p class="m" id="mRep"></p><div id="reporte"></div></section>' +
+    '<p class="m" id="mRep"></p>' +
+    /* Los avisos tienen su propia línea. Compartían la del reporte,
+       y como mandar avisos termina pidiendo el reporte otra vez, el
+       resultado —cuántos salieron, qué hizo la factura— se borraba
+       una fracción de segundo después de escribirse. El botón
+       parecía no hacer nada. */
+    '<p class="m" id="mAvisos"></p><div id="reporte"></div></section>' +
 
     '<section class="caja"><h2>Licence</h2>' +
     '<p class="sub">$49 per event, $29 if the roster is under eight. No pledges, no fee. '+
@@ -811,7 +817,7 @@ function verReporte(){
         '<div class="tot">' +
           '<div><b>' + jug.length + '</b><span>on the roster</span></div>' +
           '<div><b>' + (r.count || 0) + '</b><span>pledges</span></div>' +
-          '<div><b>$' + Number(r.pledged || 0).toFixed(2) + '</b><span>prometido</span></div>' +
+          '<div><b>$' + Number(r.pledged || 0).toFixed(2) + '</b><span>pledged</span></div>' +
         '</div>' +
         (prom.length
           ? '<table><tr><th>Padrino</th><th>Player</th><th class="n">Points</th>' +
@@ -825,7 +831,7 @@ function verReporte(){
                 esc(p.estado) + '</span></td></tr>';
             }).join('') + '</table>'
           : '<p class="vacio">No pledges on this challenge yet.</p>') +
-        '<p class="sub" style="margin-top:12px">Lo prometido no es lo recaudado. Cobrar lo hace el programa.</p>';
+        '<p class="sub" style="margin-top:12px">Pledged is not collected. The program does the collecting.</p>';
     })
     .catch(function(e){ di('mRep', 'Could not do it' + porque(e), 'mal') });
 }
@@ -862,7 +868,7 @@ function dijoLicencia(l){
 }
 
 function mandarAvisos(){
-  if (!codigo()) return di('mRep', 'The campaign code is required.', 'mal');
+  if (!codigo()) return di('mAvisos', 'The campaign code is required.', 'mal');
   /* Que diga que cobra. Antes avisaba y nada más; ahora el mismo
      botón factura la licencia, y eso no se puede descubrir después
      de pulsarlo. */
@@ -871,17 +877,17 @@ function mandarAvisos(){
                'The licence invoice goes to the program by email, due in 7 days. ' +
                'If nobody pledged, nothing is invoiced.\n\nThis cannot be undone.'))
     return;
-  di('mRep', '…');
+  di('mAvisos', '…');
   servidor('/challenge-notices', { code: codigo(), challenge_id: RETO.id })
     .then(function(r){
-      if (r.codigo === 404) return di('mRep', 'The Hooporia server does not have that route yet (' + SERVIDOR + ').', 'mal');
-      if (r.codigo !== 200) return di('mRep', 'They were not sent' + porque(r.cuerpo), 'mal');
+      if (r.codigo === 404) return di('mAvisos', 'The Hooporia server does not have that route yet (' + SERVIDOR + ').', 'mal');
+      if (r.codigo !== 200) return di('mAvisos', 'They were not sent' + porque(r.cuerpo), 'mal');
       var d = r.cuerpo || {}, l = d.licencia || {};
       /* Rojo si falló un aviso o si la licencia no salió debiendo
          salir. Los dos casos piden una segunda pasada. */
       var malo = d.failed || ['sin_correo','stripe','error','sin_calculo']
                               .indexOf(l.estado) !== -1;
-      di('mRep', 'Sent: ' + (d.sent || 0) +
+      di('mAvisos', 'Sent: ' + (d.sent || 0) +
         (d.skipped ? ' · skipped ' + d.skipped : '') +
         (d.failed ? ' · failed ' + d.failed : '') +
         dijoLicencia(l), malo ? 'mal' : 'ok');
