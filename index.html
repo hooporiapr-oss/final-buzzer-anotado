@@ -25,17 +25,62 @@
    y tienen que parecerlo: crema, navy, naranja, Inter. */
 :root{--navy:#101c2a;--navy2:#192b3d;--orange:#ff7a18;--cream:#faf8f4;--ink:#1b2937;--muted:#617083}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.55}
+/* --barra es la altura de la cabecera pegada. Se usa en dos sitios y
+   tienen que ser el mismo número: el hueco que deja scroll-padding
+   para que un ancla no se esconda DEBAJO de la cabecera, y el sitio
+   donde empieza el panel del menú. Con dos números distintos, o el
+   titular queda tapado o el panel flota. */
+:root{--barra:70px}
+/* scroll-padding-top y no un margen en las secciones: el navegador
+   descuenta esto él solo al saltar a un #ancla, y así el salto
+   funciona igual desde un enlace, desde la barra de direcciones y al
+   recargar la página con el ancla puesta. */
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--barra) + 10px)}
+/* overflow-x en el body y no sólo en html: en Safari de iOS, html
+   solo no lo sujeta y basta un elemento que se pase de ancho para
+   que toda la página se arrastre de lado. */
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.55;overflow-x:hidden}
 a{color:inherit}
-header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22}
+/* Pegada arriba. El z-index va por encima de todo lo de la página
+   —portada, fotos, el acordeón de preguntas— porque una cabecera que
+   se deja tapar por lo que pasa por debajo es peor que una que no se
+   pega. */
+header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22;
+  position:sticky;top:0;z-index:100}
 .wrap{width:min(1120px,calc(100% - 40px));margin:auto}
-.nav{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 0}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:20px;
+  min-height:var(--barra)}
 .brand{font-weight:900;letter-spacing:.07em;text-decoration:none;font-size:1.1rem}
 .brand span{color:var(--orange)}
 .navlinks{display:flex;gap:24px;align-items:center}
 .navlinks a{text-decoration:none;font-weight:600;font-size:.9rem}
 .navlinks a:hover{color:var(--orange)}
+
+/* ── El menú de mano ──────────────────────────────────────────────
+   En un teléfono los cinco enlaces no caben, y lo que había antes
+   era irlos encogiendo hasta esconder «Cómo funciona» a 430px: el
+   enlace seguía existiendo y no había forma de llegar a él. Esto lo
+   recoge entero detrás de un botón.
+
+   El botón del idioma NO entra en el menú. Es lo primero que busca
+   alguien que abre la página en el idioma que no es suyo, y
+   esconderlo detrás de tres rayas es pedirle que adivine. Se queda
+   en la barra, a la vista, en cualquier tamaño. */
+.hamb{display:none;width:44px;height:44px;flex:0 0 44px;border:1px solid #ffffff55;
+  background:transparent;border-radius:9px;cursor:pointer;padding:0;
+  align-items:center;justify-content:center}
+.hamb:hover{border-color:var(--orange)}
+.hamb span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;
+  position:relative;transition:transform .18s ease,opacity .18s ease}
+.hamb span::before,.hamb span::after{content:'';position:absolute;left:0;
+  width:20px;height:2px;background:#fff;border-radius:2px;transition:transform .18s ease}
+.hamb span::before{top:-6px}
+.hamb span::after{top:6px}
+/* Abierto, las tres rayas se vuelven una X: la raya de en medio se
+   apaga y las otras dos se cruzan sobre ella. */
+.hamb[aria-expanded="true"] span{background:transparent}
+.hamb[aria-expanded="true"] span::before{transform:translateY(6px) rotate(45deg)}
+.hamb[aria-expanded="true"] span::after{transform:translateY(-6px) rotate(-45deg)}
 .button{display:inline-block;text-decoration:none;border-radius:9px;padding:13px 20px;background:var(--orange);color:#111a24;font-weight:800;border:0;cursor:pointer}
 .button.secondary{background:transparent;color:white;border:1px solid #ffffff66}
 .hero{background:radial-gradient(circle at 85% 30%,#304459 0,transparent 45%),var(--navy);color:white;padding:94px 0 105px;overflow:hidden}
@@ -149,34 +194,83 @@ footer strong{color:white}
 .flinks{display:flex;flex-direction:column;gap:5px}
 .flinks a{text-decoration:none;font-size:.86rem}
 .flinks a:hover{color:var(--orange)}
-button.lang{border:1px solid #ffffff55;background:transparent;color:white;padding:8px 10px;border-radius:7px;font-weight:700;cursor:pointer}
-@media(max-width:750px){
-.hero{padding:65px 0}
+/* El botón del idioma dice el idioma AL QUE lleva, no el que está
+   puesto: en inglés dice «Español». Un botón que dice el idioma
+   actual se lee como un estado y no como una puerta, y la mitad de
+   la gente no lo pulsa. white-space para que «Español» no se parta
+   en dos líneas en una pantalla estrecha. */
+button.lang{border:1px solid #ffffff55;background:transparent;color:white;
+  padding:0 12px;min-height:40px;border-radius:9px;font-weight:700;cursor:pointer;
+  font-size:.85rem;white-space:nowrap;font-family:inherit}
+button.lang:hover{border-color:var(--orange);color:var(--orange)}
+
+@media(max-width:860px){
+/* ── El teléfono ──────────────────────────────────────────────────
+   Los enlaces salen de la barra y pasan al panel. El panel se
+   despliega debajo de la cabecera, no por encima de ella: la marca
+   y el idioma siguen a la vista con el menú abierto, que es como se
+   sabe dónde estás.
+
+   Cerrado se mide con max-height:0 en vez de display:none para que
+   abra y cierre con una transición; visibility lo saca del paso del
+   teclado y del lector de pantalla cuando está cerrado, que
+   max-height sola no hace. */
+.hamb{display:flex}
+.nav{gap:10px}
+.navlinks{position:absolute;left:0;right:0;top:100%;
+  flex-direction:column;align-items:stretch;gap:0;
+  background:var(--navy);border-bottom:1px solid #ffffff22;
+  max-height:0;visibility:hidden;overflow:hidden;
+  transition:max-height .22s ease,visibility .22s}
+.navlinks.abierto{max-height:70vh;visibility:visible;overflow:auto}
+/* 52px de alto: un dedo no acierta en 30. */
+.navlinks a{font-size:1rem;padding:0 max(20px,calc((100vw - 1120px)/2 + 20px));
+  min-height:52px;display:flex;align-items:center;
+  border-top:1px solid #ffffff14}
+.navlinks a:first-child{border-top:0}
+/* La llamada a la acción no se disfraza de enlace de lista: sigue
+   siendo el botón naranja, con aire alrededor. */
+.navlinks a.button{margin:14px 20px 18px;justify-content:center;
+  border-top:0;min-height:52px;border-radius:9px}
+.hero{padding:58px 0}
 .hero-foto{border-radius:12px;margin-top:28px}
 .steps,.feature-grid,.prices{grid-template-columns:1fr}
-.navlinks{gap:12px}
-.navlinks a{font-size:.8rem}
 .section{padding:62px 0}
 }
 @media(max-width:430px){
-.navlinks a[href="#how"]{display:none}
+:root{--barra:62px}
 .hero-grid{gap:35px}
+.brand{font-size:1rem}
+/* En una pantalla de 320 la marca, el idioma y las rayas tienen que
+   caber en una línea sin empujarse. */
+button.lang{padding:0 10px;font-size:.8rem}
+.hero-actions .button{width:100%;text-align:center}
 }
 </style>
 </head>
 <body>
 
+<!-- El panel del menú se cuelga de la CABECERA con top:100%, no del
+     .wrap: position:sticky ya hace de la cabecera un elemento
+     posicionado, así que es ella la que le sirve de referencia y el
+     panel sale de borde a borde en vez de con el margen del wrap. -->
 <header>
 <div class="wrap nav">
 <a class="brand" href="#top">HOOPORIA<span>.</span></a>
-<nav class="navlinks">
+<nav class="navlinks" id="menu">
 <a href="#play" data-i="navPlay">Play it</a>
 <a href="#how" data-i="navHow">How it works</a>
 <a href="#precio" data-i="navPrice">What it costs</a>
 <a href="#faq" data-i="navFaq">Questions</a>
 <a class="button" href="equipo.html" data-i="navCta">Sign up a team</a>
-<button class="lang" id="lang" aria-label="Switch language">ES</button>
 </nav>
+<!-- El idioma y las rayas, en ese orden y fuera del panel: lo que
+     se queda a la vista en un teléfono. -->
+<div style="display:flex;align-items:center;gap:8px">
+<button class="lang" id="lang">Español</button>
+<button class="hamb" id="hamb" type="button"
+        aria-controls="menu" aria-expanded="false"><span></span></button>
+</div>
 </div>
 </header>
 
@@ -506,7 +600,14 @@ var _f=document.getElementById('heroFoto');
 if(_f) _f.alt = locale==='es'
   ? 'Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21'
   : 'A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21';
-document.getElementById('lang').textContent=locale==='es'?'EN':'ES';
+/* El botón dice a dónde lleva, no dónde estás: en inglés, «Español».
+   Y el aria-label igual, en el idioma al que lleva, porque quien
+   usa un lector de pantalla está buscando exactamente eso. */
+var _l=document.getElementById('lang');
+_l.textContent = locale==='es' ? 'English' : 'Español';
+_l.setAttribute('aria-label', locale==='es' ? 'Switch to English' : 'Cambiar a español');
+document.getElementById('hamb').setAttribute('aria-label',
+  locale==='es' ? 'Menú' : 'Menu');
 document.title=locale==='es'?'Hooporia | Baloncesto digital. Cada punto queda anotado.'
                             :'Hooporia | Digital Basketball. Every point is recorded.';
 }
@@ -516,6 +617,43 @@ try{ localStorage.setItem('cfh_lang',locale); localStorage.setItem('cp-lang',loc
      localStorage.setItem('fc-lang',locale); }catch(e){}
 paint();
 });
+
+/* ── El menú ──────────────────────────────────────────────────────
+   Cuatro formas de cerrarlo, porque un menú que se queda abierto
+   tapando la página es la peor parte de un menú de teléfono:
+
+     · pulsando las rayas otra vez
+     · pulsando cualquier enlace — los cuatro primeros son anclas de
+       ESTA página, así que sin esto el panel se queda abierto encima
+       de la sección a la que acabas de saltar
+     · con Escape
+     · al ensanchar la ventana hasta el tamaño de escritorio, donde
+       el panel no tiene sentido y la clase se queda pegada */
+(function(){
+var b=document.getElementById('hamb'), m=document.getElementById('menu');
+function pon(abierto){
+  m.classList.toggle('abierto', abierto);
+  b.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+}
+b.addEventListener('click', function(){
+  pon(b.getAttribute('aria-expanded') !== 'true');
+});
+m.addEventListener('click', function(e){
+  if (e.target.closest('a')) pon(false);
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && b.getAttribute('aria-expanded') === 'true') {
+    pon(false); b.focus();
+  }
+});
+/* 861 y no 860: el media query del CSS actúa hasta 860 inclusive, y
+   con el mismo número los dos la clase sobreviviría justo en el
+   borde. */
+addEventListener('resize', function(){
+  if (innerWidth > 860) pon(false);
+});
+})();
+
 paint();
 document.getElementById('year').textContent=new Date().getFullYear();
 </script>
