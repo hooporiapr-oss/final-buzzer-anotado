@@ -887,10 +887,21 @@ function mandarAvisos(){
          salir. Los dos casos piden una segunda pasada. */
       var malo = d.failed || ['sin_correo','stripe','error','sin_calculo']
                               .indexOf(l.estado) !== -1;
+      /* Y POR QUÉ falló. El servidor manda un errors[] con el buzón
+         y lo que contestó Resend —«(422) invalid recipient», «(403)
+         domain not verified»— y esto lo tiraba a la basura para
+         decir «failed 1» y nada más. Es el mismo fallo que costó
+         cuatro viajes a Supabase el otro día, repetido en el sitio
+         donde ya sabíamos que dolía. */
+      var porQue = (d.errors && d.errors.length)
+        ? ' — ' + d.errors.slice(0, 2).map(function(x){
+            return String(x).slice(0, 120) }).join(' · ')
+          + (d.errors.length > 2 ? ' (+' + (d.errors.length - 2) + ')' : '')
+        : '';
       di('mAvisos', 'Sent: ' + (d.sent || 0) +
         (d.skipped ? ' · skipped ' + d.skipped : '') +
         (d.failed ? ' · failed ' + d.failed : '') +
-        dijoLicencia(l), malo ? 'mal' : 'ok');
+        dijoLicencia(l) + porQue, malo ? 'mal' : 'ok');
       verReporte();
       verLicencia(false);
     });
