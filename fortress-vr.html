@@ -310,6 +310,7 @@ var S={
     teclas:'1 2 arriba · 3 el medio · 4 5 abajo',
     mod:'Computadora · tablet · celular',
     amistoso:'Scrimmage · 4 cuartos',
+    demoSigue:'Ver lo que esto recauda →',
     finAmistoso:'FIN DEL SCRIMMAGE',
     otroAmistoso:'Otro scrimmage',
     cabeza:'Con un casco',
@@ -381,6 +382,7 @@ var S={
     teclas:'1 2 top · 3 middle · 4 5 bottom',
     mod:'Computer · tablet · phone',
     amistoso:'Scrimmage · 4 quarters',
+    demoSigue:'See what this raises →',
     finAmistoso:'SCRIMMAGE OVER',
     otroAmistoso:'Another scrimmage',
     cabeza:'With a headset',
@@ -1289,7 +1291,11 @@ function finDeJuego(){
   pintarCaja($('caja'), 0);
   $('practicar').hidden=false;
   $('practicar').textContent=T('practicar');
-  if(AMISTOSO){
+  if(DEMO){
+    /* En demostración el botón no ofrece otro scrimmage: lleva a lo
+       que el entrenador vino a ver, que es el dinero. */
+    $('otra').hidden=false; $('otra').textContent=T('demoSigue');
+  }else if(AMISTOSO){
     $('otra').hidden=false; $('otra').textContent=T('otroAmistoso');
   }else{
     $('otra').hidden=true;
@@ -1666,6 +1672,19 @@ try{ par=new URLSearchParams(location.search) }catch(e){}
 function pr(k){ try{ return par?par.get(k):null }catch(e){ return null } }
 
 var RETO=pr('c'), JUGADOR=pr('p'), LLAVE_RUN=pr('k');
+/* LA DEMOSTRACIÓN.
+
+   ?demo=1 arranca el scrimmage sin pasar por la portada y, al
+   sonar la chicharra del cuarto cuarto, ofrece volver a
+   demo.html con el total. Nada más: el scrimmage ya era un
+   juego entero sin reto, sin padrinos y sin servidor.
+
+   Existe porque enseñar esto en una banda son cuatro minutos y
+   un teléfono prestado. El entrenador juega, ve su número, y la
+   página siguiente le dice qué habría recaudado. Sin eso, el
+   juego termina en una puntuación y la conversación se queda
+   ahí. */
+var DEMO = pr('demo')==='1';
 var JUEGO = !!(RETO && JUGADOR && LLAVE_RUN && pr('official')==='1');
 var CUARTOS=4;
 
@@ -1973,6 +1992,10 @@ function arrancar(que){
   if(MODO==='cabeza' && !calHecha){ empezarMedida(); return }
   if(MODO==='cabeza') recentrar();
   if(JUEGO){ armarCuarto(proximoCuarto()); return }
+  /* En demostración NO se arranca solo. El cuarto lleva reloj, y
+     cinco minutos corriendo mientras el teléfono todavía está
+     cambiando de mano son cinco minutos del entrenador. El toque
+     en «Scrimmage» es él diciendo que está listo. */
   if(que==='amistoso'){ empezarAmistoso(); return }
   armarSesion();
 }
@@ -1980,6 +2003,10 @@ $('go').onclick=function(){ arrancar('practica') };
 $('goCabeza').onclick=function(){ arrancar('cabeza') };
 $('otra').onclick=function(){
   pararCuenta();
+  if(DEMO && finDelJuego && !enPractica){
+    location.href = 'demo.html?p=' + encodeURIComponent(String(totalJuego()));
+    return;
+  }
   if(AMISTOSO && !enPractica){
     if(finDelJuego){ empezarAmistoso(); return }   // otro scrimmage entero
     var qa=proximoCuarto();
