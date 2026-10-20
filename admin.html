@@ -453,7 +453,24 @@ $('crearCamp').onclick = function(){
           campaign_id: c.id, name: quien || 'Contact', email: correo,
           access_code: 'HC-' + Math.random().toString(36).slice(2,10).toUpperCase()
                              + Math.random().toString(36).slice(2,6).toUpperCase() } })
-        .then(function(){ return c })
+        .then(function(filas){
+          /* HAY QUE MIRAR LO QUE VOLVIÓ.
+
+             Un insert que RLS filtra no da error: PostgREST contesta
+             200 con una lista VACÍA. Sin esta comprobación el admin
+             decía «Created.», la campaña quedaba sin entrenador, y no
+             se notaba hasta el día de facturar —«no hay a quién»— con
+             el reto ya jugado y los avisos ya mandados.
+
+             Con Prefer: return=representation un insert que sí entra
+             devuelve su fila. Lista vacía quiere decir que no entró. */
+          if (!filas || !filas.length) {
+            throw new Error('the contact row was not created — the database accepted ' +
+                            'the request and saved nothing, which is what a row-level ' +
+                            'security policy does');
+          }
+          return c;
+        })
         /* Si el entrenador no entra, la campaña sobra: una campaña
            sin su fila de coaches no se puede facturar —no hay a quién—
            y se queda en la lista pareciendo buena. Se retira, igual
