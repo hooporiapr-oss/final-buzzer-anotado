@@ -176,13 +176,15 @@ var LICENCIA = 49, LICENCIA_CHICA = 29, PLANTILLA_CHICA = 8;
 var S = {
 es:{
   titulo:'Cuatro minutos y lo ves entero',
-  intro:'Juegas cuatro cuartos, sale tu número, y después te digo qué habría recaudado. No se guarda nada, no se apunta nadie y no hace falta registrarse.',
+  intro:'Juega tú. Cuatro cuartos de un minuto, sale tu número, y la página te dice lo que eso habría recaudado para tu programa.',
   jugar:'Jugar ahora',
-  notaIntro:'Son cuatro cuartos de cinco minutos. Puedes parar cuando quieras.',
-  comoVa:'Cómo se juega: la bola del medio se enciende, la tocas, y cada vuelta añade una más a la cadena. Lo que puntúa es la cadena más larga que aguantes entera.',
+  notaIntro:'Esto es una DEMOSTRACIÓN: un scrimmage de cuatro cuartos de UN minuto. Una corrida oficial —la que tiene padrinos detrás— son cuatro cuartos de CINCO minutos. Aquí no se guarda nada, no se apunta nadie y no hay que registrarse.',
+  comoVa:'Se enciende una bola, la tocas, y cada vuelta añade una más a la cadena: hay que repetirlas todas en el mismo orden. Un fallo acaba la tirada — pero dentro del minuto puedes intentarlo las veces que quieras, y ese cuarto se queda con tu mejor tirada.',
 
   marcadorH:'Tu juego',
   anotaste:'puntos en cuatro cuartos',
+  unaTirada:'Cuartos de un minuto, para que esto dure cuatro y no veinte. En un evento de verdad son cinco minutos por cuarto, con tiempo para muchas más tiradas y contando siempre la mejor — así que los números de abajo son el suelo, no el techo.',
+  jugarEntero:'Jugar un scrimmage entero',
   pasoPad:'Tus padrinos',
   padLinea:'Padrinos que encontró un jugador',
   tarLinea:'Lo que promete cada uno por punto',
@@ -217,13 +219,15 @@ es:{
 },
 en:{
   titulo:'Four minutes and you have seen it',
-  intro:'You play four quarters, your number comes up, and then I show you what it would have raised. Nothing is saved, nobody is signed up, and there is nothing to register for.',
+  intro:'You play. Four one-minute quarters, your number comes up, and the page tells you what that would have raised for your program.',
   jugar:'Play now',
-  notaIntro:'Four quarters of five minutes. Stop whenever you like.',
-  comoVa:'How it plays: the middle ball lights up, you tap it, and each round adds one more to the chain. What scores is the longest chain you hold together.',
+  notaIntro:'This is a DEMO: a scrimmage of four ONE-minute quarters. An official pledge run — the one with padrinos behind it — is four FIVE-minute quarters. Nothing here is saved, nobody is signed up, and there is nothing to register for.',
+  comoVa:'A ball lights up, you tap it, and each round adds one more to the chain: you repeat them all in the same order. One miss ends the run — but inside the minute you can go again as many times as you like, and the quarter keeps your best one.',
 
   marcadorH:'Your game',
   anotaste:'points across four quarters',
+  unaTirada:'One-minute quarters, so this takes four minutes instead of twenty. A real event runs five minutes a quarter, with room for far more runs and always counting the best one — so the numbers below are the floor, not the ceiling.',
+  jugarEntero:'Play a full scrimmage',
   pasoPad:'Your padrinos',
   padLinea:'Padrinos one player found',
   tarLinea:'What each pledges per point',
@@ -319,12 +323,21 @@ function pintar(){
 }
 
 function portada(){
+  /* Las reglas van ANTES del botón, no debajo.
+
+     Esta pantalla se enseña prestando el teléfono: se desbloquea,
+     se abre la página y se le pasa a alguien. Si para que toque el
+     botón hace falta que el de al lado le explique cómo se juega,
+     la demostración depende de que el de al lado esté hablando — y
+     eso no es una demostración, es una presentación.
+
+     Con las reglas encima del botón, el teléfono se defiende solo. */
   return '<p class="kick">Hooporia</p>' +
     '<h1>' + esc(T('titulo')) + '</h1>' +
     '<p class="lede">' + esc(T('intro')) + '</p>' +
+    '<div class="paso" style="margin:0 0 18px"><p>' + esc(T('comoVa')) + '</p></div>' +
     '<a class="btn" href="fortress-vr.html?demo=1">' + esc(T('jugar')) + '</a>' +
-    '<p class="nota">' + esc(T('notaIntro')) + '</p>' +
-    '<div class="paso" style="margin-top:24px"><p>' + esc(T('comoVa')) + '</p></div>';
+    '<p class="nota">' + esc(T('notaIntro')) + '</p>';
 }
 
 function cuenta(P){
@@ -336,7 +349,8 @@ function cuenta(P){
   var h =
     '<div class="paso marcador"><h2>' + esc(T('marcadorH')) + '</h2>' +
       '<div class="gordo"><b>' + P + '</b>' +
-      '<span>' + esc(T('anotaste')) + '</span></div></div>';
+      '<span>' + esc(T('anotaste')) + '</span></div></div>' +
+    '<p class="nota" style="margin:-4px 0 16px">' + esc(T('unaTirada')) + '</p>';
 
   if (corto) h += '<div class="aviso">' + esc(T('pisoAviso')) + '</div>';
 
@@ -372,7 +386,11 @@ function cuenta(P){
     '</div>' +
 
     '<a class="btn" href="equipo.html">' + esc(T('alta')) + '</a>' +
-    '<a class="btn line" href="fortress-vr.html?demo=1">' + esc(T('otra')) + '</a>';
+    '<a class="btn line" href="fortress-vr.html?demo=1">' + esc(T('otra')) + '</a>' +
+    /* El scrimmage entero, sin ?demo=1: cuatro cuartos de cinco
+       minutos. No es para la banda — es para el entrenador que
+       quiere sentir lo que van a jugar sus nenes. */
+    '<a class="btn line" href="fortress-vr.html">' + esc(T('jugarEntero')) + '</a>';
   return h;
 }
 
