@@ -90,6 +90,89 @@ footer .f-dot{padding:0 8px;opacity:.45}
   main a{border-bottom:none;color:#000}
   h2,li{break-inside:avoid}
 }
+
+/* ══ La barra, el menú y el idioma ══════════════════════════════════
+   Puesto al final de la hoja a propósito: lo que haya escrito arriba
+   sobre header, .bar o .langb queda debajo de esto.
+
+   --barra tiene que ser la MISMA altura en los dos sitios donde se
+   usa: el hueco que deja scroll-padding para que un ancla no quede
+   detrás de la cabecera, y el punto donde arranca el panel. */
+:root{--barra:66px}
+html{scroll-padding-top:calc(var(--barra) + 10px)}
+/* overflow-x en el body y no sólo en html: en Safari de iOS, html
+   solo no lo sujeta y basta un elemento ancho para arrastrar la
+   página de lado. */
+body{overflow-x:hidden}
+header{position:sticky;top:0;z-index:100;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{min-height:var(--barra);padding:0;gap:10px}
+/* El botón del idioma dice el idioma AL QUE lleva, no el que está
+   puesto. Por eso necesita sitio para una palabra y no para dos
+   letras, y nowrap para que «Español» no se parta en dos líneas. */
+.langb,#lang{white-space:nowrap;min-height:40px;font-size:.85rem;
+  padding:0 12px;border-radius:9px;font-family:inherit}
+.barra-dcha{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* Las rayas se pintan con currentColor, no con blanco: prometer.html
+   tiene la barra en crema con la marca en navy, y unas rayas
+   blancas ahí no se ven. Heredando el color de la barra valen para
+   las dos, y para la próxima página que cambie de fondo. Lo
+   encontró una captura, no la prueba: la prueba miraba que el botón
+   estuviera, no que se viera. */
+/* El color de las rayas sale de la barra, y la barra de estas
+   páginas no declaraba ninguno: heredaban la tinta del cuerpo
+   —navy sobre navy— y el botón se veía con 1.2:1 de contraste,
+   que es no verse. Barra navy, tinta blanca. */
+header{color:#fff}
+.hamb{display:none;width:44px;height:44px;flex:0 0 44px;color:inherit;
+  border:1px solid currentColor;background:transparent;border-radius:9px;
+  cursor:pointer;padding:0;align-items:center;justify-content:center}
+@supports (border-color: color-mix(in srgb, currentColor 45%, transparent)){
+  .hamb{border-color: color-mix(in srgb, currentColor 45%, transparent)}
+}
+.hamb:hover{border-color:var(--orange);color:var(--orange)}
+/* color:inherit en la propia raya y no sólo en el botón: privacy
+   y terms traen un `strong,b{color:var(--ink)}` para el texto, y
+   currentColor dentro de un <b> resuelve al color DEL <b>, no al
+   del padre. Las rayas salían navy sobre navy. */
+.hamb b{display:block;width:20px;height:2px;color:inherit;
+  background:currentColor;border-radius:2px;
+  position:relative;transition:background .18s ease}
+.hamb b::before,.hamb b::after{content:'';position:absolute;left:0;
+  width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform .18s ease}
+.hamb b::before{top:-6px}
+.hamb b::after{top:6px}
+.hamb[aria-expanded="true"] b{background:transparent}
+.hamb[aria-expanded="true"] b::before{transform:translateY(6px) rotate(45deg)}
+.hamb[aria-expanded="true"] b::after{transform:translateY(-6px) rotate(-45deg)}
+
+.menu{position:absolute;left:0;right:0;top:100%;
+  display:flex;flex-direction:column;align-items:stretch;
+  background:var(--navy);border-bottom:1px solid #ffffff22;
+  /* Cerrado con max-height para que tenga transición, y con
+     visibility para que el teclado no se meta dentro: max-height
+     sola deja los enlaces tabulables en un panel invisible. */
+  max-height:0;visibility:hidden;overflow:hidden;
+  transition:max-height .22s ease,visibility .22s}
+.menu.abierto{max-height:80vh;visibility:visible;overflow:auto}
+.menu a{display:flex;align-items:center;min-height:52px;
+  padding:0 max(20px,calc((100vw - 900px)/2 + 20px));
+  color:#fff;text-decoration:none;font-weight:600;font-size:1rem;
+  border-top:1px solid #ffffff14}
+.menu a:first-child{border-top:0}
+.menu a:hover{color:var(--orange)}
+.menu a.cta{margin:14px 20px 18px;justify-content:center;border-top:0;
+  background:var(--orange);color:#111a24;font-weight:800;border-radius:9px}
+.menu a.cta:hover{color:#111a24}
+/* Las rayas se ven siempre: estas páginas no tienen enlaces en la
+   barra en ningún tamaño, así que el menú es la única puerta y
+   esconderlo en escritorio dejaría la página sin salida otra vez. */
+.hamb{display:flex}
+@media(max-width:430px){
+:root{--barra:60px}
+.langb,#lang{padding:0 10px;font-size:.8rem}
+}
 </style>
 </head>
 <body>
@@ -97,7 +180,18 @@ footer .f-dot{padding:0 8px;opacity:.45}
 <header>
   <div class="wrap bar">
     <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
-    <button class="langb" id="langBtn" onclick="toggleLang()">ES</button>
+    <nav class="menu" id="menu">
+      <a href="index.html" data-m="inicio">Home</a>
+      <a href="index.html#how" data-m="como">How it works</a>
+      <a href="index.html#precio" data-m="precio">What it costs</a>
+      <a href="ayuda.html" data-m="ayuda">Questions</a>
+      <a href="mi-equipo.html" data-m="mia">My team</a>
+      <a class="cta" href="equipo.html" data-m="alta">Sign up a team</a>
+    </nav>
+    <div class="barra-dcha">
+      <button class="langb" id="langBtn" onclick="toggleLang()">ES</button>
+      <button class="hamb" id="hamb" type="button" aria-controls="menu" aria-expanded="false"><b></b></button>
+    </div>
   </div>
 </header>
 
@@ -434,15 +528,81 @@ try{ LANG = localStorage.getItem('cp-lang') ||
 function draw(){
   document.documentElement.lang = LANG;
   document.getElementById('app').innerHTML = BODY[LANG] || BODY.en;
-  document.getElementById('langBtn').textContent = LANG==='en' ? 'ES':'EN';
+  document.getElementById('langBtn').textContent = LANG==='en' ? 'Español':'English';
   try{ document.querySelector('main').scrollTop = 0; }catch(e){}
 }
 function toggleLang(){
   LANG = LANG==='en' ? 'es':'en';
-  try{ localStorage.setItem('cp-lang', LANG); }catch(e){}
+  try{ localStorage.setItem('cfh_lang', LANG);
+      localStorage.setItem('cp-lang', LANG);
+      localStorage.setItem('fc-lang', LANG); }catch(e){}
   draw();
 }
 draw();
+</script>
+
+<script>
+/* ══ El menú de la barra ════════════════════════════════════════════
+   Vive aparte del sistema de idioma de cada página a propósito: son
+   doce páginas con cuatro formas distintas de pintar sus textos, y
+   engancharse a cada una sería cuatro maneras de romperse. Esto lee
+   el idioma de donde lo deja todo el mundo —localStorage— y pinta
+   sus seis enlaces y nada más. */
+(function(){
+var ROTULOS = {
+  en: { inicio:'Home', como:'How it works', precio:'What it costs',
+        ayuda:'Questions', mia:'My team', alta:'Sign up a team',
+        menu:'Menu', otro:'Español', aOtro:'Cambiar a español' },
+  es: { inicio:'Inicio', como:'Cómo funciona', precio:'Cuánto cuesta',
+        ayuda:'Preguntas', mia:'Mi equipo', alta:'Registra un equipo',
+        menu:'Menú', otro:'English', aOtro:'Switch to English' }
+};
+function idioma(){
+  try{
+    return localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+           localStorage.getItem('fc-lang') ||
+           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en');
+  }catch(e){ return 'es' }
+}
+var b = document.getElementById('hamb'),
+    m = document.getElementById('menu'),
+    l = document.getElementById('langBtn') || document.getElementById('lang');
+if (!b || !m) return;
+
+function pintar(){
+  var t = ROTULOS[idioma()] || ROTULOS.es;
+  m.querySelectorAll('[data-m]').forEach(function(a){
+    a.textContent = t[a.getAttribute('data-m')] || a.textContent;
+  });
+  b.setAttribute('aria-label', t.menu);
+  /* El botón del idioma lo pinta la propia página, cada una a su
+     manera. Aquí sólo se corrige si se quedó con las dos letras
+     viejas, para que ninguna página diga «EN» mientras las demás
+     dicen «English». */
+  if (l && /^(EN|ES)$/.test((l.textContent||'').trim())) {
+    l.textContent = t.otro;
+    l.setAttribute('aria-label', t.aOtro);
+  }
+}
+function pon(abierto){
+  m.classList.toggle('abierto', abierto);
+  b.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+}
+b.addEventListener('click', function(){
+  pon(b.getAttribute('aria-expanded') !== 'true');
+});
+m.addEventListener('click', function(e){ if (e.target.closest('a')) pon(false) });
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && b.getAttribute('aria-expanded') === 'true') {
+    pon(false); b.focus();
+  }
+});
+/* Al pulsar el idioma, la página repinta lo suyo; el menú repinta
+   lo suyo detrás, con un turno de espera para que el valor nuevo ya
+   esté guardado cuando se lea. */
+if (l) l.addEventListener('click', function(){ setTimeout(pintar, 0) });
+pintar();
+})();
 </script>
 </body>
 </html>
