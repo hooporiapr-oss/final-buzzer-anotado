@@ -405,12 +405,25 @@ function draw(){
         '<div class="tick">✓</div>' +
         '<h1>' + T('doneH') + '</h1>' +
         '<p class="lede">' + T('doneP', { E: esc(SENT) }) + '</p>' +
-        '<p class="lede">' + T('doneMore') + '</p>' +
-        /* El id es la campana de demostracion que scoreboard.html
-           reconoce como tal y anuncia en la propia pagina. */
-        '<a class="btn line" href="scoreboard.html?c=8d0d1f66-29a8-4406-90f2-3c3cf9479d55" ' +
-          'target="_blank" rel="noopener">' + T('seeBoard') + '</a>' +
       '</div>';
+      /* AQUÍ IBA UN BOTÓN PARA VER UN TABLERO DE EJEMPLO.
+
+         Estaba roto de tres maneras a la vez y daba 404 justo
+         después de que alguien se apuntara, que es el peor momento
+         para que algo no funcione:
+
+           · apuntaba a scoreboard.html, y esa página no existe en
+             este repo — se llama tablero.html
+           · llevaba un id de campaña, y tablero.html espera un id de
+             RETO: la misma letra 'c' quiere decir cosas distintas
+             según la página
+           · y ese id era el de la campaña de demostración, que se
+             borró esta mañana con el resto de los datos de prueba
+
+         Enseñar un tablero de verdad vale, pero hace falta una
+         campaña de demostración permanente que las limpiezas no se
+         lleven. Mientras no exista, no hay botón: un enlace roto
+         dice más de nosotros que la falta del enlace. */
     return;
   }
 
