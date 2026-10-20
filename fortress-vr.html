@@ -335,7 +335,7 @@ var S={
     total:'Tot',
     ventanaQueda:'La ventana cierra en {T}',
     ventanaCerrada:'La ventana ya cerró',
-    juegoP:'Cuatro cuartos de 5 minutos. Cada cuarto vale tu MEJOR tirada, '+
+    juegoP:'Cuatro cuartos de {M}. Cada cuarto vale tu MEJOR tirada, '+
            'y los cuatro se suman. Eso es tu juego.',
     juegoS:'Entre cuarto y cuarto puedes practicar lo que quieras.',
     juegoHecho:'Tu juego está completo. Gracias — esto es lo que verán tus padrinos.',
@@ -407,7 +407,7 @@ var S={
     total:'Tot',
     ventanaQueda:'The window closes in {T}',
     ventanaCerrada:'The window has closed',
-    juegoP:'Four 5-minute quarters. Each quarter counts your BEST run, '+
+    juegoP:'Four quarters of {M}. Each quarter counts your BEST run, '+
            'and the four add up. That is your game.',
     juegoS:'Between quarters you can practise as much as you like.',
     juegoHecho:'Your game is complete. This is what your sponsors will see.',
@@ -477,9 +477,13 @@ function pintarTextos(){
 /* Cuánto dura la tanda, dicho en palabras. Estaba escrito a mano —
    "tus 5 minutos" — y con ?min=3 la página mentía. */
 function cuantoDura(){
-  var min=SESION_MS/60000;
+  /* Lo que dura DE VERDAD esta tanda, que en demostración es un
+     minuto y no cinco. Leía SESION_MS a secas y la portada prometía
+     cinco minutos antes de un cuarto de uno. */
+  var ms=duracionSesion();
+  var min=ms/60000;
   if(min>=1 && min===Math.round(min)) return T('minutos').replace('{N}',min);
-  var seg=Math.round(SESION_MS/1000);
+  var seg=Math.round(ms/1000);
   if(seg<60) return T('segundos').replace('{N}',seg);
   return Math.floor(seg/60)+':'+('0'+(seg%60)).slice(-2);
 }
@@ -881,6 +885,27 @@ function apagar(i){
    minutos y la chicharra se lo dice.
    ══════════════════════════════════════════════════════════════════ */
 var SESION_MS=5*60*1000;
+/* EL CUARTO DE UN SCRIMMAGE DURA UN MINUTO.
+
+   Cinco minutos por cuarto son veinte minutos de juego, y eso lo
+   aguanta quien tiene padrinos esperando el número. Un scrimmage no
+   tiene a nadie esperando: se juega para probarlo, para enseñarlo en
+   una banda, o para que un nene sepa a qué se va a enfrentar. Veinte
+   minutos para eso es una reunión, no una prueba.
+
+   Se acorta el RELOJ y no el juego: el cuarto sigue teniendo varias
+   tiradas, sigue contando la mejor y sigue acabando en chicharra.
+   Esa es la parte que hay que sentir —apretar al final, fallar y
+   que te quede tiempo para otra—, y una sola tirada por cuarto se la
+   llevaría por delante. Un minuto da para tres o cuatro.
+
+   La corrida OFICIAL no se toca: cinco minutos por cuarto. Es la que
+   tiene dinero detrás. Y la práctica con casco también se queda en
+   cinco, que ahí el reloj es la sesión entera y no un cuarto. */
+var CUARTO_CORTO_MS=60*1000;
+function duracionSesion(){
+  return (AMISTOSO && !enPractica) ? CUARTO_CORTO_MS : SESION_MS;
+}
 /* Cinco minutos por defecto, pero si la fila es larga se acorta desde
    la dirección: ?min=3. También es la única forma de probar la
    chicharra sin esperar cinco minutos cada vez. */
@@ -890,8 +915,8 @@ try{
 }catch(e){}
 var relojHasta=0, relojCorriendo=false, relojTexto='';
 
-function quedaMs(){ return relojCorriendo ? Math.max(0, relojHasta-performance.now()) : SESION_MS }
-function arrancarReloj(){ relojHasta=performance.now()+SESION_MS; relojCorriendo=true }
+function quedaMs(){ return relojCorriendo ? Math.max(0, relojHasta-performance.now()) : duracionSesion() }
+function arrancarReloj(){ relojHasta=performance.now()+duracionSesion(); relojCorriendo=true }
 function pintarReloj(){
   var ms=quedaMs(), seg=Math.ceil(ms/1000);
   var txt=Math.floor(seg/60)+':'+('0'+(seg%60)).slice(-2);
@@ -1684,8 +1709,17 @@ var RETO=pr('c'), JUGADOR=pr('p'), LLAVE_RUN=pr('k');
    página siguiente le dice qué habría recaudado. Sin eso, el
    juego termina en una puntuación y la conversación se queda
    ahí. */
-var DEMO = pr('demo')==='1';
 var JUEGO = !!(RETO && JUGADOR && LLAVE_RUN && pr('official')==='1');
+/* ?demo=1 ya no toca el reloj —eso lo decide el scrimmage— y sólo
+   cambia a dónde lleva el botón del final: a demo.html con el
+   total, en vez de ofrecer otro scrimmage.
+
+   Sigue apagado en una corrida oficial. Ahí el final manda el
+   cuarto al servidor y la pantalla es la del juego de verdad; un
+   parámetro pegado al final de un enlace no tiene por qué poder
+   desviar eso a una página de venta. Va DESPUÉS de JUEGO a
+   propósito: escrito antes, JUEGO todavía vale undefined. */
+var DEMO = pr('demo')==='1' && !JUEGO;
 var CUARTOS=4;
 
 /* EL SCRIMMAGE.
@@ -1786,7 +1820,10 @@ function pintarTapaJuego(){
     $('tapaP').textContent=T('juegoHecho');
     $('go').hidden=true;
   }else{
-    $('tapaP').textContent=T('juegoP').replace('{Q}', q);
+    /* {M} y no un «5 minutos» escrito a mano: un scrimmage son
+       cuartos de un minuto y una corrida oficial de cinco, y esta
+       misma línea la leen los dos. */
+    $('tapaP').textContent=T('juegoP').replace('{Q}', q).replace('{M}', cuantoDura());
     $('go').hidden=false;
     $('go').textContent=(q===1?T('empezarQ'):T('seguirQ')).replace('{Q}', q);
   }
