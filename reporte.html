@@ -469,8 +469,23 @@ var AVISO=null;
 
 /* Los avisos los manda el servidor, no la página: hace falta la clave
    de Resend y la de servicio, y ninguna de las dos puede estar en un
-   fichero que se descarga. */
-var SERVER='https://basketball-money-payments.onrender.com';
+   fichero que se descarga.
+
+   Y los manda el servidor DE HOOPORIA. Esta línea apuntaba al
+   compartido, que es el de los otros productos: el entrenador
+   pulsaba «avisar» desde aquí y la llamada se iba a un servidor que
+   no tiene la licencia, así que los avisos salían y la factura no
+   se creaba nunca. El botón del admin sí apuntaba bien, y por eso
+   no se notaba. */
+var SERVER='https://hooporia-server.onrender.com';
+
+/* El piso de la promesa. Tiene que ser el MISMO número que
+   PISO_CENTS en server.js y que el $5 que prometer.html le dice al
+   padrino en los dos idiomas. Estaba en 50 aquí y el servidor
+   también, mientras la página prometía $5: la cuenta que veía el
+   entrenador antes de pulsar incluía promesas que luego no se
+   cobraban. */
+var PISO_CENTS = 500;
 
 function toggleLang(){
   LANG = LANG==='es'?'en':'es';
@@ -567,7 +582,7 @@ function pintar(){
      coinciden, la que manda es la del servidor y lo que se corrige
      es esta línea. */
   var porAvisar = ps.filter(function(p){
-    return p.estado==='open' && Math.round(Number(p.total||0)*100)>=50;
+    return p.estado==='open' && Math.round(Number(p.total||0)*100)>=PISO_CENTS;
   }).length;
 
   /* Por jugador. Los que no jugaron salen en gris y con un "no jugó"
@@ -682,7 +697,7 @@ function pintar(){
 function pedirConfirma(){
   var n=$('avisoAcc'); if(!n) return;
   var cuantos = (REP&&REP.pledges||[]).filter(function(p){
-    return p.estado==='open' && Math.round(Number(p.total||0)*100)>=50;
+    return p.estado==='open' && Math.round(Number(p.total||0)*100)>=PISO_CENTS;
   }).length;
   n.innerHTML =
     '<button class="btn" onclick="mandarAvisos()">'+esc(T('avisoConfirma',{N:cuantos}))+'</button>'+
