@@ -52,12 +52,18 @@ nav{position:sticky;top:0;z-index:70;background:var(--navy);
 .wm i{font-style:normal;color:var(--orange)}
 @media(max-width:380px){ .wm,.mark .wm{font-size:.92rem} }
 
+/* Sitio para una palabra, no para dos letras, y nowrap para que
+   «Español» no se parta en dos líneas en una pantalla estrecha. */
 #lang{border:1px solid #ffffff55;background:transparent;color:#fff;
-  padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+  padding:0 12px;min-height:40px;border-radius:9px;font:inherit;font-size:.82rem;
+  font-weight:700;cursor:pointer;white-space:nowrap}
 #lang:hover{border-color:var(--orange);color:var(--orange)}
 
 /* ── El menú ──────────────────────────────────────────────────── */
-.burger{display:none;width:42px;height:42px;flex-shrink:0;
+/* Las rayas se ven en CUALQUIER tamaño. Antes sólo por debajo de
+   760px, y en escritorio esta página se quedaba con la marca y el
+   idioma y ni un enlace: la única salida era volver atrás. */
+.burger{display:block;width:42px;height:42px;flex-shrink:0;
   background:none;border:1px solid #ffffff55;border-radius:9px;
   cursor:pointer;padding:0;position:relative}
 .burger span{position:absolute;left:11px;right:11px;height:2px;background:#fff;
@@ -69,17 +75,19 @@ nav{position:sticky;top:0;z-index:70;background:var(--navy);
 .burger.open span:nth-child(2){opacity:0}
 .burger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
 
-.menu{display:none}
-@media(max-width:760px){
-  .burger{display:block}
-  .menu{display:block;max-height:0;overflow:hidden;background:var(--navy);
-    border-top:0 solid #ffffff22;transition:max-height .3s ease-out}
-  .menu.open{max-height:420px;border-top-width:1px}
-  .menu a{display:block;padding:15px 0;color:#fff;text-decoration:none;
-    font-size:1rem;font-weight:600;border-bottom:1px solid #ffffff1a}
-  .menu a:last-child{border-bottom:none}
-  .menu a.mtalk{color:var(--orange);font-weight:800}
-}
+/* visibility además de max-height: cerrado con max-height a secas
+   el panel no se ve pero sus enlaces siguen siendo tabulables, y el
+   foco del teclado se mete en una lista invisible. Lo encontró la
+   prueba del menú, no la vista. */
+.menu{display:block;max-height:0;visibility:hidden;overflow:hidden;
+  background:var(--navy);border-top:0 solid #ffffff22;
+  transition:max-height .3s ease-out,visibility .3s}
+.menu.open{max-height:420px;visibility:visible;border-top-width:1px}
+.menu a{display:flex;align-items:center;min-height:52px;padding:0;
+  color:#fff;text-decoration:none;font-size:1rem;font-weight:600;
+  border-bottom:1px solid #ffffff1a}
+.menu a:last-child{border-bottom:none}
+.menu a.mtalk{color:var(--orange);font-weight:800}
 
 header{padding:clamp(44px,8vw,76px) 0 clamp(26px,4vw,34px)}
 h1{font-size:clamp(2rem,6.2vw,3.1rem);font-weight:800;letter-spacing:-.045em;
@@ -216,7 +224,7 @@ footer .f-dot{padding:0 8px;opacity:.45}
 
 <nav><div class="wrap navin">
   <a class="mark" href="index.html"><span class="wm"><em>HOOPORIA</em><i>.</i></span></a>
-  <div class="navr"><button id="lang" onclick="flip()">ES</button>
+  <div class="navr"><button id="lang" onclick="flip()">Español</button>
     <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -549,7 +557,12 @@ function paint(){
   if (_f) _f.alt = lang === 'es'
     ? 'Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21'
     : 'A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21';
-  document.getElementById('lang').textContent = lang === 'en' ? 'ES' : 'EN';
+  /* El botón dice el idioma AL QUE lleva, no el que está puesto: un
+     botón que dice el idioma actual se lee como un estado y no como
+     una puerta. Igual que en el resto del sitio. */
+  document.getElementById('lang').textContent = lang === 'en' ? 'Español' : 'English';
+  document.getElementById('lang').setAttribute('aria-label',
+    lang === 'en' ? 'Cambiar a español' : 'Switch to English');
   document.getElementById('msgText').textContent = t('msgBody');
   document.getElementById('copiedNote').textContent = '';
   document.getElementById('fWhat').textContent = t('fWhat');
