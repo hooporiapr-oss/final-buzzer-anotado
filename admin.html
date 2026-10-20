@@ -441,10 +441,28 @@ $('crearCamp').onclick = function(){
       if (!c) throw new Error('the database did not return the campaign');
       /* El entrenador, CON correo. El admin viejo creaba esta fila
          sin él, y por eso licencia_calculo no encontraba a quién
-         facturarle y el aviso salía sin contacto. */
+         facturarle y el aviso salía sin contacto.
+
+         access_code no lo usa Hooporia para nada —aquí el entrenador
+         entra con su bw_code— pero la columna es NOT NULL desde el
+         producto anterior, y sin ella el insert se cae entero. Va un
+         valor al azar y no uno fijo: no sé qué función vieja puede
+         seguir tratándolo como una credencial, y un valor adivinable
+         sería la clase de agujero que se descubre tarde. */
       return rest('coaches', { method:'POST', body:{
-          campaign_id: c.id, name: quien || 'Contact', email: correo } })
-        .then(function(){ return c });
+          campaign_id: c.id, name: quien || 'Contact', email: correo,
+          access_code: 'HC-' + Math.random().toString(36).slice(2,10).toUpperCase()
+                             + Math.random().toString(36).slice(2,6).toUpperCase() } })
+        .then(function(){ return c })
+        /* Si el entrenador no entra, la campaña sobra: una campaña
+           sin su fila de coaches no se puede facturar —no hay a quién—
+           y se queda en la lista pareciendo buena. Se retira, igual
+           que la fila de licencias cuando Stripe falla. */
+        .catch(function(e){
+          return rest('campaigns?id=eq.' + encodeURIComponent(c.id), { method:'DELETE' })
+            .catch(function(){})
+            .then(function(){ throw e });
+        });
     })
     .then(function(c){
       $('nNombre').value = ''; $('nQuien').value = ''; $('nCorreo').value = '';
@@ -605,13 +623,14 @@ function abrirReto(id){
     '<p class="m" id="mPl"></p></section>' +
 
     '<section class="caja"><h2>Report and notices</h2>' +
-    '<p class="sub">What was pledged, and the notice each padrino gets when it closes.</p>' +
+    '<p class="sub">What was pledged. Sending the notices also invoices the licence &mdash; that is the moment the results are given.</p>' +
     '<div class="btns"><button class="q" id="verReporte">See the report</button>' +
-      '<button class="q" id="mandarAvisos">Send the notices</button></div>' +
+      '<button class="q" id="mandarAvisos">Send the notices &amp; invoice</button></div>' +
     '<p class="m" id="mRep"></p><div id="reporte"></div></section>' +
 
     '<section class="caja"><h2>Licence</h2>' +
-    '<p class="sub">$49 per event, $29 if the roster is under eight. No pledges, no fee.</p>' +
+    '<p class="sub">$49 per event, $29 if the roster is under eight. No pledges, no fee. '+
+    'It is invoiced automatically when the notices go out; this is here for the one that did not.</p>' +
     '<div class="btns"><button class="q" id="verLic">See what it would cost</button></div>' +
     '<p class="m" id="mLic"></p><div id="licencia"></div></section>';
 
@@ -790,8 +809,8 @@ function verReporte(){
       var jug = r.players || [], prom = r.pledges || [];
       $('reporte').innerHTML =
         '<div class="tot">' +
-          '<div><b>' + jug.length + '</b><span>en plantilla</span></div>' +
-          '<div><b>' + (r.count || 0) + '</b><span>promesas</span></div>' +
+          '<div><b>' + jug.length + '</b><span>on the roster</span></div>' +
+          '<div><b>' + (r.count || 0) + '</b><span>pledges</span></div>' +
           '<div><b>$' + Number(r.pledged || 0).toFixed(2) + '</b><span>prometido</span></div>' +
         '</div>' +
         (prom.length
@@ -811,20 +830,63 @@ function verReporte(){
     .catch(function(e){ di('mRep', 'Could not do it' + porque(e), 'mal') });
 }
 
+/* Lo que hizo la factura, dicho en la misma línea que los avisos.
+   Mandar avisos ahora cobra, así que esconder el resultado de la
+   factura detrás de otro botón sería dejarle adivinar si se cobró. */
+function dijoLicencia(l){
+  if (!l || !l.estado) return '';
+  var money = function(c){ return '$' + (Number(c || 0) / 100).toFixed(2) };
+  switch (l.estado) {
+    case 'enviada':
+      return ' · licence invoiced: ' + money(l.amount_cents) +
+             (l.program_email ? ' to ' + l.program_email : '');
+    case 'sin_promesas':
+      return ' · no licence: this challenge recorded no pledges, so there is no fee';
+    case 'ya_facturada':
+      return ' · licence was already invoiced';
+    case 'avisos_pendientes':
+      return ' · licence held until every padrino has their notice';
+    case 'sin_correo':
+      return ' · LICENCE NOT INVOICED: the program has no email on file';
+    case 'stripe':
+      return ' · LICENCE NOT INVOICED: Stripe refused it' +
+             (l.why ? ' (' + String(l.why).slice(0, 80) + ')' : '') +
+             ' — use Invoice the licence below';
+    case 'sin_calculo':
+    case 'error':
+      return ' · LICENCE NOT INVOICED' + porque(l.why) +
+             ' — use Invoice the licence below';
+    default:
+      return ' · licence: ' + l.estado;
+  }
+}
+
 function mandarAvisos(){
   if (!codigo()) return di('mRep', 'The campaign code is required.', 'mal');
-  if (!confirm('Send the notice to every padrino on this challenge.\n\nOne each, with the points and their total. No payment link, no reminders. This cannot be undone.'))
+  /* Que diga que cobra. Antes avisaba y nada más; ahora el mismo
+     botón factura la licencia, y eso no se puede descubrir después
+     de pulsarlo. */
+  if (!confirm('Send the notice to every padrino on this challenge, and invoice the licence.\n\n' +
+               'One notice each, with the points and their total. No payment link, no reminders.\n\n' +
+               'The licence invoice goes to the program by email, due in 7 days. ' +
+               'If nobody pledged, nothing is invoiced.\n\nThis cannot be undone.'))
     return;
   di('mRep', '…');
   servidor('/challenge-notices', { code: codigo(), challenge_id: RETO.id })
     .then(function(r){
       if (r.codigo === 404) return di('mRep', 'The Hooporia server does not have that route yet (' + SERVIDOR + ').', 'mal');
       if (r.codigo !== 200) return di('mRep', 'They were not sent' + porque(r.cuerpo), 'mal');
-      var d = r.cuerpo || {};
+      var d = r.cuerpo || {}, l = d.licencia || {};
+      /* Rojo si falló un aviso o si la licencia no salió debiendo
+         salir. Los dos casos piden una segunda pasada. */
+      var malo = d.failed || ['sin_correo','stripe','error','sin_calculo']
+                              .indexOf(l.estado) !== -1;
       di('mRep', 'Sent: ' + (d.sent || 0) +
         (d.skipped ? ' · skipped ' + d.skipped : '') +
-        (d.failed ? ' · failed ' + d.failed : ''), d.failed ? 'mal' : 'ok');
+        (d.failed ? ' · failed ' + d.failed : '') +
+        dijoLicencia(l), malo ? 'mal' : 'ok');
       verReporte();
+      verLicencia(false);
     });
 }
 
@@ -855,17 +917,17 @@ function verLicencia(confirmar){
 
       di('mLic', '');
       $('licencia').innerHTML =
-        '<div class="tot"><div><b>$' + (d.amount_cents/100).toFixed(2) + '</b><span>la licencia</span></div>' +
-        '<div><b>' + d.roster + '</b><span>en plantilla</span></div>' +
-        '<div><b>' + d.promesas + '</b><span>promesas</span></div></div>' +
-        '<p class="sub" style="margin-top:10px">Se le factura a ' + esc(d.program_email) +
+        '<div class="tot"><div><b>$' + (d.amount_cents/100).toFixed(2) + '</b><span>the licence</span></div>' +
+        '<div><b>' + d.roster + '</b><span>on the roster</span></div>' +
+        '<div><b>' + d.promesas + '</b><span>pledges</span></div></div>' +
+        '<p class="sub" style="margin-top:10px">Invoiced to ' + esc(d.program_email) +
         ', due in ' + d.dias + ' days.</p>' +
         (d.modo === 'live'
           ? '<p class="aviso"><b>Live mode.</b> Confirming sends a real invoice, by email, to a real customer.</p>'
           : '<p class="aviso">Test mode (' + esc(d.modo) + '). No real money moves.</p>') +
         '<div class="btns"><button id="facturar">Invoice the licence</button></div>';
       $('facturar').onclick = function(){
-        if (confirm('Invoice $' + (d.amount_cents/100).toFixed(2) + ' a ' + d.program_email + '.' +
+        if (confirm('Invoice $' + (d.amount_cents/100).toFixed(2) + ' to ' + d.program_email + '.' +
                     (d.modo === 'live' ? '\n\nLIVE MODE — this is a real invoice.' : '')))
           verLicencia(true);
       };
