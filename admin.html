@@ -940,8 +940,16 @@ function verLicencia(confirmar){
       if (r.codigo !== 200) return di('mLic', 'Could not do it' + porque(d), 'mal');
 
       if (confirmar) {
-        di('mLic', 'Invoiced. Stripe emailed $' + (d.amount_cents/100).toFixed(2) +
-                   ' to ' + d.program_email + '.', 'ok');
+        /* En modo de prueba Stripe NO manda el correo, así que decir
+           que lo mandó es mentira justo en la pantalla donde se está
+           comprobando si funciona. El enlace de abajo abre la factura
+           de todas formas, que es por donde se paga en una prueba. */
+        di('mLic', d.modo === 'live'
+             ? 'Invoiced. Stripe emailed $' + (d.amount_cents/100).toFixed(2) +
+               ' to ' + d.program_email + '.'
+             : 'Invoiced in test mode: $' + (d.amount_cents/100).toFixed(2) +
+               ' for ' + d.program_email + '. Stripe does not send the email in test ' +
+               'mode — open the invoice below to pay it.', 'ok');
         $('licencia').innerHTML = d.url
           ? '<div class="item"><span><b>The invoice</b></span>' +
             '<a href="' + esc(d.url) + '" target="_blank" rel="noopener"><button class="q sm">Open in Stripe</button></a></div>'
