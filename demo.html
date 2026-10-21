@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101c2a">
+<title>See it in four minutes — Hooporia</title>
+<meta name="description" content="Take a run, see your score, and see what it would have raised for a program. Nothing is saved and nobody signs up.">
+<link rel="icon" type="image/png" href="hooporia.png">
+<link rel="apple-touch-icon" href="hooporia.png">
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   LA DEMOSTRACIÓN DE BANDA
+
+   Esto se enseña de pie, en el borde de una cancha, entre dos
+   partidos, en el teléfono de uno. El entrenador tiene cuatro
+   minutos y nunca ha visto nada parecido.
+
+   Por eso la página hace dos cosas y ninguna más: le deja jugar, y
+   después le enseña la cuenta. No guarda nada, no da de alta a
+   nadie y no toca la base — se puede enseñar veinte veces seguidas
+   y no deja rastro que limpiar.
+
+   El ejemplo va con números FIJOS y con la puntuación que acaba de
+   sacar él. Fijos porque mover barritas delante de alguien es
+   enseñarle una calculadora, no un producto; y con su número porque
+   «si tus doce hacen lo que acabas de hacer tú» es una frase que no
+   se puede decir con los números de otro.
+   ══════════════════════════════════════════════════════════════════ */
+:root{--navy:#101c2a;--navy2:#192b3d;--orange:#ff7a18;--cream:#faf8f4;
+  --ink:#1b2937;--muted:#617083;--linea:#e4e0d8;--barra:66px}
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(var(--barra) + 10px)}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+  color:var(--ink);background:var(--cream);line-height:1.55;overflow-x:hidden}
+a{color:inherit}
+header{background:var(--navy);color:#fff;border-bottom:1px solid #ffffff22;
+  position:sticky;top:0;z-index:100;padding-top:env(safe-area-inset-top,0px)}
+.wrap{width:min(720px,calc(100% - 40px));margin:0 auto}
+header .bar{display:flex;align-items:center;justify-content:space-between;
+  gap:10px;min-height:var(--barra)}
+.mark{font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+  text-decoration:none;font-size:1.05rem;color:#fff;white-space:nowrap}
+.mark i{font-style:normal;color:var(--orange)}
+.barra-dcha{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.langb{border:1px solid #ffffff55;background:transparent;color:#fff;
+  white-space:nowrap;min-height:40px;font-size:.85rem;padding:0 12px;
+  border-radius:9px;font-family:inherit;font-weight:700;cursor:pointer}
+.langb:hover{border-color:var(--orange);color:var(--orange)}
+.hamb{display:flex;width:44px;height:44px;flex:0 0 44px;color:inherit;
+  border:1px solid currentColor;background:transparent;border-radius:9px;
+  cursor:pointer;padding:0;align-items:center;justify-content:center}
+@supports (border-color: color-mix(in srgb, currentColor 45%, transparent)){
+  .hamb{border-color: color-mix(in srgb, currentColor 45%, transparent)}
+}
+.hamb:hover{border-color:var(--orange);color:var(--orange)}
+.hamb b{display:block;width:20px;height:2px;color:inherit;background:currentColor;
+  border-radius:2px;position:relative}
+.hamb b::before,.hamb b::after{content:'';position:absolute;left:0;width:20px;
+  height:2px;background:currentColor;border-radius:2px;transition:transform .18s ease}
+.hamb b::before{top:-6px}
+.hamb b::after{top:6px}
+.hamb[aria-expanded="true"] b{background:transparent}
+.hamb[aria-expanded="true"] b::before{transform:translateY(6px) rotate(45deg)}
+.hamb[aria-expanded="true"] b::after{transform:translateY(-6px) rotate(-45deg)}
+.menu{position:absolute;left:0;right:0;top:100%;display:flex;flex-direction:column;
+  background:var(--navy);border-bottom:1px solid #ffffff22;max-height:0;
+  visibility:hidden;overflow:hidden;transition:max-height .22s ease,visibility .22s}
+.menu.abierto{max-height:80vh;visibility:visible;overflow:auto}
+.menu a{display:flex;align-items:center;min-height:52px;
+  padding:0 max(20px,calc((100vw - 720px)/2 + 20px));color:#fff;
+  text-decoration:none;font-weight:600;font-size:1rem;border-top:1px solid #ffffff14}
+.menu a:first-child{border-top:0}
+.menu a:hover{color:var(--orange)}
+.menu a.cta{margin:14px 20px 18px;justify-content:center;border-top:0;
+  background:var(--orange);color:#111a24;font-weight:800;border-radius:9px}
+
+main{padding:30px 0 60px}
+.kick{color:var(--orange);font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;font-size:.72rem;margin-bottom:10px}
+h1{font-size:clamp(1.9rem,7vw,2.8rem);line-height:1.08;letter-spacing:-.04em;
+  margin:0 0 16px;font-weight:800}
+h1 em{font-style:normal;color:var(--orange)}
+.lede{font-size:1.06rem;color:var(--muted);margin:0 0 26px;max-width:46ch}
+.btn{display:block;width:100%;text-align:center;text-decoration:none;
+  border:0;border-radius:12px;padding:19px 22px;background:var(--orange);
+  color:#111a24;font-weight:800;font-size:1.05rem;font-family:inherit;
+  cursor:pointer;margin:0 0 12px}
+.btn.line{background:transparent;color:var(--ink);border:1px solid var(--linea)}
+.nota{color:var(--muted);font-size:.86rem;margin:4px 0 0}
+
+/* ── Los pasos de la cuenta ─────────────────────────────────────── */
+.paso{background:#fff;border:1px solid var(--linea);border-radius:16px;
+  padding:22px 20px;margin:0 0 14px;box-shadow:0 8px 25px #17243806}
+.paso h2{font-size:.7rem;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+.paso p{margin:0 0 10px}
+.paso p:last-child{margin-bottom:0}
+/* ── La tabla de esto-contra-lo-de-verdad ────────────────────────
+   Dos columnas de arriba abajo también en un teléfono: puestas una
+   encima de otra se pierde lo único que la tabla hace, que es que
+   el ojo compare 1 minuto con 5 en la misma línea. Caben, porque
+   cada celda es media frase. */
+.comparar .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.comparar .cols>div{display:flex;flex-direction:column;gap:5px;
+  padding:12px;border-radius:12px;background:#f4f1ec}
+.comparar .cols>div.ofi{background:rgba(255,122,24,.10)}
+.comparar b{font-size:.68rem;font-weight:900;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.comparar .ofi b{color:var(--orange)}
+.comparar span{font-size:.92rem;line-height:1.35}
+.comparar .ofi span{font-weight:700}
+.comparar .pie{margin:12px 0 0;font-size:.84rem;color:var(--muted)}
+
+.linea{display:flex;justify-content:space-between;align-items:baseline;
+  gap:14px;padding:9px 0;border-top:1px solid var(--linea)}
+.linea:first-of-type{border-top:0}
+.linea span{color:var(--muted);font-size:.92rem}
+.linea b{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+.gordo{text-align:center;padding:6px 0 2px}
+.gordo b{display:block;font-size:clamp(2.6rem,13vw,4rem);font-weight:800;
+  letter-spacing:-.05em;line-height:1;color:var(--orange);
+  font-variant-numeric:tabular-nums}
+.gordo span{display:block;color:var(--muted);font-size:.9rem;margin-top:8px}
+.marcador{background:var(--navy);color:#fff;border-color:var(--navy)}
+.marcador h2{color:#9fb0c2}
+.marcador .gordo b{color:#fff}
+.marcador .gordo span{color:#9fb0c2}
+.aviso{background:#fff6ee;border:1px solid #ffd9bb;border-left:4px solid var(--orange);
+  border-radius:10px;padding:14px 16px;margin:14px 0 0;font-size:.9rem;color:#8a4a12}
+/* El cierre. Separado de las tarjetas por aire y no por una caja:
+   lo de arriba son datos, esto es la salida. */
+.cierre{margin:26px 0 0;text-align:center}
+.cierre > p{font-size:1.12rem;font-weight:700;line-height:1.35;
+  max-width:28ch;margin:0 auto 18px}
+.cierre .otras{margin:14px 0 0;font-size:.9rem;color:var(--muted)}
+.cierre .otras a{color:var(--muted)}
+.cierre .otras span{margin:0 8px;opacity:.5}
+footer{background:#0a1420;color:#aeb9c6;padding:26px 0;margin-top:40px;font-size:.86rem}
+footer a{color:#aeb9c6}
+@media(max-width:430px){
+:root{--barra:60px}
+.langb{padding:0 10px;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
+    <nav class="menu" id="menu">
+      <a href="index.html" data-m="inicio">Home</a>
+      <a href="index.html#how" data-m="como">How it works</a>
+      <a href="index.html#precio" data-m="precio">What it costs</a>
+      <a href="ayuda.html" data-m="ayuda">Questions</a>
+      <a href="mi-equipo.html" data-m="mia">My team</a>
+      <a class="cta" href="equipo.html" data-m="alta">Sign up a team</a>
+    </nav>
+    <div class="barra-dcha">
+      <button class="langb" id="langBtn" onclick="cambiarIdioma()">Español</button>
+      <button class="hamb" id="hamb" type="button" aria-controls="menu"
+              aria-expanded="false"><b></b></button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="todo"></main>
+
+<footer><div class="wrap">
+  Hooporia · Gostar Digital LLC · Puerto Rico ·
+  <a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a>
+</div></footer>
+
+<script>
+(function(){
+function $(i){ return document.getElementById(i) }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,
+  function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c] }) }
+
+/* ══ EL EJEMPLO ═══════════════════════════════════════════════════
+   Números fijos, en un sitio, con el porqué al lado. Si alguno
+   cambia, cambia aquí y la página entera se recalcula.
+
+   PADRINOS = 4 · TARIFA = 0.25  →  un dólar por punto, por jugador.
+   Esa es la frase que se dice de pie en una banda: «cada punto que
+   anote tu jugador es un dólar». Cuatro padrinos es lo que encuentra
+   un nene sin esforzarse —mamá, papá, una abuela, un tío— así que el
+   ejemplo no pide nada heroico.
+
+   Y veinticinco centavos y no diez porque hay un piso: una promesa
+   que sale por debajo de $5 se cierra y no se debe nada. A diez
+   centavos hacen falta 50 puntos para pasar ese piso, y un
+   entrenador que juegue flojo vería ceros. A veinticinco bastan 20.
+
+   PLANTILLA = 12 es un equipo, no una proyección optimista. */
+var PADRINOS = 4, TARIFA = 0.25, PLANTILLA = 12, PISO = 5;
+var LICENCIA = 49, LICENCIA_CHICA = 29, PLANTILLA_CHICA = 8;
+
+var S = {
+es:{
+  titulo:'Cuatro minutos y lo ves entero',
+  intro:'Juega tú. Cuatro cuartos de un minuto, sale tu número, y la página te dice lo que eso habría recaudado para tu programa.',
+  jugar:'Jugar ahora',
+  /* La diferencia entre esto y una corrida de verdad iba aquí abajo,
+     en gris y DEBAJO del botón. Es el sitio donde menos se lee: para
+     cuando alguien llega ahí ya vio el botón y se fue a jugar. Y es
+     justo lo que un entrenador tiene que entender antes de tocar
+     nada, porque si cree que el juego son cuatro minutos no entiende
+     qué le está vendiendo. Así que sube a una tabla encima del
+     botón, y aquí abajo se queda sólo lo que sobra decir. */
+  notaIntro:'No hay que registrarse para esto.',
+
+  compH:'Qué estás a punto de jugar',
+  compDemo:'Esta demostración',
+  compOfi:'Una corrida oficial',
+  compD1:'4 cuartos de 1 minuto',
+  compO1:'4 cuartos de 5 minutos',
+  compD2:'4 minutos en total',
+  compO2:'20 minutos en total',
+  compD3:'No se guarda nada',
+  compO3:'Una por jugador, y cuenta',
+  compPie:'En las dos igual: cada cuarto se queda con tu MEJOR tirada y los cuatro se suman. La corrida oficial es la que lleva padrinos detrás — una sola por jugador, porque la base de datos rechaza la segunda.',
+  comoVa:'Se enciende una bola, la tocas, y cada vuelta añade una más a la cadena: hay que repetirlas todas en el mismo orden. Un fallo acaba la tirada — pero dentro del minuto puedes intentarlo las veces que quieras, y ese cuarto se queda con tu mejor tirada.',
+
+  marcadorH:'Tu juego',
+  anotaste:'puntos en cuatro cuartos',
+  unaTirada:'Cuartos de un minuto, para que esto dure cuatro y no veinte. En un evento de verdad son cinco minutos por cuarto, con tiempo para muchas más tiradas y contando siempre la mejor — así que los números de abajo son el suelo, no el techo.',
+  jugarEntero:'Jugar un scrimmage entero',
+  pasoPad:'Tus padrinos',
+  padLinea:'Padrinos que encontró un jugador',
+  tarLinea:'Lo que promete cada uno por punto',
+  porPunto:'Lo que vale cada punto suyo',
+  tuTotal:'Lo que recaudó tu juego',
+  unJugador:'un jugador',
+
+  pasoEquipo:'Tu plantilla',
+  equipoP:'Ahora los otros once. Si cada uno hace lo que acabas de hacer tú, con los suyos:',
+  jugLinea:'Jugadores en la plantilla',
+  cadaLinea:'Lo que recauda cada uno',
+  recauda:'para el programa',
+  recaudaSub:'de un solo evento',
+
+  pasoCoste:'Lo que te cuesta',
+  costeP:'Una licencia por evento. Nada por adelantado, y nada si nadie promete.',
+  cl1:'Por evento, plantilla de ocho o más',
+  cl2:'Si la plantilla tiene menos de ocho',
+  cl3:'Sin promesas',
+  nada:'nada',
+  costeNota:'Se factura cuando el evento cierra y se paga en siete días. Los padrinos le pagan al programa directo — nosotros no tocamos ese dinero nunca.',
+
+  pasoHaces:'Lo que tienes que hacer tú',
+  h1:'Mandar un enlace al grupo del equipo.',
+  h2:'Decir que sí a los nombres que conoces.',
+  h3:'Y ya.',
+  haceP:'Los jugadores se apuntan solos. El juego lleva la cuenta. Los padrinos reciben un aviso con el resultado cuando cierra, uno y nada más.',
+
+  otra:'Jugar otra vez',
+  alta:'Registrar un equipo',
+  vivido:'Acabas de vivir Hooporia. Imagina tu programa entero jugando.',
+  traelo:'Lleva Hooporia a tu programa',
+  pisoAviso:'Ese juego se quedó corto para el ejemplo: a 25¢ el punto hacen falta 20 puntos para pasar el piso de $5, por debajo del cual la promesa se cierra y no se debe nada. Juega otra vez y lo ves con un número de verdad.'
+},
+en:{
+  titulo:'Four minutes and you have seen it',
+  intro:'You play. Four one-minute quarters, your number comes up, and the page tells you what that would have raised for your program.',
+  jugar:'Play now',
+  notaIntro:'There is nothing to register for.',
+
+  compH:'What you are about to play',
+  compDemo:'This demo',
+  compOfi:'An official run',
+  compD1:'4 quarters of 1 minute',
+  compO1:'4 quarters of 5 minutes',
+  compD2:'4 minutes end to end',
+  compO2:'20 minutes end to end',
+  compD3:'Nothing is saved',
+  compO3:'One per player, and it counts',
+  compPie:'Both the same way: each quarter keeps your BEST run and the four add up. The official run is the one with padrinos behind it — one per player, because the database refuses a second.',
+  comoVa:'A ball lights up, you tap it, and each round adds one more to the chain: you repeat them all in the same order. One miss ends the run — but inside the minute you can go again as many times as you like, and the quarter keeps your best one.',
+
+  marcadorH:'Your game',
+  anotaste:'points across four quarters',
+  unaTirada:'One-minute quarters, so this takes four minutes instead of twenty. A real event runs five minutes a quarter, with room for far more runs and always counting the best one — so the numbers below are the floor, not the ceiling.',
+  jugarEntero:'Play a full scrimmage',
+  pasoPad:'Your padrinos',
+  padLinea:'Padrinos one player found',
+  tarLinea:'What each pledges per point',
+  porPunto:'What one of his points is worth',
+  tuTotal:'What your game raised',
+  unJugador:'one player',
+
+  pasoEquipo:'Your roster',
+  equipoP:'Now the other eleven. If each one does what you just did, with their own:',
+  jugLinea:'Players on the roster',
+  cadaLinea:'What each one raises',
+  recauda:'for the program',
+  recaudaSub:'from a single event',
+
+  pasoCoste:'What it costs you',
+  costeP:'One licence per event. Nothing up front, and nothing at all if nobody pledges.',
+  cl1:'Per event, roster of eight or more',
+  cl2:'If the roster is under eight',
+  cl3:'No pledges',
+  nada:'nothing',
+  costeNota:'Invoiced when the event closes, due in seven days. Padrinos pay the program directly — we never touch that money.',
+
+  pasoHaces:'What you have to do',
+  h1:'Send one link to the team group.',
+  h2:'Say yes to the names you recognise.',
+  h3:'That is it.',
+  haceP:'Players sign themselves up. The game keeps score. Padrinos get one notice with the result when it closes, and nothing after it.',
+
+  otra:'Play again',
+  alta:'Sign up a team',
+  vivido:'You just experienced Hooporia. Imagine your entire program playing.',
+  traelo:'Bring Hooporia to Your Program',
+  pisoAviso:'That run came in short for the example: at 25¢ a point it takes 20 points to clear the $5 floor, below which a pledge closes out and nothing is owed. Play again and you will see it on a real number.'
+}};
+
+var ROTULOS = {
+  en:{ inicio:'Home', como:'How it works', precio:'What it costs', ayuda:'Questions',
+       mia:'My team', alta:'Sign up a team', menu:'Menu', otro:'Español' },
+  es:{ inicio:'Inicio', como:'Cómo funciona', precio:'Cuánto cuesta', ayuda:'Preguntas',
+       mia:'Mi equipo', alta:'Registra un equipo', menu:'Menú', otro:'English' }
+};
+
+var LANG = 'es';
+try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+            localStorage.getItem('fc-lang') ||
+            ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+function T(k){ return (S[LANG] && S[LANG][k]) || S.es[k] || '' }
+
+window.cambiarIdioma = function(){
+  LANG = LANG==='es' ? 'en' : 'es';
+  try{ localStorage.setItem('cfh_lang',LANG); localStorage.setItem('cp-lang',LANG);
+       localStorage.setItem('fc-lang',LANG); }catch(e){}
+  pintar();
+};
+
+/* El dinero se redondea a céntimos UNA vez, al final de cada cuenta,
+   y no a cada paso: redondear por el camino y volver a multiplicar
+   es como una suma termina en un céntimo que no cuadra con lo que
+   enseña la línea de arriba. */
+function money(n){
+  return '$' + (Math.round(Number(n||0)*100)/100)
+    .toLocaleString(LANG==='es'?'es-PR':'en-US',
+                    {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function cent(n){ return Math.round(n*100) + '¢' }
+
+/* La puntuación llega del juego por la URL. Se lee con cuidado: es
+   lo único que entra de fuera, y un '?p=abc' no puede dejar la
+   página pintando NaN delante de un entrenador. */
+function puntos(){
+  var v;
+  try{ v = new URLSearchParams(location.search).get('p') }catch(e){ v = null }
+  var n = parseInt(v, 10);
+  if (!isFinite(n) || n < 0) return null;
+  return Math.min(n, 100000);
+}
+
+function pintar(){
+  document.documentElement.lang = LANG;
+  document.title = LANG==='es' ? 'Míralo en cuatro minutos — Hooporia'
+                               : 'See it in four minutes — Hooporia';
+  var t = ROTULOS[LANG] || ROTULOS.es;
+  var m = $('menu');
+  var enlaces = m.querySelectorAll('[data-m]');
+  for (var i=0;i<enlaces.length;i++){
+    enlaces[i].textContent = t[enlaces[i].getAttribute('data-m')] || enlaces[i].textContent;
+  }
+  $('langBtn').textContent = t.otro;
+  $('langBtn').setAttribute('aria-label', LANG==='es' ? 'Switch to English' : 'Cambiar a español');
+  $('hamb').setAttribute('aria-label', t.menu);
+
+  var P = puntos();
+  $('todo').innerHTML = (P===null) ? portada() : cuenta(P);
+  conectar();
+}
+
+function portada(){
+  /* Las reglas van ANTES del botón, no debajo.
+
+     Esta pantalla se enseña prestando el teléfono: se desbloquea,
+     se abre la página y se le pasa a alguien. Si para que toque el
+     botón hace falta que el de al lado le explique cómo se juega,
+     la demostración depende de que el de al lado esté hablando — y
+     eso no es una demostración, es una presentación.
+
+     Con las reglas encima del botón, el teléfono se defiende solo. */
+  return '<p class="kick">Hooporia</p>' +
+    '<h1>' + esc(T('titulo')) + '</h1>' +
+    '<p class="lede">' + esc(T('intro')) + '</p>' +
+    '<div class="paso" style="margin:0 0 14px"><p>' + esc(T('comoVa')) + '</p></div>' +
+    /* La tabla va ANTES del botón, por lo mismo que las reglas: el
+       teléfono se pasa de mano en mano y tiene que explicarse solo.
+       Un entrenador que juega cuatro minutos y se cree que eso es el
+       juego no sabe qué le estás vendiendo. */
+    '<div class="paso comparar" style="margin:0 0 18px">' +
+      '<h2>' + esc(T('compH')) + '</h2>' +
+      '<div class="cols">' +
+        '<div><b>' + esc(T('compDemo')) + '</b>' +
+          '<span>' + esc(T('compD1')) + '</span>' +
+          '<span>' + esc(T('compD2')) + '</span>' +
+          '<span>' + esc(T('compD3')) + '</span></div>' +
+        '<div class="ofi"><b>' + esc(T('compOfi')) + '</b>' +
+          '<span>' + esc(T('compO1')) + '</span>' +
+          '<span>' + esc(T('compO2')) + '</span>' +
+          '<span>' + esc(T('compO3')) + '</span></div>' +
+      '</div>' +
+      '<p class="pie">' + esc(T('compPie')) + '</p>' +
+    '</div>' +
+    '<a class="btn" href="fortress-vr.html?demo=1">' + esc(T('jugar')) + '</a>' +
+    '<p class="nota">' + esc(T('notaIntro')) + '</p>';
+}
+
+function cuenta(P){
+  var porPunto  = PADRINOS * TARIFA;         // 4 × 0.25 = 1.00
+  var unJugador = P * porPunto;
+  var programa  = unJugador * PLANTILLA;
+  var corto     = (P * TARIFA) < PISO;       // una promesa suelta no pasa el piso
+
+  var h =
+    '<div class="paso marcador"><h2>' + esc(T('marcadorH')) + '</h2>' +
+      '<div class="gordo"><b>' + P + '</b>' +
+      '<span>' + esc(T('anotaste')) + '</span></div></div>' +
+    '<p class="nota" style="margin:-4px 0 16px">' + esc(T('unaTirada')) + '</p>';
+
+  if (corto) h += '<div class="aviso">' + esc(T('pisoAviso')) + '</div>';
+
+  h +=
+    '<div class="paso"><h2>' + esc(T('pasoPad')) + '</h2>' +
+      fila(T('padLinea'), PADRINOS) +
+      fila(T('tarLinea'), cent(TARIFA)) +
+      fila(T('porPunto'), money(porPunto)) +
+      fila('<b>' + esc(T('tuTotal')) + '</b>', '<b>' + money(unJugador) + '</b>', true) +
+    '</div>' +
+
+    '<div class="paso"><h2>' + esc(T('pasoEquipo')) + '</h2>' +
+      '<p>' + esc(T('equipoP')) + '</p>' +
+      fila(T('jugLinea'), PLANTILLA) +
+      fila(T('cadaLinea'), money(unJugador)) +
+      '<div class="gordo" style="margin-top:12px"><b>' + money(programa) + '</b>' +
+      '<span>' + esc(T('recauda')) + ' · ' + esc(T('recaudaSub')) + '</span></div>' +
+    '</div>' +
+
+    '<div class="paso"><h2>' + esc(T('pasoCoste')) + '</h2>' +
+      '<p>' + esc(T('costeP')) + '</p>' +
+      fila(T('cl1'), money(LICENCIA)) +
+      fila(T('cl2'), money(LICENCIA_CHICA)) +
+      fila(T('cl3'), esc(T('nada'))) +
+      '<p class="nota" style="margin-top:12px">' + esc(T('costeNota')) + '</p>' +
+    '</div>' +
+
+    '<div class="paso"><h2>' + esc(T('pasoHaces')) + '</h2>' +
+      '<p><b>1.</b> ' + esc(T('h1')) + '</p>' +
+      '<p><b>2.</b> ' + esc(T('h2')) + '</p>' +
+      '<p><b>3.</b> ' + esc(T('h3')) + '</p>' +
+      '<p class="nota" style="margin-top:12px">' + esc(T('haceP')) + '</p>' +
+    '</div>' +
+
+    /* UNA sola acción al final.
+
+       Había tres botones del mismo tamaño —registrar, jugar otra
+       vez, scrimmage entero— y tres acciones iguales no son tres
+       opciones, son ninguna: el que acaba de ver su número tiene
+       que escoger en vez de dar el paso.
+
+       Ahora la frase cierra el arco —acabas de vivirlo, ahora
+       imagínalo con tu programa entero— y debajo va lo único que
+       hace falta hacer. Volver a jugar sigue estando, en pequeño,
+       para quien quiera otra tirada antes de decidir. */
+    '<div class="cierre">' +
+      '<p>' + esc(T('vivido')) + '</p>' +
+      '<a class="btn" href="equipo.html">' + esc(T('traelo')) + '</a>' +
+      '<p class="otras">' +
+        '<a href="fortress-vr.html?demo=1">' + esc(T('otra')) + '</a>' +
+        '<span>·</span>' +
+        '<a href="fortress-vr.html">' + esc(T('jugarEntero')) + '</a>' +
+      '</p>' +
+    '</div>';
+  return h;
+}
+
+/* esc() lo aplica QUIEN LLAMA cuando el texto viene de los rótulos,
+   porque algunas líneas llevan <b> a propósito. Los números no pasan
+   por aquí sin formatear: todos salen de money(), cent() o de un
+   entero que ya se validó. */
+function fila(izq, der){
+  return '<div class="linea"><span>' + izq + '</span><b>' + der + '</b></div>';
+}
+
+function conectar(){
+  var b = $('hamb'), m = $('menu');
+  b.onclick = function(){
+    var abierto = b.getAttribute('aria-expanded') !== 'true';
+    m.classList.toggle('abierto', abierto);
+    b.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+  };
+  m.onclick = function(e){
+    if (e.target.closest('a')) {
+      m.classList.remove('abierto'); b.setAttribute('aria-expanded','false');
+    }
+  };
+}
+document.addEventListener('keydown', function(e){
+  var b = $('hamb');
+  if (e.key === 'Escape' && b && b.getAttribute('aria-expanded') === 'true') {
+    $('menu').classList.remove('abierto');
+    b.setAttribute('aria-expanded','false'); b.focus();
+  }
+});
+
+pintar();
+})();
+</script>
+</body>
+</html>
