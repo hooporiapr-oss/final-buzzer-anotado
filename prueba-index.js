@@ -1,0 +1,280 @@
+const { chromium } = require('/opt/node-tools/node_modules/playwright-core');
+const path = require('path');
+const fs   = require('fs');
+const FILE='file://'+path.resolve(__dirname,'index.html');
+let bad=0; const ok=m=>console.log('  ok   '+m); const mal=m=>{bad++;console.log('  MAL  '+m)};
+const has=(t,re,q)=>re.test(t)?ok(q):mal(q+'  (no '+re+')');
+const not=(t,re,q)=>!re.test(t)?ok(q):mal(q+'  (apareció '+re+')');
+const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n         vino:     '+a);
+(async()=>{
+  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',args:['--no-sandbox']});
+  const p=await b.newPage();
+  await p.route('**/*',r=>r.request().url().startsWith('file:')?r.continue():r.abort());
+  const errs=[]; p.on('pageerror',e=>errs.push(String(e).split('\n')[0]));
+  p.on('console',m=>{if(m.type()==='error')errs.push('console: '+m.text())});
+  await p.addInitScript(()=>{try{localStorage.setItem('cp-lang','es')}catch(e){}
+    try{Object.defineProperty(navigator,'language',{get:()=>'es-PR'})}catch(e){}});
+  await p.goto(FILE,{waitUntil:'domcontentloaded'});
+  await p.waitForTimeout(300);
+
+  console.log('\n1 · El español');
+  /* El acordeón de preguntas ya no vive en la portada —se fue entero
+     a ayuda.html cuando la página se condensó— así que leer() es
+     ahora innerText a secas. Se deja la función porque medio fichero
+     la llama, y porque si algún día vuelve algo plegado, aquí es
+     donde hay que pegarlo. */
+  const leer=()=>p.evaluate(()=>document.body.innerText+'\n'+
+    (document.querySelector('.faq')?document.querySelector('.faq').textContent:''));
+  let t=await leer();
+  has(t,/Juega\. Anota\. Recauda\./,'el titular: los tres verbos');
+  has(t,/Juego|juego/,'y habla del juego');
+  has(t,/Una corrida cada uno/,'una corrida cada uno');
+  has(t,/El juego anota cada punto mientras juega/,'el juego anota los puntos');
+  has(t,/en la cancha o en su casa/i,'se juega desde donde sea');
+  has(t,/Nosotros manejamos las promesas/,'la posición de la casa');
+  // .eyebrow va en mayúsculas por CSS, así que innerText la devuelve
+  // gritada. La caja la decide la hoja de estilo, no el texto.
+  has(t,/Baloncesto digital \+ Manejo de promesas automatizado/i,'la categoría, arriba');
+  has(t,/Ustedes manejan los fondos/,'y la otra mitad');
+
+  /* AQUÍ SE EXIGÍAN TRES FRASES QUE LA PORTADA YA NO DICE, y conviene
+     saber cuáles por si alguna hacía falta:
+
+       · «Suena la chicharra. ¿Cuánto anoté?» — el titular viejo, que
+         se cambió a propósito por los tres verbos.
+       · «Cada ronda vale más que la anterior» y «La ronda nueve vale
+         nueve puntos» — cómo escala la puntuación. Eso se fue con la
+         condensación y hoy vive en demo.html y en padrinos.html, que
+         es donde a alguien le importa el número.
+       · «Nada que vender, sin hojas de pedido» — ése NO está en
+         ninguna otra parte del sitio. Es la diferencia con la
+         recaudación de toda la vida, y hoy la portada no la dice. */
+
+  console.log('\n2 · Las puertas al juego');
+  has(t,/Juégalo antes de seguir leyendo/,'la invitación a jugar');
+
+  /* AQUÍ SE EXIGÍA LA TARJETA DEL SCRIMMAGE y ya no existe: se quitó
+     de la portada a propósito. Las dos puertas al juego son ahora la
+     del titular y la del paso de la ventana, y las dos van a la
+     demo. Al scrimmage se llega desde demo.html al terminar, que es
+     cuando tiene sentido querer los cuatro cuartos.
+
+     Lo que sí se sigue exigiendo es que TODA puerta al juego lleve a
+     un fichero que exista. Ese es el fallo que importa —un botón a
+     una página que no está— y no cuál de los dos tableros se
+     enseña. */
+  const juegos = await p.evaluate(()=>
+    [...document.querySelectorAll('a[href$=".html"]')]
+      .map(a=>a.getAttribute('href'))
+      .filter(h=>/^(demo|fortress|fortress-vr)\.html/.test(h)));
+  const fs2 = require('fs'), pa = require('path');
+  juegos.length > 0
+    ? ok('la portada tiene ' + juegos.length + ' puerta(s) al juego')
+    : mal('la portada no lleva al juego por ningún lado');
+  for (const h of [...new Set(juegos)]){
+    fs2.existsSync(pa.resolve(__dirname, h.split('?')[0]))
+      ? ok('el enlace ' + h + ' existe en el repo')
+      : mal('el enlace ' + h + ' NO existe');
+  }
+  juegos.some(h=>h.indexOf('demo.html')===0)
+    ? ok('y la demo es una de ellas')
+    : mal('la portada ya no lleva a la demo');
+  /* fortress.html sigue existiendo y sigue siendo un juego válido para
+     un reto —está en la lista del admin— pero ya no se enlaza desde la
+     portada. Así que se comprueba que el fichero esté, no que la
+     portada apunte a él. */
+  fs.existsSync(path.join(__dirname,'fortress.html'))
+    ? ok('fortress.html sigue en el repo, aunque la portada ya no lo enlace')
+    : mal('falta el fichero fortress.html');
+  juegos.includes('fortress.html')
+    ? mal('la portada todavía enlaza la práctica')
+    : ok('y la portada no lo enlaza');
+
+  console.log('\n3 · El argumento grande');
+  /* El argumento es el mismo que siempre —el evento no hay que
+     montarlo— pero dicho en tres frases en vez de en una parrilla de
+     seis recuadros. Se exige la versión que la página dice hoy. */
+  has(t,/El juego es el evento/,'el juego ES el evento');
+  has(t,/No hay cancha que reservar/,'no hay cancha que reservar');
+  has(t,/No hay calendario que cuadrar/,'ni calendario que cuadrar');
+  has(t,/No hay marcadores que anotar/,'ni marcadores que meter a mano');
+
+  /* La parrilla de seis recuadros se fue con la condensación: «Trae
+     su propio evento», «No sólo la plantilla», «un hermano, una mamá,
+     un entrenador», «ni temporada». Dos de esas ideas sobreviven
+     dentro del precio, que es donde pesan, y se exigen ahí abajo:
+     que el precio sea POR EVENTO y no por persona. Las otras dos ya
+     no se dicen en ningún sitio de la portada. */
+
+  console.log('\n4 · El precio sale de un número');
+  /* El precio y su etiqueta son dos elementos, así que en innerText
+     caen en líneas distintas: la regex tiene que cruzar el salto. Con
+     /\$49 por equipo por evento/ en una sola línea esto fallaba
+     aunque la página lo dijera perfectamente. */
+  has(t,/\$49[\s\S]{0,40}por equipo, por evento/i,'49 por equipo, por evento');
+  has(t,/\$29[\s\S]{0,40}plantilla menor de 8/i,'29 bajo ocho');
+  // Por evento y no por cabeza: lo que queda de «no es un cargo por persona».
+  has(t,/corran los que corran/,'un precio por el evento, corran los que corran');
+  has(t,/no se mueve con lo que recaudes/,'y que no se mueve con lo recaudado');
+  not(t,/\{A\}|\{B\}|\{N\}/,'sin plantillas sin rellenar');
+
+  /* Y, sobre todo, que se VEA. Esto se mira en innerText a secas,
+     sin pegarle el texto del acordeón — que es justo lo que leer()
+     hace y lo que dejaba pasar el fallo. El precio estuvo sólo
+     dentro de un <details> plegado ("¿Cuánto cuesta?", tercera de
+     cinco), así que las tres líneas de arriba pasaban mientras en la
+     página no se leía un número por ningún lado. Visible es que se
+     lea sin abrir nada. */
+  console.log('\n4b · Y el precio se ve sin abrir nada');
+  const aLaVista = () => p.evaluate(()=>document.body.innerText);
+  let v = await aLaVista();
+  has(v,/\$49/,'el 49 se lee con la página como la encuentra cualquiera');
+  has(v,/\$29/,'y el 29 también');
+  has(v,/El cargo llega después del resultado/,'con su titular, que es el argumento');
+  has(v,/Nada por adelantado/,'nada por adelantado');
+  has(v,/Se factura cuando cierra el evento/,'cuándo se factura');
+  has(v,/caduca/,'y qué pasa si no se paga');
+
+  /* Sin promesas, sin cargo. Es una promesa que se hace, así que
+     tiene que leerse en la página —no sólo en los términos— y tiene
+     que decir PROMESAS y no PAGOS: el cargo se debe cuando hay
+     promesas anotadas y reporte, haya pagado un padrino o no. Si
+     esto se escribiera como "hasta que te paguen", sería mentira y
+     además sonaría a que el dinero pasa por aquí. */
+  has(v,/Sin promesas, sin cargo/,'la promesa, dicha en la página');
+  has(v,/no recoge ni una promesa no se factura/,'y qué significa exactamente');
+  not(v,/hasta que te paguen|cuando cobres|de lo que recaudes/i,
+      'y en ningún sitio dice que se pague con lo recaudado');
+  not(v,/\{A\}|\{B\}|\{N\}/,'sin plantillas sin rellenar');
+  const alPrecio = await p.evaluate(()=>
+    [...document.querySelectorAll('.navlinks a')].some(a=>a.getAttribute('href')==='#precio'));
+  alPrecio ? ok('y el menú de arriba lleva hasta él') : mal('el menú no lleva al precio');
+
+  /* Y el botón de inscribir, dentro de la sección: es donde alguien
+     decide, y hasta ahora había que seguir bajando para encontrarlo.
+     Se comprueba que esté DENTRO de #precio y que lleve texto — un
+     data-i repetido pinta bien sólo si la llave existe en las dos
+     tablas, y si no, el botón sale vacío sin dar error. */
+  const btn = await p.evaluate(()=>{
+    const a = document.querySelector('#precio a.button');
+    return a ? { href:a.getAttribute('href'), texto:a.textContent.trim() } : null;
+  });
+  if (!btn) mal('la sección del precio no lleva el botón de inscribir');
+  else {
+    btn.href==='equipo.html' ? ok('el botón del precio va a equipo.html')
+                             : mal('el botón del precio va a '+btn.href);
+    /^Solicitar registro de equipo$/.test(btn.texto)
+      ? ok('con su texto en español → '+btn.texto)
+      : mal('el botón salió con el texto "'+btn.texto+'"');
+  }
+
+  console.log('\n5 · Nada de custodia, nada de impuestos');
+  /* Esto lo decían las preguntas del acordeón, que se fueron enteras
+     a ayuda.html. La idea sigue en la portada, en la sección de la
+     posición y en el pie, y es la que no puede faltar: que el dinero
+     no pasa por aquí. Se exige donde está hoy.
+
+     Lo que ya NO dice la portada es «Sin enlace de pago, y sin
+     recordatorios». Eso vive en padrinos.html y en ayuda.html. */
+  has(t,/estrictamente un proveedor de software de manejo de promesas/,
+      'Hooporia es sólo el software de las promesas');
+  has(t,/manejan sus fondos de forma independiente/,'y los fondos los manejan ellos');
+  has(t,/El dinero no pasa por nosotros/,'y el pie lo dice sin rodeos');
+  has(t,/al programa se le paga directo/,'el padrino le paga al programa');
+  not(t,/deducib|deductib|impuesto/i,'ni una palabra de impuestos');
+  not(t,/cobrad|recaudad(?!o)/i,'ni cobrado');
+  not(t,/facebook|instagram/i,'ni redes');
+
+  console.log('\n6 · El inglés');
+  await p.click('#lang'); await p.waitForTimeout(150);
+  const en=await leer();
+  /* Las mismas frases que en español, una por una. Cada línea de
+     arriba tiene su pareja aquí a propósito: un cambio de copy que
+     se haga en un idioma y no en el otro es exactamente el fallo que
+     esta sección existe para encontrar. */
+  has(en,/Play\. Score\. Raise Money\./,'the headline: three verbs');
+  has(en,/Digital basketball \+ Automated pledge management/i,'the category line');
+  has(en,/The Game Is the Event/,'the game IS the event');
+  has(en,/No gym to book/,'no gym to book');
+  has(en,/One run each/,'one run each');
+  has(en,/The game records every point as he plays/,'the game records the points');
+  has(en,/\$49[\s\S]{0,40}per team, per event/i,'49 per team, per event');
+  has(en,/\$29[\s\S]{0,40}roster under 8/i,'29 under eight');
+  has(en,/however many players take a run/,'one price per event, not per head');
+  has(en,/strictly a pledge management software provider/i,'only the pledge software');
+  has(en,/independently manage all proceeds/i,'and they hold the proceeds');
+  has(en,/The money does not pass through us/,'and the footer says it plainly');
+  has(en,/the program is paid directly/,'the padrino pays the program');
+  const ven = await aLaVista();
+  has(ven,/\$49/,'the price reads in English too, nothing to open');
+  has(ven,/The invoice comes after the results do/,'with its heading');
+  has(ven,/Nothing up front/,'and nothing up front');
+  has(ven,/No pledges, no fee/,'the promise, in English');
+  eqTexto(await p.$eval('#precio a.button', e=>e.textContent.trim()),
+          'Request Team Registration', 'and the button says it in English too');
+  has(ven,/records no pledges is never invoiced/,'and what it means');
+  not(ven,/out of what you raise|once you have been paid/i,
+      'and nowhere does it say the fee comes out of what was raised');
+  not(en,/\{A\}|\{B\}|\{N\}/,'sin plantillas');
+  not(en,/\bdeductible\b|\btax\b/i,'ni impuestos');
+  const ti=await p.title();
+  has(ti,/Digital Basketball\. Every point is recorded\./,'el título, en inglés');
+  // Y que no se le haya pegado el nombre del otro producto.
+  not(ti,/Every point counts/i,'el título no lleva el nombre de Cada Punto');
+
+  console.log('\n7 · Los enlaces');
+  const hrefs=await p.evaluate(()=>[...document.querySelectorAll('a')].map(a=>a.getAttribute('href')));
+  for(const h of ['equipo.html','mi-equipo.html','ayuda.html','cobro.html','terms.html','privacy.html','custodia.html'])
+    hrefs.includes(h)?ok('a '+h):mal('falta '+h);
+  hrefs.some(h=>/cadapunto|prometer\.html/.test(h||''))?mal('enlaza fuera del producto'):ok('no enlaza a Cada Punto');
+
+  /* ── Las dos listas de llaves, una contra la otra ────────────────
+     El inglés se recoge del MARCADO y el español vive en la tabla,
+     así que las dos listas tienen que ser la misma lista. Las dos
+     formas de que se separen hacen daño distinto:
+
+       · una llave en el marcado SIN español deja ese trozo en inglés
+         para el que lee en español, sin dar ningún error;
+       · una llave en la tabla SIN marcado es texto muerto — había 31
+         (la parrilla de seis recuadros, el acordeón de preguntas y
+         las tarjetas viejas de jugar), sobrevividas a dos
+         condensaciones de la portada, y nadie lo iba a notar nunca
+         porque una traducción de más no rompe nada. */
+  console.log('\n7b · Las llaves del marcado y las de la tabla, iguales');
+  const llaves = await p.evaluate(()=>{
+    const marcado=[...new Set([...document.querySelectorAll('[data-i]')]
+      .map(e=>e.dataset.i))];
+    return { marcado };
+  });
+  const fuenteIdx = fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+  const _i = fuenteIdx.indexOf('const translations');
+  const _j = fuenteIdx.indexOf('\n};', _i);
+  const TAB = new Function('return '+fuenteIdx.slice(fuenteIdx.indexOf('{',_i), _j+2))();
+  const sinEs = llaves.marcado.filter(k=>!(k in TAB.es));
+  const muertas = Object.keys(TAB.es).filter(k=>!llaves.marcado.includes(k));
+  sinEs.length===0
+    ? ok('las '+llaves.marcado.length+' llaves del marcado tienen español')
+    : mal('sin español: '+sinEs.join(', '));
+  muertas.length===0
+    ? ok('y la tabla no lleva ninguna de más')
+    : mal('texto muerto en la tabla: '+muertas.join(', '));
+
+  console.log('\n8 · La piel y los errores');
+  const src=await p.content();
+  has(src,/--orange:#ff7a18/,'el naranja');
+  has(src,/--cream:#faf8f4/,'la crema');
+  /* Antes esto exigía lo contrario: que NADIE apuntara a hooporia.png
+     ni a la imagen de compartir, porque no existían y un <link> a un
+     fichero que no está es un 404 en cada carga. Ya existen, así que
+     ahora se exige que estén puestas. La comprobación de que los
+     ficheros existen de verdad vive en prueba-marca.js, que mira
+     todas las páginas y no sólo ésta. */
+  has(src,/<link[^>]+rel="icon"[^>]+href="hooporia\.png"/,'el icono de la pestaña');
+  has(src,/og:image"[^>]+content="https:\/\/hooporia\.com\/hooporia-share\.jpg"/,
+      'la imagen de compartir, en absoluto');
+  errs.length?errs.forEach(e=>mal(e)):ok('sin errores de página');
+
+  await b.close();
+  console.log('\n'+(bad===0?'✓ el índice de Hooporia pasa':'✗ '+bad+' fallo(s)'));
+  process.exit(bad===0?0:1);
+})().catch(e=>{console.error(e);process.exit(1)});
