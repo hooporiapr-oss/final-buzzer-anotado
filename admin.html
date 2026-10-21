@@ -44,6 +44,10 @@ header{background:var(--navy);color:#fff;padding:14px 0}
 main{padding:26px 0 70px}
 h2{font-family:Archivo,sans-serif;font-size:1.25rem;letter-spacing:-.02em;margin:0 0 3px}
 .sub{color:var(--muted);font-size:.84rem;margin:0 0 14px}
+/* The note under a field, and the (optional) next to its label.
+   Smaller than .sub because it explains one input, not a section. */
+.pista{color:var(--muted);font-size:.78rem;line-height:1.45;margin:-6px 0 14px}
+.opt{color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0}
 .caja{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;
   margin-bottom:16px;box-shadow:0 6px 20px #17243808}
 label{display:block;font-weight:600;font-size:.8rem;margin:12px 0 4px}
@@ -133,10 +137,47 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
         <div><label for="nCorreo">Their email</label>
              <input id="nCorreo" type="email" placeholder="coach@program.com"></div>
       </div>
+      <!-- How a padrino pays. The closing notice tells him what he
+           owes and who to; without this it cannot tell him HOW, and
+           the only thing left to offer is "write to the coach".
+
+           At twelve players that is a nuisance. At a school of four
+           hundred it is sixteen hundred padrinos asking the same
+           question, or — what actually happens — putting it off and
+           never paying. The moment somebody is most willing to pay
+           is the second they read that their godson scored 150
+           points. If there is no way to pay in that second, it is
+           gone.
+
+           Whatever the program types here is printed in the notice
+           word for word. Hooporia opens no account, processes
+           nothing, holds nothing and verifies nothing: this is an
+           instruction, not a charge. -->
+      <label for="nPago">How padrinos pay you <span class="opt">(optional)</span></label>
+      <input id="nPago" maxlength="160"
+             placeholder="ATH Móvil to /LincolnPTA, or at the school office">
+      <p class="pista">Printed word for word in the closing notice, so every padrino
+        knows how to pay without asking. Do not put an account number here — put a
+        link to your own page if a transfer is needed.</p>
       <div class="btns"><button id="crearCamp">Create campaign</button>
                         <button class="q" id="cancelarCamp">Cancel</button></div>
       <p class="m" id="mCamp"></p>
     </div>
+  </section>
+
+  <!-- Set once per program, used by every challenge it runs. Hidden
+       until a campaign is picked, because it belongs to one. -->
+  <section class="caja" id="secPago" hidden>
+    <h2>How padrinos pay this program</h2>
+    <p class="sub">Printed word for word at the end of every padrino notice, so nobody
+      has to ask. Leave it empty and the notice tells them to write to you instead.</p>
+    <input id="pagoAhora" maxlength="160"
+           placeholder="ATH Móvil to /LincolnPTA, or at the school office">
+    <p class="pista">Do not put an account number here. Sixteen hundred emails carrying
+      one is exactly what a fake follow-up email needs to redirect payments — point to a
+      page of your own instead, where you control what it says.</p>
+    <div class="btns"><button id="guardarPago">Save</button></div>
+    <p class="m" id="mPago"></p>
   </section>
 
   <section class="caja" id="secCodigo">
@@ -167,7 +208,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
       <!-- El juego no se escoge. Hooporia tiene un tablero y es el de
            cuatro cuartos: es el único que guarda cuarto a cuarto, y
            es el que la portada enseña. -->
-      <p class="aviso">Game: <b>The Fortress — scrimmage, 4 quarters</b>. It is the only board Hooporia has.</p>
+      <p class="aviso">Game: <b>The Fortress — scrimmage, 4 sets</b>. It is the only board Hooporia has.</p>
       <div class="fila">
         <div><label for="rAbre">Opens</label><input id="rAbre" type="datetime-local"></div>
         <div><label for="rCierra">Closes</label><input id="rCierra" type="datetime-local"></div>
@@ -398,9 +439,39 @@ function escoger(id){
   RETO = null; $('detalle').innerHTML = '';
   CODE = CAMP ? codigoGuardado(CAMP.id) : '';
   $('codigoUso').value = CODE;
+  /* The payment line belongs to the campaign, so it follows whichever
+     one is picked — and it has to be editable here, not only at
+     creation. Every campaign that existed before this field was added
+     has it empty, and those are the ones that need it most. */
+  $('pagoAhora').value = (CAMP && CAMP.pay_how) || '';
+  $('secPago').hidden = !CAMP;
+  di('mPago', '');
   if (CAMP) { $('camp').value = CAMP.id; cargarCodigos(); cargarRetos(); }
   else { $('codigos').innerHTML = ''; $('retos').innerHTML = ''; }
 }
+
+/* Guardar la línea de pago de la campaña escogida.
+
+   La PATCH se comprueba por las filas que devuelve. Una PATCH que RLS
+   no deja pasar NO da error: contesta 200 con una lista vacía, y sin
+   mirar eso el admin diría "guardado" sobre una campaña que no
+   cambió. Es el mismo fallo silencioso que ya nos costó una mañana. */
+$('guardarPago').onclick = function(){
+  if (!CAMP) return di('mPago', 'Pick a campaign first.', 'mal');
+  var v = ($('pagoAhora').value || '').trim();
+  di('mPago', '…');
+  rest('campaigns?id=eq.' + encodeURIComponent(CAMP.id),
+       { method:'PATCH', body:{ pay_how: v || null } })
+    .then(function(rows){
+      if (!rows || !rows.length)
+        throw new Error('the database accepted the request but changed no row');
+      CAMP.pay_how = rows[0].pay_how;
+      di('mPago', v ? 'Saved. Every padrino notice for this program will carry it.'
+                    : 'Cleared. Notices will tell padrinos to write to you instead.',
+         'bien');
+    })
+    .catch(function(e){ di('mPago', 'Could not save it' + porque(e), 'mal') });
+};
 $('camp').onchange = function(){ escoger(this.value) };
 $('recargar').onclick = cargarCampanas;
 
@@ -433,8 +504,12 @@ $('crearCamp').onclick = function(){
   var slug = nombre.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')
            + '-' + Math.random().toString(36).slice(2,6);
 
+  var pago = ($('nPago').value || '').trim();
   rest('campaigns', { method:'POST', body:{
         name: nombre, product: 'anotado', slug: slug,
+        /* Empty stays null and the notice falls back to "write to the
+           coach", which is what it said before this field existed. */
+        pay_how: pago || null,
         admin_code: 'ADMIN-' + Math.random().toString(36).slice(2,11).toUpperCase() } })
     .then(function(rows){
       var c = rows && rows[0];
@@ -620,7 +695,7 @@ function abrirReto(id){
   if (!RETO) return;
   $('detalle').innerHTML =
     '<section class="caja"><h2>' + esc(RETO.name) + '</h2>' +
-    '<p class="sub">The Fortress — scrimmage, 4 quarters</p>' +
+    '<p class="sub">The Fortress — scrimmage, 4 sets</p>' +
 
     '<label>Game window</label><div class="fila">' +
       '<div><input type="datetime-local" id="dAbre" value="' + aLocal(RETO.opens_at) + '"></div>' +
