@@ -161,9 +161,20 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22;
    width y height van puestos en el <img> para que el hueco esté
    reservado antes de que la imagen baje: sin ellos los tres pasos
    saltan hacia abajo a mitad de lectura. */
-.promesa{margin:34px auto 0;max-width:430px;border:1px solid #e7e6e2;
+.promesa{margin:22px auto 0;max-width:430px;border:1px solid #e7e6e2;
   border-radius:16px;overflow:hidden;box-shadow:0 8px 25px #17243808}
 .promesa img{display:block;width:100%;height:auto}
+
+/* El paso uno, ancho y con la foto dentro; los otros dos, en fila
+   debajo. Dos columnas y no tres, que ya sólo quedan dos — con
+   repeat(3,1fr) las dos tarjetas salían estrechas y con un hueco
+   vacío a la derecha donde el ojo busca una tercera que no está. */
+/* Y la tarjeta del paso uno no va a lo ancho de la página: con 1120
+   de ancho y la foto en 430, la imagen quedaba flotando en medio de
+   un campo vacío y la tarjeta parecía a medio llenar. Ceñida al
+   ancho de lo que lleva dentro, se lee como una pieza. */
+.step.paso1{margin:36px auto 0;max-width:620px}
+.steps.dos{grid-template-columns:repeat(2,1fr)}
 
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
 .step{background:white;border:1px solid #e7e6e2;border-radius:16px;padding:28px;box-shadow:0 8px 25px #17243808}
@@ -295,7 +306,17 @@ footer .wrap{gap:14px}
    trabajo en una frase larga que en español se iba a seis líneas. */
 .hero h1{font-size:clamp(2.7rem,9vw,4rem)}
 .hero-foto{border-radius:12px;margin-top:28px}
-.steps,.feature-grid,.prices{grid-template-columns:1fr}
+/* .steps.dos va nombrada entera a propósito: con sólo .steps ganaba
+   la regla de dos columnas de arriba, que lleva dos clases, y los
+   dos pasos se quedaban en fila en un teléfono. */
+.steps,.steps.dos,.feature-grid,.prices{grid-template-columns:1fr}
+/* Y en un teléfono la foto sale hasta los bordes de la tarjeta. Los
+   28px de relleno a cada lado se comían 56 de los 350 que hay — un
+   16% — y la letra chica de la pantalla del padrino se quedaba al
+   filo de lo legible, que es justo donde no puede estar: el teléfono
+   es donde un entrenador abre esto. */
+.step.paso1 .promesa{margin-left:-28px;margin-right:-28px;max-width:none;
+  border-left:0;border-right:0;border-radius:0}
 .section{padding:62px 0}
 }
 @media(max-width:430px){
@@ -384,30 +405,33 @@ button.lang{padding:0 10px;font-size:.8rem}
 <div class="wrap">
 <div class="eyebrow" data-i="processLabel">A challenge you open when you want</div>
 <h2 data-i="processTitle">Three steps. One run each.</h2>
-<!-- Lo que ve el padrino, antes de contar los tres pasos. Es un
-     recorte de prometer.html de verdad, sin montaje: el mismo crema
-     de la página, así que se lee como una tarjeta más de las que
-     vienen debajo y no como una ilustración pegada encima.
+<!-- EL PRIMER PASO LLEVA LA FOTO DENTRO.
 
-     Dos imágenes, una por idioma, porque el texto va quemado dentro.
-     Un entrenador leyendo en español veía si no la pantalla del
-     padrino en inglés — justo la que le va a mandar a la abuela de
-     un nene.
+     Antes la imagen iba suelta entre el titular de la sección y las
+     tres tarjetas, sin nada que dijera de qué paso era: se leía como
+     una ilustración puesta de adorno. Ahora el paso uno es una
+     tarjeta ancha con sus dos títulos arriba, su frase, y debajo la
+     pantalla de la que habla. Los otros dos pasos van en fila.
 
-     Y PNG, no JPEG: es texto sobre un fondo plano, así que el PNG
-     sale a la vez más nítido y más pequeño (116 KB contra 175). -->
+     La foto: un recorte de prometer.html de verdad, sin montaje, con
+     el mismo crema de la página. Dos imágenes, una por idioma,
+     porque el texto va quemado dentro — un entrenador leyendo en
+     español veía si no la pantalla del padrino en inglés, justo la
+     que le va a mandar a la abuela de un nene. Y PNG y no JPEG: es
+     texto sobre fondo plano, así que sale más nítido y más pequeño a
+     la vez (116 KB contra 175). -->
+<article class="step paso1">
+<div class="num" data-i="sBefore">BEFORE IT OPENS</div>
+<h3 data-i="s1t">Players find padrinos</h3>
+<p data-i="s1d">Each player sends his own link. Every padrino he finds raises what one of his points is worth.</p>
 <figure class="promesa">
   <img id="promesaFoto" src="pledge-card-en.png" width="1122" height="1275"
        loading="lazy" decoding="async"
        alt="The pledge screen a padrino sees: 5¢, 10¢ and 20¢ a point, with 20¢ chosen, and the line that says a 150-point game comes to $30.00 for the program, never more than the $40 cap.">
 </figure>
-
-<div class="steps">
-<article class="step">
-<div class="num" data-i="sBefore">BEFORE IT OPENS</div>
-<h3 data-i="s1t">Players find padrinos</h3>
-<p data-i="s1d">Each player sends his own link. Every padrino he finds raises what one of his points is worth.</p>
 </article>
+
+<div class="steps dos">
 <article class="step">
 <div class="num" data-i="sWindow">THE WINDOW</div>
 <h3 data-i="s2t">Each one takes his run</h3>
