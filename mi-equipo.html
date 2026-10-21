@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mi equipo — Hooporia</title>
+<meta name="robots" content="noindex,nofollow">
+
+<!-- El icono y la imagen de compartir. og:image va en absoluto
+     a propósito: WhatsApp y los demás no resuelven rutas
+     relativas, y con una relativa la vista previa sale en
+     blanco igual que sin imagen. -->
+<link rel="icon" type="image/png" href="hooporia.png">
+<link rel="apple-touch-icon" href="hooporia.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hooporia">
+<meta property="og:image" content="https://hooporia.com/hooporia-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+/* ── El look nuevo: crema, navy y naranja ─────────────────────────
+   El mismo de la portada. Antes esta pagina era la cancha de noche;
+   lo que cambia es la piel, no lo que hace: el marcado y el guion se
+   quedaron como estaban. */
+:root{
+  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
+  --cream:#faf8f4; --ink:#1b2937; --muted:#617083;
+  --linea:#e7e6e2; --bad:#b4231c; --good:#0b7a5a;
+}
+*{box-sizing:border-box}
+html{background:var(--cream)}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  line-height:1.55;-webkit-text-size-adjust:100%}
+.wrap{width:min(720px,calc(100% - 40px));margin:0 auto}
+
+/* ── Cabecera ─────────────────────────────────────────────────── */
+header{background:var(--navy);color:#fff;border-bottom:1px solid #ffffff22;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 0}
+.mark{font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+  font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
+.mark em{font-style:normal;color:#fff}
+.mark i{font-style:normal;color:var(--orange)}
+@media(max-width:380px){ .mark{font-size:.92rem} }
+.hright{display:flex;align-items:center;gap:9px}
+.who{color:#c8d2dd;font-size:.8rem;font-weight:600;max-width:11ch;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.out,.langb{border:1px solid #ffffff55;background:transparent;color:#fff;
+  padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+.out:hover,.langb:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ── Cuerpo ───────────────────────────────────────────────────── */
+main .wrap{padding:38px 0 44px}
+h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.1;letter-spacing:-.04em;margin:0 0 12px}
+h2{font-size:1.3rem;letter-spacing:-.025em;margin:34px 0 14px}
+.lede{color:var(--muted);margin:0 0 24px;max-width:52ch}
+.help{color:var(--muted);font-size:.86rem;margin:7px 0 0}
+.hide{display:none !important}
+
+/* ── La puerta: tarjeta blanca, como todo lo demas ─────────────── */
+.gate{background:#fff;border:1px solid var(--linea);border-radius:16px;
+  padding:clamp(22px,5vw,32px);box-shadow:0 8px 25px #17243808}
+label{display:block;font-weight:700;font-size:.9rem;margin:18px 0 6px}
+input[type=text]{width:100%;padding:14px 15px;border:1px solid #d6d9d6;border-radius:10px;
+  background:#fff;color:var(--ink);font:inherit;font-size:1.05rem;letter-spacing:.04em}
+input[type=text]:focus{outline:none;border-color:var(--orange);
+  box-shadow:0 0 0 3px rgba(255,122,24,.18)}
+.btn{display:inline-block;border:0;border-radius:9px;padding:14px 22px;
+  background:var(--navy);color:#fff;font:inherit;font-weight:800;font-size:1rem;
+  cursor:pointer;text-decoration:none;text-align:center}
+.btn.go{background:var(--orange);color:#111a24;width:100%;margin-top:20px}
+.btn:hover{opacity:.92}
+.btn:disabled{opacity:.5;cursor:default}
+.msg{margin:13px 0 0;font-weight:700;font-size:.9rem;min-height:1.2em}
+.msg.bad{color:var(--bad)}
+
+/* ── Lo que falta por hacer. Es lo unico de la pagina que cuesta
+   dinero si se olvida, asi que es la unica caja naranja. ───────── */
+.todo{background:#fff;border:1px solid rgba(255,122,24,.45);border-left:5px solid var(--orange);
+  border-radius:16px;padding:22px 24px;margin:0 0 10px;box-shadow:0 8px 25px #17243808}
+.todo b{display:block;color:var(--orange);font-size:.72rem;font-weight:800;
+  letter-spacing:.13em;text-transform:uppercase}
+.todo .big{font-size:1.45rem;font-weight:900;letter-spacing:-.03em;margin:7px 0 4px}
+.todo p{color:var(--muted);margin:0;font-size:.95rem}
+.todo .btn{width:auto;margin-top:16px}
+
+/* ── Las tarjetas de equipo ───────────────────────────────────── */
+.team{background:#fff;border:1px solid var(--linea);border-radius:16px;
+  padding:22px 24px;margin:0 0 14px;box-shadow:0 8px 25px #17243808}
+.team .st{color:var(--muted);font-size:.84rem;margin:2px 0 10px}
+.team .nm{font-size:1.2rem;font-weight:800;letter-spacing:-.02em;margin:0 0 14px}
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:12px;margin:0 0 18px}
+.nums.uno{grid-template-columns:max-content}
+.num{background:var(--cream);border:1px solid var(--linea);border-radius:11px;
+  padding:12px 16px;text-align:center}
+.num b{display:block;font-size:1.5rem;font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.num span{display:block;color:var(--muted);font-size:.74rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
+.num.hot b{color:var(--orange)}
+.acts{display:flex;flex-wrap:wrap;gap:10px}
+.acts a{flex:1 1 150px;text-decoration:none;text-align:center;font-weight:800;font-size:.95rem;
+  padding:13px 16px;border-radius:9px;border:1px solid var(--navy);color:var(--navy)}
+.acts a:hover{background:var(--navy);color:#fff}
+.acts a.fill{background:var(--navy);color:#fff}
+.acts a.fill:hover{background:var(--navy2);border-color:var(--navy2)}
+.acts a.wide{background:transparent}
+
+.stuck{color:var(--muted);font-size:.88rem;margin:30px 0 0;text-align:center}
+.stuck a{color:var(--navy);font-weight:700}
+
+/* ── Pie ──────────────────────────────────────────────────────── */
+footer{background:#0a1420;color:#aeb9c6;padding:26px 0 calc(26px + env(safe-area-inset-bottom,0px));
+  text-align:center;font-size:.86rem}
+footer a{color:#aeb9c6;text-decoration:none}
+footer a:hover{color:var(--orange)}
+.f-dot{padding:0 8px;opacity:.45}
+
+/* ══ La barra, el menú y el idioma ══════════════════════════════════
+   Puesto al final de la hoja a propósito: lo que haya escrito arriba
+   sobre header, .bar o .langb queda debajo de esto.
+
+   --barra tiene que ser la MISMA altura en los dos sitios donde se
+   usa: el hueco que deja scroll-padding para que un ancla no quede
+   detrás de la cabecera, y el punto donde arranca el panel. */
+:root{--barra:66px}
+html{scroll-padding-top:calc(var(--barra) + 10px)}
+/* overflow-x en el body y no sólo en html: en Safari de iOS, html
+   solo no lo sujeta y basta un elemento ancho para arrastrar la
+   página de lado. */
+body{overflow-x:hidden}
+header{position:sticky;top:0;z-index:100;
+  padding-top:env(safe-area-inset-top,0px)}
+header .bar{min-height:var(--barra);padding:0;gap:10px}
+/* El botón del idioma dice el idioma AL QUE lleva, no el que está
+   puesto. Por eso necesita sitio para una palabra y no para dos
+   letras, y nowrap para que «Español» no se parta en dos líneas. */
+.langb,#lang{white-space:nowrap;min-height:40px;font-size:.85rem;
+  padding:0 12px;border-radius:9px;font-family:inherit}
+.barra-dcha{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* Las rayas se pintan con currentColor, no con blanco: prometer.html
+   tiene la barra en crema con la marca en navy, y unas rayas
+   blancas ahí no se ven. Heredando el color de la barra valen para
+   las dos, y para la próxima página que cambie de fondo. Lo
+   encontró una captura, no la prueba: la prueba miraba que el botón
+   estuviera, no que se viera. */
+/* El color de las rayas sale de la barra, y la barra de estas
+   páginas no declaraba ninguno: heredaban la tinta del cuerpo
+   —navy sobre navy— y el botón se veía con 1.2:1 de contraste,
+   que es no verse. Barra navy, tinta blanca. */
+header{color:#fff}
+.hamb{display:none;width:44px;height:44px;flex:0 0 44px;color:inherit;
+  border:1px solid currentColor;background:transparent;border-radius:9px;
+  cursor:pointer;padding:0;align-items:center;justify-content:center}
+@supports (border-color: color-mix(in srgb, currentColor 45%, transparent)){
+  .hamb{border-color: color-mix(in srgb, currentColor 45%, transparent)}
+}
+.hamb:hover{border-color:var(--orange);color:var(--orange)}
+/* color:inherit en la propia raya y no sólo en el botón: privacy
+   y terms traen un `strong,b{color:var(--ink)}` para el texto, y
+   currentColor dentro de un <b> resuelve al color DEL <b>, no al
+   del padre. Las rayas salían navy sobre navy. */
+.hamb b{display:block;width:20px;height:2px;color:inherit;
+  background:currentColor;border-radius:2px;
+  position:relative;transition:background .18s ease}
+.hamb b::before,.hamb b::after{content:'';position:absolute;left:0;
+  width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform .18s ease}
+.hamb b::before{top:-6px}
+.hamb b::after{top:6px}
+.hamb[aria-expanded="true"] b{background:transparent}
+.hamb[aria-expanded="true"] b::before{transform:translateY(6px) rotate(45deg)}
+.hamb[aria-expanded="true"] b::after{transform:translateY(-6px) rotate(-45deg)}
+
+.menu{position:absolute;left:0;right:0;top:100%;
+  display:flex;flex-direction:column;align-items:stretch;
+  background:var(--navy);border-bottom:1px solid #ffffff22;
+  /* Cerrado con max-height para que tenga transición, y con
+     visibility para que el teclado no se meta dentro: max-height
+     sola deja los enlaces tabulables en un panel invisible. */
+  max-height:0;visibility:hidden;overflow:hidden;
+  transition:max-height .22s ease,visibility .22s}
+.menu.abierto{max-height:80vh;visibility:visible;overflow:auto}
+.menu a{display:flex;align-items:center;min-height:52px;
+  padding:0 max(20px,calc((100vw - 900px)/2 + 20px));
+  color:#fff;text-decoration:none;font-weight:600;font-size:1rem;
+  border-top:1px solid #ffffff14}
+.menu a:first-child{border-top:0}
+.menu a:hover{color:var(--orange)}
+.menu a.cta{margin:14px 20px 18px;justify-content:center;border-top:0;
+  background:var(--orange);color:#111a24;font-weight:800;border-radius:9px}
+.menu a.cta:hover{color:#111a24}
+/* Las rayas se ven siempre: estas páginas no tienen enlaces en la
+   barra en ningún tamaño, así que el menú es la única puerta y
+   esconderlo en escritorio dejaría la página sin salida otra vez. */
+.hamb{display:flex}
+@media(max-width:430px){
+:root{--barra:60px}
+.langb,#lang{padding:0 10px;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
+    <div class="hright">
+      <span class="who hide" id="hwho"></span>
+    <nav class="menu" id="menu">
+      <a href="index.html" data-m="inicio">Home</a>
+      <a href="index.html#how" data-m="como">How it works</a>
+      <a href="index.html#precio" data-m="precio">What it costs</a>
+      <a href="ayuda.html" data-m="ayuda">Questions</a>
+      <a href="mi-equipo.html" data-m="mia">My team</a>
+      <a class="cta" href="equipo.html" data-m="alta">Sign up a team</a>
+    </nav>
+      <div class="barra-dcha">
+        <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+      <button class="hamb" id="hamb" type="button" aria-controls="menu" aria-expanded="false"><b></b></button>
+      </div>
+      <button class="out hide" id="hout" onclick="salir()">Salir</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="gate" id="gate">
+      <h1 id="tH1"></h1>
+      <p class="lede" id="tLede"></p>
+      <label for="code" id="tCodeL"></label>
+      <input id="code" type="text" autocapitalize="characters" autocorrect="off"
+             spellcheck="false" enterkeyhint="go">
+      <p class="help" id="tCodeH"></p>
+      <button class="btn go" id="tGo" onclick="entrar(false)"></button>
+      <p class="msg" id="gm"></p>
+    </div>
+
+    <div id="app" class="hide">
+      <div id="todo"></div>
+      <h2 id="tTeams"></h2>
+      <div id="teams"></div>
+    </div>
+
+    <p class="stuck" id="tStuck"></p>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="ayuda.html" id="fAyuda">Ayuda</a><span class="f-dot">·</span><a href="index.html">Hooporia</a><span class="f-dot">·</span><a href="terms.html">Términos</a><span class="f-dot">·</span><a href="custodia.html">Dinero</a>
+  </div>
+</footer>
+
+<script>
+var SB='https://sdaphocueugzfvjovuxd.supabase.co';
+var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
+
+function rpc(name,args){
+  return fetch(SB+'/rest/v1/rpc/'+name,{
+    method:'POST',
+    headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(args||{})
+  }).then(function(r){
+    if (r.ok) return r.json();
+    /* El cuerpo de un error de PostgREST trae el porqué —message,
+       hint, details— y tirarlo era lo que convertía cada fallo en
+       una visita al editor de SQL: la página sabía exactamente qué
+       había pasado y enseñaba "no se pudo". Se lee antes de lanzar. */
+    return r.text().then(function(t){
+      var d = {}; try { d = JSON.parse(t) } catch(x){}
+      var e = new Error(d.message || d.hint || t || ('rpc ' + r.status));
+      e.detalle = d.details || d.hint || '';
+      e.codigo  = d.code || r.status;
+      throw e;
+    });
+  });
+
+/* El porqué, cuando lo hay. Un mensaje amable que no dice nada manda
+   a alguien a buscar en la base; el mismo mensaje con la razón
+   detrás se arregla solo. Se recorta: esto es una línea de aviso, no
+   un registro. */
+function porque(x){
+  if (!x) return '';
+  var r = (typeof x === 'string') ? x
+        : (x.why || x.error || x.message || x.hint || x.detalle || '');
+  return r ? ' — ' + String(r).slice(0, 160) : '';
+}
+}
+function $(id){ return document.getElementById(id) }
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,function(m){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]});
+}
+
+var S={
+  es:{
+    h1:'Mi equipo',
+    lede:'Entra con tu código. En este teléfono queda guardado — no lo vas a escribir otra vez.',
+    codeL:'Tu código', codeH:'El mismo que te dimos para tu equipo.',
+    go:'Entrar',
+    bad:'Ese código no sirve.', net:'No entró. Inténtalo otra vez.',
+    none:'Tu código no alcanza ningún equipo. Escríbenos.',
+    teams:'Tus equipos', out:'Salir',
+    todoL:'Falta que jueguen',
+    todo1:'{N} jugador no ha hecho su corrida.',
+    todoN:'{N} jugadores no han hecho su corrida.',
+    todoP:'Sus padrinos prometieron por sus puntos, y sin corrida sus puntos son cero. Siéntalos a jugar antes de que cierre la ventana.',
+    todoGo:'Ver el tablero',
+    nPlant:'en la plantilla',
+    nJug:'ya jugaron',
+    stNada:'Sin reto abierto',
+    stAbierta:'Ventana abierta',
+    stCerrada:'Ventana cerrada',
+    cierraEl:'Cierra el {D}',
+    aBoard:'Ver el tablero',
+    aRoster:'La plantilla', aReport:'El reporte',
+
+    stuck:'¿Algo no sale? <a href="ayuda.html">Ayuda del entrenador →</a>',
+    fAyuda:'Ayuda'
+  },
+  en:{
+    h1:'My team',
+    lede:'Sign in with your code. It stays on this phone — you will not type it again.',
+    codeL:'Your code', codeH:'The same one we gave you for your team.',
+    go:'Enter',
+    bad:'That code does not work.', net:'That did not go through. Try again.',
+    none:'Your code does not reach any team. Write to us.',
+    teams:'Your teams', out:'Sign out',
+    todoL:'Still to play',
+    todo1:'{N} player has not taken his run.',
+    todoN:'{N} players have not taken their run.',
+    todoP:'Their padrinos pledged on their points, and with no run their points are zero. Sit them down to play before the window closes.',
+    todoGo:'See the board',
+    nPlant:'on the roster',
+    nJug:'have played',
+    stNada:'No challenge open',
+    stAbierta:'Window open',
+    stCerrada:'Window closed',
+    cierraEl:'Closes {D}',
+    aBoard:'See the board',
+    aRoster:'The roster', aReport:'The report',
+
+    stuck:'Something will not work? <a href="ayuda.html">Coach help →</a>',
+    fAyuda:'Help'
+  }
+};
+var LANG='es';
+try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
+  localStorage.getItem('fc-lang')||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en'); }catch(e){}
+function T(k,v){
+  var s=(S[LANG]&&S[LANG][k])||S.es[k]||'';
+  if(v)Object.keys(v).forEach(function(x){ s=s.split('{'+x+'}').join(v[x]) });
+  return s;
+}
+function toggleLang(){
+  LANG=LANG==='es'?'en':'es';
+  try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG);
+       localStorage.setItem('fc-lang',LANG); }catch(e){}
+  paintStatic();
+  if(CODE&&CAMPS.length) pintar();
+}
+function paintStatic(){
+  $('tH1').textContent=T('h1');
+  $('tLede').textContent=T('lede');
+  $('tCodeL').textContent=T('codeL');
+  $('tCodeH').textContent=T('codeH');
+  $('tGo').textContent=T('go');
+  $('tTeams').textContent=T('teams');
+  $('hout').textContent=T('out');
+  $('tStuck').innerHTML=T('stuck');
+  $('fAyuda').textContent=T('fAyuda');
+  $('langBtn').textContent=LANG==='es'?'English':'Español';
+  document.documentElement.lang=LANG;
+}
+
+var CODE=null, BY=null, CAMPS=[], BOARDS={}, RETOS={};
+
+/* Acepta la sesión que ya tenga de cualquiera de las dos páginas
+   viejas: el calendario guardaba cp_build y el marcador cp_code. Un
+   entrenador que ya entró en una de ellas no vuelve a escribir nada. */
+try{ CODE = localStorage.getItem('cp_build') || localStorage.getItem('cp_code') || null; }catch(e){}
+
+/* El código se guarda con las dos llaves que leen las demás páginas.
+   Antes la segunda estaba condicionada a una casilla de certificación
+   —herencia del marcador de mano, donde el entrenador escribía los
+   puntos y tenía que responder por ellos— y aquí esa casilla no tenía
+   nada que certificar: el marcador lo anota el juego. */
+function recordar(k){
+  try{
+    localStorage.setItem('cp_build',k);
+    localStorage.setItem('cp_code',k);
+  }catch(e){}
+}
+function olvidar(){
+  try{ localStorage.removeItem('cp_build'); localStorage.removeItem('cp_code');
+       localStorage.removeItem('cp_by'); }catch(e){}
+}
+function salir(){ olvidar(); location.reload(); }
+
+function say(t,c){ var e=$('gm'); if(e){ e.textContent=t||''; e.className='msg '+(c||'') } }
+
+function entrar(auto){
+  var k = auto ? CODE : ($('code').value||'').trim();
+  if(!k || k.length<4) return say(T('bad'),'bad');
+  say('…');
+  rpc('builder_check',{p_code:k})
+    .then(function(r){
+      if(!r||!r.ok){ if(auto) olvidar(); return say(T('bad'),'bad'); }
+      CODE=k; BY=r.by; CAMPS=r.campaigns||[];
+      recordar(k);
+      say('');
+      $('gate').className='gate hide';
+      $('app').className='';
+      $('hwho').className='who'; $('hwho').textContent=BY;
+      $('hout').className='out';
+      cargar();
+    })
+    .catch(function(e){ console.error(e); say(T('net') + porque(e), 'bad') });
+}
+
+/* Trae el reto de cada equipo, y si hay uno abierto, su tablero.
+   Todo en paralelo: un entrenador con siete equipos no debe esperar
+   siete veces.
+
+   Dos llamadas y no una porque cp_reto_vivo va por campaña y
+   cp_tablero va por reto: hay que saber cuál es el reto antes de
+   poder pedir su tablero. */
+function cargar(){
+  if(!CAMPS.length){ $('teams').innerHTML='<p class="help">'+T('none')+'</p>'; return }
+  var jobs = CAMPS.map(function(c){
+    return rpc('cp_reto_vivo',{p_campaign:c.id})
+      .then(function(r){
+        RETOS[c.id] = (r && r.ok) ? r : null;
+        if (!RETOS[c.id] || !RETOS[c.id].hay) return null;
+        return rpc('cp_tablero',{p_challenge:RETOS[c.id].challenge_id})
+          .then(function(d){ BOARDS[c.id] = (d && d.ok) ? d : null })
+          .catch(function(){ BOARDS[c.id] = null });
+      })
+      .catch(function(){ RETOS[c.id]=null; BOARDS[c.id]=null });
+  });
+  Promise.all(jobs).then(pintar);
+}
+
+/* ── Lo que de verdad cuesta dinero si se olvida ──────────────────
+   En Hooporia era un juego ya jugado al que le falta el marcador.
+   Aquí no existe: el marcador lo anota el juego solo, y esa es toda
+   la idea.
+
+   Lo que sí cuesta dinero aquí es un nene que no hizo su corrida
+   antes de que cierre la ventana. Sus padrinos prometieron por sus
+   puntos, y sin corrida sus puntos son cero: cada promesa suya vale
+   nada. Es lo único de esta página que pide una acción. */
+function sinJugar(cid){
+  var d = BOARDS[cid];
+  if (!d || !d.nenes) return 0;
+  return d.nenes.filter(function(n){ return !(n.jugados > 0) }).length;
+}
+function jugaron(cid){
+  var d = BOARDS[cid];
+  if (!d || !d.nenes) return 0;
+  return d.nenes.filter(function(n){ return n.jugados > 0 }).length;
+}
+function enPlantilla(cid){
+  var d = BOARDS[cid];
+  return (d && d.nenes) ? d.nenes.length : 0;
+}
+/* Abierta de verdad: hay reto y la ventana está corriendo. Un reto
+   que todavía no abre no apura a nadie, y uno cerrado ya no tiene
+   arreglo. */
+function abierta(cid){
+  var r = RETOS[cid];
+  return !!(r && r.hay && r.open);
+}
+function cierra(cid){
+  var r = RETOS[cid];
+  return (r && (r.closes_at || r.opens_at)) || null;
+}
+
+function pintar(){
+  paintStatic();
+
+  /* Lo primero de la página: los nenes que no han jugado y la ventana
+     está abierta. Cada uno es un juego de promesas que va a valer
+     cero si nadie lo sienta a jugar. */
+  var faltan = 0, uno = null;
+  CAMPS.forEach(function(c){
+    if (!abierta(c.id)) return;
+    var n = sinJugar(c.id);
+    faltan += n;
+    if (n && !uno) uno = c;
+  });
+
+  $('todo').innerHTML = faltan ?
+    '<div class="todo">'+
+      '<b>'+T('todoL')+'</b>'+
+      '<div class="big">'+(faltan===1?T('todo1',{N:faltan}):T('todoN',{N:faltan}))+'</div>'+
+      '<p>'+T('todoP')+'</p>'+
+      '<a class="btn go" href="tablero.html?camp='+esc(uno.id)+'">'+T('todoGo')+'</a>'+
+    '</div>' : '';
+
+  $('teams').innerHTML = CAMPS.map(function(c){
+    var est = !RETOS[c.id] || !RETOS[c.id].hay ? T('stNada')
+            : abierta(c.id)                    ? T('stAbierta')
+            :                                    T('stCerrada');
+    var cuando = cierra(c.id);
+    var pie = abierta(c.id) && cuando ? T('cierraEl',{D:cuandoCorto(cuando)}) : est;
+
+    return '<div class="team">'+
+      '<p class="nm">'+esc(c.name)+'</p>'+
+      '<p class="st">'+esc(pie)+'</p>'+
+      '<div class="nums">'+
+        '<div class="num"><b>'+enPlantilla(c.id)+'</b><span>'+T('nPlant')+'</span></div>'+
+        '<div class="num"><b>'+jugaron(c.id)+'</b><span>'+T('nJug')+'</span></div>'+
+      '</div>'+
+      '<div class="acts">'+
+        '<a class="fill" href="tablero.html?camp='+esc(c.id)+'">'+T('aBoard')+'</a>'+
+        '<a class="wide" href="plantilla.html">'+T('aRoster')+'</a>'+
+        '<a class="wide" href="reporte.html">'+T('aReport')+'</a>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+/* La fecha corta, para que quepa en la línea de estado. */
+function cuandoCorto(iso){
+  try{
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString(LANG==='es'?'es-PR':'en-US',
+      { weekday:'long', day:'numeric', month:'long' });
+  }catch(e){ return '' }
+}
+
+$('code').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){ e.preventDefault(); entrar(false) }
+});
+
+paintStatic();
+if(CODE) entrar(true);
+</script>
+
+<script>
+/* ══ El menú de la barra ════════════════════════════════════════════
+   Vive aparte del sistema de idioma de cada página a propósito: son
+   doce páginas con cuatro formas distintas de pintar sus textos, y
+   engancharse a cada una sería cuatro maneras de romperse. Esto lee
+   el idioma de donde lo deja todo el mundo —localStorage— y pinta
+   sus seis enlaces y nada más. */
+(function(){
+var ROTULOS = {
+  en: { inicio:'Home', como:'How it works', precio:'What it costs',
+        ayuda:'Questions', mia:'My team', alta:'Sign up a team',
+        menu:'Menu', otro:'Español', aOtro:'Cambiar a español' },
+  es: { inicio:'Inicio', como:'Cómo funciona', precio:'Cuánto cuesta',
+        ayuda:'Preguntas', mia:'Mi equipo', alta:'Registra un equipo',
+        menu:'Menú', otro:'English', aOtro:'Switch to English' }
+};
+function idioma(){
+  try{
+    return localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+           localStorage.getItem('fc-lang') ||
+           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en');
+  }catch(e){ return 'es' }
+}
+var b = document.getElementById('hamb'),
+    m = document.getElementById('menu'),
+    l = document.getElementById('langBtn') || document.getElementById('lang');
+if (!b || !m) return;
+
+function pintar(){
+  var t = ROTULOS[idioma()] || ROTULOS.es;
+  m.querySelectorAll('[data-m]').forEach(function(a){
+    a.textContent = t[a.getAttribute('data-m')] || a.textContent;
+  });
+  b.setAttribute('aria-label', t.menu);
+  /* El botón del idioma lo pinta la propia página, cada una a su
+     manera. Aquí sólo se corrige si se quedó con las dos letras
+     viejas, para que ninguna página diga «EN» mientras las demás
+     dicen «English». */
+  if (l && /^(EN|ES)$/.test((l.textContent||'').trim())) {
+    l.textContent = t.otro;
+    l.setAttribute('aria-label', t.aOtro);
+  }
+}
+function pon(abierto){
+  m.classList.toggle('abierto', abierto);
+  b.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+}
+b.addEventListener('click', function(){
+  pon(b.getAttribute('aria-expanded') !== 'true');
+});
+m.addEventListener('click', function(e){ if (e.target.closest('a')) pon(false) });
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && b.getAttribute('aria-expanded') === 'true') {
+    pon(false); b.focus();
+  }
+});
+/* Al pulsar el idioma, la página repinta lo suyo; el menú repinta
+   lo suyo detrás, con un turno de espera para que el valor nuevo ya
+   esté guardado cuando se lea. */
+if (l) l.addEventListener('click', function(){ setTimeout(pintar, 0) });
+pintar();
+})();
+</script>
+</body>
+</html>
