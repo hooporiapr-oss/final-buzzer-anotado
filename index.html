@@ -148,6 +148,23 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22;
 .section{padding:84px 0}
 .section h2{font-size:clamp(2rem,4vw,3rem);line-height:1.14;letter-spacing:-.035em;margin:8px 0 18px}
 .intro{color:var(--muted);max-width:700px;font-size:1.1rem}
+/* La foto de la promesa, encima de los tres pasos. Es una captura de
+   prometer.html de verdad —la pantalla que ve el padrino— así que
+   enseña el producto en vez de describirlo.
+
+   El borde y la sombra son los mismos de .step, para que entre en la
+   fila de tarjetas que viene debajo en vez de competir con ella. Y
+   un ancho máximo: la imagen mide 1122 de ancho y a página completa
+   en un monitor saldría gigante, con la letra de la pantalla más
+   grande que los titulares de la sección.
+
+   width y height van puestos en el <img> para que el hueco esté
+   reservado antes de que la imagen baje: sin ellos los tres pasos
+   saltan hacia abajo a mitad de lectura. */
+.promesa{margin:34px auto 0;max-width:430px;border:1px solid #e7e6e2;
+  border-radius:16px;overflow:hidden;box-shadow:0 8px 25px #17243808}
+.promesa img{display:block;width:100%;height:auto}
+
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
 .step{background:white;border:1px solid #e7e6e2;border-radius:16px;padding:28px;box-shadow:0 8px 25px #17243808}
 .step .num{color:var(--orange);font-weight:900;font-size:1.15rem}
@@ -367,6 +384,24 @@ button.lang{padding:0 10px;font-size:.8rem}
 <div class="wrap">
 <div class="eyebrow" data-i="processLabel">A challenge you open when you want</div>
 <h2 data-i="processTitle">Three steps. One run each.</h2>
+<!-- Lo que ve el padrino, antes de contar los tres pasos. Es un
+     recorte de prometer.html de verdad, sin montaje: el mismo crema
+     de la página, así que se lee como una tarjeta más de las que
+     vienen debajo y no como una ilustración pegada encima.
+
+     Dos imágenes, una por idioma, porque el texto va quemado dentro.
+     Un entrenador leyendo en español veía si no la pantalla del
+     padrino en inglés — justo la que le va a mandar a la abuela de
+     un nene.
+
+     Y PNG, no JPEG: es texto sobre un fondo plano, así que el PNG
+     sale a la vez más nítido y más pequeño (116 KB contra 175). -->
+<figure class="promesa">
+  <img id="promesaFoto" src="pledge-card-en.png" width="1122" height="1275"
+       loading="lazy" decoding="async"
+       alt="The pledge screen a padrino sees: 5¢, 10¢ and 20¢ a point, with 20¢ chosen, and the line that says a 150-point game comes to $30.00 for the program, never more than the $40 cap.">
+</figure>
+
 <div class="steps">
 <article class="step">
 <div class="num" data-i="sBefore">BEFORE IT OPENS</div>
@@ -643,6 +678,17 @@ var _f=document.getElementById('heroFoto');
 if(_f) _f.alt = locale==='es'
   ? 'Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21'
   : 'A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21';
+/* La foto de la promesa lleva el texto quemado dentro, así que aquí
+   no basta con el alt: cambia la imagen entera. Si no, un entrenador
+   que lee la página en español ve la pantalla del padrino en inglés
+   —justo la pantalla que va a mandarle a la abuela de un nene. */
+var _p=document.getElementById('promesaFoto');
+if(_p){
+  _p.src = locale==='es' ? 'pledge-card-es.png' : 'pledge-card-en.png';
+  _p.alt = locale==='es'
+    ? 'La pantalla de promesa que ve un padrino: 5¢, 10¢ y 20¢ por punto, con 20¢ escogido, y la línea que dice que un juego de 150 puntos da $30.00 para el programa, nunca más del tope de $40.'
+    : 'The pledge screen a padrino sees: 5¢, 10¢ and 20¢ a point, with 20¢ chosen, and the line that says a 150-point game comes to $30.00 for the program, never more than the $40 cap.';
+}
 /* El botón dice a dónde lleva, no dónde estás: en inglés, «Español».
    Y el aria-label igual, en el idioma al que lleva, porque quien
    usa un lector de pantalla está buscando exactamente eso. */
