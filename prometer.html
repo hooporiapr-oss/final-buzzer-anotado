@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Apadrina — Hooporia</title>
+<title>Apadrina — Cada Punto Cuenta</title>
 <meta name="robots" content="noindex,nofollow">
 
 <!-- El icono y la imagen de compartir. og:image va en absoluto
      a propósito: WhatsApp y los demás no resuelven rutas
      relativas, y con una relativa la vista previa sale en
      blanco igual que sin imagen. -->
-<link rel="icon" type="image/png" href="hooporia.png">
-<link rel="apple-touch-icon" href="hooporia.png">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Hooporia">
-<meta property="og:image" content="https://hooporia.com/hooporia-share.jpg">
+<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21">
+<meta property="og:image:alt" content="Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21">
 <meta name="twitter:card" content="summary_large_image">
 <style>
 /* ══════════════════════════════════════════════════════════════════
@@ -33,7 +33,7 @@
 
    Tres cosas que esta página no hace, y son a propósito:
 
-   · No cobra nada, aquí ni después. Hooporia no procesa pagos: el
+   · No cobra nada, aquí ni después. Cada Punto Cuenta no procesa pagos: el
      padrino le paga al programa, directo, cuando el programa le diga.
    · No deja prometer una vez empezado el juego. Después ya se sabe
      cuánto anotó, y prometer sabiendo el resultado no es prometer.
@@ -302,7 +302,7 @@ header{color:#101c2a}
 <body>
 
 <header><div class="wrap bar">
-  <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
+  <a class="mark" href="index.html"><em>CADA PUNTO CUENTA</em><i>.</i></a>
     <nav class="menu" id="menu">
       <a href="index.html" data-m="inicio">Home</a>
       <a href="index.html#how" data-m="como">How it works</a>
@@ -389,7 +389,7 @@ var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 var S={
  es:{
   kick:'Te invitó a ser su padrino',
-  trato:'Juega cuatro cuartos de cinco minutos. Cada cuarto vale su mejor tirada, y los cuatro se suman. Tú prometes unos centavos por cada punto de ese total.',
+  trato:'Juega cuatro sets de cinco minutos. Cada set vale su mejor tirada, y los cuatro se suman. Tú prometes unos centavos por cada punto de ese total.',
   cuandoAbre:'El juego es el {F}. Las promesas cierran cuando empieza.',
   cuandoSin:'Todavía no hay fecha. Puedes prometer desde ahora.',
   lTarifa:'¿Cuánto por punto?',
@@ -412,16 +412,16 @@ var S={
   cerradaP:'El juego ya empezó, así que esta promesa llega tarde. Pero quedan más días de juego — pídele el próximo enlace.',
   jugado:'Esto es lo que hizo',
   listoH:'Listo. Eres su padrino.',
-  listoP:'Al cerrar el juego te llega un aviso con el marcador y lo que dio tu promesa. Le pagas directo al programa — Hooporia no te va a cobrar nada.',
+  listoP:'Al cerrar el juego te llega un aviso con el marcador y lo que dio tu promesa. Le pagas directo al programa — Cada Punto Cuenta no te va a cobrar nada.',
   volver:'Cambiar mi promesa',
   otraVez:'Ya tenías una promesa para {N} — la actualizamos con lo que acabas de poner.',
   noVa:'Este enlace no abre una promesa.',
   total:'Tot',
-  pie:'Hooporia es un sistema de manejo de promesas de Gostar Digital LLC. No procesamos pagos: le pagas al programa, directo.'
+  pie:'Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC. No procesamos pagos: le pagas al programa, directo.'
  },
  en:{
   kick:'Invited you to be their padrino',
-  trato:'They play four five-minute quarters. Each quarter counts their best run, and the four add up. You pledge a few cents for every point of that total.',
+  trato:'They play four five-minute sets. Each set counts their best run, and the four add up. You pledge a few cents for every point of that total.',
   cuandoAbre:'Game day is {F}. Pledges close when it starts.',
   cuandoSin:'No date yet. You can pledge now.',
   lTarifa:'How much per point?',
@@ -444,12 +444,12 @@ var S={
   cerradaP:'The game has started, so this pledge is late. There will be other game days — ask them for the next link.',
   jugado:'Here is what they did',
   listoH:'Done. You are their padrino.',
-  listoP:'When the game closes you get a notice with the score and what your pledge came to. You pay the program directly — Hooporia will never charge you anything.',
+  listoP:'When the game closes you get a notice with the score and what your pledge came to. You pay the program directly — Cada Punto Cuenta will never charge you anything.',
   volver:'Change my pledge',
   otraVez:'You already had a pledge for {N} — we updated it with what you just entered.',
   noVa:'This link does not open a pledge.',
   total:'Tot',
-  pie:'Hooporia is a pledge management system from Gostar Digital LLC. We process no payments: you pay the program directly.'
+  pie:'Cada Punto Cuenta is a pledge management system from Gostar Digital LLC. We process no payments: you pay the program directly.'
  }
 };
 var LANG='es';
@@ -463,7 +463,7 @@ function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){
 var par=new URLSearchParams(location.search);
 var RETO=par.get('c'), JUGADOR=par.get('p');
 
-/* Ya no hay cargo que sumarle al padrino: Hooporia se licencia al
+/* Ya no hay cargo que sumarle al padrino: Cada Punto Cuenta se licencia al
    programa por evento y al padrino no se le cobra nada. Lo
    que se enseña es la promesa, y nada más. */
 /* Para la cuenta de ejemplo. No es una promesa de cuánto va a anotar:
