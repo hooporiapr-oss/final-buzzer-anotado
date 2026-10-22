@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Fortress en la cancha — Hooporia</title>
+<title>Fortress en la cancha — Cada Punto Cuenta</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,14 +13,14 @@
      a propósito: WhatsApp y los demás no resuelven rutas
      relativas, y con una relativa la vista previa sale en
      blanco igual que sin imagen. -->
-<link rel="icon" type="image/png" href="hooporia.png">
-<link rel="apple-touch-icon" href="hooporia.png">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Hooporia">
-<meta property="og:image" content="https://hooporia.com/hooporia-share.jpg">
+<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21">
+<meta property="og:image:alt" content="Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21">
 <meta name="twitter:card" content="summary_large_image">
 <style>
 /* ══════════════════════════════════════════════════════════════════
@@ -246,9 +246,9 @@ body.conVolver #pista{bottom:calc(50px + env(safe-area-inset-bottom,0px))}
 <button id="volver" hidden></button>
 
 <div class="capa" id="tapa">
-  <img id="tapaFoto" src="hooporia-share.jpg" width="1200" height="630"
+  <img id="tapaFoto" src="compartir.jpg" width="1200" height="630"
        loading="eager" decoding="async"
-       alt="Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21">
+       alt="Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21">
   <h1>Fortress <em>en la cancha</em></h1>
   <div class="marca" id="tapaQuien" hidden></div>
   <p id="tapaP"></p>
@@ -387,7 +387,7 @@ var S={
     siguienteBtn:'Siguiente jugador',
     atras:'← Inicio',
     volver:'← Volver al tablero',
-    fotoAlt:'Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21'
+    fotoAlt:'Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21'
   },
   en:{
     p:'The chain gets one longer every round. Watch where the balls light '+
@@ -465,7 +465,7 @@ var S={
     siguienteBtn:'Next player',
     atras:'← Home',
     volver:'← Back to the board',
-    fotoAlt:'A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21'
+    fotoAlt:'A kid on a court at sunset, arm raised, as his score climbs: 1, 3, 6, 10, 15, 21'
   }
 };
 var LANG='es';
@@ -993,7 +993,7 @@ function construir(){
 
   dibujarEspacio();
 
-  /* Las bolas. Naranja Hooporia; la luz propia (emissive) es la que
+  /* Las bolas. Naranja Cada Punto Cuenta; la luz propia (emissive) es la que
      sube cuando se encienden, así que empieza apagada. */
   var geo=new THREE.SphereGeometry(RADIO_GEO,28,20);
   for(var i=0;i<5;i++){
@@ -2021,7 +2021,7 @@ function cabezaEnElBucle(){
 
 
 /* ══════════════════════════════════════════════════════════════════
-   EL JUEGO DE HOOPORIA
+   EL JUEGO DE CADA PUNTO CUENTA
 
    La misma cancha y las mismas reglas, pero jugando por plata.
 
