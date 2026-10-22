@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>The Fortress 1-3-1</title>
+
+<!-- El icono y la imagen de compartir. og:image va en absoluto
+     a propósito: WhatsApp y los demás no resuelven rutas
+     relativas, y con una relativa la vista previa sale en
+     blanco igual que sin imagen. -->
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A kid on a court at sunset, arm raised, as his score climbs: 1, 3, 6, 10, 15, 21">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;background:#000;font-family:Arial,sans-serif;color:#fff;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
@@ -87,6 +101,14 @@ html,body{width:100%;height:100%;background:#000;font-family:Arial,sans-serif;co
 .box-open-btn{width:100%;max-width:420px;height:52px;border:2px solid rgba(34,211,238,.5);background:rgba(34,211,238,.1);border-radius:14px;color:#7DD3FC;font-size:.9rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;margin-top:6px;text-decoration:none;display:flex;align-items:center;justify-content:center}
 .best-line{margin-top:16px;font-size:.85rem;color:#a7adba}
 .best-line b{color:#22D3EE}
+/* De vuelta al scrimmage, que es el tablero que la portada enseña.
+   Este juego es el otro, el de una sola tirada: a esta página se
+   llega por un enlace, y quien cae aquí buscando los cuatro cuartos
+   necesita una salida que no sea el botón de atrás del navegador. */
+.to-scrim{display:inline-block;margin-top:24px;padding:11px 20px;
+  border:2px solid rgba(255,255,255,.22);border-radius:999px;
+  background:rgba(0,0,0,.35);color:#cbd5e1;font-size:.78rem;font-weight:900;
+  letter-spacing:.06em;text-transform:uppercase;text-decoration:none}
 .lang-btn{position:fixed;top:16px;right:16px;padding:8px 14px;border:2px solid rgba(34,211,238,.45);background:rgba(0,0,0,.5);color:#7DD3FC;font-size:.72rem;font-weight:900;letter-spacing:.08em;border-radius:999px;cursor:pointer;z-index:60}
 .intro-back{position:fixed;top:16px;left:16px;padding:8px 16px;border:2px solid rgba(255,255,255,.25);background:rgba(0,0,0,.5);color:#fff;font-size:.78rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;text-decoration:none;z-index:60}
 
@@ -228,6 +250,7 @@ html,body{width:100%;height:100%;background:#000;font-family:Arial,sans-serif;co
   </div>
   <button class="big-btn" id="bigStart" onclick="handleStartClick()">▶ START</button>
   <div class="best-line" id="bestLine"></div>
+  <a class="to-scrim" id="toScrim" href="fortress-vr.html">&larr; The scrimmage</a>
 </div>
 
 <!-- COUNTDOWN -->
@@ -295,6 +318,7 @@ var STR = {
     alreadyRun:'Your official run is already in: <b>level {L}, {P} points</b>. You can keep practising, but this score is final.',
     confirmOfficial:'This is your official run. Your sponsors pay on the points you score, and you only get one. Ready?',
     back:'← Back', backToChallenge:'← Back to my Challenge page', home:'← Home',
+    toScrim:'← The scrimmage',
     lblLevel:'Level', lblPoints:'Points', lblTime:'Time',
     getReady:'GET READY...', watch:'WATCH THE CHAIN', yourTurn:'YOUR TURN',
     held:'✅ CHAIN HELD', broken:'CHAIN BROKEN',
@@ -307,7 +331,7 @@ var STR = {
     tryoutSaved:'✓ Saved to your team tryout.',
     demoLeft:'Free demo — {N} of 3 tries left.',
     demoOver:'Demo finished', demoTalk:'Bring this to my program →',
-    demoOverNote:'That is the demo. If your school or team runs Hooporia, open your own link and play as much as you like.',
+    demoOverNote:'That is the demo. If your school or team runs Cada Punto Cuenta, open your own link and play as much as you like.',
     practiceCount:'Practice {D} of {N}. Go back and play again.',
     practiceUnlocked:'✓ Practice done. Go back to your page to see what is next.',
     worthLine:'That is {P} points. In a fundraiser, every padrino backing you at 25¢ a point would be giving {M}.',
@@ -341,6 +365,7 @@ var STR = {
     alreadyRun:'Tu corrida oficial ya está hecha: <b>nivel {L}, {P} puntos</b>. Puedes seguir practicando, pero esa puntuación es final.',
     confirmOfficial:'Esta es tu corrida oficial. Tus padrinos pagan por los puntos que anotes, y solo tienes una. ¿Listo?',
     back:'← Atrás', backToChallenge:'← Volver a mi página del Reto', home:'← Inicio',
+    toScrim:'← El scrimmage',
     lblLevel:'Nivel', lblPoints:'Puntos', lblTime:'Tiempo',
     getReady:'PREPÁRATE...', watch:'OBSERVA LA CADENA', yourTurn:'TU TURNO',
     held:'✅ CADENA AGUANTADA', broken:'CADENA ROTA',
@@ -353,7 +378,7 @@ var STR = {
     tryoutSaved:'✓ Guardado en la prueba de tu equipo.',
     demoLeft:'Demo gratis — te quedan {N} de 3 intentos.',
     demoOver:'Demo terminado', demoTalk:'Quiero esto en mi programa →',
-    demoOverNote:'Hasta ahí llega el demo. Si tu escuela o equipo usa Hooporia, abre tu propio enlace y juega todo lo que quieras.',
+    demoOverNote:'Hasta ahí llega el demo. Si tu escuela o equipo usa Cada Punto Cuenta, abre tu propio enlace y juega todo lo que quieras.',
     practiceCount:'Práctica {D} de {N}. Regresa y juega otra vez.',
     practiceUnlocked:'✓ Práctica completa. Regresa a tu página para ver qué sigue.',
     worthLine:'Son {P} puntos. En una recaudación, cada padrino que te apoye a 25¢ por punto estaría dando {M}.',
@@ -394,6 +419,7 @@ function applyLang(){
   $('againBtn').textContent = TRYOUT_PRACTICE ? T('practiceAgain') : T('playAgain');
   $('langBtn').textContent = LANG === 'en' ? 'ES' : 'EN';
   document.querySelector('.intro-back').textContent = (CHALLENGE_ID && PLAYER_ID) ? T('backToChallenge') : T('back');
+  if ($('toScrim')) $('toScrim').textContent = T('toScrim');
   document.querySelector('#controls .ctrl-btn').textContent = (CHALLENGE_ID && PLAYER_ID) ? T('backToChallenge') : T('home');
   $('backToPledge').textContent = (CHALLENGE_ID && PLAYER_ID) ? T('backToChallenge') : T('back');
   if (!$('bigStart').dataset.locked){
@@ -781,15 +807,19 @@ var runStartTime=0;
 
 (function setBackLink(){
   if (TRYOUT){
-    var t = 'index.html' + encodeURIComponent(TRYOUT);
+    /* Era 'challenges.html?c=' + el reto, y el cambio de marca se
+       llevó por delante el '?c=': quedó index.htmlRETO1&p=…, que no
+       es ninguna página. Aquí no hay challenges.html —eso es de
+       Cada Punto— así que la vuelta es la portada, sin parámetros,
+       igual que en fortress.html. */
+    var t = 'index.html';
     ['introBack','homeBtn','backToPledge'].forEach(function(id){
       var el = $(id); if (el) el.href = t;
     });
     return;
   }
   if (CHALLENGE_ID && PLAYER_ID){
-    var back = 'index.html' + encodeURIComponent(CHALLENGE_ID) + '&p=' + encodeURIComponent(PLAYER_ID)
-             + (RUN_KEY ? '&k=' + encodeURIComponent(RUN_KEY) : '');
+    var back = 'index.html';
     $('backToPledge').href = back;
     $('backToPledge').textContent = T('backToChallenge');
     document.querySelector('.intro-back').href = back;
