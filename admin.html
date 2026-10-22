@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin — Hooporia</title>
+<title>Admin — Cada Punto Cuenta</title>
 <meta name="robots" content="noindex,nofollow">
-<link rel="icon" type="image/png" href="hooporia.png">
-<link rel="apple-touch-icon" href="hooporia.png">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   EL ADMIN DE HOOPORIA
+   EL ADMIN DE CADA PUNTO CUENTA
 
    El anterior lo usaban tres productos a la vez —BOGO, Cada Punto y
    éste— y acabó con seis mil líneas de las que cinco mil eran de
@@ -21,7 +21,7 @@
    padrinos en una plataforma que no cobra a padrinos, un calendario
    ofrecido a un producto que no tiene calendario.
 
-   Éste hace una sola cosa. Es de Hooporia y de nadie más, y lo que
+   Éste hace una sola cosa. Es de Cada Punto Cuenta y de nadie más, y lo que
    hay aquí es exactamente la cadena: una campaña, su código, su
    reto con su ventana, la plantilla que se aprueba, los enlaces que
    se reparten, el reporte, los avisos y la licencia. Si algo no es
@@ -96,7 +96,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 <body>
 
 <header><div class="wrap bar">
-  <div class="marca">HOOPORIA<span>.</span><small>ADMIN</small></div>
+  <div class="marca">CADA PUNTO CUENTA<span>.</span><small>ADMIN</small></div>
   <button class="q sm oculto" id="salir" style="color:#fff;border-color:#ffffff55">Sign out</button>
 </div></header>
 
@@ -150,7 +150,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
            gone.
 
            Whatever the program types here is printed in the notice
-           word for word. Hooporia opens no account, processes
+           word for word. Cada Punto Cuenta opens no account, processes
            nothing, holds nothing and verifies nothing: this is an
            instruction, not a charge. -->
       <label for="nPago">How padrinos pay you <span class="opt">(optional)</span></label>
@@ -205,10 +205,10 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
     <div id="nuevoReto" class="oculto" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
       <label for="rNombre">Challenge name</label>
       <input id="rNombre" placeholder="November scrimmage">
-      <!-- El juego no se escoge. Hooporia tiene un tablero y es el de
+      <!-- El juego no se escoge. Cada Punto Cuenta tiene un tablero y es el de
            cuatro cuartos: es el único que guarda cuarto a cuarto, y
            es el que la portada enseña. -->
-      <p class="aviso">Game: <b>The Fortress — scrimmage, 4 sets</b>. It is the only board Hooporia has.</p>
+      <p class="aviso">Game: <b>The Fortress — scrimmage, 4 sets</b>. It is the only board Cada Punto Cuenta has.</p>
       <div class="fila">
         <div><label for="rAbre">Opens</label><input id="rAbre" type="datetime-local"></div>
         <div><label for="rCierra">Closes</label><input id="rCierra" type="datetime-local"></div>
@@ -234,13 +234,13 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 var SB_URL = 'https://sdaphocueugzfvjovuxd.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
 
-/* El servidor de Hooporia. Es suyo y de nadie más — los avisos y la
+/* El servidor de Cada Punto Cuenta. Es suyo y de nadie más — los avisos y la
    licencia salen de ahí. Mientras no esté desplegado, los dos
    botones que lo usan lo dirán con todas las letras en vez de
    fallar en silencio. */
 var SERVIDOR = 'https://hooporia-server.onrender.com';
 
-var SITIO = 'https://hooporia.com';
+var SITIO = 'https://cadapunto.com';
 
 function $(id){ return document.getElementById(id) }
 function esc(s){ return String(s == null ? '' : s)
@@ -328,7 +328,7 @@ function rpc(nombre, args){
   });
 }
 
-/* Y con el servidor de Hooporia. Un 404 aquí tiene un significado
+/* Y con el servidor de Cada Punto Cuenta. Un 404 aquí tiene un significado
    muy concreto —ese servidor no tiene esa ruta— y conviene decirlo
    así en vez de "error 404". */
 function servidor(ruta, cuerpo){
@@ -344,7 +344,7 @@ function servidor(ruta, cuerpo){
       });
     });
   }).catch(function(e){
-    return { codigo: 0, cuerpo: { error: 'Could not reach the Hooporia server (' +
+    return { codigo: 0, cuerpo: { error: 'Could not reach the Cada Punto Cuenta server (' +
              SERVIDOR + ')' + porque(e) } };
   });
 }
@@ -419,7 +419,7 @@ function arrancar(){
 }
 
 function cargarCampanas(){
-  /* Sólo las de Hooporia. Este admin no sabe nada de Cada Punto y es
+  /* Sólo las de Cada Punto Cuenta. Este admin no sabe nada de Cada Punto y es
      a propósito: las campañas del otro producto no se enseñan aquí
      ni por error. */
   rest('campaigns?product=eq.anotado&select=*&order=created_at.desc')
@@ -518,7 +518,7 @@ $('crearCamp').onclick = function(){
          sin él, y por eso licencia_calculo no encontraba a quién
          facturarle y el aviso salía sin contacto.
 
-         access_code no lo usa Hooporia para nada —aquí el entrenador
+         access_code no lo usa Cada Punto Cuenta para nada —aquí el entrenador
          entra con su bw_code— pero la columna es NOT NULL desde el
          producto anterior, y sin ella el insert se cae entero. Va un
          valor al azar y no uno fijo: no sé qué función vieja puede
@@ -972,7 +972,7 @@ function mandarAvisos(){
   di('mAvisos', '…');
   servidor('/challenge-notices', { code: codigo(), challenge_id: RETO.id })
     .then(function(r){
-      if (r.codigo === 404) return di('mAvisos', 'The Hooporia server does not have that route yet (' + SERVIDOR + ').', 'mal');
+      if (r.codigo === 404) return di('mAvisos', 'The Cada Punto Cuenta server does not have that route yet (' + SERVIDOR + ').', 'mal');
       if (r.codigo !== 200) return di('mAvisos', 'They were not sent' + porque(r.cuerpo), 'mal');
       var d = r.cuerpo || {}, l = d.licencia || {};
       /* Rojo si falló un aviso o si la licencia no salió debiendo
@@ -1005,7 +1005,7 @@ function verLicencia(confirmar){
   servidor('/licencia', { challenge_id: RETO.id, confirmar: confirmar })
     .then(function(r){
       var d = r.cuerpo || {};
-      if (r.codigo === 404) return di('mLic', 'The Hooporia server does not have that route yet (' + SERVIDOR + ').', 'mal');
+      if (r.codigo === 404) return di('mLic', 'The Cada Punto Cuenta server does not have that route yet (' + SERVIDOR + ').', 'mal');
       if (r.codigo === 422 && d.error === 'sin_promesas')
         return di('mLic', 'This challenge recorded no pledges, so there is nothing to invoice. No pledges, no fee.', 'ok');
       if (r.codigo === 422 && d.error === 'sin_correo')
