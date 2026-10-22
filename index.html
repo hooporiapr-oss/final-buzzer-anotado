@@ -172,14 +172,23 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22;
    Dos tarjetas, el número grande primero. La lista de debajo es lo
    que de verdad hay que leer —cuándo se paga, qué pasa si no—, pero
    nadie la lee hasta que ve el número, así que el número va antes. */
-.prices{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:34px}
-.price{background:white;border:1px solid #e7e6e2;border-radius:16px;padding:28px;
-  box-shadow:0 8px 25px #17243808}
-.price .num{font-size:clamp(2.6rem,7vw,3.8rem);font-weight:900;letter-spacing:-.05em;
-  line-height:1;color:var(--navy)}
-.price .per{color:var(--orange);font-weight:900;font-size:.76rem;letter-spacing:.13em;
-  text-transform:uppercase;margin-top:10px}
-.price p{color:var(--muted);margin:12px 0 0}
+/* La escalera: una fila por peldaño. Seis tarjetones no caben en
+   un teléfono y además no es lo que hace falta — lo que hace falta
+   es encontrar TU fila de un vistazo y leer un número. */
+.prices{display:block;background:white;border:1px solid #e7e6e2;border-radius:16px;
+  margin-top:34px;overflow:hidden;box-shadow:0 8px 25px #17243808;max-width:620px}
+.peldano{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  padding:15px 22px;border-top:1px solid #f0efec}
+.peldano:first-child{border-top:0}
+/* El del equipo va resaltado: es el peldaño en el que cae casi
+   todo el mundo que llega a esta página. */
+.peldano.suyo{background:#fff7f0}
+.peldano .cuantos{color:var(--navy);font-weight:700}
+.peldano .cuesta{font-size:1.5rem;font-weight:900;letter-spacing:-.03em;
+  color:var(--navy);white-space:nowrap}
+.peldano.suyo .cuesta{color:var(--orange)}
+.peldano .hablar{font-size:.95rem;font-weight:800;color:var(--muted);white-space:nowrap}
+.priceNota{color:var(--muted);margin:14px 0 0;max-width:620px}
 .pricefacts{list-style:none;padding:0;margin:32px 0 0;display:grid;gap:11px;max-width:760px}
 .pricefacts li{position:relative;padding-left:26px;color:var(--muted)}
 .pricefacts li::before{content:"";position:absolute;left:4px;top:.62em;width:8px;height:8px;
@@ -411,7 +420,7 @@ button.lang{padding:0 10px;font-size:.8rem}
 <article class="step">
 <div class="num" data-i="sWindow">THE WINDOW</div>
 <h3 data-i="s2t">Each one takes his run</h3>
-<p data-i="s2d">Four quarters on a phone, at the court or at home. The game records every point as he plays.</p>
+<p data-i="s2d">Four sets on a phone, at the court or at home. The game records every point as he plays.</p>
 <!-- El mismo data-i que el botón de la portada, a propósito: los dos
      dicen lo mismo y van al mismo sitio, así que con una sola llave
      no pueden acabar diciendo cosas distintas.
@@ -464,18 +473,12 @@ button.lang{padding:0 10px;font-size:.8rem}
 <h2 data-i="priceTitle">Nothing up front. The invoice comes after the results do.</h2>
 <p class="intro" data-i="priceDesc">You run the event, the report is yours to print the moment it closes, and the licence is invoiced after that. One price per event — it does not move with how much you raise, how many players run, or how many padrinos they bring in. And if the event records no pledges at all, there is no invoice.</p>
 
-<div class="prices">
-  <div class="price">
-    <div class="num" data-i="priceA">${A}</div>
-    <div class="per" data-i="priceAPer">per team, per event</div>
-    <p data-i="priceAD">A roster of {N} or more. One price for the whole event, however many players take a run and however many padrinos each one brings.</p>
-  </div>
-  <div class="price">
-    <div class="num" data-i="priceB">${B}</div>
-    <div class="per" data-i="priceBPer">roster under {N}</div>
-    <p data-i="priceBD">A small squad pays less. Everything else about the event is the same.</p>
-  </div>
-</div>
+<!-- La escalera se PINTA desde TARIFAS, no se escribe aquí. Dos
+     tarjetas escritas a mano era lo que había cuando había dos
+     precios; con seis peldaños, escribirlos en el marcado es
+     garantizar que un día uno diga una cosa y la tabla otra. -->
+<div class="prices" id="escalera"></div>
+<p class="priceNota" data-i="priceEscala">One price for the whole event, however many players take a run and however many padrinos each one brings. You know which step you are on before you start, and it does not move.</p>
 
 <ul class="pricefacts">
   <li data-i="pf1">Nothing up front. Setting it up is free and running it is free.</li>
@@ -551,6 +554,35 @@ button.lang{padding:0 10px;font-size:.8rem}
 /* ── El precio, en un sitio ───────────────────────────────────────
    Un número, no una frase repetida en seis páginas. Si cambia, cambia
    aquí y las dos traducciones lo recogen. */
+/* ══════════════════════════════════════════════════════════════
+   LA ESCALERA DEL PRECIO
+
+   Había dos peldaños —$29 bajo ocho, $49 de ocho en adelante— y se
+   acababa ahí, porque el producto se pensó para una plantilla de
+   doce. Una escuela de cuatrocientos no es un equipo grande: son mil
+   seiscientos padrinos, mil seiscientos avisos y un reporte que no
+   cabe en una pantalla. Cobrar $49 por eso no es ser barato, es no
+   haber puesto el peldaño.
+
+   Lo que NO cambia es la promesa: un precio POR EVENTO, que no se
+   mueve con lo que recaudes ni con cuántos jueguen. Dentro de tu
+   peldaño es plano, y sabes cuál es antes de empezar. Un por ciento
+   o un precio por cabeza romperían eso; otro peldaño no.
+
+   Para cambiar un número se cambia AQUÍ y en ningún otro sitio de
+   esta página. Las otras páginas que lo dicen —terms, custodia, el
+   admin— tienen su propia copia, y prueba-precio.js comprueba que
+   todas digan lo mismo. */
+const TARIFAS = [
+  { hasta:   7, precio:  29 },
+  { hasta:  40, precio:  49 },
+  { hasta: 150, precio: 149 },
+  { hasta: 400, precio: 349 },
+  { hasta: 800, precio: 599 },
+  { hasta: null, precio: null }      // más de 800: se habla
+];
+/* El peldaño del equipo es el que casi todo el mundo va a usar, y es
+   el que sale en las frases sueltas que hablan de "el precio". */
 const FEE = { team: 49, small: 29, under: 8 };
 
 const translations={
@@ -572,7 +604,7 @@ s1t:'Los jugadores consiguen padrinos',
 s1d:'Cada jugador manda su propio enlace. Cada padrino que consigue sube lo que vale uno de sus puntos.',
 sWindow:'LA VENTANA',
 s2t:'Cada uno hace su corrida',
-s2d:'Cuatro cuartos desde el teléfono, en la cancha o en su casa. El juego anota cada punto mientras juega.',
+s2d:'Cuatro sets desde el teléfono, en la cancha o en su casa. El juego anota cada punto mientras juega.',
 sClose:'AL CERRAR',
 s3t:'Reportado al programa',
 s3d:'Cada promesa se calcula y se le reporta al programa. Cada padrino recibe un correo con los puntos y su total, y al programa se le paga directo.',
@@ -585,15 +617,15 @@ promiseLabel:'Nuestra posición',
 promise:'Nosotros manejamos las promesas.<br><span class="orange">Ustedes manejan los fondos.</span>',
 promiseDesc:'Hooporia es estrictamente un proveedor de software de manejo de promesas. Las organizaciones manejan sus fondos de forma independiente.',
 
+priceEscala:'Un precio por el evento entero, corran los que corran y traiga cada uno los padrinos que traiga. Sabes en qué peldaño estás antes de empezar, y no se mueve.',
+escHasta:'Plantilla hasta {H}',
+escDesde:'Plantilla de {D} o más',
+escEntre:'Plantilla de {D} a {H}',
+escHablar:'Hablemos',
+escEvento:'por evento',
 priceLabel:'Cuánto cuesta',
 priceTitle:'Nada por adelantado. El cargo llega después del resultado.',
 priceDesc:'Corres el evento, el reporte es tuyo para imprimirlo en cuanto cierra, y la licencia se factura después de eso. Un precio por evento — no se mueve con lo que recaudes, ni con cuántos jugadores corran, ni con cuántos padrinos traigan. Y si el evento no recoge ni una promesa, no hay cargo.',
-priceA:'${A}',
-priceAPer:'por equipo, por evento',
-priceAD:'Plantilla de {N} o más. Un precio por el evento entero, corran los que corran y traiga cada uno los padrinos que traiga.',
-priceB:'${B}',
-priceBPer:'plantilla menor de {N}',
-priceBD:'Un equipo pequeño paga menos. Todo lo demás del evento es igual.',
 pf1:'Nada por adelantado. Montarlo es gratis y correrlo es gratis.',
 pf0:'<b>Sin promesas, sin cargo.</b> Un evento que no recoge ni una promesa no se factura nunca.',
 pf2:'Se factura cuando cierra el evento y se paga dentro de siete días.',
@@ -621,6 +653,16 @@ lMoney:'El dinero no pasa por nosotros'
    pintar nada. */
 const english={};
 document.querySelectorAll('[data-i]').forEach(el=>english[el.dataset.i]=el.innerHTML);
+
+/* La escalera la pinta el JS, así que estas cuatro frases no están
+   en ningún elemento del que recoger el inglés. Se ponen aquí, al
+   lado de la recogida, para que no haya dos sitios donde buscar el
+   inglés de esta página. */
+english.escHasta  = 'Roster up to {H}';
+english.escDesde  = 'Roster of {D} or more';
+english.escEntre  = 'Roster of {D} to {H}';
+english.escHablar = 'Let us talk';
+english.escEvento = 'per event';
 
 /* El precio, metido en las dos tablas antes de que se pinte una sola
    vez — así ninguna de las dos lleva el número escrito a mano. */
@@ -664,6 +706,37 @@ if(_p){
     ? 'La pantalla de promesa que ve un padrino: 5¢, 10¢ y 20¢ por punto, con 20¢ escogido, y la línea que dice que un juego de 150 puntos da $30.00 para el programa, nunca más del tope de $40.'
     : 'The pledge screen a padrino sees: 5¢, 10¢ and 20¢ a point, with 20¢ chosen, and the line that says a 150-point game comes to $30.00 for the program, never more than the $40 cap.';
 }
+/* ── LA ESCALERA DEL PRECIO, PINTADA ──────────────────────────────
+   Una fila por peldaño, leídas de TARIFAS. Se repinta al cambiar de
+   idioma porque las etiquetas son texto («Plantilla de 8 a 40»), no
+   sólo números.
+
+   El peldaño del equipo —el que contiene a FEE.team— va resaltado:
+   es donde cae casi todo el que llega aquí, y una escalera sin un
+   punto de entrada es seis números que hay que leer enteros. */
+function pintarEscalera(){
+  var caja = document.getElementById('escalera');
+  if (!caja || typeof TARIFAS === 'undefined') return;
+  var t = (k) => (locale==='es' ? (translations.es[k]||english[k]) : english[k]) || '';
+  var desde = 1, filas = '';
+  TARIFAS.forEach(function(p){
+    var etiqueta;
+    if (p.hasta === null)      etiqueta = t('escDesde').split('{D}').join(desde);
+    else if (desde === 1)      etiqueta = t('escHasta').split('{H}').join(p.hasta);
+    else                       etiqueta = t('escEntre').split('{D}').join(desde)
+                                                       .split('{H}').join(p.hasta);
+    var suyo = p.precio === FEE.team ? ' suyo' : '';
+    var cuesta = p.precio === null
+      ? '<span class="hablar">' + t('escHablar') + '</span>'
+      : '<span class="cuesta">$' + p.precio + '</span>';
+    filas += '<div class="peldano' + suyo + '">' +
+               '<span class="cuantos">' + etiqueta + '</span>' + cuesta +
+             '</div>';
+    if (p.hasta !== null) desde = p.hasta + 1;
+  });
+  caja.innerHTML = filas;
+}
+
 /* El botón dice a dónde lleva, no dónde estás: en inglés, «Español».
    Y el aria-label igual, en el idioma al que lleva, porque quien
    usa un lector de pantalla está buscando exactamente eso. */
@@ -674,6 +747,7 @@ document.getElementById('hamb').setAttribute('aria-label',
   locale==='es' ? 'Menú' : 'Menu');
 document.title=locale==='es'?'Hooporia | Baloncesto digital. Cada punto queda anotado.'
                             :'Hooporia | Digital Basketball. Every point is recorded.';
+pintarEscalera();
 }
 document.getElementById('lang').addEventListener('click',()=>{
 locale=locale==='en'?'es':'en';
