@@ -56,16 +56,26 @@ const PAGINAS = {
   'custodia.html': {
     es: [/El dinero no pasa por nosotros/, /No recibimos dinero de nadie/,
          /El marcador lo anota el juego/, /Nadie mete un marcador a mano/,
-         /por equipo, por evento/, /No hay columna de pagado/],
+         /depende del tamaño de la plantilla/, /No hay columna de pagado/],
     en: [/The money does not pass through us/, /We do not receive any money/,
          /score is recorded by the game/, /Nobody enters a score by hand/,
-         /per team, per event/, /no paid column/]
+         /set by the size of the roster/, /no paid column/]
   },
   'terms.html': {
+    /* Las dos últimas son la promesa de QUIÉN manda los avisos. Están
+       aquí porque los términos decían que los mandaba Hooporia sola al
+       cerrar la ventana, y no es verdad: los manda el programa cuando
+       pulsa el botón del reporte. Si alguien vuelve a poner que salen
+       solos, esto falla — un documento que un programa firma no puede
+       prometer un comportamiento que el código no tiene. */
     es: [/El marcador lo anota el juego, no una persona/,
-         /la base de datos rechaza la segunda/, /una ventana que pone el programa/],
+         /la base de datos rechaza la segunda/, /una ventana que pone el programa/,
+         /El programa lo revisa y manda los avisos/,
+         /Hooporia\s+no le escribe a un padrino por su cuenta/],
     en: [/recorded by the game, not by a person/,
-         /the database refuses a second/, /inside a window the program sets/]
+         /the database refuses a second/, /inside a window the program sets/,
+         /The program reviews it and sends the notices/,
+         /Hooporia does not write to a padrino on its\s+own/]
   },
   'privacy.html': {
     es: [/De una corrida/, /el nivel que alcanzó/, /una clave, que existe nada más/],
