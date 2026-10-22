@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Inscribe tu equipo — Hooporia</title>
+<title>Inscribe tu equipo — Cada Punto Cuenta</title>
 <!-- La vista previa cuando alguien comparte el enlace: en vez de
      un enlace pelado en un grupo de WhatsApp, sale el cartel. -->
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Hooporia">
-<meta property="og:title" content="Inscribe tu equipo — Hooporia">
+<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:title" content="Inscribe tu equipo — Cada Punto Cuenta">
 <meta property="og:description" content="Tu equipo recauda con sus propios juegos. Los padrinos prometen por punto, tú pones el marcador, y cada dólar cobrado va al programa.">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21">
+<meta property="og:image:alt" content="Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21">
 <meta property="og:locale" content="es_PR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Inscribe tu equipo — Hooporia">
+<meta name="twitter:title" content="Inscribe tu equipo — Cada Punto Cuenta">
 <meta name="twitter:description" content="Tu equipo recauda con sus propios juegos. Los padrinos prometen por punto, tú pones el marcador, y cada dólar cobrado va al programa.">
 
 <meta name="description" content="Tu equipo recauda con sus propios juegos. Los padrinos prometen por punto, tú pones el marcador, y cada dólar cobrado va al programa.">
@@ -24,9 +24,9 @@
      a propósito: WhatsApp y los demás no resuelven rutas
      relativas, y con una relativa la vista previa sale en
      blanco igual que sin imagen. -->
-<link rel="icon" type="image/png" href="hooporia.png">
-<link rel="apple-touch-icon" href="hooporia.png">
-<meta property="og:image" content="https://hooporia.com/hooporia-share.jpg">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
 <style>
 /* ── El look nuevo: crema, navy y naranja ─────────────────────────
    El mismo de la portada y de mi-equipo. Cambia la piel; el marcado
@@ -50,7 +50,17 @@ header .bar{display:flex;align-items:center;justify-content:space-between;gap:14
   font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
 .mark em{font-style:normal;color:#fff}
 .mark i{font-style:normal;color:var(--orange)}
+/* La marca pasó de una palabra a tres el 22 de octubre de 2026, y
+   en la barra de 320px ya no cabía: con la hamburguesa y el botón
+   de acción al lado pedía 339px de los 320 que hay.
+
+   Se arregla por el ESPACIADO antes que por el tamaño. Dieciocho
+   letras a .07em son casi veinte píxeles de aire, que es justo lo
+   que sobraba; quitando casi todo ese aire la marca cabe sin tener
+   que encogerla hasta que no se lea. El tamaño baja un poco también,
+   pero poco. */
 @media(max-width:380px){ .mark{font-size:.92rem} }
+@media(max-width:430px){ .mark{font-size:.84rem;letter-spacing:.015em} }
 .langb{border:1px solid #ffffff55;background:transparent;color:#fff;
   padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
 .langb:hover{border-color:var(--orange);color:var(--orange)}
@@ -208,7 +218,7 @@ header{color:#fff}
 
 <header>
   <div class="wrap bar">
-    <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
+    <a class="mark" href="index.html"><em>CADA PUNTO CUENTA</em><i>.</i></a>
     <nav class="menu" id="menu">
       <a href="index.html" data-m="inicio">Home</a>
       <a href="index.html#how" data-m="como">How it works</a>
@@ -243,8 +253,8 @@ header{color:#fff}
            ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
   var el = document.getElementById('fWhat');
   if (el) el.textContent = (l === 'es')
-    ? 'Hooporia es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
-    : 'Hooporia is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+    ? 'Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Cada Punto Cuenta is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
 })();
 </script>
     <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
@@ -255,7 +265,7 @@ header{color:#fff}
 </footer>
 
 <script>
-/* El servidor de Hooporia, no el compartido: /team-signup existe
+/* El servidor de Cada Punto Cuenta, no el compartido: /team-signup existe
    en los dos y el correo que manda el compartido dice «Cada
    Punto». */
 var SERVER='https://hooporia-server.onrender.com';
@@ -315,7 +325,7 @@ var S = {
     phoneL:'Tu teléfono (opcional)', phonePh:'787…',
     terms:'He leído y acepto los <a href="terms.html" target="_blank">Términos de Uso</a> y la <a href="privacy.html" target="_blank">Política de Privacidad</a>.',
     errTerms:'Tienes que aceptar los términos para seguir.',
-    custody:'He leído <a href="custodia.html" target="_blank">que el dinero no pasa por ustedes</a>: Hooporia no procesa ni guarda pagos, y el dinero lo cobra y lo maneja mi programa.',
+    custody:'He leído <a href="custodia.html" target="_blank">que el dinero no pasa por ustedes</a>: Cada Punto Cuenta no procesa ni guarda pagos, y el dinero lo cobra y lo maneja mi programa.',
     errCustody:'Tienes que aceptar cómo funciona el dinero para seguir.',
     lic:'Acepto la licencia por evento: <b>$49 por equipo y por evento</b>, o $29 si la plantilla tiene menos de ocho. No se paga nada por adelantado; se factura cuando el evento cierra y se paga dentro de siete días. Si el evento no recoge ni una promesa, no se factura nada. Si el cargo no se paga, la licencia de ese evento caduca y los datos de promesas se retiran de la plataforma.',
     errLic:'Tienes que aceptar la licencia y su cargo para seguir.',
@@ -331,7 +341,7 @@ var S = {
     doneMore:'Mientras tanto, así se ve el tablero de un equipo el día que juega.',
     seeBoard:'Ver un tablero',
     fineH:'Lo que cuesta',
-    fineP:'Hooporia se licencia <b>por evento</b>: $49 por equipo, por juego — $29 si la plantilla tiene menos de ocho. Se factura cuando cierra el evento y se paga dentro de siete días; nada por adelantado, y si el evento no recoge ni una promesa, no se factura nada. No es un por ciento de nada, no sale de ninguna promesa, y a tus padrinos no les cobramos nada. Una cosa que conviene tener clara desde el principio: <b>lo prometido no es lo recaudado</b>. Nosotros anotamos lo prometido; lo que entre, y cuándo, depende de tu cobro — por eso un padrino que paga vale más que diez promesas apuntadas. Lo que recaudes es tuyo, incluido cualquier acuerdo que tengas con tu liga o con quien te trajo.'
+    fineP:'Cada Punto Cuenta se licencia <b>por evento</b>: $49 por equipo, por juego — $29 si la plantilla tiene menos de ocho. Se factura cuando cierra el evento y se paga dentro de siete días; nada por adelantado, y si el evento no recoge ni una promesa, no se factura nada. No es un por ciento de nada, no sale de ninguna promesa, y a tus padrinos no les cobramos nada. Una cosa que conviene tener clara desde el principio: <b>lo prometido no es lo recaudado</b>. Nosotros anotamos lo prometido; lo que entre, y cuándo, depende de tu cobro — por eso un padrino que paga vale más que diez promesas apuntadas. Lo que recaudes es tuyo, incluido cualquier acuerdo que tengas con tu liga o con quien te trajo.'
   },
   en:{
     kick:'Sign up your team',
@@ -353,7 +363,7 @@ var S = {
     phoneL:'Your phone (optional)', phonePh:'787…',
     terms:'I have read and accept the <a href="terms.html" target="_blank">Terms of Use</a> and the <a href="privacy.html" target="_blank">Privacy Policy</a>.',
     errTerms:'You have to accept the terms to continue.',
-    custody:'I have read <a href="custodia.html" target="_blank">that the money does not pass through you</a>: Hooporia processes and holds no payments, and my program collects and manages the money itself.',
+    custody:'I have read <a href="custodia.html" target="_blank">that the money does not pass through you</a>: Cada Punto Cuenta processes and holds no payments, and my program collects and manages the money itself.',
     errCustody:'You have to accept how the money works to continue.',
     lic:'I accept the per-event license: <b>$49 per team, per event</b>, or $29 where the roster is under eight. Nothing is paid up front; it is invoiced when the event closes and is due within seven days. If the event records no pledges at all, nothing is invoiced. If the fee is not paid, that event\u2019s license lapses and its pledge data is removed from the platform.',
     errLic:'You have to accept the license and its fee to continue.',
@@ -369,7 +379,7 @@ var S = {
     doneMore:'Meanwhile, this is the board of a team already running.',
     seeBoard:'See a board →',
     fineH:'What it costs',
-    fineP:'Hooporia is licensed <b>per event</b>: $49 per team, per game — $29 if the roster is under eight. It is invoiced when the event closes and due within seven days; nothing up front, and if the event records no pledges at all, nothing is invoiced. It is not a percentage of anything, it does not come out of any pledge, and we charge your padrinos nothing. One thing worth having straight from the start: <b>pledged is not collected</b>. We record what was pledged; what comes in, and when, depends on your collecting \u2014 so one padrino who pays is worth more than ten pledges on a list. What you raise is yours, including any arrangement you have with your league or with whoever brought you in.'
+    fineP:'Cada Punto Cuenta is licensed <b>per event</b>: $49 per team, per game — $29 if the roster is under eight. It is invoiced when the event closes and due within seven days; nothing up front, and if the event records no pledges at all, nothing is invoiced. It is not a percentage of anything, it does not come out of any pledge, and we charge your padrinos nothing. One thing worth having straight from the start: <b>pledged is not collected</b>. We record what was pledged; what comes in, and when, depends on your collecting \u2014 so one padrino who pays is worth more than ten pledges on a list. What you raise is yours, including any arrangement you have with your league or with whoever brought you in.'
   }
 };
 
@@ -517,8 +527,8 @@ function send(){
     draw();
 
     /* De qué producto es esta solicitud. Los dos productos escriben
-       en bw_requests, y sin esto una inscripción de Hooporia le llega
-       al admin idéntica a una de Hooporia.
+       en bw_requests, y sin esto una inscripción de Cada Punto Cuenta le llega
+       al admin idéntica a una de Cada Punto Cuenta.
 
        Va después de draw() y en best-effort a propósito: el
        entrenador ya vio que entró, y si request_product no existe
