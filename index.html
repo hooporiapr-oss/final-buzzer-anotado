@@ -4,21 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101c2a">
-<title>Hooporia | Digital Basketball. Every point is recorded.</title>
+<title>Cada Punto Cuenta | Digital Basketball. Every point is recorded.</title>
 <meta name="description" content="Pledge management for scored challenges. Each player takes his run, the game records his points, and every padrino is told what their pledge came to.">
 
 <!-- El icono y la imagen de compartir. og:image va en absoluto
      a propósito: WhatsApp y los demás no resuelven rutas
      relativas, y con una relativa la vista previa sale en
      blanco igual que sin imagen. -->
-<link rel="icon" type="image/png" href="hooporia.png">
-<link rel="apple-touch-icon" href="hooporia.png">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Hooporia">
-<meta property="og:image" content="https://hooporia.com/hooporia-share.jpg">
+<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21">
+<meta property="og:image:alt" content="A kid on a court at sunset, arm raised, as his score climbs: 1, 3, 6, 10, 15, 21">
 <meta name="twitter:card" content="summary_large_image">
 <style>
 /* La misma hoja que cadapunto.com. Son dos productos de la misma casa
@@ -52,6 +52,10 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22;
   min-height:var(--barra)}
 .brand{font-weight:900;letter-spacing:.07em;text-decoration:none;font-size:1.1rem}
 .brand span{color:var(--orange)}
+/* Tres palabras donde había una: a 320px la marca, la hamburguesa y
+   el botón no caben a .07em de espaciado. Se recorta el aire entre
+   letras, que es de donde sale el ancho. */
+@media(max-width:430px){ .brand{font-size:.9rem;letter-spacing:.015em} }
 .navlinks{display:flex;gap:24px;align-items:center}
 .navlinks a{text-decoration:none;font-weight:600;font-size:.9rem}
 .navlinks a:hover{color:var(--orange)}
@@ -324,7 +328,7 @@ button.lang{padding:0 10px;font-size:.8rem}
      panel sale de borde a borde en vez de con el margen del wrap. -->
 <header>
 <div class="wrap nav">
-<a class="brand" href="#top">HOOPORIA<span>.</span></a>
+<a class="brand" href="#top">CADA PUNTO CUENTA<span>.</span></a>
 <nav class="navlinks" id="menu">
 <!-- Tres entradas, y las tres llevan a algo que existe. Había
      cinco: «Play it» apuntaba a una sección que ya no está —la
@@ -364,9 +368,9 @@ button.lang{padding:0 10px;font-size:.8rem}
 <!-- width y height van puestos para que el navegador reserve el hueco
      antes de descargarla. Sin ellos el titular salta hacia arriba
      cuando la imagen llega, justo mientras alguien lo está leyendo. -->
-<img class="hero-foto" src="hooporia-share.jpg" width="1200" height="630"
+<img class="hero-foto" src="compartir.jpg" width="1200" height="630"
      loading="eager" decoding="async" id="heroFoto"
-     alt="A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21">
+     alt="A kid on a court at sunset, arm raised, as his score climbs: 1, 3, 6, 10, 15, 21">
 </div>
 </div>
 </section>
@@ -499,7 +503,7 @@ button.lang{padding:0 10px;font-size:.8rem}
 <section class="promise wrap">
 <div class="eyebrow" data-i="promiseLabel">Our promise</div>
 <blockquote data-i="promise">We manage the pledges.<br><span class="orange">You manage the proceeds.</span></blockquote>
-<p class="fine" data-i="promiseDesc">Hooporia is strictly a pledge management software provider. Organizations independently manage all proceeds.</p>
+<p class="fine" data-i="promiseDesc">Cada Punto Cuenta is strictly a pledge management software provider. Organizations independently manage all proceeds.</p>
 </section>
 
 <section class="section sola" style="text-align:center">
@@ -531,7 +535,7 @@ button.lang{padding:0 10px;font-size:.8rem}
 <footer>
 <div class="wrap">
 <div>
-<strong>HOOPORIA</strong><br>
+<strong>CADA PUNTO CUENTA</strong><br>
 <span data-i="footer">We manage the pledges. You manage the proceeds.</span>
 </div>
 <nav class="flinks">
@@ -615,7 +619,7 @@ softwareDesc:'No hay cancha que reservar. No hay calendario que cuadrar. No hay 
 
 promiseLabel:'Nuestra posición',
 promise:'Nosotros manejamos las promesas.<br><span class="orange">Ustedes manejan los fondos.</span>',
-promiseDesc:'Hooporia es estrictamente un proveedor de software de manejo de promesas. Las organizaciones manejan sus fondos de forma independiente.',
+promiseDesc:'Cada Punto Cuenta es estrictamente un proveedor de software de manejo de promesas. Las organizaciones manejan sus fondos de forma independiente.',
 
 priceEscala:'Un precio por el evento entero, corran los que corran y traiga cada uno los padrinos que traiga. Sabes en qué peldaño estás antes de empezar, y no se mueve.',
 escHasta:'Plantilla hasta {H}',
@@ -693,8 +697,8 @@ el.innerHTML=locale==='es'?(translations.es[el.dataset.i]||english[el.dataset.i]
    la está oyendo en su idioma. */
 var _f=document.getElementById('heroFoto');
 if(_f) _f.alt = locale==='es'
-  ? 'Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21'
-  : 'A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21';
+  ? 'Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21'
+  : 'A kid on a court at sunset, arm raised, as his score climbs: 1, 3, 6, 10, 15, 21';
 /* La foto de la promesa lleva el texto quemado dentro, así que aquí
    no basta con el alt: cambia la imagen entera. Si no, un entrenador
    que lee la página en español ve la pantalla del padrino en inglés
@@ -745,8 +749,8 @@ _l.textContent = locale==='es' ? 'English' : 'Español';
 _l.setAttribute('aria-label', locale==='es' ? 'Switch to English' : 'Cambiar a español');
 document.getElementById('hamb').setAttribute('aria-label',
   locale==='es' ? 'Menú' : 'Menu');
-document.title=locale==='es'?'Hooporia | Baloncesto digital. Cada punto queda anotado.'
-                            :'Hooporia | Digital Basketball. Every point is recorded.';
+document.title=locale==='es'?'Cada Punto Cuenta | Baloncesto digital. Cada punto queda anotado.'
+                            :'Cada Punto Cuenta | Digital Basketball. Every point is recorded.';
 pintarEscalera();
 }
 document.getElementById('lang').addEventListener('click',()=>{
