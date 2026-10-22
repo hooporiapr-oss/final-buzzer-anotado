@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Terms of Use — Hooporia</title>
+<title>Terms of Use — Cada Punto Cuenta</title>
 <meta name="robots" content="index,follow">
 
 <!-- El icono y la imagen de compartir. og:image va en absoluto
      a propósito: WhatsApp y los demás no resuelven rutas
      relativas, y con una relativa la vista previa sale en
      blanco igual que sin imagen. -->
-<link rel="icon" type="image/png" href="hooporia.png">
-<link rel="apple-touch-icon" href="hooporia.png">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Hooporia">
-<meta property="og:image" content="https://hooporia.com/hooporia-share.jpg">
+<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21">
+<meta property="og:image:alt" content="A kid on a court at sunset, arm raised, as his score climbs: 1, 3, 6, 10, 15, 21">
 <meta name="twitter:card" content="summary_large_image">
 <style>
 /* ── El look nuevo: crema, navy y naranja ─────────────────────────
@@ -43,7 +43,17 @@ header .bar{display:flex;align-items:center;justify-content:space-between;gap:14
   font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
 .mark em{font-style:normal;color:#fff}
 .mark i{font-style:normal;color:var(--orange)}
+/* La marca pasó de una palabra a tres el 22 de octubre de 2026, y
+   en la barra de 320px ya no cabía: con la hamburguesa y el botón
+   de acción al lado pedía 339px de los 320 que hay.
+
+   Se arregla por el ESPACIADO antes que por el tamaño. Dieciocho
+   letras a .07em son casi veinte píxeles de aire, que es justo lo
+   que sobraba; quitando casi todo ese aire la marca cabe sin tener
+   que encogerla hasta que no se lea. El tamaño baja un poco también,
+   pero poco. */
 @media(max-width:380px){ .mark{font-size:.92rem} }
+@media(max-width:430px){ .mark{font-size:.84rem;letter-spacing:.015em} }
 .langb{border:1px solid #ffffff55;background:transparent;color:#fff;
   padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
 .langb:hover{border-color:var(--orange);color:var(--orange)}
@@ -179,7 +189,7 @@ header{color:#fff}
 
 <header>
   <div class="wrap bar">
-    <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
+    <a class="mark" href="index.html"><em>CADA PUNTO CUENTA</em><i>.</i></a>
     <nav class="menu" id="menu">
       <a href="index.html" data-m="inicio">Home</a>
       <a href="index.html#how" data-m="como">How it works</a>
@@ -214,8 +224,8 @@ header{color:#fff}
            ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
   var el = document.getElementById('fWhat');
   if (el) el.textContent = (l === 'es')
-    ? 'Hooporia es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
-    : 'Hooporia is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+    ? 'Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Cada Punto Cuenta is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
 })();
 </script>
     <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
@@ -231,17 +241,17 @@ var BODY = {
 <h1>Terms of Use</h1>
 <p class="updated">Last updated 17 October 2026</p>
 
-<p class="lead">Hooporia is operated by Gostar Digital LLC, a limited liability company in
+<p class="lead">Cada Punto Cuenta is operated by Gostar Digital LLC, a limited liability company in
 Puerto Rico. By using this site you agree to what follows. If you do not agree, please do not
 use it.</p>
 
-<h2>What Hooporia does</h2>
-<p>Hooporia is a pledge management system. A supporter — a <em>padrino</em> — pledges an amount
-for every point one player scores in his run of a scored basketball game. Hooporia records that
+<h2>What Cada Punto Cuenta does</h2>
+<p>Cada Punto Cuenta is a pledge management system. A supporter — a <em>padrino</em> — pledges an amount
+for every point one player scores in his run of a scored basketball game. Cada Punto Cuenta records that
 pledge, calculates what it comes to once the game has recorded the player's points, and shows the
 program what was pledged.</p>
 
-<p><strong>Hooporia does not process, receive, hold, verify or collect any payment.</strong>
+<p><strong>Cada Punto Cuenta does not process, receive, hold, verify or collect any payment.</strong>
 Whatever a padrino pays, he pays the program directly, by whatever method the two of them agree.
 We are not a party to that payment, we do not know whether it was made, and the system has nowhere
 to record it.</p>
@@ -253,11 +263,11 @@ second. Nobody at the program and nobody at Gostar Digital LLC enters a score by
 no mechanism by which either could change one.</p>
 
 <p>An event runs inside a window the program sets, which may be a single afternoon or several
-days. Players take their runs inside it, wherever they are. When the window closes, Hooporia works
+days. Players take their runs inside it, wherever they are. When the window closes, Cada Punto Cuenta works
 out each pledge and gives the program the full report. The program reviews it and sends the notices:
 each padrino then receives one notice carrying the points scored, what their pledge came to, and who to
 write to at the program if they are not sure how to pay. The
-notices are sent once, on the program's instruction — Hooporia does not write to a padrino on its
+notices are sent once, on the program's instruction — Cada Punto Cuenta does not write to a padrino on its
 own. That notice contains no payment link, and no further message is sent to a padrino at any
 time — no reminders and no collection notices. The event is then closed.</p>
 
@@ -269,7 +279,7 @@ the program either way, whatever that score turns out to be — and it is owed t
 to Gostar Digital LLC.</p>
 
 <h2>Taxes</h2>
-<p>Hooporia is operated by Gostar Digital LLC, a for-profit company. We make no representation
+<p>Cada Punto Cuenta is operated by Gostar Digital LLC, a for-profit company. We make no representation
 about how any pledge or payment is treated for tax purposes, and we do not issue tax receipts.
 Nothing on this site should be read as saying a pledge is a charitable donation or that it is
 deductible. A padrino who wants to know how a payment is treated should ask their own advisor,
@@ -285,7 +295,7 @@ them.</p>
 <h2>What a padrino agrees to</h2>
 <ul>
   <li>A pledge is a commitment to pay the program once the game is over and the score is in.</li>
-  <li>Nothing is ever charged by Hooporia. Payment is arranged directly with the program.</li>
+  <li>Nothing is ever charged by Cada Punto Cuenta. Payment is arranged directly with the program.</li>
   <li>Pledging closes when the game begins. Nobody pledges knowing the score.</li>
   <li>A padrino may set a maximum. The amount will never be worked out above it, however high
       the score goes.</li>
@@ -295,9 +305,9 @@ them.</p>
 </ul>
 
 <h2>Fees</h2>
-<p>Hooporia is licensed per event: a fixed fee set by the size of the roster, from $29 for the
+<p>Cada Punto Cuenta is licensed per event: a fixed fee set by the size of the roster, from $29 for the
 smallest squad to $599 for the largest, with anything above that agreed beforehand. The scale is
-published in full at hooporia.com and the step that applies is known before the event opens. It is paid by the organization for use of the software. It is not a share of what a
+published in full at cadapunto.com and the step that applies is known before the event opens. It is paid by the organization for use of the software. It is not a share of what a
 program raises, it is not taken out of any pledge, and no padrino is ever charged anything by Gostar
 Digital LLC.</p>
 <p>Nothing is paid up front. The fee is invoiced when the event closes, after the notices have gone
@@ -317,7 +327,7 @@ padrino has paid the program.</p>
   <li>To hold any permission required to raise money on behalf of its school, club or league.</li>
   <li>That it collects, holds and accounts for its own funds, and that Gostar Digital LLC takes
       no part in that.</li>
-  <li>That it tells no padrino that Hooporia processes, holds, verifies or guarantees any
+  <li>That it tells no padrino that Cada Punto Cuenta processes, holds, verifies or guarantees any
       payment.</li>
 </ul>
 
@@ -340,7 +350,7 @@ versions — are free to play, need no account, and record nothing. We may chang
 the games at any time.</p>
 
 <h2>What belongs to us</h2>
-<p>All software, text, wording, layouts, designs and the names Hooporia and Memory Basketball are the property of Gostar Digital LLC. Nothing on this site grants any licence
+<p>All software, text, wording, layouts, designs and the names Cada Punto Cuenta and Memory Basketball are the property of Gostar Digital LLC. Nothing on this site grants any licence
 to copy, reproduce or reuse them. Content supplied by a program — its name, its list of
 participants, what they scored — remains that program's own.</p>
 
@@ -376,17 +386,17 @@ PO Box 1980-345, Loíza, Puerto Rico 00772<br>
 <h1>Términos de Uso</h1>
 <p class="updated">Última actualización: 17 de octubre de 2026</p>
 
-<p class="lead">Hooporia es operado por Gostar Digital LLC, una compañía de responsabilidad
+<p class="lead">Cada Punto Cuenta es operado por Gostar Digital LLC, una compañía de responsabilidad
 limitada en Puerto Rico. Al usar este sitio aceptas lo que sigue. Si no estás de acuerdo, por
 favor no lo uses.</p>
 
-<h2>Qué hace Hooporia</h2>
-<p>Hooporia es un sistema de manejo de promesas. Un padrino promete una cantidad por cada punto
+<h2>Qué hace Cada Punto Cuenta</h2>
+<p>Cada Punto Cuenta es un sistema de manejo de promesas. Un padrino promete una cantidad por cada punto
 que anota un equipo en un juego, o por cada punto que anota un participante en un día de juego del
-juego pautado. Hooporia anota esa promesa, calcula lo que corresponde cuando entra el marcador
+juego pautado. Cada Punto Cuenta anota esa promesa, calcula lo que corresponde cuando entra el marcador
 final, y le enseña al programa lo prometido.</p>
 
-<p><strong>Hooporia no procesa, no recibe, no guarda, no verifica y no cobra ningún pago.</strong>
+<p><strong>Cada Punto Cuenta no procesa, no recibe, no guarda, no verifica y no cobra ningún pago.</strong>
 Lo que un padrino pague, se lo paga al programa directo, por el método que los dos acuerden. No
 somos parte de ese pago, no sabemos si se hizo, y el sistema no tiene dónde anotarlo.</p>
 
@@ -398,9 +408,9 @@ Digital LLC mete un marcador a mano, y no hay forma de que ninguno de los dos ca
 
 <p>Un evento corre dentro de una ventana que pone el programa, que puede ser una sola tarde o
 varios días. Los jugadores hacen sus corridas dentro de ella, desde donde estén.
-Al cerrar la ventana, Hooporia saca lo que dio cada promesa y le entrega al programa el reporte
+Al cerrar la ventana, Cada Punto Cuenta saca lo que dio cada promesa y le entrega al programa el reporte
 completo. El programa lo revisa y manda los avisos: entonces cada padrino recibe un solo aviso con
-los puntos anotados, su cantidad, y a quién escribirle en el programa si no sabe cómo pagar. Los avisos salen una vez, cuando el programa lo indica — Hooporia
+los puntos anotados, su cantidad, y a quién escribirle en el programa si no sabe cómo pagar. Los avisos salen una vez, cuando el programa lo indica — Cada Punto Cuenta
 no le escribe a un padrino por su cuenta. Ese aviso no lleva enlace de pago, y a un padrino no
 se le vuelve a escribir en ningún momento — ni recordatorios ni avisos de cobro. Ahí el evento
 queda cerrado.</p>
@@ -413,7 +423,7 @@ al programa de todas formas, sea cual sea ese marcador — y se le debe al progr
 Digital LLC.</p>
 
 <h2>Impuestos</h2>
-<p>Hooporia lo opera Gostar Digital LLC, una empresa con fines de lucro. No hacemos ninguna
+<p>Cada Punto Cuenta lo opera Gostar Digital LLC, una empresa con fines de lucro. No hacemos ninguna
 afirmación sobre cómo se trata una promesa o un pago para efectos contributivos, y no emitimos
 recibos para impuestos. Nada en este sitio debe leerse como que una promesa es un donativo
 caritativo ni que es deducible. El padrino que quiera saber cómo se trata su pago debe
@@ -430,7 +440,7 @@ participa en esos acuerdos, no los administra y no cobra nada por ellos.</p>
 <ul>
   <li>Una promesa es un compromiso de pagarle al programa una vez acabado el juego y puesto el
       marcador.</li>
-  <li>Hooporia no le cobra nada, nunca. El pago se arregla directo con el programa.</li>
+  <li>Cada Punto Cuenta no le cobra nada, nunca. El pago se arregla directo con el programa.</li>
   <li>Las promesas cierran cuando empieza el juego. Nadie promete sabiendo el marcador.</li>
   <li>El padrino puede poner un máximo. La cantidad nunca se saca por encima de eso, suba lo que
       suba el marcador.</li>
@@ -440,9 +450,9 @@ participa en esos acuerdos, no los administra y no cobra nada por ellos.</p>
 </ul>
 
 <h2>Cargos</h2>
-<p>Hooporia se licencia por evento: un cargo fijo que depende del tamaño de la plantilla, desde $29
+<p>Cada Punto Cuenta se licencia por evento: un cargo fijo que depende del tamaño de la plantilla, desde $29
 la más pequeña hasta $599 la más grande, y por encima de eso se acuerda antes. La escala está
-publicada entera en hooporia.com y el peldaño que aplica se sabe antes de abrir el evento. Lo paga la organización por el uso del programa. No es una parte de
+publicada entera en cadapunto.com y el peldaño que aplica se sabe antes de abrir el evento. Lo paga la organización por el uso del programa. No es una parte de
 lo que recauda nadie, no sale de ninguna promesa, y Gostar Digital LLC nunca le cobra nada a un
 padrino.</p>
 <p>No se paga nada por adelantado. El cargo se factura cuando cierra el evento, después de que
@@ -463,7 +473,7 @@ debe haya pagado o no haya pagado un padrino.</p>
   <li>Tener el permiso que haga falta para recaudar en nombre de su escuela, club o liga.</li>
   <li>Que cobra, guarda y responde por su propio dinero, y que Gostar Digital LLC no participa en
       eso.</li>
-  <li>Que no le dice a ningún padrino que Hooporia procesa, guarda, verifica o garantiza un
+  <li>Que no le dice a ningún padrino que Cada Punto Cuenta procesa, guarda, verifica o garantiza un
       pago.</li>
 </ul>
 
@@ -486,7 +496,7 @@ contra uno — son gratis, no hace falta cuenta y no guardan nada. Podemos cambi
 cualquiera de ellos en cualquier momento.</p>
 
 <h2>Lo que nos pertenece</h2>
-<p>Todo el programa, los textos, la redacción, los diseños y los nombres Hooporia y Memory Basketball son propiedad de Gostar Digital LLC. Nada en este sitio da licencia
+<p>Todo el programa, los textos, la redacción, los diseños y los nombres Cada Punto Cuenta y Memory Basketball son propiedad de Gostar Digital LLC. Nada en este sitio da licencia
 para copiarlos, reproducirlos ni reutilizarlos. El contenido que pone un programa — su nombre, su
 lista de participantes, lo que anotaron — sigue siendo de ese programa.</p>
 
