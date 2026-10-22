@@ -181,15 +181,28 @@ console.log('\n3 · El piso de $5, dicho y calculado\n');
 // ── 4 · La aritmética que ve el nene ──────────────────────────────
 console.log('\n4 · La tabla de ejemplo cuadra\n');
 {
-  /* Las seis filas son un valor por punto por una corrida de 100.
+  /* Las seis filas son un valor por punto por el largo de una corrida.
      Se comprueban contra una cuenta hecha aquí, no contra la página:
      una cifra mal en esta tabla no da error, no sale en rojo, y
-     manda a un nene a prometerle a su tía un número que no es. */
+     manda a un nene a prometerle a su tía un número que no es.
+
+     EL LARGO NO SE ESCRIBE AQUÍ, se saca de la cabecera de la tabla.
+     Antes decía 100 a mano y la prueba fallaba al subir la página a
+     150 —una prueba que grita cuando la página mejora— y, peor, no
+     habría dicho nada si alguien cambiaba la cabecera y dejaba las
+     seis cifras viejas. Leyéndolo de la página, las tres cosas que
+     tienen que cuadrar —cabecera, filas y barra— se comprueban entre
+     ellas y da igual qué número sea. */
   const pag = await navegador.newPage({ viewport: { width: 390, height: 844 } });
   await pag.goto(PAGINA);
   await pag.waitForTimeout(200);
 
-  const corrida = 100;
+  const cabRun = (await pag.locator('.lhead span').last().textContent()).trim();
+  const mRun = cabRun.match(/(\d{2,4})/);
+  if (!mRun) mal('la cabecera de la tabla no dice de qué corrida habla («' + cabRun + '»)');
+  const corrida = mRun ? +mRun[1] : 0;
+  si(corrida >= 40 && corrida <= 180,
+     'la cabecera habla de una corrida de ' + corrida + ' puntos, que cabe en la barra');
   const acumulado = [1.00, 1.25, 1.35, 1.85, 3.85, 5.00];
   const filas = await pag.evaluate(() =>
     Array.from(document.querySelectorAll('.mrow')).map(f => ({
@@ -201,14 +214,10 @@ console.log('\n4 · La tabla de ejemplo cuadra\n');
     const v = acumulado[k];
     eq(f.val, '$' + v.toFixed(2), 'fila ' + (k+1) + ' · el punto vale $' + v.toFixed(2));
     eq(f.amt, '$' + (v * corrida).toFixed(2),
-       'fila ' + (k+1) + ' · y una corrida de 100 da $' + (v*corrida).toFixed(2));
+       'fila ' + (k+1) + ' · y una corrida de ' + corrida + ' da $' + (v*corrida).toFixed(2));
   });
-  /* Y que la cabecera diga de qué corrida habla, o las seis cifras
-     son seis números sueltos. */
-  const cab = (await pag.locator('.lhead span').last().textContent()).trim();
-  si(/100/.test(cab), 'la cabecera dice que la corrida es de 100 puntos («' + cab + '»)');
 
-  /* Las barras, en el rango de una corrida de cuatro cuartos. */
+  /* Las barras, en el rango de una corrida de cuatro sets. */
   const barra = await pag.evaluate(() => {
     const r = document.getElementById('rounds');
     return { min: +r.min, max: +r.max, val: +r.value };
