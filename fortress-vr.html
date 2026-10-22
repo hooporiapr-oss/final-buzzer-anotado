@@ -304,7 +304,7 @@ var S={
        y que la pista de arriba dice de qué cuarto se trata. */
     p:'La cadena se alarga una ronda tras otra. Mira bien dónde se '+
       'encienden y repítelas en el mismo orden. Un fallo acaba la '+
-      'tirada. Cada cuarto se juega en otra zona, y en dos de los '+
+      'tirada. Cada set se juega en otra zona, y en dos de los '+
       'cuatro la cadena es nueva cada ronda — la pantalla te lo dice.',
     go:'Práctica · sin reloj',
     sDedo:'Toca la bola. Nada que instalar.',
@@ -319,7 +319,7 @@ var S={
     mejor:'Tu mejor cadena: ',
     teclas:'1 2 arriba · 3 el medio · 4 5 abajo',
     mod:'Computadora · tablet · celular',
-    amistoso:'Scrimmage · 4 cuartos',
+    amistoso:'Scrimmage · 4 sets',
     demoSigue:'Ver lo que esto recauda →',
     finAmistoso:'FIN DEL SCRIMMAGE',
     otroAmistoso:'Otro scrimmage',
@@ -349,9 +349,9 @@ var S={
     total:'Tot',
     ventanaQueda:'La ventana cierra en {T}',
     ventanaCerrada:'La ventana ya cerró',
-    juegoP:'Cuatro cuartos de {M}. Cada cuarto vale tu MEJOR tirada, '+
+    juegoP:'Cuatro sets de {M}. Cada set vale tu MEJOR tirada, '+
            'y los cuatro se suman. Eso es tu juego.',
-    juegoS:'Entre cuarto y cuarto puedes practicar lo que quieras.',
+    juegoS:'Entre set y set puedes practicar lo que quieras.',
     juegoHecho:'Tu juego está completo. Gracias — esto es lo que verán tus padrinos.',
     empezarQ:'Empezar el Q{Q}',
     seguirQ:'Jugar el Q{Q}',
@@ -360,8 +360,8 @@ var S={
     juegoNoLlave:'Este enlace no es el tuyo.',
     juegoNoVentana:'Todavía no es la hora, o la ventana ya cerró.',
     sinRed:'Sin conexión. Reintentando…',
-    cuartoPill:'Q{Q}',
-    aBatir:'Tu mejor de este cuarto: {P}',
+    cuartoPill:'S{Q}',
+    aBatir:'Tu mejor de este set: {P}',
     /* El nombre de la zona se queda a la vista toda la tanda: es lo
        que le dice al nene POR QUÉ las cinco están en otro sitio que
        en el cuarto anterior. Sin esto parece que se movieron solas. */
@@ -372,16 +372,16 @@ var S={
        ésa. Avisado, la ronda en frío es el reto que queríamos. */
     zonaCrece:'la cadena crece',
     zonaNueva:'cadena nueva cada ronda',
-    finCuarto:'FIN DEL Q{Q}',
+    finCuarto:'FIN DEL SET {Q}',
     finJuego:'JUEGO TERMINADO',
-    porVentana:'Cerró la ventana a mitad del cuarto, así que ese cuarto vale 0.',
+    porVentana:'Cerró la ventana a mitad del set, así que ese set vale 0.',
     totalJuego:'Total del juego',
-    siguienteCuarto:'Jugar el Q{Q}',
+    siguienteCuarto:'Jugar el set {Q}',
     practicar:'Practicar',
     volverJuego:'Volver a mi juego',
     otraTanda:'Otra tanda',
     reintentar:'Reintentar',
-    guardando:'Guardando el cuarto…',
+    guardando:'Guardando el set…',
     noGuardo:'No se pudo guardar. Revisa la conexión y vuelve a abrir tu enlace.',
     mejorTanda:'Tu mejor cadena de la tanda',
     siguienteBtn:'Siguiente jugador',
@@ -392,7 +392,7 @@ var S={
   en:{
     p:'The chain gets one longer every round. Watch where the balls light '+
       'up and repeat them in the same order. One miss ends the run. Each '+
-      'quarter is played in a different zone, and in two of the four the '+
+      'set is played in a different zone, and in two of the four the '+
       'chain is brand new every round — the screen tells you which.',
     go:'Practice · no clock',
     sDedo:'Tap the ball. Nothing to install.',
@@ -407,7 +407,7 @@ var S={
     mejor:'Your best chain: ',
     teclas:'1 2 top · 3 middle · 4 5 bottom',
     mod:'Computer · tablet · phone',
-    amistoso:'Scrimmage · 4 quarters',
+    amistoso:'Scrimmage · 4 sets',
     demoSigue:'See what this raises →',
     finAmistoso:'SCRIMMAGE OVER',
     otroAmistoso:'Another scrimmage',
@@ -434,9 +434,9 @@ var S={
     total:'Tot',
     ventanaQueda:'The window closes in {T}',
     ventanaCerrada:'The window has closed',
-    juegoP:'Four quarters of {M}. Each quarter counts your BEST run, '+
+    juegoP:'Four sets of {M}. Each set counts your BEST run, '+
            'and the four add up. That is your game.',
-    juegoS:'Between quarters you can practise as much as you like.',
+    juegoS:'Between sets you can practise as much as you like.',
     juegoHecho:'Your game is complete. This is what your sponsors will see.',
     empezarQ:'Start Q{Q}',
     seguirQ:'Play Q{Q}',
@@ -445,21 +445,21 @@ var S={
     juegoNoLlave:'This link is not yours.',
     juegoNoVentana:'Not time yet, or the window has closed.',
     sinRed:'No connection. Retrying…',
-    cuartoPill:'Q{Q}',
-    aBatir:'Your best this quarter: {P}',
+    cuartoPill:'S{Q}',
+    aBatir:'Your best this set: {P}',
     zonaPista:'{Z} zone',
     zonaCrece:'the chain grows',
     zonaNueva:'new chain every round',
-    finCuarto:'END OF Q{Q}',
+    finCuarto:'END OF SET {Q}',
     finJuego:'GAME OVER',
-    porVentana:'The window closed mid-quarter, so that quarter counts 0.',
+    porVentana:'The window closed mid-set, so that set counts 0.',
     totalJuego:'Game total',
-    siguienteCuarto:'Play Q{Q}',
+    siguienteCuarto:'Play set {Q}',
     practicar:'Practise',
     volverJuego:'Back to my game',
     otraTanda:'Another round',
     reintentar:'Try again',
-    guardando:'Saving the quarter…',
+    guardando:'Saving the set…',
     noGuardo:'Could not save. Check your connection and reopen your link.',
     mejorTanda:'Your best chain this round',
     siguienteBtn:'Next player',
@@ -631,6 +631,24 @@ var audioCtx=null;
 function abrirAudio(){
   try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)() }catch(e){}
 }
+/* CADA BOLA SUENA DONDE ESTÁ.
+
+   La nota ya venía del sitio —una esquina canta siempre la misma—
+   pero salía por los dos oídos a la vez, así que era un diagrama con
+   banda sonora y no un sitio. Panear por la x de la bola la pone
+   donde se ve: la de la izquierda suena a la izquierda.
+
+   Esto no hace el juego más difícil: AÑADE un canal para recordar,
+   no lo quita. Y se lee de la posición que de verdad tiene la bola
+   pintada, no de la tabla de la zona, así que vale igual en el
+   abanico que en la fila del casco.
+
+   0,75 y no 1: paneado del todo, una nota desaparece del oído que no
+   toca, y con un solo auricular puesto —que es como la mitad de la
+   gente escucha— desaparecería entera.
+
+   StereoPannerNode no está en los navegadores viejos, y el del casco
+   es Firefox 78. Si no está, suena como siempre: centrado. */
 function playTone(i){
   if(!audioCtx)return;
   var f=TONES[i%TONES.length], now=audioCtx.currentTime;
@@ -641,7 +659,14 @@ function playTone(i){
     g.gain.setValueAtTime(.0001,now);
     g.gain.exponentialRampToValueAtTime(.3,now+0.012);
     g.gain.exponentialRampToValueAtTime(.0001,now+0.30);
-    o.connect(g);g.connect(audioCtx.destination);
+    var salida=g, pan=null;
+    if(audioCtx.createStereoPanner && balls[i]){
+      var x=balls[i].position.x/DISTANCIA;          // -1 .. 1
+      pan=audioCtx.createStereoPanner();
+      pan.pan.setValueAtTime(Math.max(-1,Math.min(1,x))*0.75, now);
+      g.connect(pan); salida=pan;
+    }
+    o.connect(g); salida.connect(audioCtx.destination);
     o.start(now);o.stop(now+0.32);
   }catch(e){}
 }
@@ -929,6 +954,13 @@ function construir(){
      de la cara, y es justo lo que calienta el aparato. */
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
   renderer.setSize(innerWidth,innerHeight);
+  /* Sombras, que es de donde sale casi toda la sensación de sitio.
+     PCFSoft porque un borde duro sobre un piso liso no parece una
+     sombra, parece una mancha. Cinco esferas y un plano: el coste en
+     un teléfono es despreciable, pero el mapa se queda en 1024 y la
+     cámara de la sombra bien apretada por si acaso. */
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   document.body.appendChild(renderer.domElement);
 
   /* Luz de cielo bajita y foco un poco más fuerte. Con el cielo a
@@ -937,9 +969,29 @@ function construir(){
      lados, casi no lo notan. */
   scene.add(new THREE.HemisphereLight(0xbfe3ff,0x16222f,0.72));
   var key=new THREE.DirectionalLight(0xffffff,0.68);
-  key.position.set(2,6,1); scene.add(key);
+  /* Casi de arriba, y no de lado. Con la luz baja la sombra de una
+     bola de arriba caía a metros de ella, y cinco sombras sueltas
+     por el piso no anclan nada: parecen manchas. Desde arriba cada
+     una cae debajo de la suya y se lee de un vistazo.
 
-  dibujarCancha();
+     No del todo vertical: un pelo de lado deja que la esfera siga
+     teniendo un lado iluminado y otro en sombra, que es lo que la
+     hace esfera y no círculo. */
+  key.position.set(1.4,9,1.2);
+  /* Un poco por encima y a la derecha: la sombra cae hacia el lado
+     contrario y un pelo hacia atrás, que es donde hay piso para
+     recibirla. Con la luz de frente la sombra se esconde detrás de
+     su propia bola y no se ve ninguna. */
+  key.castShadow=true;
+  key.shadow.mapSize.set(1024,1024);
+  key.target.position.set(0,1.6,-4.2);   // el centro de la zona
+  scene.add(key.target);
+  var c=key.shadow.camera;
+  c.left=-8; c.right=8; c.top=8; c.bottom=-8; c.near=0.5; c.far=22;
+  c.updateProjectionMatrix();
+  scene.add(key);
+
+  dibujarEspacio();
 
   /* Las bolas. Naranja Hooporia; la luz propia (emissive) es la que
      sube cuando se encienden, así que empieza apagada. */
@@ -950,6 +1002,7 @@ function construir(){
     });
     var m=new THREE.Mesh(geo,mat);
     m.userData.i=i; m.userData.base=1;
+    m.castShadow=true;          // sin esto no hay nada que anclar
     scene.add(m); balls.push(m);
   }
   colocarBolas();
@@ -969,126 +1022,105 @@ function alCambiarTamano(){
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth,innerHeight);
   colocarBolas();
-  ponerAro();          // de pie y apaisado no llevan el mismo aro
-}
-
-/* Algo debajo y detrás, para que las bolas estén EN un sitio. Sin
-   esto son cinco puntos flotando en negro y se pierde la idea de la
-   zona: el piso y las líneas son la mitad de lo que se entrena. */
-function dibujarCancha(){
-  /* El piso, oscuro y muy cerca del color del fondo. La primera
-     versión era azul claro y, como el horizonte cae justo en el medio
-     de la pantalla, media pantalla quedaba de una losa azul lisa: no
-     parecía una cancha, parecía agua. Lo que hace cancha son las
-     líneas, así que el piso se apaga y las líneas se encienden. */
-  var suelo=new THREE.Mesh(
-    new THREE.PlaneGeometry(60,60),
-    new THREE.MeshStandardMaterial({color:0x0B1E2E, roughness:.95})
-  );
-  suelo.rotation.x=-Math.PI/2;
-  scene.add(suelo);
-
-  var tinta=new THREE.LineBasicMaterial({color:0x4C85B0});
-  function linea(pts,alto){
-    var y=(alto===undefined)?0.02:alto;
-    var g=new THREE.BufferGeometry().setFromPoints(
-      pts.map(function(p){ return new THREE.Vector3(p[0],y,p[1]) }));
-    scene.add(new THREE.Line(g,tinta));
-  }
-  // La botella y el fondo, lo justo para leer dónde estás parado.
-  linea([[-2.45,-7.6],[2.45,-7.6],[2.45,-2.2],[-2.45,-2.2],[-2.45,-7.6]]);
-  linea([[-7.5,-7.6],[7.5,-7.6]]);
-  // El semicírculo del tiro libre.
-  var arco=[];
-  for(var a=0;a<=Math.PI;a+=Math.PI/24) arco.push([Math.cos(a)*1.8,-2.2+Math.sin(a)*1.8]);
-  linea(arco);
-  /* El triple. Es la línea que más cerca pasa de donde uno está
-     parado, y por eso es la que de verdad dice "esto es una cancha":
-     las otras quedan lejos y se aplastan contra el horizonte. */
-  var tres=[[-6.6,0.4],[-6.6,-2.0]];
-  for(var b=Math.PI;b>=0;b-=Math.PI/30) tres.push([Math.cos(b)*6.6,-2.0-Math.sin(b)*2.2]);
-  tres.push([6.6,0.4]);
-  linea(tres);
-
-  tintaAro=tinta;
-  ponerAro();
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   EL ARO Y EL TABLERO, SEGÚN LA PANTALLA
+   EL SITIO DONDE ESTÁN LAS CINCO
 
-   Con una sola zona esto no era un problema: el 2-1-2 pone las dos de
-   arriba a los lados y el aro se veía por el hueco del medio. Con
-   cuatro zonas hay dos —el 1-3-1 y el 3-2— que tienen una bola en x=0
-   arriba del todo, y esa bola caía justo encima del aro.
+   Aquí había una cancha: piso, botella, tiro libre, triple, aro y
+   tablero. Estaba por una razón buena, y la razón sigue en pie —
+   sin NADA debajo son cinco puntos flotando en negro y se pierde la
+   idea de que están EN un sitio. Lo que cambió es que ya no tiene
+   que ser una cancha.
 
-   Medido desde el ojo, a 1,55 y a 9,1 metros del tablero:
+   Así que la cancha se va y su trabajo se queda, hecho por tres
+   cosas que no son de ningún deporte:
 
-     · la fila de arriba va a 16°, y la bola mide 2,9° de radio, así
-       que su borde de arriba llega a 18,9°
-     · el aro estaba a 19,4°, con su elipse bajando hasta 16,1°
+     · una REJILLA que se aleja. Las líneas que convergen son lo que
+       le dice al ojo hacia dónde va el suelo, que es exactamente lo
+       que hacían las líneas de la cancha.
+     · una SOMBRA debajo de cada bola. Ancla una esfera en el espacio
+       mejor que cualquier línea: sin ella una bola podría estar a un
+       palmo o a veinte metros.
+     · la NIEBLA, que ya estaba, comiéndose el fondo para que la
+       rejilla no acabe en un borde recto.
 
-   Se pisaban. DE PIE se arregla subiendo el aro y menguándolo, que es
-   lo mismo que decir que se aleja: mismas proporciones, 58%. El aro
-   queda a 22,4° —tres grados y medio de aire sobre la bola— y el
-   borde de arriba del tablero a 25,4°, dentro del cuadro.
+   LO QUE NO SE TOCA, porque es dinero: las cinco siguen a 4,2 metros
+   —todas del mismo tamaño aparente— y en los mismos ángulos de su
+   zona. Una cadena de 7 vale 28 puntos igual que ayer. La
+   profundidad va en el decorado, nunca en las bolas.
 
-   APAISADO no se puede, y conviene saber por qué. Ahí la cámara abre
-   56° en vez de 68, así que la media pantalla son 28° y no 34: todo
-   se apretuja contra el techo. Entre el borde de arriba de la bola
-   (18,9°) y el borde de abajo de la pastilla del HUD (21,4°) quedan
-   dos grados y medio, y un tablero necesita cuatro. Subirlo ahí no lo
-   despeja: lo mete detrás de la pastilla, que es donde ya estaba
-   medio metido desde siempre.
-
-   Así que apaisado se queda como estaba —ni mejor ni peor— y de pie
-   se arregla. Lo que de verdad lo desbloquearía apaisado es mover la
-   pastilla del HUD, que en esa forma tiene los dos costados vacíos.
-
-   El aro se rehace al girar el teléfono, como se recolocan las cinco:
-   son dos líneas y una rosca, y sólo pasa al cambiar de forma.
-
-   Y esto es DECORADO. No toca una bola, así que no puede cambiar lo
-   que vale una cadena ni lo que paga un padrino.
+   Dicho eso, una sombra es una pista más de dónde está cada bola, y
+   eso puede subir un poco lo que anota la gente. Es igual para las
+   cuatro zonas y para todo el mundo, así que es justo — pero mueve
+   el número absoluto, como lo movieron los sets que renuevan.
    ══════════════════════════════════════════════════════════════════ */
-var aroPiezas=[], tintaAro=null, aroDePie=null;
-function ponerAro(){
-  if(!scene||!tintaAro) return;
-  var dePie=(innerWidth/innerHeight)<1;
-  if(aroDePie===dePie && aroPiezas.length) return;   // nada que rehacer
-  aroDePie=dePie;
-
-  aroPiezas.forEach(function(o){
-    scene.remove(o);
-    if(o.geometry) o.geometry.dispose();
-    if(o.material && o.material.dispose && o.isMesh) o.material.dispose();
-  });
-  aroPiezas=[];
-
-  var ESCALA = dePie ? 0.58 : 1;
-  var SUELO  = dePie ? 5.13 : 4.45;    // el borde de abajo del tablero
-  function alto(y){ return SUELO + (y-4.45)*ESCALA }
-
-  var aro=new THREE.Mesh(
-    new THREE.TorusGeometry(0.52*ESCALA,0.045*ESCALA,10,36),
-    new THREE.MeshStandardMaterial({color:0xE8622A, roughness:.5,
-      emissive:0x3A1405})
+function dibujarEspacio(){
+  /* El piso, oscuro y muy cerca del color del fondo. Con un piso
+     claro el horizonte parte la pantalla en dos y la mitad de abajo
+     se lee como agua. Lo que hace el suelo son las líneas, así que
+     el piso se apaga y la rejilla se enciende. */
+  var suelo=new THREE.Mesh(
+    new THREE.PlaneGeometry(90,90),
+    new THREE.MeshStandardMaterial({color:0x0B1E2E, roughness:.95})
   );
-  aro.rotation.x=Math.PI/2;
-  aro.position.set(0,alto(4.75),-9.1);
-  scene.add(aro); aroPiezas.push(aro);
+  suelo.rotation.x=-Math.PI/2;
+  suelo.receiveShadow=true;              // aquí caen las sombras
+  scene.add(suelo);
 
-  /* El tablero, dibujado y no rellenado. Relleno era un rectángulo
-     gris translúcido flotando entre las dos bolas de arriba, y no
-     parecía un tablero: parecía un fallo de pintado. */
-  function tableroLinea(pts){
-    var g=new THREE.BufferGeometry().setFromPoints(
-      pts.map(function(p){ return new THREE.Vector3(p[0]*ESCALA,alto(p[1]),-9.45) }));
-    var l=new THREE.Line(g,tintaAro);
-    scene.add(l); aroPiezas.push(l);
+  /* LA REJILLA. Un solo objeto con todos los segmentos dentro: cinco
+     bolas y una rejilla tienen que ir a sesenta cuadros en un
+     teléfono de hace cuatro años, y cien líneas sueltas son cien
+     cosas que pintar.
+
+     Llega hasta donde llega la niebla (26m) y no más: una línea que
+     sigue después del final de la niebla reaparece recortada contra
+     el fondo y se ve el truco. */
+  var LEJOS=26, ANCHO=16;
+  var puntos=[];
+  /* Las que se alejan salen EN ABANICO desde debajo del ojo, no
+     paralelas. Paralelas no se veían: a metro y medio de alto
+     mirando al frente van casi en la misma dirección que la vista,
+     se aplastan a nada y sólo quedaban las cruzadas, que leídas
+     solas parecen rayas y no suelo.
+
+     En abanico se abren por abajo de la pantalla —que es donde hay
+     sitio— y se juntan en el horizonte. Es la misma fuga, puesta
+     donde se ve. */
+  /* OJO CON EL ORIGEN DEL ABANICO: tiene que estar DELANTE de la
+     cámara. Empezaba en z=+0.6, que con la cámara en z=0 mirando a
+     -z está detrás del ojo, y un segmento con un vértice detrás del
+     plano cercano se descarta entero. Las treinta y dos líneas
+     existían en la geometría y no se pintaba ni una — y no se notó
+     antes porque de las cruzadas sólo dos caían ahí.
+
+     Arrancan a metro y medio por delante, que además es donde
+     empieza el suelo que se ve: más cerca queda por debajo del
+     borde de la pantalla. */
+  for(var a=-60;a<=60;a+=10){
+    var r=a*Math.PI/180;
+    puntos.push(new THREE.Vector3(Math.sin(r)*1.5,0.015,-Math.cos(r)*1.5),
+                new THREE.Vector3(Math.sin(r)*LEJOS,0.015,-Math.cos(r)*LEJOS));
   }
-  tableroLinea([[-1.1,4.45],[1.1,4.45],[1.1,5.75],[-1.1,5.75],[-1.1,4.45]]);
-  tableroLinea([[-0.42,4.62],[0.42,4.62],[0.42,5.22],[-0.42,5.22],[-0.42,4.62]]);
+  /* Y las cruzadas, al revés: separadas cerca y apretándose solas con
+     la distancia, que es justo lo que dice "me estoy alejando". A
+     paso fijo, las de lejos se amontonan en una mancha. */
+  var z=-0.4, paso=1.1;
+  while(z>-LEJOS){
+    puntos.push(new THREE.Vector3(-ANCHO,0.015,z), new THREE.Vector3(ANCHO,0.015,z));
+    z-=paso; paso*=1.16;
+  }
+  var g=new THREE.BufferGeometry().setFromPoints(puntos);
+  /* Sin transparencia y con más luz que el piso: con opacidad baja la
+     niebla se las comía antes de que llegaran a ser una rejilla. La
+     niebla ya las apaga ella sola con la distancia, que es lo que se
+     quería. */
+  /* Apagada a propósito. Esto es el suelo, no el juego: si la
+     rejilla compite con las bolas, el ojo tiene dos sitios donde
+     mirar y uno de los dos no vale puntos. Lo justo para que se vea
+     dónde está el suelo y hasta dónde llega. */
+  scene.add(new THREE.LineSegments(g,
+    new THREE.LineBasicMaterial({color:0x2A5B80, transparent:true, opacity:.75})));
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -2116,7 +2148,7 @@ function pintarCaja(el, resalta){
     var c=cuartoDe(q);
     var clase = q===resalta ? ' class="vivo"' : (c ? (c.points?'':' class="cero"') : ' class="cero"');
     var val = c ? String(c.points) : (q===resalta ? '·' : '—');
-    h += '<div'+clase+'><b>Q'+q+'</b><span>'+val+'</span></div>';
+    h += '<div'+clase+'><b>S'+q+'</b><span>'+val+'</span></div>';
   }
   h += '<div class="tot"><b>'+T('total')+'</b><span>'+totalJuego()+'</span></div>';
   el.innerHTML=h;
