@@ -384,7 +384,7 @@ console.log('\n8 · Las cuatro zonas valen lo mismo\n');
      y la prueba lo dice en vez de pasar por otro camino. */
   const ASA = '\nwindow.__zonas={ZONAS:ZONAS,balls:balls,colocarBolas:colocarBolas,' +
               'cadenaNueva:cadenaNueva,siguienteNivel:siguienteNivel,limpiarT:limpiarT,' +
-              'elegirZona:elegirZona,RADIO_GEO:RADIO_GEO,aro:function(){return aroPiezas[0]},' +
+              'elegirZona:elegirZona,RADIO_GEO:RADIO_GEO,' +
               'g:function(k){return eval(k)},s:function(k,v){eval(k+"=v")}};\n';
   const fuente = require('fs').readFileSync(path.join(AQUI, 'fortress-vr.html'), 'utf8');
   const CIERRE = '\n})();\n</script>';
@@ -481,40 +481,16 @@ console.log('\n8 · Las cuatro zonas valen lo mismo\n');
   await pag.setViewportSize({ width: 390, height: 800 });
   await pag.waitForTimeout(200);
 
-  /* ── Y que ninguna bola tape el aro ───────────────────────────────
-     El 1-3-1 y el 3-2 tienen una bola arriba del todo en x=0, justo
-     donde estaba el aro, y se lo comían. Si algún día alguien añade
-     una zona con una bola ahí arriba, esto lo dice antes de que se
-     vea en la cancha. Sólo de pie: apaisado el aro vive detrás de la
-     pastilla del HUD y ahí no hay sitio para nadie. */
-  const tapan = await pag.evaluate(() => {
-    const H = window.__zonas, B = H.balls, malas = [];
-    const ojo = new (H.aro().position.constructor)(0, 1.55, 0);
-    const ang = (p) => {           // elevación vista desde el ojo
-      const dx = p.x - ojo.x, dy = p.y - ojo.y, dz = p.z - ojo.z;
-      return Math.atan2(dy, Math.hypot(dx, dz)) * 180 / Math.PI;
-    };
-    const lado = (p) => Math.atan2(p.x - ojo.x, -(p.z - ojo.z)) * 180 / Math.PI;
-    const zonaAntes = H.g('ZONA');
-    for (let z = 0; z < H.ZONAS.length; z++) {
-      H.s('ZONA', z); H.colocarBolas();
-      const a = H.aro(), ra = a.geometry.parameters.radius;
-      const dAro = a.position.distanceTo(ojo);
-      const radioAro = Math.atan(ra / dAro) * 180 / Math.PI;
-      const aAlto = ang(a.position), aLado = lado(a.position);
-      for (let i = 0; i < 5; i++) {
-        const rb = B[i].userData.base * H.RADIO_GEO;
-        const radioBola = Math.atan(rb / B[i].position.distanceTo(ojo)) * 180 / Math.PI;
-        const sep = Math.hypot(ang(B[i].position) - aAlto, lado(B[i].position) - aLado);
-        if (sep < radioAro + radioBola)
-          malas.push(H.ZONAS[z].nombre + ' bola ' + i + ' a ' + sep.toFixed(1) + '°');
-      }
-    }
-    H.s('ZONA', zonaAntes); H.colocarBolas();
-    return malas;
-  });
-  si(tapan.length === 0, 'de pie, ninguna bola tapa el aro en ninguna zona' +
-     (tapan.length ? ' — tapan: ' + tapan.join(', ') : ''));
+  /* AQUÍ SE COMPROBABA QUE NINGUNA BOLA TAPARA EL ARO, y ya no hay
+     aro que tapar: el tablero, el aro y las líneas de cancha se
+     fueron cuando el juego dejó de ser sólo de baloncesto. Lo que
+     hay debajo ahora es una rejilla y una sombra por bola, y ninguna
+     de las dos se puede tapar — están en el suelo, debajo de todo.
+
+     Se quita entera en vez de adaptarla: una comprobación que ya no
+     protege nada es ruido, y la que sí hace falta —que las cinco no
+     se monten unas sobre otras— está justo arriba y sigue corriendo
+     en las cuatro pantallas. */
 
   // ── Las cadenas: legales en las dos formas de crecer ─────────────
   const cad = await pag.evaluate(() => {
