@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Getting padrinos — Hooporia</title>
+<title>Getting padrinos — Cada Punto Cuenta</title>
 <!-- Esta frase es la única de la página que paint() NO reescribe, así
      que era la única que seguía diciendo el modelo viejo — el de la
      puntuación del equipo — y es justo la que sale en la vista previa
@@ -14,14 +14,14 @@
      a propósito: WhatsApp y los demás no resuelven rutas
      relativas, y con una relativa la vista previa sale en
      blanco igual que sin imagen. -->
-<link rel="icon" type="image/png" href="hooporia.png">
-<link rel="apple-touch-icon" href="hooporia.png">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Hooporia">
-<meta property="og:image" content="https://hooporia.com/hooporia-share.jpg">
+<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21">
+<meta property="og:image:alt" content="A kid on a court at sunset, arm raised, as his score climbs: 1, 3, 6, 10, 15, 21">
 <meta name="twitter:card" content="summary_large_image">
 <style>
 /* ── El look nuevo: crema, navy y naranja ─────────────────────────
@@ -54,7 +54,25 @@ nav{position:sticky;top:0;z-index:70;background:var(--navy);
   font-size:1.05rem;color:#fff;line-height:1.1;white-space:nowrap}
 .wm em{font-style:normal;color:#fff}
 .wm i{font-style:normal;color:var(--orange)}
-@media(max-width:380px){ .wm,.mark .wm{font-size:.92rem} }
+/* Tres palabras donde había una. A 320px la marca ya no cabía al
+   lado de la hamburguesa: el ancho sale del espaciado entre letras
+   —dieciocho letras a .07em son casi veinte píxeles— así que se
+   recorta eso antes que el tamaño. */
+/* Una sola regla, y no dos. Estaban las dos y la de 380px iba
+   DESPUÉS, así que a 320px ganaba ella y devolvía la marca a .92rem
+   —el espaciado recortado sí sobrevivía, porque esa regla no lo
+   toca, y por eso el arrastre bajó de 350 a 335 en vez de irse. Un
+   escalón de más abajo que deshace al de arriba no se ve leyendo:
+   se ve cuando la prueba sigue cantando después de arreglarlo. */
+@media(max-width:430px){
+  .wm,.mark .wm{font-size:.84rem;letter-spacing:.015em}
+  /* Y cuatro píxeles del hueco entre el botón de idioma y la
+     hamburguesa. La marca ya cabía —lo que sobresalía era el grupo
+     de la derecha, 324 de 320— y esos cuatro salen de aquí sin que
+     se note, que es mejor que quitárselos a un botón que se pulsa
+     con el pulgar. */
+  .navr{gap:7px}
+}
 
 /* Sitio para una palabra, no para dos letras, y nowrap para que
    «Español» no se parta en dos líneas en una pantalla estrecha. */
@@ -234,7 +252,7 @@ footer .f-dot{padding:0 8px;opacity:.45}
 <body>
 
 <nav><div class="wrap navin">
-  <a class="mark" href="index.html"><span class="wm"><em>HOOPORIA</em><i>.</i></span></a>
+  <a class="mark" href="index.html"><span class="wm"><em>CADA PUNTO CUENTA</em><i>.</i></span></a>
   <div class="navr"><button id="lang" onclick="flip()">Español</button>
     <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -255,9 +273,9 @@ footer .f-dot{padding:0 8px;opacity:.45}
   <p class="lede" data-t="lede">How far you get in your run is down to how much you practise. What each of those points is worth is down to how many people you asked — and you can start that today, before you play at all.</p>
   <!-- width y height para que el hueco esté reservado antes de que la
        imagen baje y el texto no salte mientras se lee. -->
-  <img class="foto" src="hooporia-share.jpg" width="1200" height="630"
+  <img class="foto" src="compartir.jpg" width="1200" height="630"
        loading="lazy" decoding="async" id="foto"
-       alt="A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21">
+       alt="A kid on a court at sunset, arm raised, as his score climbs: 1, 3, 6, 10, 15, 21">
 </div></header>
 
 <div class="wrap">
@@ -506,7 +524,7 @@ var T = {
 
     copy:'Copy this', copied:'✓ Copied',
     fSignin:'Sign in', fHelp:'Help', fTerms:'Terms', fMoney:'Money', fPrivacy:'Privacy',
-    fWhat:'Hooporia is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.'
+    fWhat:'Cada Punto Cuenta is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.'
   },
   es:{
     mHow:'Cómo funciona', mPlayer:'Soy jugador', mPad:'Conseguir padrinos',
@@ -574,7 +592,7 @@ var T = {
 
     copy:'Copiar esto', copied:'✓ Copiado',
     fSignin:'Acceder', fHelp:'Ayuda', fTerms:'Términos', fMoney:'Dinero', fPrivacy:'Privacidad',
-    fWhat:'Hooporia es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    fWhat:'Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
   }
 };
 
@@ -608,8 +626,8 @@ function paint(){
      persona que no ve la foto y la está oyendo en su idioma. */
   var _f = document.getElementById('foto');
   if (_f) _f.alt = lang === 'es'
-    ? 'Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21'
-    : 'A kid shoots at sunset as his score climbs: 1, 3, 6, 10, 15, 21';
+    ? 'Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21'
+    : 'A kid on a court at sunset, arm raised, as his score climbs: 1, 3, 6, 10, 15, 21';
   /* El botón dice el idioma AL QUE lleva, no el que está puesto: un
      botón que dice el idioma actual se lee como un estado y no como
      una puerta. Igual que en el resto del sitio. */
@@ -619,8 +637,8 @@ function paint(){
   document.getElementById('msgText').textContent = t('msgBody');
   document.getElementById('copiedNote').textContent = '';
   document.getElementById('fWhat').textContent = t('fWhat');
-  document.title = lang === 'es' ? 'Conseguir padrinos — Hooporia'
-                                 : 'Getting padrinos — Hooporia';
+  document.title = lang === 'es' ? 'Conseguir padrinos — Cada Punto Cuenta'
+                                 : 'Getting padrinos — Cada Punto Cuenta';
   update();
 }
 
