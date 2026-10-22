@@ -34,7 +34,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(t,/Nosotros manejamos las promesas/,'la posición de la casa');
   // .eyebrow va en mayúsculas por CSS, así que innerText la devuelve
   // gritada. La caja la decide la hoja de estilo, no el texto.
-  has(t,/Baloncesto digital \+ Manejo de promesas automatizado/i,'la categoría, arriba');
+  has(t,/Manejo de promesas automatizado/i,'la categoría, arriba');
   has(t,/Ustedes manejan los fondos/,'y la otra mitad');
 
   /* AQUÍ SE EXIGÍAN TRES FRASES QUE LA PORTADA YA NO DICE, y conviene
@@ -183,7 +183,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      Lo que ya NO dice la portada es «Sin enlace de pago, y sin
      recordatorios». Eso vive en padrinos.html y en ayuda.html. */
   has(t,/estrictamente un proveedor de software de manejo de promesas/,
-      'Hooporia es sólo el software de las promesas');
+      'Cada Punto Cuenta es sólo el software de las promesas');
   has(t,/manejan sus fondos de forma independiente/,'y los fondos los manejan ellos');
   has(t,/El dinero no pasa por nosotros/,'y el pie lo dice sin rodeos');
   has(t,/al programa se le paga directo/,'el padrino le paga al programa');
@@ -199,7 +199,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      se haga en un idioma y no en el otro es exactamente el fallo que
      esta sección existe para encontrar. */
   has(en,/Play\. Score\. Raise Money\./,'the headline: three verbs');
-  has(en,/Digital basketball \+ Automated pledge management/i,'the category line');
+  has(en,/Automated pledge management/i,'the category line');
   has(en,/The Game Is the Event/,'the game IS the event');
   has(en,/No gym to book/,'no gym to book');
   has(en,/One run each/,'one run each');
@@ -226,9 +226,12 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   not(en,/\{A\}|\{B\}|\{N\}/,'sin plantillas');
   not(en,/\bdeductible\b|\btax\b/i,'ni impuestos');
   const ti=await p.title();
-  has(ti,/Digital Basketball\. Every point is recorded\./,'el título, en inglés');
-  // Y que no se le haya pegado el nombre del otro producto.
-  not(ti,/Every point counts/i,'el título no lleva el nombre de Cada Punto');
+  has(ti,/Every point is recorded\./,'el título, en inglés');
+  /* Esta línea miraba al revés: guardaba que no se colara «Every
+     point counts», el nombre del otro producto. Ese nombre es el
+     nuestro desde el 22 de octubre de 2026. Lo que no puede quedarse
+     en el título es el retirado. */
+  not(ti,/Hooporia/i,'el título no se quedó con el nombre retirado');
 
   console.log('\n7 · Los enlaces');
   const hrefs=await p.evaluate(()=>[...document.querySelectorAll('a')].map(a=>a.getAttribute('href')));
@@ -278,18 +281,18 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   const src=await p.content();
   has(src,/--orange:#ff7a18/,'el naranja');
   has(src,/--cream:#faf8f4/,'la crema');
-  /* Antes esto exigía lo contrario: que NADIE apuntara a hooporia.png
+  /* Antes esto exigía lo contrario: que NADIE apuntara a logo.png
      ni a la imagen de compartir, porque no existían y un <link> a un
      fichero que no está es un 404 en cada carga. Ya existen, así que
      ahora se exige que estén puestas. La comprobación de que los
      ficheros existen de verdad vive en prueba-marca.js, que mira
      todas las páginas y no sólo ésta. */
-  has(src,/<link[^>]+rel="icon"[^>]+href="hooporia\.png"/,'el icono de la pestaña');
-  has(src,/og:image"[^>]+content="https:\/\/hooporia\.com\/hooporia-share\.jpg"/,
+  has(src,/<link[^>]+rel="icon"[^>]+href="logo\.png"/,'el icono de la pestaña');
+  has(src,/og:image"[^>]+content="https:\/\/cadapunto\.com\/compartir\.jpg"/,
       'la imagen de compartir, en absoluto');
   errs.length?errs.forEach(e=>mal(e)):ok('sin errores de página');
 
   await b.close();
-  console.log('\n'+(bad===0?'✓ el índice de Hooporia pasa':'✗ '+bad+' fallo(s)'));
+  console.log('\n'+(bad===0?'✓ el índice de Cada Punto Cuenta pasa':'✗ '+bad+' fallo(s)'));
   process.exit(bad===0?0:1);
 })().catch(e=>{console.error(e);process.exit(1)});
