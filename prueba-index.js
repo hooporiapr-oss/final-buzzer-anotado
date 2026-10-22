@@ -111,8 +111,14 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      caen en líneas distintas: la regex tiene que cruzar el salto. Con
      /\$49 por equipo por evento/ en una sola línea esto fallaba
      aunque la página lo dijera perfectamente. */
-  has(t,/\$49[\s\S]{0,40}por equipo, por evento/i,'49 por equipo, por evento');
-  has(t,/\$29[\s\S]{0,40}plantilla menor de 8/i,'29 bajo ocho');
+  /* La escalera, no los dos peldaños de antes. Se exigen los dos
+     extremos y que el del equipo esté — los de en medio los
+     comprueba prueba-precio.js, que además mira que las otras tres
+     páginas digan lo mismo. */
+  has(t,/Plantilla hasta 7[\s\S]{0,40}\$29/i,'el peldaño chico');
+  has(t,/Plantilla de 8 a 40[\s\S]{0,40}\$49/i,'el del equipo');
+  has(t,/Plantilla de 151 a 400[\s\S]{0,40}\$349/i,'y el de una escuela');
+  has(t,/Plantilla de 801 o más[\s\S]{0,40}Hablemos/i,'y arriba del todo, se habla');
   // Por evento y no por cabeza: lo que queda de «no es un cargo por persona».
   has(t,/corran los que corran/,'un precio por el evento, corran los que corran');
   has(t,/no se mueve con lo que recaudes/,'y que no se mueve con lo recaudado');
@@ -198,8 +204,10 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(en,/No gym to book/,'no gym to book');
   has(en,/One run each/,'one run each');
   has(en,/The game records every point as he plays/,'the game records the points');
-  has(en,/\$49[\s\S]{0,40}per team, per event/i,'49 per team, per event');
-  has(en,/\$29[\s\S]{0,40}roster under 8/i,'29 under eight');
+  has(en,/Roster up to 7[\s\S]{0,40}\$29/i,'the small step');
+  has(en,/Roster of 8 to 40[\s\S]{0,40}\$49/i,'the team step');
+  has(en,/Roster of 151 to 400[\s\S]{0,40}\$349/i,'and a school');
+  has(en,/Roster of 801 or more[\s\S]{0,40}Let us talk/i,'and above that, a conversation');
   has(en,/however many players take a run/,'one price per event, not per head');
   has(en,/strictly a pledge management software provider/i,'only the pledge software');
   has(en,/independently manage all proceeds/i,'and they hold the proceeds');
@@ -251,9 +259,16 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   const _j = fuenteIdx.indexOf('\n};', _i);
   const TAB = new Function('return '+fuenteIdx.slice(fuenteIdx.indexOf('{',_i), _j+2))();
   const sinEs = llaves.marcado.filter(k=>!(k in TAB.es));
-  const muertas = Object.keys(TAB.es).filter(k=>!llaves.marcado.includes(k));
+  /* Una llave está VIVA si tiene un elemento con data-i... o si el
+     JS le pone el inglés a mano. La escalera del precio la pinta el
+     JS desde TARIFAS, así que sus cinco frases no cuelgan de ningún
+     elemento del marcado y aquí salían como texto muerto cuando no
+     lo son. Se cuentan las dos formas. */
+  const aMano = [...fuenteIdx.matchAll(/english\.([A-Za-z0-9_]+)\s*=/g)].map(m=>m[1]);
+  const vivas = new Set([...llaves.marcado, ...aMano]);
+  const muertas = Object.keys(TAB.es).filter(k=>!vivas.has(k));
   sinEs.length===0
-    ? ok('las '+llaves.marcado.length+' llaves del marcado tienen español')
+    ? ok('las '+llaves.marcado.length+' llaves del marcado tienen español (y '+aMano.length+' más las pone el JS)')
     : mal('sin español: '+sinEs.join(', '));
   muertas.length===0
     ? ok('y la tabla no lleva ninguna de más')
