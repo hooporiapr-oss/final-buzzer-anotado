@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>El reporte — Hooporia</title>
+<title>El reporte — Cada Punto Cuenta</title>
 <meta name="robots" content="noindex,nofollow">
 
 <!-- El icono y la imagen de compartir. og:image va en absoluto
      a propósito: WhatsApp y los demás no resuelven rutas
      relativas, y con una relativa la vista previa sale en
      blanco igual que sin imagen. -->
-<link rel="icon" type="image/png" href="hooporia.png">
-<link rel="apple-touch-icon" href="hooporia.png">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Hooporia">
-<meta property="og:image" content="https://hooporia.com/hooporia-share.jpg">
+<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21">
+<meta property="og:image:alt" content="Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21">
 <meta name="twitter:card" content="summary_large_image">
 <style>
 :root{
@@ -41,7 +41,17 @@ header .bar{display:flex;align-items:center;justify-content:space-between;gap:14
   font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
 .mark em{font-style:normal;color:#fff}
 .mark i{font-style:normal;color:var(--orange)}
+/* La marca pasó de una palabra a tres el 22 de octubre de 2026, y
+   en la barra de 320px ya no cabía: con la hamburguesa y el botón
+   de acción al lado pedía 339px de los 320 que hay.
+
+   Se arregla por el ESPACIADO antes que por el tamaño. Dieciocho
+   letras a .07em son casi veinte píxeles de aire, que es justo lo
+   que sobraba; quitando casi todo ese aire la marca cabe sin tener
+   que encogerla hasta que no se lea. El tamaño baja un poco también,
+   pero poco. */
 @media(max-width:380px){ .mark{font-size:.92rem} }
+@media(max-width:430px){ .mark{font-size:.84rem;letter-spacing:.015em} }
 .langb{border:1px solid #ffffff55;background:transparent;color:#fff;
   padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
 .langb:hover{border-color:var(--orange);color:var(--orange)}
@@ -239,7 +249,7 @@ header{color:#fff}
 
 <header>
   <div class="wrap bar">
-    <a class="mark" href="index.html"><em>HOOPORIA</em><i>.</i></a>
+    <a class="mark" href="index.html"><em>CADA PUNTO CUENTA</em><i>.</i></a>
     <nav class="menu" id="menu">
       <a href="index.html" data-m="inicio">Home</a>
       <a href="index.html#how" data-m="como">How it works</a>
@@ -325,7 +335,7 @@ function porque(x){
 
 var S={
   es:{
-    titulo:'El reporte — Hooporia',
+    titulo:'El reporte — Cada Punto Cuenta',
     h1:'El reporte del reto',
     lede:'Lo que se llevó cada padrino: su tarifa, su tope y lo que dio su promesa. Para imprimir o bajar.',
     codeL:'Tu código de entrenador',
@@ -344,11 +354,11 @@ var S={
     deN:'de {N}',
 
     /* Lo que este reporte NO dice, dicho antes de que lo busquen. */
-    nota:'Lo prometido no es lo recaudado. Aquí está lo que cada padrino prometió y lo que salió su promesa con los puntos de su jugador; el dinero lo recibe el programa directo, y Hooporia no sabe quién pagó.',
+    nota:'Lo prometido no es lo recaudado. Aquí está lo que cada padrino prometió y lo que salió su promesa con los puntos de su jugador; el dinero lo recibe el programa directo, y Cada Punto Cuenta no sabe quién pagó.',
 
     hJugadores:'Por jugador',
     hPromesas:'Cada promesa',
-    thJugador:'Jugador', thPuntos:'Puntos', thCuartos:'Cuartos',
+    thJugador:'Jugador', thPuntos:'Puntos', thCuartos:'Sets',
     thPromesasN:'Promesas', thTotal:'Total',
     thPadrino:'Padrino', thCorreo:'Correo', thTarifa:'Por punto', thTope:'Tope',
     sinTope:'—',
@@ -359,13 +369,13 @@ var S={
     csv:'Bajar en hoja de cálculo',
     otro:'Ver otro reto',
     aMiEquipo:'← Mi equipo',
-    sello:'Reporte generado el {D} · Hooporia · Gostar Digital LLC, Puerto Rico',
+    sello:'Reporte generado el {D} · Cada Punto Cuenta · Gostar Digital LLC, Puerto Rico',
     noJugo:'no jugó',
 
     hAviso:'El aviso al padrino',
     avisoQue:'Cuando mandes esto, cada padrino con promesa recibe UN correo: los puntos de su jugador, su tarifa, su tope si mordió, y lo que dio su promesa. Nada más. Sin enlace de pago, sin recordatorios, y diciéndole que te paga a ti directo.',
     avisoCuantos:'{N} padrino(s) por avisar',
-    avisoNinguno:'No hay a quién avisar: o ya salieron todos, o ninguna promesa llegó a cincuenta centavos.',
+    avisoNinguno:'No hay a quién avisar: o ya salieron todos, o ninguna promesa llegó a {P}.',
     avisoRevisa:'Revisa los números de arriba antes de mandar. Un correo no se puede retirar.',
     avisoBoton:'Mandar los avisos',
     avisoConfirma:'Mandar {N} correo(s) ahora',
@@ -374,13 +384,13 @@ var S={
     avisoHecho:'{N} aviso(s) mandado(s).',
     avisoNada:'No salió ninguno.',
     avisoFallo:'{N} no salió(eron). Las promesas siguen abiertas: puedes volver a pulsar y sale sólo lo que faltó.',
-    avisoCero:'{N} promesa(s) se cerraron sin aviso: su jugador no anotó, o la promesa no llegó a cincuenta centavos.',
+    avisoCero:'{N} promesa(s) se cerraron sin aviso: su jugador no anotó, o la promesa no llegó a {P}.',
     avisoYa:'{N} ya estaba(n) avisada(s).',
     avisoErrServidor:'No se pudo hablar con el servidor de avisos. No se mandó nada; vuelve a intentarlo.',
     avisoErrCodigo:'El servidor no aceptó tu código. No se mandó nada.'
   },
   en:{
-    titulo:'The report — Hooporia',
+    titulo:'The report — Cada Punto Cuenta',
     h1:'The challenge report',
     lede:'What each padrino came to: his rate, his cap, and what his pledge worked out to. To print or download.',
     codeL:'Your coach code',
@@ -398,11 +408,11 @@ var S={
     nJugaron:'played',
     deN:'of {N}',
 
-    nota:'Pledged is not collected. This is what each padrino pledged and what it came to against his player’s points; the money goes to the program directly, and Hooporia does not know who paid.',
+    nota:'Pledged is not collected. This is what each padrino pledged and what it came to against his player’s points; the money goes to the program directly, and Cada Punto Cuenta does not know who paid.',
 
     hJugadores:'By player',
     hPromesas:'Every pledge',
-    thJugador:'Player', thPuntos:'Points', thCuartos:'Quarters',
+    thJugador:'Player', thPuntos:'Points', thCuartos:'Sets',
     thPromesasN:'Pledges', thTotal:'Total',
     thPadrino:'Padrino', thCorreo:'Email', thTarifa:'Per point', thTope:'Cap',
     sinTope:'—',
@@ -413,13 +423,13 @@ var S={
     csv:'Download as a spreadsheet',
     otro:'See another challenge',
     aMiEquipo:'← My team',
-    sello:'Report generated {D} · Hooporia · Gostar Digital LLC, Puerto Rico',
+    sello:'Report generated {D} · Cada Punto Cuenta · Gostar Digital LLC, Puerto Rico',
     noJugo:'did not play',
 
     hAviso:'The padrino’s notice',
     avisoQue:'When you send this, every padrino with a pledge gets ONE email: his player’s points, his rate, his cap if it bit, and what his pledge came to. Nothing else. No payment link, no reminders, and it tells him he pays you directly.',
     avisoCuantos:'{N} padrino(s) to notify',
-    avisoNinguno:'Nobody to notify: either they have all gone out, or no pledge reached fifty cents.',
+    avisoNinguno:'Nobody to notify: either they have all gone out, or no pledge reached {P}.',
     avisoRevisa:'Check the numbers above before sending. An email cannot be taken back.',
     avisoBoton:'Send the notices',
     avisoConfirma:'Send {N} email(s) now',
@@ -428,7 +438,7 @@ var S={
     avisoHecho:'{N} notice(s) sent.',
     avisoNada:'None went out.',
     avisoFallo:'{N} did not go out. Those pledges are still open: press again and only the ones that failed will be sent.',
-    avisoCero:'{N} pledge(s) closed with no notice: their player did not score, or the pledge did not reach fifty cents.',
+    avisoCero:'{N} pledge(s) closed with no notice: their player did not score, or the pledge did not reach {P}.',
     avisoYa:'{N} had already been notified.',
     avisoErrServidor:'Could not reach the notice server. Nothing was sent; try again.',
     avisoErrCodigo:'The server did not accept your code. Nothing was sent.'
@@ -442,6 +452,13 @@ try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') 
 
 function T(k,v){
   var s=(S[LANG]&&S[LANG][k])||S.es[k]||'';
+  /* El piso entra solo, sin que nadie lo pida. Las frases que lo
+     nombran son cuatro y están en dos idiomas, y basta con que una
+     se escriba a mano para que la página le prometa al entrenador un
+     número que el servidor no respeta. Ya pasó: decían cincuenta
+     centavos mientras PISO_CENTS valía quinientos, y la cuenta de
+     "a cuántos voy a escribir" contaba promesas que no se cobraban. */
+  s = s.split('{P}').join(money(PISO_CENTS/100));
   if(v) Object.keys(v).forEach(function(x){ s=s.split('{'+x+'}').join(v[x]) });
   return s;
 }
@@ -471,7 +488,7 @@ var AVISO=null;
    de Resend y la de servicio, y ninguna de las dos puede estar en un
    fichero que se descarga.
 
-   Y los manda el servidor DE HOOPORIA. Esta línea apuntaba al
+   Y los manda el servidor DE CADA PUNTO CUENTA. Esta línea apuntaba al
    compartido, que es el de los otros productos: el entrenador
    pulsaba «avisar» desde aquí y la llamada se iba a un servidor que
    no tiene la licencia, así que los avisos salían y la factura no
@@ -574,7 +591,7 @@ function pintar(){
   var jugaron = js.filter(function(j){ return (j.puntos||0)>0 }).length;
 
   /* Cuántos recibirían el aviso si se pulsa ahora: los que siguen
-     abiertos y llegan a cincuenta centavos.
+     abiertos y llegan al piso.
 
      Esta cuenta es para que el entrenador sepa a cuánta gente va a
      escribir antes de pulsar; la de verdad la hace el servidor, que
@@ -784,7 +801,7 @@ function bajarCSV(){
   var blob=new Blob(['﻿'+filas.join('\r\n')],{type:'text/csv;charset=utf-8'});
   var a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='hooporia-'+(nom||'reporte')+'.csv';
+  a.download='cadapunto-'+(nom||'reporte')+'.csv';
   document.body.appendChild(a); a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove() },0);
 }
