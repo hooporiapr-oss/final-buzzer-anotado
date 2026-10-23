@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Ayuda del entrenador — Cada Punto Cuenta</title>
+<title>Preguntas — Cada Punto Cuenta</title>
 <meta name="robots" content="noindex,nofollow">
 
 <!-- El icono y la imagen de compartir. og:image va en absoluto
@@ -269,7 +269,7 @@ function esc(s){ return String(s==null?'':s)
    respuesta es nuestro, no de nadie de fuera, así que va tal cual. */
 var S={
   es:{
-    h1:'Ayuda del entrenador',
+    h1:'Preguntas',
     lede:'Lo que preguntan los entrenadores y los padrinos.',
     hint:'Si lo tuyo no está aquí, escríbenos — al final de la página.',
     askB:'¿No está aquí?',
@@ -384,7 +384,7 @@ var S={
     ]
   },
   en:{
-    h1:'Coach help',
+    h1:'Questions',
     lede:'What coaches and padrinos ask.',
     hint:'If yours is not here, write to us — at the bottom of the page.',
     askB:'Not here?',
@@ -526,8 +526,8 @@ function paint(){
      octubre y esta linea lo volvia a poner mal en cuanto cargaba la
      pagina, asi que la pestana siguio diciendo lo de siempre. */
   document.title = LANG==='es'
-    ? 'Ayuda del entrenador — Cada Punto Cuenta'
-    : 'Coach help — Cada Punto Cuenta';
+    ? 'Preguntas — Cada Punto Cuenta'
+    : 'Questions — Cada Punto Cuenta';
 
   var secs=T('secs'), qs=T('qs'), out='';
   secs.forEach(function(name, i){
@@ -581,10 +581,10 @@ toda();
 (function(){
 var ROTULOS = {
   en: { inicio:'Home', como:'How it works', precio:'What it costs',
-        ayuda:'Questions', mia:'My team', alta:'Sign up a team',
+        ayuda:'Questions', mia:'My program', alta:'Sign up a program',
         menu:'Menu', otro:'Español', aOtro:'Cambiar a español' },
   es: { inicio:'Inicio', como:'Cómo funciona', precio:'Cuánto cuesta',
-        ayuda:'Preguntas', mia:'Mi equipo', alta:'Registra un equipo',
+        ayuda:'Preguntas', mia:'Mi programa', alta:'Registra un programa',
         menu:'Menú', otro:'English', aOtro:'Switch to English' }
 };
 function idioma(){
