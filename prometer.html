@@ -480,8 +480,32 @@ function rpc(nombre, cuerpo, listo, falla){
     method:'POST',
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'},
     body:JSON.stringify(cuerpo)
-  }).then(function(r){ if(!r.ok) throw new Error('http '+r.status); return r.json() })
+  }).then(function(r){
+    if (r.ok) return r.json();
+    /* El cuerpo de un error de PostgREST trae el porqué —message,
+       hint, details— y esta línea lo tiraba: lanzaba 'http 400' y
+       nada más. Seis páginas se arreglaron en su día y ésta se
+       quedó, que es la que toca un padrino: cualquier fallo le salía
+       como problema de internet, también cuando el problema era la
+       base, y de la razón no quedaba rastro en ningún sitio. */
+    return r.text().then(function(t){
+      var d = {}; try { d = JSON.parse(t) } catch(x){}
+      var e = new Error(d.message || d.hint || t || ('rpc ' + r.status));
+      e.detalle = d.details || d.hint || '';
+      e.codigo  = d.code || r.status;
+      throw e;
+    });
+  })
     .then(listo).catch(function(e){ if(falla) falla(e) });
+}
+
+/* El porqué, cuando lo hay. Recortado: esto es una línea debajo de
+   un botón, no un registro. */
+function porque(x){
+  if (!x) return '';
+  var r = (typeof x === 'string') ? x
+        : (x.why || x.error || x.message || x.hint || x.detalle || '');
+  return r ? ' — ' + String(r).slice(0, 160) : '';
 }
 
 function pintarTarifas(){
@@ -584,8 +608,13 @@ function arrancar(){
     $('todo').hidden=false;
     if(d.open){ $('form').hidden=false } else { $('cerrado').hidden=false }
     pintar();
-  }, function(){
-    $('cargando').textContent=T('malRed');
+  }, function(e){
+    /* Con la razón delante. Esto reintenta cada cuatro segundos, y
+       un fallo que no va a arreglarse solo —un enlace mal copiado,
+       un reto que ya no está— se quedaba dando vueltas sin decir
+       nunca por qué. El reintento se queda, que un corte de red sí
+       se arregla solo; lo que faltaba era la razón. */
+    $('cargando').textContent=T('malRed')+porque(e);
     setTimeout(arrancar, 4000);
   });
 }
@@ -615,7 +644,7 @@ $('form').onsubmit=function(ev){
       decir(r==='name'?T('malNom'):r==='email'?T('malMail'):
             r==='cap'?T('malTope'):T('malRed'),'mal');
     },
-    function(){ $('enviar').disabled=false; decir(T('malRed'),'mal') });
+    function(e){ $('enviar').disabled=false; decir(T('malRed')+porque(e),'mal') });
 };
 function decir(t,c){ var e=$('dice'); e.textContent=t; e.className='estado'+(c?' '+c:'') }
 
