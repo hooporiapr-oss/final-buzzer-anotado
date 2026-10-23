@@ -35,7 +35,20 @@ const eq  = (a, b, m) => (a === b ? ok(m + (a ? ' → ' + a : ''))
   : mal(m + '\n         esperaba: ' + JSON.stringify(b) +
             '\n         vino:     ' + JSON.stringify(a)));
 
-const PAGINAS = ['ayuda.html','equipo.html','jugador.html','mi-equipo.html',
+/* Las paginas que le piden algo a un servidor Y le ensenan el
+   resultado a una persona que esta esperando. La lista se escribe a
+   mano a proposito: no es "toda pagina que llama a algo", es aquella
+   donde un fallo sale en pantalla debajo de un boton y alguien tiene
+   que entender que paso.
+
+   ayuda.html salio de la lista el 23 de octubre de 2026: se le quito
+   el chat y con el la unica llamada que hacia. Una pagina que no
+   pide nada no puede tirar el cuerpo de un error.
+
+   Fuera de esta lista hay cinco que si piden y NO leen el cuerpo:
+   admin.html, prometer.html y los tres tableros del juego. Queda
+   escrito aqui para que se mire a proposito y no por sorpresa. */
+const PAGINAS = ['equipo.html','jugador.html','mi-equipo.html',
                  'plantilla.html','reporte.html','tablero.html'];
 
 console.log('\n1 · Ninguna página tira el cuerpo del error\n');
