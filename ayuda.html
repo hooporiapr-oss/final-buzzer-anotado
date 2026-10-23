@@ -74,7 +74,18 @@ h2{font-size:1.1rem;letter-spacing:.01em;margin:38px 0 6px;
   color:var(--orange);text-transform:uppercase;font-weight:800;font-size:.78rem;
   letter-spacing:.14em}
 .lede{color:var(--muted);margin:0 0 24px;max-width:56ch}
-.hint,.cp,.who,.sub,.nota{color:var(--muted);font-size:.88rem}
+/* La linea que manda al final de la pagina. Vive dentro de #head
+   para quedar pegada al hero, y #head esta FUERA de .wrap porque el
+   hero va de borde a borde — asi que esta linea salia tambien de
+   borde a borde, pegada al canto izquierdo de la pantalla, sin un
+   pixel de margen, mientras el resto de la pagina empezaba a 70.
+   Se lleva su propio ancho, el mismo de .wrap, y va centrada.
+
+   .cp, .who, .sub y .nota compartian esta regla y ya no existen:
+   eran del chat, que se quito. */
+.hint{width:min(760px,calc(100% - 40px));margin:24px auto 4px;
+  text-align:center;color:var(--muted);font-size:.92rem;font-weight:600;
+  line-height:1.5}
 
 /* ── El acordeón de preguntas ─────────────────────────────────── */
 details{background:#fff;border:1px solid var(--linea);border-radius:14px;
@@ -258,7 +269,7 @@ function esc(s){ return String(s==null?'':s)
    respuesta es nuestro, no de nadie de fuera, así que va tal cual. */
 var S={
   es:{
-    h1:'Coach Cada Punto Cuenta',
+    h1:'Ayuda del entrenador',
     lede:'Lo que preguntan los entrenadores y los padrinos.',
     hint:'Si lo tuyo no está aquí, escríbenos — al final de la página.',
     askB:'¿No está aquí?',
@@ -373,7 +384,7 @@ var S={
     ]
   },
   en:{
-    h1:'Coach Cada Punto Cuenta',
+    h1:'Coach help',
     lede:'What coaches and padrinos ask.',
     hint:'If yours is not here, write to us — at the bottom of the page.',
     askB:'Not here?',
