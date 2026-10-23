@@ -97,12 +97,24 @@ details[open] summary{color:var(--navy)}
 
 
 /* ── Si no encuentras lo tuyo ─────────────────────────────────── */
-.ask{background:#fff;border:1px solid var(--linea);border-left:5px solid var(--navy);
-  border-radius:16px;padding:20px 22px;margin:32px 0 0;box-shadow:0 8px 25px #17243808}
-.ask b{display:block;font-size:.76rem;font-weight:800;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--navy);margin-bottom:8px}
-.ask p{margin:0;color:var(--muted);font-size:.95rem}
-.ask a{color:var(--navy);font-weight:750}
+/* Centrado, y es lo último que se ve de la página: cierra en vez de
+   ser una tarjeta más de la lista. La raya de acento pasa de la
+   izquierda a arriba — una barra lateral tira del ojo hacia ese
+   lado y pelea con el centrado— y se pone naranja, que es el color
+   con el que el sitio marca lo que hay que tocar.
+
+   El párrafo lleva su propio ancho máximo en ch. Texto centrado y
+   largo es de lo que peor se lee: el ojo pierde dónde empieza el
+   renglón siguiente. A 42 caracteres no da tiempo a perderse. */
+.ask{background:#fff;border:1px solid var(--linea);border-top:4px solid var(--orange);
+  border-radius:16px;padding:28px 24px 30px;margin:40px auto 0;max-width:560px;
+  text-align:center;box-shadow:0 8px 25px #17243808}
+.ask b{display:block;font-size:.78rem;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--navy);margin-bottom:10px}
+.ask p{margin:0 auto;color:var(--muted);font-size:.95rem;line-height:1.6;max-width:42ch}
+.ask a{color:var(--navy);font-weight:750;text-decoration:none;
+  border-bottom:2px solid var(--orange);padding-bottom:1px}
+.ask a:hover{color:var(--orange);border-bottom-color:var(--navy)}
 
 /* ── Botones ──────────────────────────────────────────────────── */
 .btn,.cta{display:inline-block;border:0;border-radius:9px;padding:14px 22px;
