@@ -4,7 +4,7 @@
    Es el único camino de conversión de la portada, así que lo que
    importa es que entre y que entre bien etiquetada: los dos
    productos escriben en bw_requests y sin la etiqueta una solicitud
-   de Hooporia le llega al admin idéntica a una de Cada Punto.
+   de Cada Punto Cuenta le llega al admin idéntica a una de Cada Punto.
 
    Y que la licencia se acepte a mano. Sin el visto, no se manda.
    ════════════════════════════════════════════════════════════════ */
@@ -61,9 +61,13 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
       'nadie tiene que reportar ni que le crean');
   has(txt, /Antes de la ventana/,              'los pasos van por ventana, no por día');
   has(txt, /una sola corrida oficial/,         'una sola corrida oficial');
-  has(txt, /por equipo y por evento/,          'la licencia, por evento');
+  /* El HECHO —se licencia por evento— y no la frase con la que se
+     decia. Esta linea pedia "por equipo y por evento", que ademas
+     de ser la frase vieja llevaba dentro el precio de dos
+     peldaños. El numero lo vigila prueba-precio.js. */
+  has(txt, /licencia por evento|licencia <b>por evento/i, 'la licencia, por evento');
   not(txt, /catorce días|día quince|día 1/i,   'sin los días del otro producto');
-  not(txt, /Cada Punto/,                       'sin el nombre del otro producto');
+  not(txt, /\bHooporia\b/i,                    'sin el nombre retirado');
   not(txt, /deducib|impuesto/i,                'ni una palabra de impuestos');
 
   /* El paso dos pedía la plantilla: "nos pasas tu plantilla". Aquí
@@ -75,7 +79,10 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
   has(txt, /se dan de alta solos/,             'los jugadores se dan de alta solos');
   has(txt, /No nos mandas ninguna lista/,      'y se dice que no se manda ninguna lista');
   has(txt, /tú apruebas quién queda dentro/,   'con el entrenador aprobando');
-  has(txt, /no tiene que ser sólo el equipo/,  'y abierto a más que la plantilla');
+  /* Lo que importa es que se diga que corre mas gente que la
+     plantilla, no con que palabra. "El equipo" paso a "la
+     plantilla" cuando la pagina dejo de hablarle solo a un equipo. */
+  has(txt, /no tiene que ser sólo (el equipo|la plantilla)/, 'y abierto a más que la plantilla');
   not(txt, /[Nn]os pasas tu plantilla|[Mm]ándanos|[Pp]ásanos (tu|la) plantilla/,
       'y en ningún sitio se le piden los nombres al entrenador');
 
