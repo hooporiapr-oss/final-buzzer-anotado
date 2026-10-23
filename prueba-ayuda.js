@@ -31,7 +31,7 @@ const PROHIBIDO = [
   [/día quince|day fifteen/i,              'el día quince'],
   [/marcador final|final score/i,          'un marcador final'],
   [/lo reportas tú|you report the score/i, 'que el entrenador reporte el marcador'],
-  [/Cada Punto/,                           'el nombre del otro producto'],
+  [/\bHooporia\b/i,                       'el nombre retirado'],
   [/cincuenta centavos|fifty cents/i,      'el mínimo de cincuenta centavos, que aquí no existe'],
   [/puntos del equipo|points the team/i,   'promesas por los puntos del equipo'],
 ];
@@ -89,7 +89,13 @@ const PROHIBIDO = [
          [/una sola corrida oficial/,            'una sola corrida oficial'],
          [/la segunda la rechaza la base de datos/, 'y la segunda la rechaza la base'],
          [/Tú pones la ventana/,                 'la ventana la pone el programa'],
-         [/por equipo, por reto/,                'la licencia, por reto'],
+         /* Se comprueba QUE SE LICENCIA POR EVENTO, no la frase con
+            la que se decia. Esta linea pedia "por equipo, por reto",
+            que era el precio de dos peldanos, y fallo el dia que el
+            FAQ paso a la escalera — una prueba quejandose de que la
+            pagina se puso al dia. El precio en si lo vigila
+            prueba-precio.js, contra la escalera de index.html. */
+         [/se licencia por evento/,              'la licencia, por evento'],
          [/45 puntos son \$4\.50/,               'el ejemplo del padrino, con su cuenta'],
          [/No decimos que lo sea/,               'impuestos: no decimos que lo sea'],
          [/no los escribió una persona/,         'por qué los puntos son de verdad']]
@@ -97,7 +103,7 @@ const PROHIBIDO = [
          [/one official run/,                    'one official run'],
          [/the database refuses the second/,     'and the database refuses the second'],
          [/You set the window/,                  'the program sets the window'],
-         [/per team, per challenge/,             'licensed per challenge'],
+         [/licensed per event/,                  'licensed per event'],
          [/45-point run is \$4\.50/,             'the padrino example, with its sum'],
          [/We do not say that it is/,            'tax: we do not say that it is'],
          [/a person did not write them/,         'why the points are real']];
