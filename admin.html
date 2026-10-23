@@ -596,7 +596,16 @@ $('crearCodigo').onclick = function(){
 
   /* El código se arma aquí y se enseña una vez: la base sólo guarda
      su hash, así que si no se copia ahora no se recupera nunca. */
-  var recien = 'HOO-' + Math.random().toString(36).slice(2,8).toUpperCase();
+  /* El prefijo es lo unico de la marca que un entrenador se lleva
+     escrito. Era HOO- y se quedo asi al cambiar el sitio a Cada
+     Punto Cuenta: ninguna prueba lo vio porque no es texto de la
+     pagina, se arma aqui en el momento de crear el codigo. Y no se
+     corrige despues — el codigo se enseña UNA vez y la base solo
+     guarda su hash.
+
+     Los codigos que ya existen con HOO- siguen valiendo: se buscan
+     por su valor, no por su prefijo. */
+  var recien = 'CP-' + Math.random().toString(36).slice(2,8).toUpperCase();
   di('mCodigo', '…');
   rpc('bw_code_add', { p_label: label, p_code: recien, p_campaign: CAMP.id, p_build: true })
     .then(function(){
