@@ -45,11 +45,18 @@ const eq  = (a, b, m) => (a === b ? ok(m + (a ? ' → ' + a : ''))
    el chat y con el la unica llamada que hacia. Una pagina que no
    pide nada no puede tirar el cuerpo de un error.
 
-   Fuera de esta lista hay cinco que si piden y NO leen el cuerpo:
-   admin.html, prometer.html y los tres tableros del juego. Queda
-   escrito aqui para que se mire a proposito y no por sorpresa. */
+   prometer.html entro el 23 de octubre, y era la peor que faltaba:
+   es la pagina donde promete un padrino. Cualquier fallo —tambien
+   uno de la base— le salia como "parece que es tu internet", y de
+   la razon no quedaba rastro en ningun sitio. Su carga ademas
+   reintenta cada cuatro segundos, asi que un enlace mal copiado
+   daba vueltas en silencio.
+
+   Siguen fuera cuatro que si piden y no leen el cuerpo: admin.html
+   y los tres tableros del juego. Queda escrito aqui para que se
+   mire a proposito y no por sorpresa. */
 const PAGINAS = ['equipo.html','jugador.html','mi-equipo.html',
-                 'plantilla.html','reporte.html','tablero.html'];
+                 'plantilla.html','prometer.html','reporte.html','tablero.html'];
 
 console.log('\n1 · Ninguna página tira el cuerpo del error\n');
 for (const p of PAGINAS) {
