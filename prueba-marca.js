@@ -46,7 +46,7 @@
    ── Y al revés ───────────────────────────────────────────────────
    No basta con que no esté el nombre malo: una página que perdiera
    el nombre bueno pasaría esta prueba callada. Así que también se
-   exige que cada página diga 'Hooporia' —en cualquier caja, que la
+   exige que cada página diga 'Cada Punto Cuenta' —en cualquier caja, que la
    cabecera va en versales— al menos una vez.
 
    Lo que va en un comentario no cuenta: no lo lee un entrenador.
@@ -101,15 +101,19 @@ const PROHIBIDOS = [
     malo: (hit) => hit !== hit.toLowerCase()
   },
   {
-    nombre: '"Cada Punto" (el otro producto)',
-    re: /\bcada\s+punto\b/gi,
-    // La segunda palabra es la que hace marca: "cada punto" y
-    // "Cada punto" son castellano; "Cada Punto" y "CADA PUNTO" no.
-    malo: (hit) => /\s[A-Z]/.test(hit)
+    nombre: '"Hooporia" (nombre retirado)',
+    re: /\bhooporia\b/gi,
+    /* No se perdona ninguna forma. No es una palabra castellana: si
+       aparece, es el nombre viejo que se quedó. La única excepción
+       está fuera del texto, en hooporia-server.onrender.com, y es la
+       dirección de un servicio de Render — se comprueba más abajo
+       que ninguna PÁGINA diga el nombre, y el servidor se mira en
+       prueba-servidores.js. */
+    malo: () => true
   },
   {
-    nombre: 'cadapunto.com',
-    re: /cadapunto\.com/gi,
+    nombre: 'hooporia.com (dominio retirado)',
+    re: /hooporia\.com/gi,
     malo: () => true
   }
 ];
@@ -127,35 +131,62 @@ function buscar(cadena){
 }
 
 /* ── La marca, por dónde está y no por cómo se escribe ────────────
-   Buscar nombres no basta, y la prueba de mutación lo enseñó: la
-   marca de Cada Punto va escrita en MINÚSCULA en el código
-   —cada&nbsp;<em>punto</em>&nbsp;<i>cuenta</i>— y la pinta en
-   versales el CSS. Por caja es idéntica al castellano corriente
-   "cada punto", así que perdonar la minúscula —que hay que
-   perdonarla, está en varias frases— es perdonar justo la marca
-   ajena entera.
+   ESTA COMPROBACIÓN ES LA QUE MANDA, y desde el 22 de octubre de
+   2026 es casi la única que puede mandar.
+
+   Mientras la marca fue "Hooporia" se podía contar la palabra: no
+   existe en castellano, así que cada aparición era la marca. "Cada
+   Punto Cuenta" no es así. Es una frase corriente —"cada punto
+   cuenta" lo dice padrinos.html hablando de promesas, y lo dice
+   bien— y además es LITERALMENTE de lo que va el producto: una
+   promesa por cada punto. Contar las palabras aquí no distingue la
+   marca del castellano, y nunca va a distinguirla.
 
    Lo que la distingue no son las palabras: es el sitio. Es lo que
-   hay dentro del elemento de marca. Así que eso se comprueba
-   aparte: lo que lea una persona en la esquina de la página tiene
-   que ser HOOPORIA. y nada más. Sea cual sea la caja, sea cual sea
-   la etiqueta que lo parta por dentro.
+   hay dentro del elemento de marca. Lo que lea una persona en la
+   esquina de la página tiene que ser CADA PUNTO CUENTA. y nada
+   más — sea cual sea la caja, sea cual sea la etiqueta que lo
+   parta por dentro.
 
    Las tres páginas del juego no llevan ese elemento —son lienzo— y
    salen dichas por su nombre, que un hueco en silencio es como
    empezó todo esto. */
-const MARCA_ESPERADA = 'HOOPORIA.';
+const MARCA_ESPERADA = 'CADA PUNTO CUENTA.';
 function marca(s){
   const m = /<a[^>]*class="(?:mark|brand)"[^>]*>([\s\S]*?)<\/a>/i.exec(s);
   if (!m) return null;
-  return texto(m[1]).replace(/\s+/g, '');
+  /* Los huecos se APRIETAN, no se borran. Antes se borraban todos,
+     y con una marca de una palabra daba igual: HOOPORIA partida en
+     <em>HOOPO</em><i>RIA</i> tenía que comparar igual que entera.
+     Con tres palabras borrarlos devuelve CADAPUNTOCUENTA. y la
+     prueba canta dieciséis páginas que están bien.
+
+     Apretando se consiguen las dos cosas: el salto de línea entre
+     etiquetas y el &nbsp; cuentan como un hueco, y la marca sigue
+     comparando igual la escriba quien la escriba. */
+  return texto(m[1])
+           .replace(/\s+/g, ' ')
+           /* Y el punto se vuelve a pegar. Va en su propia etiqueta
+              —<i>.</i>, que el CSS pinta en naranja— así que al
+              quitar etiquetas queda un hueco delante y la marca sale
+              "CADA PUNTO CUENTA ." con un espacio que nadie ve en la
+              página. Eso es un artefacto de leer el código, no una
+              marca mal escrita. */
+           .replace(/\s+([.!?])/g, '$1')
+           .trim();
 }
 
 const archivos = fs.readdirSync(__dirname).filter(f => /\.html$/.test(f)).sort();
 console.log(archivos.length + ' páginas\n');
 
 for (const f of archivos){
-  const limpio = sinComentarios(fs.readFileSync(path.join(__dirname, f), 'utf8'));
+  /* Fuera la dirección del servicio de Render antes de buscar
+     nombres. Lleva "hooporia" dentro y no es marca: es el host al
+     que llaman cuatro páginas, y renombrarlo cambiaría la url del
+     webhook de Stripe. Que ninguna página lo diga de más se
+     comprueba en prueba-servidores.js, que es su sitio. */
+  const limpio = sinComentarios(fs.readFileSync(path.join(__dirname, f), 'utf8'))
+                   .split('hooporia-server.onrender.com').join('EL-SERVIDOR');
 
   /* Las dos vistas: lo que se lee en pantalla y el código en crudo
      con sus atributos. Lo que salte en cualquiera de las dos cuenta,
@@ -171,8 +202,15 @@ for (const f of archivos){
     for (const e of buscar(cadena)) encontrados.push(donde + ': ' + e);
   }
 
-  const nuestro = (texto(limpio).match(/hooporia/gi) || []).length
-                + (atributos(limpio).match(/hooporia/gi) || []).length;
+  /* La cuenta, ahora floja a propósito. Con "Hooporia" cada
+     aparición era la marca; con "cada punto cuenta" no se puede
+     saber si lo que se contó es la marca o una frase sobre promesas.
+     Se deja porque una página que no dice el nombre NI LLEVA
+     elemento de marca sigue siendo un fallo que conviene cantar —
+     pero el que de verdad comprueba la marca es el bloque de arriba,
+     y es el que hay que mirar cuando esto falle. */
+  const nuestro = (texto(limpio).match(/cada\s+punto\s+cuenta/gi) || []).length
+                + (atributos(limpio).match(/cada\s+punto\s+cuenta/gi) || []).length;
 
   /* El elemento de marca, que es lo que mira una persona primero. */
   const m = marca(limpio);
@@ -193,15 +231,15 @@ for (const f of archivos){
       }
     }
   } else if (!nuestro){
-    mal(f + ': no dice "Hooporia" en ningún sitio visible');
+    mal(f + ': no dice "Cada Punto Cuenta" en ningún sitio visible');
   } else {
-    ok(f + ' (' + nuestro + ' × Hooporia' +
+    ok(f + ' (' + nuestro + ' × Cada Punto Cuenta' +
        (m === null ? ', sin elemento de marca' : '') + ')');
   }
 }
 
 /* ── Que las imágenes de marca estén, y existan ──────────────────
-   Una página puede nombrar a Hooporia perfectamente y seguir saliendo
+   Una página puede nombrar a Cada Punto Cuenta perfectamente y seguir saliendo
    en blanco cuando un entrenador la manda por WhatsApp. Esto mira las
    dos cosas que deciden eso: que cada página apunte al icono y a la
    imagen de compartir, y que los dos ficheros existan de verdad.
@@ -210,7 +248,7 @@ for (const f of archivos){
    resuelven rutas relativas, así que una relativa da exactamente la
    misma vista previa en blanco que no poner nada — y pasaría
    cualquier prueba que sólo mirara si la etiqueta está. */
-const IMAGENES = ['hooporia.png', 'hooporia-share.jpg'];
+const IMAGENES = ['logo.png', 'compartir.jpg'];
 console.log('');
 for (const img of IMAGENES){
   fs.existsSync(path.join(__dirname, img))
@@ -219,8 +257,8 @@ for (const img of IMAGENES){
 }
 for (const f of archivos){
   const s = fs.readFileSync(path.join(__dirname, f), 'utf8');
-  const icono = /<link[^>]+rel="icon"[^>]+href="hooporia\.png"/.test(s);
-  const abs   = /og:image"[^>]+content="https:\/\/hooporia\.com\/hooporia-share\.jpg"/.test(s);
+  const icono = /<link[^>]+rel="icon"[^>]+href="logo\.png"/.test(s);
+  const abs   = /og:image"[^>]+content="https:\/\/cadapunto\.com\/compartir\.jpg"/.test(s);
   const rel   = /og:image"[^>]+content="(?!https?:)/.test(s);
   /* La imagen de compartir se exige donde compartir el enlace tiene
      sentido. Una página marcada noindex —el admin— no se manda por
@@ -234,7 +272,31 @@ for (const f of archivos){
 }
 if (!fallos) ok('cada página lleva su icono, y las públicas su imagen de compartir');
 
+/* ── El prefijo del codigo que se lleva el entrenador ────────────
+   Es lo unico de la marca que alguien copia a mano y vuelve a
+   teclear, y es el unico sitio donde la marca NO es texto de la
+   pagina: se arma en JavaScript en el momento de crear el codigo.
+   Por eso sobrevivio al cambio de nombre — todo lo demas se leia en
+   el marcado y esto no.
+
+   Y no se arregla despues: el codigo se enseña una vez y la base
+   solo guarda su hash, asi que un prefijo equivocado se va con el
+   entrenador y no vuelve. */
+console.log('');
+{
+  const a = fs.readFileSync(path.join(__dirname, 'admin.html'), 'utf8');
+  const m = a.match(/var recien = '([A-Z]+)-'/);
+  if (!m) mal('no encuentro el prefijo del codigo en admin.html');
+  else {
+    const p = m[1];
+    const retiradas = ['HOO', 'HOOP', 'ANOT', 'APOY'];
+    retiradas.indexOf(p) === -1
+      ? ok('el codigo del entrenador empieza por ' + p + '-, y no por una marca retirada')
+      : mal('el codigo del entrenador todavia empieza por ' + p + '-');
+  }
+}
+
 console.log('\n' + (fallos === 0
-  ? '✓ todas las páginas dicen Hooporia, nombran sus imágenes y ninguna nombra otra marca'
+  ? '✓ todas las páginas dicen Cada Punto Cuenta, nombran sus imágenes y ninguna nombra otra marca'
   : '✗ ' + fallos + ' página(s) con problema de marca'));
 process.exit(fallos === 0 ? 0 : 1);
