@@ -169,7 +169,12 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   else {
     btn.href==='equipo.html' ? ok('el botón del precio va a equipo.html')
                              : mal('el botón del precio va a '+btn.href);
-    /^Solicitar registro de equipo$/.test(btn.texto)
+    /* Que el boton INSCRIBA y que vaya en español, no la palabra
+       exacta: "equipo" paso a "programa" el 23 de octubre, porque la
+       pagina de alta ya inscribe programas y el boton que lleva a
+       ella decia otra cosa. Lo que no puede pasar es que salga en
+       ingles con la pagina en español, que es el fallo de verdad. */
+    /^Solicitar registro de (equipo|programa)$/.test(btn.texto)
       ? ok('con su texto en español → '+btn.texto)
       : mal('el botón salió con el texto "'+btn.texto+'"');
   }
@@ -218,8 +223,8 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(ven,/The invoice comes after the results do/,'with its heading');
   has(ven,/Nothing up front/,'and nothing up front');
   has(ven,/No pledges, no fee/,'the promise, in English');
-  eqTexto(await p.$eval('#precio a.button', e=>e.textContent.trim()),
-          'Request Team Registration', 'and the button says it in English too');
+  has(await p.$eval('#precio a.button', e=>e.textContent.trim()),
+      /^Request (Team|Program) Registration$/, 'and the button says it in English too');
   has(ven,/records no pledges is never invoiced/,'and what it means');
   not(ven,/out of what you raise|once you have been paid/i,
       'and nowhere does it say the fee comes out of what was raised');
