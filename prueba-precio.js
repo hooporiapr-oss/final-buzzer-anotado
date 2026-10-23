@@ -1,615 +1,207 @@
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Ayuda del entrenador — Cada Punto Cuenta</title>
-<meta name="robots" content="noindex,nofollow">
+/* ══════════════════════════════════════════════════════════════════
+   EL PRECIO DICE LO MISMO EN TODAS PARTES
 
-<!-- El icono y la imagen de compartir. og:image va en absoluto
-     a propósito: WhatsApp y los demás no resuelven rutas
-     relativas, y con una relativa la vista previa sale en
-     blanco igual que sin imagen. -->
-<link rel="icon" type="image/png" href="logo.png">
-<link rel="apple-touch-icon" href="logo.png">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Cada Punto Cuenta">
-<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21">
-<meta name="twitter:card" content="summary_large_image">
-<style>
-/* ── El look nuevo: crema, navy y naranja ─────────────────────────
-   El mismo de la portada, mi-equipo y equipo. Cambia la piel: el
-   marcado y el acordeon se quedaron como estaban. */
-:root{
-  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
-  --cream:#faf8f4; --ink:#1b2937; --muted:#617083;
-  --linea:#e7e6e2; --bad:#b4231c; --good:#0b7a5a;
-}
-*{box-sizing:border-box}
-html{background:var(--cream)}
-body{margin:0;background:var(--cream);color:var(--ink);
-  font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
-  line-height:1.6;-webkit-text-size-adjust:100%}
-.wrap{width:min(760px,calc(100% - 40px));margin:0 auto}
+   El precio vive en cuatro sitios: la escalera de index.html, los
+   términos, la divulgación del dinero y el admin. Son cuatro copias
+   de un número que un día va a cambiar, y nada obligaba a que
+   cambiaran juntas.
 
-header{background:var(--navy);color:#fff;border-bottom:1px solid #ffffff22;
-  padding-top:env(safe-area-inset-top,0px)}
-header .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 0}
-.mark{font-weight:900;letter-spacing:.07em;text-transform:uppercase;
-  font-size:1.05rem;color:#fff;text-decoration:none;white-space:nowrap}
-.mark em{font-style:normal;color:#fff}
-.mark i{font-style:normal;color:var(--orange)}
-/* La marca pasó de una palabra a tres el 22 de octubre de 2026, y
-   en la barra de 320px ya no cabía: con la hamburguesa y el botón
-   de acción al lado pedía 339px de los 320 que hay.
+   Ya pasó con el piso de $5: estaba en 50 centavos en el servidor y
+   en $5 en la página, y un padrino cuya promesa daba $2 leía que no
+   debía nada y recibía un aviso pidiéndole $2. Un precio desfasado
+   es peor: es lo que una escuela va a leer antes de firmar.
 
-   Se arregla por el ESPACIADO antes que por el tamaño. Dieciocho
-   letras a .07em son casi veinte píxeles de aire, que es justo lo
-   que sobraba; quitando casi todo ese aire la marca cabe sin tener
-   que encogerla hasta que no se lea. El tamaño baja un poco también,
-   pero poco. */
-@media(max-width:380px){ .mark{font-size:.92rem} }
-@media(max-width:430px){ .mark{font-size:.84rem;letter-spacing:.015em} }
-.langb{border:1px solid #ffffff55;background:transparent;color:#fff;
-  padding:8px 11px;border-radius:7px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
-.langb:hover{border-color:var(--orange);color:var(--orange)}
+   Así que la escalera de index.html manda —es la que se pinta y la
+   que lee un entrenador— y esto comprueba que las otras tres no la
+   contradigan.
 
-/* ── La foto de arriba, con el titular encima ─────────────────── */
-.hero{position:relative;margin:0 0 30px;overflow:hidden;background:var(--navy)}
-.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5}
-.hero .scrim{position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(180deg,#101c2aaa 0%,#101c2aee 100%)}
-.hero .ht{position:relative;width:min(760px,calc(100% - 40px));margin:0 auto;
-  padding:clamp(34px,8vw,64px) 0}
-.hero h1{color:#fff;font-size:clamp(1.9rem,5.4vw,2.9rem);line-height:1.08;
-  letter-spacing:-.045em;margin:0 0 10px}
-.hero .lede{color:#c8d2dd;margin:0;max-width:52ch;font-size:1.05rem}
+   Y comprueba la escalera por dentro, que es donde se cuela un
+   error que nadie ve: peldaños que se solapan, un hueco entre dos,
+   o un precio que baja cuando la plantilla sube.
 
-main{padding-bottom:50px}
-h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.1;letter-spacing:-.04em;margin:0 0 12px}
-h2{font-size:1.1rem;letter-spacing:.01em;margin:38px 0 6px;
-  color:var(--orange);text-transform:uppercase;font-weight:800;font-size:.78rem;
-  letter-spacing:.14em}
-.lede{color:var(--muted);margin:0 0 24px;max-width:56ch}
-.hint,.cp,.who,.sub,.nota{color:var(--muted);font-size:.88rem}
+       node prueba-precio.js
+   ══════════════════════════════════════════════════════════════════ */
+'use strict';
+const fs = require('fs');
+const path = require('path');
 
-/* ── El acordeón de preguntas ─────────────────────────────────── */
-details{background:#fff;border:1px solid var(--linea);border-radius:14px;
-  margin:0 0 10px;box-shadow:0 8px 25px #17243806;overflow:hidden}
-details[open]{border-color:#d7dbd7}
-summary{cursor:pointer;list-style:none;padding:17px 20px 17px 46px;position:relative;
-  font-weight:750;font-size:1rem;letter-spacing:-.01em}
-summary::-webkit-details-marker{display:none}
-summary::before{content:"+";position:absolute;left:19px;top:50%;transform:translateY(-50%);
-  color:var(--orange);font-weight:900;font-size:1.15rem;line-height:1}
-details[open] summary::before{content:"–"}
-details[open] summary{color:var(--navy)}
-.a{padding:0 20px 18px 46px}
-.a p{margin:0 0 11px;color:var(--muted);font-size:.97rem}
-.a p:last-child{margin-bottom:0}
-.a b{color:var(--ink);font-weight:750}
-.a a{color:var(--navy);font-weight:700}
-.a code{background:var(--cream);border:1px solid var(--linea);border-radius:5px;
-  padding:1px 6px;font-size:.9em}
+let fallos = 0;
+const ok  = (m) => console.log('  ok   ' + m);
+const mal = (m) => { fallos++; console.log('  MAL  ' + m) };
+const si  = (v, m) => (v ? ok(m) : mal(m));
+const leer = (f) => fs.readFileSync(path.join(__dirname, f), 'utf8');
 
+/* La escalera, sacada de index.html tal cual se despliega. */
+const idx = leer('index.html');
+const i = idx.indexOf('const TARIFAS = [');
+if (i < 0) { console.log('  MAL  no encuentro TARIFAS en index.html'); process.exit(1) }
+const j = idx.indexOf('];', i);
+const TARIFAS = new Function('return ' + idx.slice(idx.indexOf('[', i), j + 1))();
 
-/* ── Si no encuentras lo tuyo ─────────────────────────────────── */
-.ask{background:#fff;border:1px solid var(--linea);border-left:5px solid var(--navy);
-  border-radius:16px;padding:20px 22px;margin:32px 0 0;box-shadow:0 8px 25px #17243808}
-.ask b{display:block;font-size:.76rem;font-weight:800;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--navy);margin-bottom:8px}
-.ask p{margin:0;color:var(--muted);font-size:.95rem}
-.ask a{color:var(--navy);font-weight:750}
+console.log('\n1 · La escalera, por dentro\n');
+{
+  si(TARIFAS.length >= 2, 'tiene ' + TARIFAS.length + ' peldaños');
 
-/* ── Botones ──────────────────────────────────────────────────── */
-.btn,.cta{display:inline-block;border:0;border-radius:9px;padding:14px 22px;
-  background:var(--orange);color:#111a24;font:inherit;font-weight:800;font-size:1rem;
-  cursor:pointer;text-decoration:none;text-align:center}
-.btn.line{background:transparent;color:var(--navy);border:1px solid var(--navy)}
-.btn.line:hover{background:var(--navy);color:#fff}
-.btn:hover,.cta:hover{opacity:.92}
-.btn:disabled,.btn[disabled]{opacity:.5;cursor:default}
+  /* Monótona: si la plantilla sube, el precio no puede bajar. Un
+     peldaño más barato que el anterior es una invitación a apuntar
+     a un nene de más para pagar menos. */
+  let sube = true, precios = [];
+  TARIFAS.forEach(p => { if (p.precio !== null) precios.push(p.precio) });
+  for (let k = 1; k < precios.length; k++) if (precios[k] <= precios[k-1]) sube = false;
+  si(sube, 'el precio sube con la plantilla, peldaño a peldaño (' +
+     precios.map(x => '$' + x).join(' → ') + ')');
 
-footer{background:#0a1420;color:#aeb9c6;padding:26px 0 calc(26px + env(safe-area-inset-bottom,0px));
-  text-align:center;font-size:.86rem}
-footer a{color:#aeb9c6;text-decoration:none}
-footer a:hover{color:var(--orange)}
-footer .f-dot{padding:0 8px;opacity:.45}
-
-/* ══ La barra, el menú y el idioma ══════════════════════════════════
-   Puesto al final de la hoja a propósito: lo que haya escrito arriba
-   sobre header, .bar o .langb queda debajo de esto.
-
-   --barra tiene que ser la MISMA altura en los dos sitios donde se
-   usa: el hueco que deja scroll-padding para que un ancla no quede
-   detrás de la cabecera, y el punto donde arranca el panel. */
-:root{--barra:66px}
-html{scroll-padding-top:calc(var(--barra) + 10px)}
-/* overflow-x en el body y no sólo en html: en Safari de iOS, html
-   solo no lo sujeta y basta un elemento ancho para arrastrar la
-   página de lado. */
-body{overflow-x:hidden}
-header{position:sticky;top:0;z-index:100;
-  padding-top:env(safe-area-inset-top,0px)}
-header .bar{min-height:var(--barra);padding:0;gap:10px}
-/* El botón del idioma dice el idioma AL QUE lleva, no el que está
-   puesto. Por eso necesita sitio para una palabra y no para dos
-   letras, y nowrap para que «Español» no se parta en dos líneas. */
-.langb,#lang{white-space:nowrap;min-height:40px;font-size:.85rem;
-  padding:0 12px;border-radius:9px;font-family:inherit}
-.barra-dcha{display:flex;align-items:center;gap:8px;flex-shrink:0}
-
-/* Las rayas se pintan con currentColor, no con blanco: prometer.html
-   tiene la barra en crema con la marca en navy, y unas rayas
-   blancas ahí no se ven. Heredando el color de la barra valen para
-   las dos, y para la próxima página que cambie de fondo. Lo
-   encontró una captura, no la prueba: la prueba miraba que el botón
-   estuviera, no que se viera. */
-/* El color de las rayas sale de la barra, y la barra de estas
-   páginas no declaraba ninguno: heredaban la tinta del cuerpo
-   —navy sobre navy— y el botón se veía con 1.2:1 de contraste,
-   que es no verse. Barra navy, tinta blanca. */
-header{color:#fff}
-.hamb{display:none;width:44px;height:44px;flex:0 0 44px;color:inherit;
-  border:1px solid currentColor;background:transparent;border-radius:9px;
-  cursor:pointer;padding:0;align-items:center;justify-content:center}
-@supports (border-color: color-mix(in srgb, currentColor 45%, transparent)){
-  .hamb{border-color: color-mix(in srgb, currentColor 45%, transparent)}
-}
-.hamb:hover{border-color:var(--orange);color:var(--orange)}
-/* color:inherit en la propia raya y no sólo en el botón: privacy
-   y terms traen un `strong,b{color:var(--ink)}` para el texto, y
-   currentColor dentro de un <b> resuelve al color DEL <b>, no al
-   del padre. Las rayas salían navy sobre navy. */
-.hamb b{display:block;width:20px;height:2px;color:inherit;
-  background:currentColor;border-radius:2px;
-  position:relative;transition:background .18s ease}
-.hamb b::before,.hamb b::after{content:'';position:absolute;left:0;
-  width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform .18s ease}
-.hamb b::before{top:-6px}
-.hamb b::after{top:6px}
-.hamb[aria-expanded="true"] b{background:transparent}
-.hamb[aria-expanded="true"] b::before{transform:translateY(6px) rotate(45deg)}
-.hamb[aria-expanded="true"] b::after{transform:translateY(-6px) rotate(-45deg)}
-
-.menu{position:absolute;left:0;right:0;top:100%;
-  display:flex;flex-direction:column;align-items:stretch;
-  background:var(--navy);border-bottom:1px solid #ffffff22;
-  /* Cerrado con max-height para que tenga transición, y con
-     visibility para que el teclado no se meta dentro: max-height
-     sola deja los enlaces tabulables en un panel invisible. */
-  max-height:0;visibility:hidden;overflow:hidden;
-  transition:max-height .22s ease,visibility .22s}
-.menu.abierto{max-height:80vh;visibility:visible;overflow:auto}
-.menu a{display:flex;align-items:center;min-height:52px;
-  padding:0 max(20px,calc((100vw - 900px)/2 + 20px));
-  color:#fff;text-decoration:none;font-weight:600;font-size:1rem;
-  border-top:1px solid #ffffff14}
-.menu a:first-child{border-top:0}
-.menu a:hover{color:var(--orange)}
-.menu a.cta{margin:14px 20px 18px;justify-content:center;border-top:0;
-  background:var(--orange);color:#111a24;font-weight:800;border-radius:9px}
-.menu a.cta:hover{color:#111a24}
-/* Las rayas se ven siempre: estas páginas no tienen enlaces en la
-   barra en ningún tamaño, así que el menú es la única puerta y
-   esconderlo en escritorio dejaría la página sin salida otra vez. */
-.hamb{display:flex}
-@media(max-width:430px){
-:root{--barra:60px}
-.langb,#lang{padding:0 10px;font-size:.8rem}
-}
-</style>
-</head>
-<body>
-
-<header>
-  <div class="wrap bar">
-    <a class="mark" href="index.html"><em>CADA PUNTO CUENTA</em><i>.</i></a>
-    <nav class="menu" id="menu">
-      <a href="index.html" data-m="inicio">Home</a>
-      <a href="index.html#how" data-m="como">How it works</a>
-      <a href="index.html#precio" data-m="precio">What it costs</a>
-      <a href="ayuda.html" data-m="ayuda">Questions</a>
-      <a href="mi-equipo.html" data-m="mia">My team</a>
-      <a class="cta" href="equipo.html" data-m="alta">Sign up a team</a>
-    </nav>
-    <div class="barra-dcha">
-      <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
-      <button class="hamb" id="hamb" type="button" aria-controls="menu" aria-expanded="false"><b></b></button>
-    </div>
-  </div>
-</header>
-
-<main>
-  <div id="head"></div>
-  <div class="wrap">
-  <div id="app"></div>
-  </div>
-</main>
-
-<footer>
-  <div class="wrap">
-    <a href="index.html">Cada Punto Cuenta</a><span class="f-dot">·</span>
-    <a href="terms.html" id="fTerms">Términos</a><span class="f-dot">·</span>
-    <a href="custodia.html">Dinero</a>
-  </div>
-</footer>
-
-<script>
-function esc(s){ return String(s==null?'':s)
-  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
-
-/* Cada pregunta: [sección, pregunta, respuesta en HTML]. El HTML de la
-   respuesta es nuestro, no de nadie de fuera, así que va tal cual. */
-var S={
-  es:{
-    h1:'Coach Cada Punto Cuenta',
-    lede:'Lo que preguntan los entrenadores y los padrinos.',
-    hint:'Si lo tuyo no está aquí, escríbenos — al final de la página.',
-    askB:'¿No está aquí?',
-    askP:'Escríbenos a <a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a> y dinos tu división. Contestamos el mismo día.',
-    terms:'Términos',
-    alt:'Una cancha de barrio en Puerto Rico de noche, vacía después de la lluvia, con un teléfono encendido en el banco',
-    secs:['Entrar','La plantilla','El reto','El tablero','El dinero','Si vas a prometer'],
-    qs:[
-      [0,'¿Dónde entro?',
-       '<p>En <a href="mi-equipo.html">Mi equipo</a>, con el código que te dimos.</p>'+
-       '<p>Lo escribes <b>una sola vez</b>. De ahí en adelante ese teléfono ya te conoce — para la plantilla, para el tablero, para todo.</p>'],
-      [0,'¿Tengo que escribir el código en cada página?',
-       '<p>No. Una vez, en Mi equipo, y listo.</p>'+
-       '<p>Si te lo vuelve a pedir es porque estás en otro teléfono, en otro navegador, o en una ventana privada. Escríbelo otra vez y ya.</p>'],
-      [0,'Perdí mi código.',
-       '<p>Escríbenos y te hacemos uno nuevo. No lo podemos buscar: se guarda cifrado, así que ni nosotros lo sabemos.</p>'],
-      [0,'Dice que mi código no sirve.',
-       '<p>Fíjate que no tenga espacios al principio o al final — al copiarlo y pegarlo se arrastran solos.</p>'+
-       '<p>Si sigue sin entrar, escríbenos. Puede que esté apagado.</p>'],
-
-      [1,'¿Cómo apunto a mis jugadores?',
-       '<p>De dos maneras, y las dos valen a la vez.</p>'+
-       '<p><b>Tú:</b> en <a href="plantilla.html">La plantilla</a>, pegas los nombres, uno por línea.</p>'+
-       '<p><b>Ellos:</b> mandas el enlace de apuntarse al grupo del equipo y cada familia se apunta sola. Ésa es la buena — cada nene recibe su propio enlace para sus padrinos, y tú no tecleas nada.</p>'],
-      [1,'Un nene se apuntó y no lo veo en la plantilla.',
-       '<p>Está esperando que tú digas que sí. Ábrela y lo verás arriba, en un recuadro anaranjado, con <b>Aprobar</b> y <b>Rechazar</b>.</p>'+
-       '<p>Mientras no lo apruebes no sale en ningún sitio. Es a propósito: con el enlace del equipo cualquiera podría apuntar a quien sea.</p>'],
-      [1,'Se fue un nene del equipo.',
-       '<p>En La plantilla, <b>Sacar</b>. Baja al final de la lista en gris y deja de salir en el tablero.</p>'+
-       '<p>No se borra, y vuelve con un toque si fue un error. Si de verdad quieres borrarlo, el botón <b>Borrar</b> sale después de sacarlo — menos si ya tiene promesas encima, que entonces no se puede y se queda fuera de la lista.</p>'],
-      [1,'Escribí mal un nombre.',
-       '<p><b>Arreglar</b>, en su fila. También puedes cambiarle la escuadra ahí mismo.</p>'],
-
-      [2,'¿Cómo funciona un reto?',
-       '<p>Tú pones la <b>ventana</b>: puede ser una tarde en el gimnasio o una semana con las familias jugando en su casa.</p>'+
-       '<p>Antes y durante la ventana, los nenes consiguen padrinos. Dentro de la ventana, cada uno hace su corrida. Al cerrar, la plataforma calcula el total de cada promesa y te deja el reporte. Lo revisas, pulsas mandar, y ahí le llega a cada padrino su aviso. Ahí el reto cierra.</p>'],
-      [2,'¿Cuánto dura todo esto?',
-       '<p>Lo que tú decidas. No hay una forma fija: la ventana la pones tú cuando te abrimos el reto.</p>'+
-       '<p>La parte nuestra se acaba al cerrarla: el total de cada promesa sale ese mismo momento, porque los puntos ya están anotados. De ahí en adelante el calendario es tuyo, porque el cobro es tuyo.</p>'+
-       '<p>Y se acaba. Un reto no se queda abierto: se abre, se juega, se reporta y se cierra.</p>'],
-      [2,'¿Hasta cuándo se puede prometer por un nene?',
-       '<p>Hasta que <b>él</b> empieza su corrida oficial. Ahí se cierran sus promesas, aunque la ventana siga abierta para los demás.</p>'+
-       '<p>Es a propósito: prometer sabiendo los puntos no es prometer. Los padrinos hay que buscarlos antes de sentarse a jugar.</p>'],
-      [2,'¿Puedo correr más de un reto?',
-       '<p>Sí, pero cada reto es su propio evento: sus propios padrinos, su propia licencia.</p>'+
-       '<p>Un consejo: la misma gente no promete diez veces en una temporada. Dos o tres retos bien hechos rinden más que ocho a medias.</p>'],
-
-      [3,'¿Quién pone el marcador?',
-       '<p>Nadie. <b>El juego lo anota solo.</b> Los puntos de cada nene se escriben mientras juega, desde su propio enlace de corrida.</p>'+
-       '<p>Eso es lo que hace a este reto distinto: no hay nada que reportar, nada que esperar, y nadie a quien haya que creerle.</p>'],
-      [3,'¿Puede un nene jugar dos veces para mejorar su número?',
-       '<p>No. Cada nene tiene <b>una sola corrida oficial</b>, y la segunda la rechaza la base de datos — no es una regla de buena fe, es que no cabe.</p>'+
-       '<p>Practicar sí, todo lo que quiera, y además conviene: a la corrida que cuenta se llega caliente. Lo que no se repite es la que cuenta.</p>'],
-      [3,'¿Dónde veo cómo van?',
-       '<p>En el tablero del equipo. El enlace se puede mandar: las familias lo abren y lo ven igual que tú.</p>'+
-       '<p>Ahí están tus nenes, lo que ha anotado cada uno, y quién todavía no ha jugado.</p>'],
-      [3,'¿Cuándo sale el total de cada promesa?',
-       '<p>Al cerrar la ventana, cuando tú lo mandas. Se calcula el total de cada padrino con su tope aplicado si mordió, te lo enseña el reporte, y al pulsar mandar le llega a cada uno su aviso con los puntos de su nene y su cantidad. No sale solo: sale cuando tú lo ves bueno.</p>'+
-       '<p>A ti te queda la lista: cada padrino con su nombre, su nene y su cantidad, para imprimir o bajar. Cobrar lo haces tú, por donde ya hablas con esa gente.</p>'],
-      [3,'A un nene le fue mal en su corrida.',
-       '<p>Sus padrinos pagan por los puntos que anotó, sean los que sean. Nadie pierde nada y nadie debe más por una mala corrida.</p>'+
-       '<p>Y la del vecino no cambia la suya: cada nene tiene sus propios padrinos y sus propios puntos.</p>'],
-
-      [4,'¿Ustedes le escriben a mis padrinos?',
-       '<p>Una sola vez, al cerrar el reto: cada padrino recibe los puntos de su nene y el total de su promesa. Sale solo, sin que nadie apriete nada.</p>'+
-       '<p>Ese aviso no trae enlace de pago, y después de ése no se vuelve a escribir: ni recordatorios, ni cobros, ni nada. Lo que sí trae es tu nombre y tu correo, para que un padrino que no sepa cómo pagarte te lo pueda preguntar a ti y no a nosotros.</p>'+
-       '<p>La lista completa te la damos a ti, y el cobro lo hablas con tu gente por donde ya hablas con ella.</p>'],
-      [4,'¿Cuándo me llega el dinero?',
-       '<p>Cuando tus padrinos te paguen. Va directo de ellos a ti.</p>'+
-       '<p>Nosotros no lo recibimos, no lo guardamos y no te lo remitimos, así que no hay fecha nuestra que esperar.</p>'],
-      [4,'¿Tengo que darles una cuenta?',
-       '<p>No. No te pedimos número de banco ni de ATH, porque nunca te vamos a mandar dinero.</p>'+
-       '<p>Cómo se trabaja la lista está en <a href="cobro.html">Cómo cobras</a>.</p>'],
-      [4,'¿Cuánto se quedan ustedes?',
-       '<p>Nada de lo que recaudes. Ese dinero no pasa por nuestras manos.</p>'+
-       '<p>Cada Punto Cuenta se licencia <b>por evento</b>: un cargo fijo que depende del tamaño de la plantilla, desde $29 la más chica hasta $599 la más grande, y por encima de eso se acuerda antes. La escala entera está en la portada. No es un por ciento de nada, no sale de ninguna promesa, y a tus padrinos no les cobramos nada.</p>'+
-       '<p>Se factura cuando cierra el evento, y se paga dentro de siete días. Nada por adelantado: primero tienes tu reporte, después te llega el cargo.</p>'+
-       '<p><b>Y si el evento no recoge ni una promesa, no se factura nada.</b> El cargo es por el resultado de las promesas; donde no hay ninguna, no hay nada que pagar.</p>'+
-       '<p>Ojo con una cosa, que es distinta: <b>lo prometido no es lo recaudado</b>. Nosotros anotamos lo prometido; lo que entre, y cuándo, depende de tu cobro.</p>'],
-      [4,'¿Un padrino puede terminar debiendo una fortuna?',
-       '<p>No, si pone su tope. El padrino pone lo máximo que quiere pagar cuando promete, y el tope manda, suba lo que suba el número.</p>'+
-       '<p>Vale la pena decírselo cuando le pidas: a mucha gente le quita el miedo de encima y promete más por punto.</p>'],
-      [4,'Un padrino me preguntó algo que no sé contestar.',
-       '<p>Baja a <b>Si vas a prometer</b>, al final de esta página: ahí está contestado lo que preguntan ellos — cuánto van a pagar, cuándo se sabe la cantidad, el tope, y a dónde va el dinero.</p>'+
-       '<p>Mandarles esta misma página contesta mejor que explicarlo de memoria. Y si es algo que no está ahí, pásanoslo y lo contestamos nosotros.</p>'],
-      [4,'¿Esto es deducible de impuestos?',
-       '<p>No decimos que lo sea. Gostar Digital LLC es una empresa con fines de lucro, no una organización sin fines de lucro, y no emitimos recibos para impuestos.</p>'+
-       '<p>Si a un padrino le importa cómo se trata su pago, que lo consulte con su asesor.</p>'],
-
-      /* De aquí para abajo no habla el entrenador: habla el padrino. Son
-         las preguntas que hace quien va a pagar, contestadas como se le
-         contestan a él y no como se le explican a un coach. Un
-         entrenador que no sabe qué decirle a una familia manda este
-         enlace y ya. */
-      [5,'¿Cuándo tengo que pagar?',
-       '<p>Después de que el nene juegue, nunca antes. Prometes una cantidad por punto, él hace su corrida, y al cerrar el reto el programa manda los avisos: te llega uno con sus puntos y tu cantidad.</p>'+
-       '<p>Le pagas directo al programa, por donde ellos te digan. Cada Punto Cuenta no cobra nada y no procesa pagos.</p>'],
-      [5,'¿Cuánto voy a pagar exactamente?',
-       '<p>Tu tarifa por los puntos que anotó <b>ese nene</b> en su corrida. A diez centavos el punto, una corrida de 45 puntos son $4.50.</p>'+
-       '<p>El aviso te trae el desglose: tu tarifa, los puntos y el tope si lo pusiste.</p>'],
-      [5,'¿Puedo poner un tope?',
-       '<p>Sí, y conviene. Al prometer pones lo máximo que quieres pagar y la cantidad nunca sale por encima de eso, anote lo que anote.</p>'],
-      [5,'¿Y si le va mal?',
-       '<p>Pagas por los puntos que anotó, sean los que sean. No hay bono por una buena corrida ni castigo por una mala: tu promesa es por los puntos.</p>'],
-      [5,'¿Cómo sé que esos puntos son de verdad?',
-       '<p>Porque no los escribió una persona: los anotó el juego mientras el nene jugaba, y la corrida se comprueba dentro de la base de datos.</p>'+
-       '<p>Y es una sola: la base rechaza una segunda corrida oficial del mismo nene. El número que te llega es el que salió, no el mejor de varios intentos.</p>'],
-      [5,'¿A dónde va el dinero?',
-       '<p>Al programa que escogiste, directo. Tu pago no pasa por Cada Punto Cuenta: no lo recibimos y no nos quedamos con nada de él.</p>'+
-       '<p>Lo que ese programa haga con lo recaudado es suyo, igual que cualquier otra contribución: a veces comparten parte con su liga o con el programa que los trajo. Eso es entre ellos.</p>'+
-       '<p>No se gana ni se rifa nada: es una contribución voluntaria cuya cantidad depende de los puntos.</p>']
-    ]
-  },
-  en:{
-    h1:'Coach Cada Punto Cuenta',
-    lede:'What coaches and padrinos ask.',
-    hint:'If yours is not here, write to us — at the bottom of the page.',
-    askB:'Not here?',
-    askP:'Write to <a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a> and tell us your division. We answer the same day.',
-    terms:'Terms',
-    alt:'A neighbourhood basketball court in Puerto Rico at night, empty after rain, with a phone glowing on the bench',
-    secs:['Signing in','The roster','The challenge','The board','The money','If you are pledging'],
-    qs:[
-      [0,'Where do I sign in?',
-       '<p>At <a href="mi-equipo.html">My team</a>, with the code we gave you.</p>'+
-       '<p>You type it <b>once</b>. From then on that phone knows you — for the roster, for the board, for everything.</p>'],
-      [0,'Do I have to type the code on every page?',
-       '<p>No. Once, at My team, and that is it.</p>'+
-       '<p>If it asks again you are on another phone, another browser, or a private window. Type it again and carry on.</p>'],
-      [0,'I lost my code.',
-       '<p>Write to us and we will make you a new one. We cannot look it up: it is stored encrypted, so not even we know it.</p>'],
-      [0,'It says my code does not work.',
-       '<p>Check for a space at the start or the end — copying and pasting drags them along.</p>'+
-       '<p>If it still will not go in, write to us. It may be switched off.</p>'],
-
-      [1,'How do I get my players on?',
-       '<p>Two ways, and both work at once.</p>'+
-       '<p><b>You:</b> at <a href="plantilla.html">The roster</a>, paste the names, one per line.</p>'+
-       '<p><b>They do:</b> send the sign-up link to the team group and each family adds itself. That is the good one — each child gets his own link for his padrinos, and you type nothing.</p>'],
-      [1,'A child signed up and I cannot see him on the roster.',
-       '<p>He is waiting on you. Open it and he is at the top, in an orange box, with <b>Approve</b> and <b>Decline</b>.</p>'+
-       '<p>Until you approve him he appears nowhere. That is deliberate: with the team link anybody could add anybody.</p>'],
-      [1,'A child left the team.',
-       '<p>On The roster, <b>Remove</b>. He drops to the bottom of the list in grey and stops appearing on the board.</p>'+
-       '<p>He is not deleted, and one tap brings him back if it was a mistake. If you really want him gone, <b>Delete</b> appears after removing him — unless he already has pledges on him, in which case he cannot be deleted and simply stays off the list.</p>'],
-      [1,'I spelled a name wrong.',
-       '<p><b>Fix</b>, on his row. You can change his squad there too.</p>'],
-
-      [2,'How does a challenge work?',
-       '<p>You set the <b>window</b>: it can be one afternoon in the gym or a week with families playing at home.</p>'+
-       '<p>Before and during the window, the children find padrinos. Inside the window, each one takes his run. When it closes, the platform works out every pledge and leaves you the report. You check it, press send, and each padrino gets his notice. That closes the challenge.</p>'],
-      [2,'How long does all this take?',
-       '<p>As long as you decide. There is no fixed shape: you set the window when we open the challenge for you.</p>'+
-       '<p>Our part ends when it closes: every pledge total comes out at that moment, because the points are already recorded. From there the calendar is yours, because the collecting is yours.</p>'+
-       '<p>And it ends. A challenge does not stay open: it opens, it is played, it is reported and it closes.</p>'],
-      [2,'How long can somebody pledge on a child?',
-       '<p>Until <b>he</b> starts his official run. His pledges close then, even if the window is still open for everybody else.</p>'+
-       '<p>That is deliberate: pledging while knowing the points is not pledging. Padrinos have to be found before sitting down to play.</p>'],
-      [2,'Can I run more than one challenge?',
-       '<p>Yes, but each challenge is its own event: its own padrinos, its own licence.</p>'+
-       '<p>One piece of advice: the same people will not pledge ten times in a season. Two or three challenges done properly bring in more than eight done badly.</p>'],
-
-      [3,'Who puts the score in?',
-       '<p>Nobody. <b>The game records it itself.</b> Each child’s points are written as he plays, from his own run link.</p>'+
-       '<p>That is what makes this different: there is nothing to report, nothing to wait for, and nobody who has to be taken at his word.</p>'],
-      [3,'Can a child play twice to improve his number?',
-       '<p>No. Each child gets <b>one official run</b>, and the database refuses the second — it is not a rule kept in good faith, there is simply no room for it.</p>'+
-       '<p>Practice, yes, as much as he likes, and it helps: you want to arrive at the run that counts already warm. What cannot be repeated is the one that counts.</p>'],
-      [3,'Where do I watch how it is going?',
-       '<p>On the team board. The link can be sent: families open it and see exactly what you see.</p>'+
-       '<p>Your children are there, what each one has scored, and who has not played yet.</p>'],
-      [3,'When does each pledge total come out?',
-       '<p>When the window closes, once you send them. Each padrino’s total is worked out with his cap applied if it bit, the report shows it to you, and when you press send each one gets his notice with his child’s points and his amount. It does not go out by itself: it goes out when you are satisfied with it.</p>'+
-       '<p>You are left with the list: every padrino with his name, his child and his amount, to print or download. The collecting you do yourself, wherever you already talk to those people.</p>'],
-      [3,'One of the children had a bad run.',
-       '<p>His padrinos pay on the points he scored, whatever they are. Nobody loses anything and nobody owes more for a bad run.</p>'+
-       '<p>And the next child’s run does not change his: each one has his own padrinos and his own points.</p>'],
-
-      [4,'Do you write to my padrinos?',
-       '<p>Once, when the challenge closes: each padrino gets his child’s points and his pledge total. It goes out on its own, with nobody pressing anything.</p>'+
-       '<p>That notice carries no payment link, and after it nobody is written to again: no reminders, no collection notices, nothing. What it does carry is your name and your email, so a padrino who does not know how to pay you can ask you rather than us.</p>'+
-       '<p>The full list goes to you, and the collecting you arrange with your people wherever you already talk to them.</p>'],
-      [4,'When does the money reach me?',
-       '<p>When your padrinos pay you. It goes straight from them to you.</p>'+
-       '<p>We do not receive it, we do not hold it and we do not remit it to you, so there is no date of ours to wait on.</p>'],
-      [4,'Do I have to give you an account?',
-       '<p>No. We ask you for no bank or ATH number, because we are never going to send you money.</p>'+
-       '<p>How the list gets worked is at <a href="cobro.html">How you collect</a>.</p>'],
-      [4,'What do you keep?',
-       '<p>None of what you raise. That money never passes through our hands.</p>'+
-       '<p>Cada Punto Cuenta is licensed <b>per event</b>: a fixed fee set by the size of the roster, from $29 for the smallest squad to $599 for the largest, with anything above that agreed beforehand. The full scale is on the home page. It is not a percentage of anything, it does not come out of any pledge, and we charge your padrinos nothing.</p>'+
-       '<p>It is invoiced when the event closes and due within seven days. Nothing up front: you have your report first, the bill comes after.</p>'+
-       '<p><b>And if the event records no pledges at all, nothing is invoiced.</b> The fee is for the pledge results; where there are none, there is nothing to pay.</p>'+
-       '<p>One thing worth having straight, because it is different: <b>pledged is not collected</b>. We record what was pledged; what comes in, and when, depends on your collecting.</p>'],
-      [4,'Could a padrino end up owing a fortune?',
-       '<p>Not if he sets his cap. A padrino sets the most he is willing to pay when he pledges, and the cap wins however high the number goes.</p>'+
-       '<p>It is worth telling him when you ask: for a lot of people it takes the fear away, and they pledge more per point.</p>'],
-      [4,'A padrino asked me something I could not answer.',
-       '<p>Scroll to <b>If you are pledging</b>, at the end of this page: what they ask is answered there — how much they will pay, when the amount is known, the cap, and where the money goes.</p>'+
-       '<p>Sending them this page answers better than explaining it from memory. And if it is something not there, pass it to us and we will answer it.</p>'],
-      [4,'Is this tax-deductible?',
-       '<p>We do not say that it is. Gostar Digital LLC is a for-profit company, not a non-profit, and we do not issue tax receipts.</p>'+
-       '<p>If it matters to a padrino how his payment is treated, he should ask his own adviser.</p>'],
-
-      /* From here down it is not the coach talking: it is the padrino.
-         These are the questions the person who is going to pay asks,
-         answered the way you answer him and not the way you explain it
-         to a coach. A coach who does not know what to tell a family
-         sends this link. */
-      [5,'When do I have to pay?',
-       '<p>After the child plays, never before. You pledge an amount per point, he takes his run, and when the challenge closes the program sends the notices: you get one with his points and your amount.</p>'+
-       '<p>You pay the program directly, however they tell you. Cada Punto Cuenta charges nothing and processes no payments.</p>'],
-      [5,'How much exactly am I going to pay?',
-       '<p>Your rate against the points <b>that child</b> scored in his run. At ten cents a point, a 45-point run is $4.50.</p>'+
-       '<p>The notice brings you the breakdown: your rate, the points, and the cap if you set one.</p>'],
-      [5,'Can I set a ceiling?',
-       '<p>Yes, and it is worth doing. When you pledge you set the most you are willing to pay, and the amount never comes out above it, whatever he scores.</p>'],
-      [5,'What if he does badly?',
-       '<p>You pay on the points he scored, whatever they are. There is no bonus for a good run and no penalty for a bad one: your pledge is on the points.</p>'],
-      [5,'How do I know those points are real?',
-       '<p>Because a person did not write them: the game recorded them as the child played, and the run is verified inside the database.</p>'+
-       '<p>And there is only one: the database refuses a second official run from the same child. The number you are sent is the one that happened, not the best of several tries.</p>'],
-      [5,'Where does the money go?',
-       '<p>To the program you chose, directly. Your payment does not pass through Cada Punto Cuenta: we do not receive it and we keep none of it.</p>'+
-       '<p>What that program does with what it raises is its own, like any other contribution: sometimes they share part with their league or with whoever brought them in. That is between them.</p>'+
-       '<p>Nothing is won and nothing is raffled: it is a voluntary contribution whose amount depends on the points.</p>']
-    ]
-  }
-};
-
-var LANG='es';
-try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
-  localStorage.getItem('fc-lang')||
-  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en'); }catch(e){}
-function T(k,v){
-  var t=(S[LANG]&&S[LANG][k]); if(t===undefined) t=S.es[k];
-  if(v&&typeof t==='string') Object.keys(v).forEach(function(x){ t=t.split('{'+x+'}').join(v[x]) });
-  return t;
-}
-function $(id){ return document.getElementById(id) }
-
-function toggleLang(){
-  LANG=LANG==='es'?'en':'es';
-  try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG);
-       localStorage.setItem('fc-lang',LANG) }catch(e){}
-  toda();
-}
-
-function paint(){
-  document.documentElement.lang=LANG;
-  document.getElementById('langBtn').textContent=LANG==='es'?'English':'Español';
-  document.getElementById('fTerms').textContent=T('terms');
-  /* El titulo lo pisaba el JS. El de la etiqueta se arreglo el 22 de
-     octubre y esta linea lo volvia a poner mal en cuanto cargaba la
-     pagina, asi que la pestana siguio diciendo lo de siempre. */
-  document.title = LANG==='es'
-    ? 'Ayuda del entrenador — Cada Punto Cuenta'
-    : 'Coach help — Cada Punto Cuenta';
-
-  var secs=T('secs'), qs=T('qs'), out='';
-  secs.forEach(function(name, i){
-    out += '<h2>'+esc(name)+'</h2>';
-    qs.filter(function(q){ return q[0]===i }).forEach(function(q){
-      out += '<details><summary>'+esc(q[1])+'</summary>'+
-             '<div class="a">'+q[2]+'</div></details>';
-    });
+  /* Contigua: sin huecos ni solapes. Un hueco deja una plantilla sin
+     precio y un solape deja dos precios para la misma. */
+  let huecos = [];
+  TARIFAS.forEach((p, k) => {
+    if (k === 0) return;
+    const antes = TARIFAS[k-1].hasta;
+    if (antes === null) huecos.push('hay un peldaño después del último');
   });
+  si(huecos.length === 0, 'el peldaño abierto es el último y no hay ninguno después');
 
-  /* El título arriba y las preguntas abajo, en contenedores
-     distintos. Antes eso era para que el chat no se perdiera al
-     cambiar de idioma; el chat se quitó el 23 de octubre de 2026
-     —contestaba con un modelo de negocio que ya no existe— y la
-     separación se queda porque repintar sólo lo que cambió sigue
-     siendo lo correcto. */
-  $('head').innerHTML =
-    '<div class="hero">'+
-      /* Un solo archivo a propósito. El srcset pedía tres tamaños y
-         Render sólo dejó subir éste; con los otros dos ausentes la foto
-         no salía ni en teléfono ni en escritorio. 62 KB sirven en todas
-         partes. Cuando los otros dos estén arriba se vuelve a poner el
-         srcset y el teléfono baja 40 KB en vez de 62. */
-      '<img src="coach-cancha-1024.webp" '+
-        'width="1024" height="683" '+
-        'decoding="async" alt="'+esc(T('alt'))+'">'+
-      '<span class="scrim" aria-hidden="true"></span>'+
-      '<div class="ht">'+
-        '<h1>'+esc(T('h1'))+'</h1>'+
-        '<p class="lede">'+esc(T('lede'))+'</p>'+
-      '</div>'+
-    '</div>'+
-    '<p class="hint">'+esc(T('hint'))+'</p>';
+  si(TARIFAS[TARIFAS.length-1].hasta === null,
+     'y la escalera acaba abierta, para el que no cabe en ninguno');
+  si(TARIFAS[TARIFAS.length-1].precio === null,
+     'ese último no lleva número: se habla');
 
-  $('app').innerHTML =
-    out+
-    '<div class="ask"><b>'+esc(T('askB'))+'</b><p>'+T('askP')+'</p></div>';
+  /* Todos los de en medio tienen techo y número. */
+  const rotos = TARIFAS.slice(0, -1).filter(p => p.hasta === null || p.precio === null);
+  si(rotos.length === 0, 'y todos los demás llevan techo y precio');
 }
 
-function toda(){ paint() }
-toda();
-</script>
-
-<script>
-/* ══ El menú de la barra ════════════════════════════════════════════
-   Vive aparte del sistema de idioma de cada página a propósito: son
-   doce páginas con cuatro formas distintas de pintar sus textos, y
-   engancharse a cada una sería cuatro maneras de romperse. Esto lee
-   el idioma de donde lo deja todo el mundo —localStorage— y pinta
-   sus seis enlaces y nada más. */
-(function(){
-var ROTULOS = {
-  en: { inicio:'Home', como:'How it works', precio:'What it costs',
-        ayuda:'Questions', mia:'My team', alta:'Sign up a team',
-        menu:'Menu', otro:'Español', aOtro:'Cambiar a español' },
-  es: { inicio:'Inicio', como:'Cómo funciona', precio:'Cuánto cuesta',
-        ayuda:'Preguntas', mia:'Mi equipo', alta:'Registra un equipo',
-        menu:'Menú', otro:'English', aOtro:'Switch to English' }
-};
-function idioma(){
-  try{
-    return localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
-           localStorage.getItem('fc-lang') ||
-           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en');
-  }catch(e){ return 'es' }
+console.log('\n2 · El equipo cae en un peldaño de verdad\n');
+{
+  const k = idx.indexOf('const FEE = {');
+  const FEE = new Function('return ' + idx.slice(idx.indexOf('{', k), idx.indexOf('}', k) + 1))();
+  si(TARIFAS.some(p => p.precio === FEE.team),
+     'FEE.team ($' + FEE.team + ') es uno de los peldaños — el que sale resaltado');
+  si(TARIFAS.some(p => p.precio === FEE.small),
+     'y FEE.small ($' + FEE.small + ') también');
 }
-var b = document.getElementById('hamb'),
-    m = document.getElementById('menu'),
-    l = document.getElementById('langBtn') || document.getElementById('lang');
-if (!b || !m) return;
 
-function pintar(){
-  var t = ROTULOS[idioma()] || ROTULOS.es;
-  m.querySelectorAll('[data-m]').forEach(function(a){
-    a.textContent = t[a.getAttribute('data-m')] || a.textContent;
-  });
-  b.setAttribute('aria-label', t.menu);
-  /* El botón del idioma lo pinta la propia página, cada una a su
-     manera. Aquí sólo se corrige si se quedó con las dos letras
-     viejas, para que ninguna página diga «EN» mientras las demás
-     dicen «English». */
-  if (l && /^(EN|ES)$/.test((l.textContent||'').trim())) {
-    l.textContent = t.otro;
-    l.setAttribute('aria-label', t.aOtro);
+const precios = TARIFAS.filter(p => p.precio !== null).map(p => p.precio);
+console.log('\n3 · Las otras tres páginas no la contradicen\n');
+{
+  const min = Math.min(...precios), max = Math.max(...precios);
+
+  /* Las páginas de letra pequeña no repiten los seis números: dicen
+     el rango y mandan a la escalera. Repetir seis números en cuatro
+     sitios es firmar que un día dirán cosas distintas. Lo que sí
+     tienen que decir bien son los dos extremos. */
+  /* ayuda.html entró en esta lista el 23 de octubre de 2026. No
+     estaba, y por eso se quedó sola: la escalera se puso el martes y
+     el FAQ siguió diciendo "$49 por equipo, $29 si la plantilla tiene
+     menos de ocho", que era el precio de DOS peldaños. A una escuela
+     de 400 nenes —justo el mercado nuevo— le decía $49 cuando le
+     tocan $349.
+
+     Ninguna prueba lo vio porque ninguna lo miraba. Una página que
+     habla de dinero y no está en esta lista es una página que va a
+     desfasarse sin que nadie se entere. */
+  /* equipo.html entro el 23 de octubre, y era el peor de los que
+     faltaban: su linea lic: es la que un programa MARCA para
+     aceptar la licencia, y decia "$49 por equipo y por evento, o
+     $29 si la plantilla tiene menos de ocho". Un precio de dos
+     peldaños en una casilla de aceptacion. */
+  for (const f of ['terms.html', 'custodia.html', 'ayuda.html',
+                   'equipo.html', 'admin.html']) {
+    const t = leer(f);
+    /* Cuántas veces, no si aparece. terms.html y custodia.html
+       llevan el texto DOS veces, una por idioma, y con un indexOf a
+       secas cambiar el número en inglés y dejar el español pasaba la
+       prueba: el otro idioma seguía teniendo la cifra. Probado
+       cambiando sólo el inglés — así no cuela. */
+    const copias = f === 'admin.html' ? 1 : 2;
+    const veces = (x) => (t.match(new RegExp('\\$' + x + '\\b', 'g')) || []).length;
+    si(veces(min) >= copias,
+       f + ' dice el suelo ($' + min + ') en sus ' + copias + ' copia(s)');
+    si(veces(max) >= copias,
+       f + ' dice el techo ($' + max + ') en sus ' + copias + ' copia(s)');
+
+    /* Y ninguna cifra de licencia que no sea una de las dos. Un $499
+       colado en una frase es un precio que la escalera no tiene, y
+       es lo que una escuela leería antes de firmar.
+
+       Se saltan las cifras de EJEMPLO de custodia.html —$16,45 y
+       $42,75, las promesas desiguales que explican por qué la cuenta
+       a mano no la lleva nadie— porque no son precios de licencia.
+       Se reconocen porque llevan centavos. */
+    const sinCentavos = t.replace(/\$\d+[.,]\d\d/g, '');
+    const cifras = [...new Set((sinCentavos.match(/\$\d{2,4}\b/g) || []))];
+    const ajenas = cifras.filter(c => c !== '$' + min && c !== '$' + max);
+    si(ajenas.length === 0,
+       f + ' no nombra ninguna otra cifra de licencia' +
+       (ajenas.length ? ' — sobran: ' + ajenas.join(', ') : ''));
+
+    /* Y que no se haya quedado un precio de la escalera vieja. Los
+       dos peldaños de antes eran $49 y $29; $29 sigue siendo el
+       suelo, pero un «$49» suelto en la letra pequeña es la frase
+       vieja sin cambiar. */
+    const viejo = /\$49\b/.test(t.replace(/<!--[\s\S]*?-->/g, ''));
+    si(!viejo, f + ' no se quedó con el precio de dos peldaños');
   }
 }
-function pon(abierto){
-  m.classList.toggle('abierto', abierto);
-  b.setAttribute('aria-expanded', abierto ? 'true' : 'false');
-}
-b.addEventListener('click', function(){
-  pon(b.getAttribute('aria-expanded') !== 'true');
-});
-m.addEventListener('click', function(e){ if (e.target.closest('a')) pon(false) });
-document.addEventListener('keydown', function(e){
-  if (e.key === 'Escape' && b.getAttribute('aria-expanded') === 'true') {
-    pon(false); b.focus();
+
+console.log('\n3b · La demostración cobra lo que dice la escalera\n');
+{
+  /* demo.html lleva su propia copia del precio, en constantes y no
+     en texto: calcula en vivo lo que habría recaudado un programa y
+     lo que costaría la licencia. Es el QUINTO sitio donde vive el
+     precio, y es el único donde no se lee —se calcula—, así que un
+     desfase aquí sale como un número y nadie lo nota.
+
+     Modela una plantilla de 12, que cae en el peldaño del equipo.
+     Lo que se exige es que sus dos cifras sean peldaños de verdad y
+     que el que usa sea el que le toca a 12. */
+  const d = leer('demo.html');
+  const m = d.match(/var LICENCIA\s*=\s*(\d+),\s*LICENCIA_CHICA\s*=\s*(\d+),\s*PLANTILLA_CHICA\s*=\s*(\d+)/);
+  if (!m) mal('no encuentro las constantes del precio en demo.html');
+  else {
+    const grande = +m[1], chica = +m[2], corte = +m[3];
+    si(TARIFAS.some(p => p.precio === grande), 'su precio normal ($' + grande + ') es un peldaño');
+    si(TARIFAS.some(p => p.precio === chica), 'y el chico ($' + chica + ') también');
+
+    const dm = d.match(/PLANTILLA\s*=\s*(\d+)/);
+    const plantilla = dm ? +dm[1] : null;
+    if (plantilla === null) mal('no encuentro la plantilla que modela la demostración');
+    else {
+      let toca = null, desde = 1;
+      for (const p of TARIFAS) {
+        if (p.hasta === null || plantilla <= p.hasta) { toca = p.precio; break }
+        desde = p.hasta + 1;
+      }
+      si(toca === grande,
+         'y a una plantilla de ' + plantilla + ' le toca $' + toca +
+         ', que es justo lo que cobra');
+      si(corte === TARIFAS[0].hasta + 1,
+         'el corte de plantilla chica (' + corte + ') cuadra con el primer peldaño');
+    }
   }
-});
-/* Al pulsar el idioma, la página repinta lo suyo; el menú repinta
-   lo suyo detrás, con un turno de espera para que el valor nuevo ya
-   esté guardado cuando se lea. */
-if (l) l.addEventListener('click', function(){ setTimeout(pintar, 0) });
-pintar();
-})();
-</script>
-</body>
-</html>
+}
+
+console.log('\n4 · Y la escalera se pinta, no se escribe a mano\n');
+{
+  si(idx.indexOf('id="escalera"') >= 0, 'index.html deja el hueco para pintarla');
+  si(idx.indexOf('function pintarEscalera') >= 0, 'y la pinta desde TARIFAS');
+  /* Si alguien vuelve a escribir un PRECIO DE LICENCIA en el marcado,
+     la tabla y la página pueden separarse sin que nadie se entere.
+
+     Se buscan sólo los números de la escalera, no cualquier cifra con
+     dólar: el marcado lleva $30 y $40 en el texto alternativo de la
+     imagen de la promesa —lo que da un juego de 150 puntos a 20¢ y el
+     tope del padrino— y ésos no tienen nada que ver con la licencia.
+     Un buscador de "$ y dos dígitos" los cogía y la prueba gritaba
+     por algo que estaba bien. */
+  const marcado = idx.slice(idx.indexOf('<body'), idx.indexOf('<script'));
+  const sueltos = precios.filter(p => new RegExp('\\$' + p + '\\b').test(marcado));
+  si(sueltos.length === 0,
+     'y ningún precio de la escalera está escrito a mano en el marcado' +
+     (sueltos.length ? ' — encontrados: $' + sueltos.join(', $') : ''));
+}
+
+console.log('\n' + (fallos === 0
+  ? '✓ un solo precio, dicho igual en los cuatro sitios'
+  : '✗ ' + fallos + ' fallo(s)'));
+process.exit(fallos === 0 ? 0 : 1);
