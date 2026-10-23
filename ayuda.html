@@ -22,7 +22,7 @@
 <style>
 /* ── El look nuevo: crema, navy y naranja ─────────────────────────
    El mismo de la portada, mi-equipo y equipo. Cambia la piel: el
-   marcado, el acordeon y el chat se quedaron como estaban. */
+   marcado y el acordeon se quedaron como estaban. */
 :root{
   --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
   --cream:#faf8f4; --ink:#1b2937; --muted:#617083;
@@ -95,29 +95,6 @@ details[open] summary{color:var(--navy)}
 .a code{background:var(--cream);border:1px solid var(--linea);border-radius:5px;
   padding:1px 6px;font-size:.9em}
 
-/* ── El chat del coach ────────────────────────────────────────── */
-.chat{background:#fff;border:1px solid var(--linea);border-radius:16px;
-  padding:22px 24px;margin:0 0 30px;box-shadow:0 8px 25px #17243808}
-.chat>b{display:block;font-size:.78rem;font-weight:800;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--orange);margin-bottom:10px}
-.chat .who{display:block;margin-bottom:12px}
-.chat label{display:block;font-weight:700;font-size:.88rem;margin:14px 0 6px}
-.chat input,.chat textarea{width:100%;padding:13px 14px;border:1px solid #d6d9d6;
-  border-radius:10px;background:#fff;color:var(--ink);font:inherit;font-size:1rem}
-.chat textarea{min-height:84px;resize:vertical}
-.chat input:focus,.chat textarea:focus{outline:none;border-color:var(--orange);
-  box-shadow:0 0 0 3px rgba(255,122,24,.18)}
-.chat .btn{width:100%;margin-top:11px}
-.chat .log{display:grid;gap:10px;margin:16px 0 0}
-.chat .m{padding:12px 14px;border-radius:12px;font-size:.96rem;line-height:1.5}
-.chat .m.me{background:var(--navy);color:#fff;justify-self:end;max-width:85%}
-.chat .m.you{background:var(--cream);border:1px solid var(--linea);max-width:92%}
-.chat .m.bad{background:#fff3f2;border:1px solid #f0c9c5;color:var(--bad)}
-.chat .m.me.fix{background:var(--navy2)}
-.chat .m .tag{display:block;font-size:.66rem;font-weight:800;letter-spacing:.12em;
-  text-transform:uppercase;opacity:.65;margin-bottom:4px}
-.chat .msg{margin:10px 0 0;font-weight:700;font-size:.88rem;min-height:1.2em}
-.chat .cp{margin-top:10px}
 
 /* ── Si no encuentras lo tuyo ─────────────────────────────────── */
 .ask{background:#fff;border:1px solid var(--linea);border-left:5px solid var(--navy);
@@ -249,7 +226,6 @@ header{color:#fff}
 <main>
   <div id="head"></div>
   <div class="wrap">
-  <div id="chatbox"></div>
   <div id="app"></div>
   </div>
 </main>
@@ -271,26 +247,12 @@ function esc(s){ return String(s==null?'':s)
 var S={
   es:{
     h1:'Coach Cada Punto Cuenta',
-    lede:'Lo que preguntan los entrenadores y los padrinos. Y si eres entrenador, un chat con tu código.',
+    lede:'Lo que preguntan los entrenadores y los padrinos.',
     hint:'Si lo tuyo no está aquí, escríbenos — al final de la página.',
     askB:'¿No está aquí?',
     askP:'Escríbenos a <a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a> y dinos tu división. Contestamos el mismo día.',
     terms:'Términos',
     alt:'Una cancha de barrio en Puerto Rico de noche, vacía después de la lluvia, con un teléfono encendido en el banco',
-    chatB:'Pregúntame',
-    chatP:'Esto es para entrenadores. Pon tu código y pregúntame lo que no te salga — a cualquier hora.',
-    chatCode:'Tu código',
-    chatGo:'Entrar',
-    chatBad:'Ese código no sirve.',
-    chatNet:'No entró. Inténtalo otra vez.',
-    chatOff:'El chat todavía no está encendido. Las preguntas de abajo están completas, y si no está lo tuyo escríbenos a gostardigital@gmail.com.',
-    chatWho:'Hola, {B}. Dime qué no te sale.',
-    chatHi:'Sé de la campaña y de cómo corre, de la plantilla, del tablero y del dinero. De baloncesto también, si te hace falta. Pregúntame como te salga.',
-    chatPh:'Escribe tu pregunta',
-    chatSend:'Mandar',
-    chatWait:'Pensando…',
-    chatFix:'Texto oficial',
-    chatErr:'Algo falló de mi lado. Pregúntalo otra vez, o escríbenos.',
     secs:['Entrar','La plantilla','El reto','El tablero','El dinero','Si vas a prometer'],
     qs:[
       [0,'¿Dónde entro?',
@@ -400,26 +362,12 @@ var S={
   },
   en:{
     h1:'Coach Cada Punto Cuenta',
-    lede:'What coaches and padrinos ask. And if you are a coach, a chat with your code.',
+    lede:'What coaches and padrinos ask.',
     hint:'If yours is not here, write to us — at the bottom of the page.',
     askB:'Not here?',
     askP:'Write to <a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a> and tell us your division. We answer the same day.',
     terms:'Terms',
     alt:'A neighbourhood basketball court in Puerto Rico at night, empty after rain, with a phone glowing on the bench',
-    chatB:'Ask me',
-    chatP:'This is for coaches. Enter your code and ask me whatever will not work — at any hour.',
-    chatCode:'Your code',
-    chatGo:'Enter',
-    chatBad:'That code does not work.',
-    chatNet:'That did not go through. Try again.',
-    chatOff:'The chat is not switched on yet. The questions below are complete, and if yours is not there write to gostardigital@gmail.com.',
-    chatWho:'Hello, {B}. Tell me what will not work.',
-    chatHi:'I know the campaign and how it runs, the roster, the board and the money. Basketball too, if that is what you need. Ask me however it comes out.',
-    chatPh:'Type your question',
-    chatSend:'Send',
-    chatWait:'Thinking…',
-    chatFix:'Official wording',
-    chatErr:'Something failed on my side. Ask again, or write to us.',
     secs:['Signing in','The roster','The challenge','The board','The money','If you are pledging'],
     qs:[
       [0,'Where do I sign in?',
@@ -540,146 +488,6 @@ function T(k,v){
 }
 function $(id){ return document.getElementById(id) }
 
-/* ── El chat ────────────────────────────────────────────
-
-   La puerta de aquí es para que el entrenador no vea una caja que no va
-   a funcionar. La puerta de verdad está en el servidor, que vuelve a
-   comprobar el código en cada pregunta — cualquiera puede llamar al
-   endpoint a mano, así que lo que diga esta página no cuenta.
-
-   Y lo de dinero no lo contesta el modelo: viene del servidor con
-   fixed, palabra por palabra igual que la sección El dinero de esta
-   misma página. */
-var SB='https://sdaphocueugzfvjovuxd.supabase.co';
-var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
-/* El chat lo contesta el servidor de Cada Punto Cuenta, como todo lo demás.
-   Hasta el 22 de octubre de 2026 ésta era la ÚNICA llamada de todo
-   el sitio al servidor compartido, y esa única llamada bastó para
-   que una mañana se desplegara el server.js del otro producto encima
-   del de Cada Punto Cuenta: dos repos, dos ficheros con el mismo nombre, y la
-   mano humana en medio. Ahora Cada Punto Cuenta pide todo a un solo sitio. */
-var API='https://hooporia-server.onrender.com';
-
-var CODE=null, BY=null, MSGS=[], BUSY=false, ERR='';
-
-/* Si ya entró en Mi equipo en este teléfono, no le pedimos el código
-   otra vez. Las dos páginas viejas guardan en sitios distintos. */
-try{ CODE=localStorage.getItem('cp_build')||localStorage.getItem('cp_code')||null }catch(e){}
-
-function rpc(name,args){
-  return fetch(SB+'/rest/v1/rpc/'+name,{
-    method:'POST',
-    headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json'},
-    body:JSON.stringify(args||{})
-  }).then(function(r){
-    if (r.ok) return r.json();
-    /* El cuerpo de un error de PostgREST trae el porqué —message,
-       hint, details— y tirarlo era lo que convertía cada fallo en
-       una visita al editor de SQL: la página sabía exactamente qué
-       había pasado y enseñaba "no se pudo". Se lee antes de lanzar. */
-    return r.text().then(function(t){
-      var d = {}; try { d = JSON.parse(t) } catch(x){}
-      var e = new Error(d.message || d.hint || t || ('rpc ' + r.status));
-      e.detalle = d.details || d.hint || '';
-      e.codigo  = d.code || r.status;
-      throw e;
-    });
-  });
-
-/* El porqué, cuando lo hay. Un mensaje amable que no dice nada manda
-   a alguien a buscar en la base; el mismo mensaje con la razón
-   detrás se arregla solo. Se recorta: esto es una línea de aviso, no
-   un registro. */
-function porque(x){
-  if (!x) return '';
-  var r = (typeof x === 'string') ? x
-        : (x.why || x.error || x.message || x.hint || x.detalle || '');
-  return r ? ' — ' + String(r).slice(0, 160) : '';
-}
-}
-
-function entrar(auto){
-  var k=auto?CODE:(($('cCode')||{}).value||'').trim();
-  if(!k) return;
-  ERR=''; paintChat();
-  rpc('builder_check',{p_code:k})
-    .then(function(r){
-      if(!r||!r.ok){ CODE=null; if(!auto){ ERR=T('chatBad'); } paintChat(); return; }
-      CODE=k; BY=r.by||'';
-      paintChat();
-      var box=$('cAsk'); if(box&&!auto) box.focus();
-    })
-    .catch(function(e){ console.error(e); CODE=null; if(!auto) ERR=T('chatNet'); paintChat() });
-}
-
-function mandar(){
-  var box=$('cAsk'); if(!box||BUSY) return;
-  var q=(box.value||'').trim(); if(!q) return;
-  box.value=''; ERR='';
-  MSGS.push({role:'user',content:q});
-  BUSY=true; paintChat();
-
-  fetch(API+'/coach/chat',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    /* El idioma va aquí: lo decide el botón de arriba, no la frase que
-       escribió. Preguntar algo en inglés en medio de una conversación
-       en español no debería cambiarle el idioma al que lee. */
-    body:JSON.stringify({code:CODE,lang:LANG,messages:MSGS.map(function(m){
-      return {role:m.role,content:m.content} })})
-  })
-  .then(function(r){ return r.json().then(function(j){ return {s:r.status,j:j} }) })
-  .then(function(o){
-    BUSY=false;
-    if(o.s===503){ MSGS.push({role:'assistant',content:T('chatOff'),bad:true}) }
-    else if(o.s===401){ CODE=null; ERR=T('chatBad') }
-    else if(o.j&&o.j.reply){ MSGS.push({role:'assistant',content:o.j.reply,fixed:!!o.j.fixed}) }
-    else { MSGS.push({role:'assistant',content:T('chatErr'),bad:true}) }
-    paintChat();
-  })
-  .catch(function(e){
-    console.error(e); BUSY=false;
-    MSGS.push({role:'assistant',content:T('chatErr'),bad:true});
-    paintChat();
-  });
-}
-
-function paintChat(){
-  var out='<b>'+esc(T('chatB'))+'</b>';
-  if(!CODE){
-    out+='<p class="cp">'+esc(T('chatP'))+'</p>'+
-      '<label for="cCode">'+esc(T('chatCode'))+'</label>'+
-      '<input id="cCode" type="text" autocapitalize="characters" autocorrect="off" '+
-        'spellcheck="false" enterkeyhint="go">'+
-      '<button class="btn" onclick="entrar(false)">'+esc(T('chatGo'))+'</button>'+
-      (ERR?'<p class="msg">'+esc(ERR)+'</p>':'');
-  } else {
-    out+='<p class="who">'+esc(T('chatWho',{B:BY||''}))+'</p>';
-    out+='<div class="log">';
-    if(!MSGS.length) out+='<div class="m me">'+esc(T('chatHi'))+'</div>';
-    MSGS.forEach(function(m){
-      if(m.role==='user'){ out+='<div class="m you">'+esc(m.content)+'</div>'; return }
-      out+='<div class="m me'+(m.fixed?' fix':'')+(m.bad?' bad':'')+'">'+
-        (m.fixed?'<span class="tag">'+esc(T('chatFix'))+'</span>':'')+
-        esc(m.content)+'</div>';
-    });
-    if(BUSY) out+='<div class="m me">'+esc(T('chatWait'))+'</div>';
-    out+='</div>';
-    out+='<textarea id="cAsk" placeholder="'+esc(T('chatPh'))+'"'+(BUSY?' disabled':'')+'></textarea>'+
-      '<button class="btn" onclick="mandar()"'+(BUSY?' disabled':'')+'>'+esc(T('chatSend'))+'</button>'+
-      (ERR?'<p class="msg">'+esc(ERR)+'</p>':'');
-  }
-  $('chatbox').innerHTML='<div class="chat">'+out+'</div>';
-
-  var ask=$('cAsk');
-  if(ask) ask.addEventListener('keydown',function(e){
-    if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); mandar() }
-  });
-  var cc=$('cCode');
-  if(cc) cc.addEventListener('keydown',function(e){
-    if(e.key==='Enter'){ e.preventDefault(); entrar(false) }
-  });
-}
 function toggleLang(){
   LANG=LANG==='es'?'en':'es';
   try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG);
@@ -691,7 +499,12 @@ function paint(){
   document.documentElement.lang=LANG;
   document.getElementById('langBtn').textContent=LANG==='es'?'English':'Español';
   document.getElementById('fTerms').textContent=T('terms');
-  document.title='Coach Cada Punto Cuenta';
+  /* El titulo lo pisaba el JS. El de la etiqueta se arreglo el 22 de
+     octubre y esta linea lo volvia a poner mal en cuanto cargaba la
+     pagina, asi que la pestana siguio diciendo lo de siempre. */
+  document.title = LANG==='es'
+    ? 'Ayuda del entrenador — Cada Punto Cuenta'
+    : 'Coach help — Cada Punto Cuenta';
 
   var secs=T('secs'), qs=T('qs'), out='';
   secs.forEach(function(name, i){
@@ -702,9 +515,12 @@ function paint(){
     });
   });
 
-  /* El título va arriba del chat, y las preguntas abajo. Están en
-     contenedores distintos a propósito: cambiar de idioma repinta
-     estos dos y la conversación se queda donde estaba. */
+  /* El título arriba y las preguntas abajo, en contenedores
+     distintos. Antes eso era para que el chat no se perdiera al
+     cambiar de idioma; el chat se quitó el 23 de octubre de 2026
+     —contestaba con un modelo de negocio que ya no existe— y la
+     separación se queda porque repintar sólo lo que cambió sigue
+     siendo lo correcto. */
   $('head').innerHTML =
     '<div class="hero">'+
       /* Un solo archivo a propósito. El srcset pedía tres tamaños y
@@ -728,9 +544,8 @@ function paint(){
     '<div class="ask"><b>'+esc(T('askB'))+'</b><p>'+T('askP')+'</p></div>';
 }
 
-function toda(){ paint(); paintChat() }
+function toda(){ paint() }
 toda();
-if(CODE) entrar(true);
 </script>
 
 <script>
