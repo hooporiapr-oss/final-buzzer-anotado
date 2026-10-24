@@ -185,8 +185,18 @@ for (const f of archivos){
      que llaman cuatro páginas, y renombrarlo cambiaría la url del
      webhook de Stripe. Que ninguna página lo diga de más se
      comprueba en prueba-servidores.js, que es su sitio. */
+  /* Y fuera también hooporia.mobi, por la misma razón y con la misma
+     incomodidad: lleva "hooporia" dentro y no es una marca que la
+     página esté usando — es el dominio donde vive el Cognitivo Gym, al
+     que sale el botón de practicar. El rótulo que lee el nene dice
+     "Cognitivo Gym"; la palabra retirada sólo está en la url.
+
+     Si algún día el gimnasio se muda a cognitivogym.com, esta línea
+     sobra y hay que quitarla: una excepción que ya no tapa nada es una
+     excepción que tapará otra cosa por accidente. */
   const limpio = sinComentarios(fs.readFileSync(path.join(__dirname, f), 'utf8'))
-                   .split('hooporia-server.onrender.com').join('EL-SERVIDOR');
+                   .split('hooporia-server.onrender.com').join('EL-SERVIDOR')
+                   .split('hooporia.mobi').join('EL-GIMNASIO');
 
   /* Las dos vistas: lo que se lee en pantalla y el código en crudo
      con sus atributos. Lo que salte en cualquiera de las dos cuenta,
