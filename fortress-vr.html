@@ -526,7 +526,7 @@ var S={
       'encienden y repítelas en el mismo orden. Un fallo acaba la '+
       'tirada. Cada set se juega en otra zona, y en dos de los '+
       'cuatro la cadena es nueva cada ronda — la pantalla te lo dice.',
-    go:'Práctica · sin reloj',
+    go:'Practica en el Cognitivo Gym',
     sDedo:'Toca la casilla. Nada que instalar.',
     sRaton:'Haz clic en la casilla, o usa las teclas 1 a 5.',
     mira:'MIRA',
@@ -617,7 +617,7 @@ var S={
       'up and repeat them in the same order. One miss ends the run. Each '+
       'set is played in a different zone, and in two of the four the '+
       'chain is brand new every round — the screen tells you which.',
-    go:'Practice · no clock',
+    go:'Practice in the Cognitivo Gym',
     sDedo:'Tap the cell. Nothing to install.',
     sRaton:'Click the cell, or use keys 1 to 5.',
     mira:'WATCH',
@@ -2173,7 +2173,21 @@ function arrancar(que){
   if(que==='amistoso'){ empezarAmistoso(); return }
   armarSesion();
 }
-$('go').onclick=function(){ arrancar('practica') };
+/* PRACTICAR SE HACE EN EL GIMNASIO, NO AQUÍ.
+
+   Este botón abría una práctica suelta en este mismo tablero. Ahora
+   sale del sitio: los juegos de memoria viven en el Cognitivo Gym y
+   es ahí donde se practica.
+
+   PERO EL MISMO BOTÓN ES OTRA COSA EN UNA CORRIDA OFICIAL, y por eso
+   la rama. Con un juego atado, pintarTapaJuego() le cambia el rótulo
+   a «Empezar el Q1» y es con lo que el nene arranca su cuarto. Sin la
+   rama, el botón con el que se empieza un juego por el que hay
+   padrinos pagando se llevaría al nene fuera del sitio. */
+$('go').onclick=function(){
+  if(JUEGO){ arrancar('practica'); return }
+  location.href='https://hooporia.mobi';
+};
 $('otra').onclick=function(){
   if(selladoAhora()) return;
   pararCuenta();
