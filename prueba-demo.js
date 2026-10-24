@@ -358,19 +358,17 @@ for (const [q, esperaba, qué] of [
    miden sobre la PÁGINA CORRIENDO, no sobre una copia de las tablas
    escrita aquí: lo que se mide es lo que se despliega.
 
-   Y de paso, que ninguna bola se monte sobre otra. Eso no era
-   hipotético: la fila del casco —las cinco en línea, para el visor
-   que sólo publica el giro— se solapaba en un teléfono de pie ya
-   antes de que hubiera cuatro zonas, y no se veía porque la fila
-   sólo sale con el casco puesto y el casco va apaisado.
+   Y de paso, que la cancha de 5×5 pinte de verdad las cinco casillas
+   que la zona declara, en cualquier pantalla. Eso no es hipotético:
+   las casillas se podrían sacar de los ángulos viejos redondeando, y
+   el 0,75 del 3-2 cae justo en la mitad entre dos columnas y redondea
+   a un lado por la izquierda y al otro por la derecha. Por eso se
+   declaran, y por eso se comprueba que lo declarado es lo pintado.
    ══════════════════════════════════════════════════════════════════ */
 console.log('\n8 · Las cuatro zonas valen lo mismo\n');
 {
   const pag = await navegador.newPage({ viewport: { width: 390, height: 800 } });
   pag.on('pageerror', (e) => mal('la página reventó: ' + e.message));
-  await pag.route('**/three.min.js', (ruta) =>
-    ruta.fulfill({ path: '/opt/node-tools/vendor/three.min.js',
-                   contentType: 'application/javascript' }));
 
   /* El juego entero vive dentro de un (function(){…})(), así que desde
      fuera no se ve ni una variable — y está bien que sea así: una
@@ -382,9 +380,9 @@ console.log('\n8 · Las cuatro zonas valen lo mismo\n');
      el fichero que se despliega, byte por byte, menos ese asa; nada de
      esto se sube. Si alguien renombra el cierre, el reemplazo no pega
      y la prueba lo dice en vez de pasar por otro camino. */
-  const ASA = '\nwindow.__zonas={ZONAS:ZONAS,balls:balls,colocarBolas:colocarBolas,' +
+  const ASA = '\nwindow.__zonas={ZONAS:ZONAS,celdas:celdas,bolas:bolas,colocarBolas:colocarBolas,' +
               'cadenaNueva:cadenaNueva,siguienteNivel:siguienteNivel,limpiarT:limpiarT,' +
-              'elegirZona:elegirZona,RADIO_GEO:RADIO_GEO,' +
+              'elegirZona:elegirZona,ajustarCancha:ajustarCancha,' +
               'g:function(k){return eval(k)},s:function(k,v){eval(k+"=v")}};\n';
   const fuente = require('fs').readFileSync(path.join(AQUI, 'fortress-vr.html'), 'utf8');
   const CIERRE = '\n})();\n</script>';
@@ -401,7 +399,7 @@ console.log('\n8 · Las cuatro zonas valen lo mismo\n');
   // ── Las tablas, leídas de la página ──────────────────────────────
   const zonas = await pag.evaluate(() => window.__zonas.ZONAS.map(z => ({
     nombre: z.nombre, nueva: !!z.nueva, pases: z.pases, entrada: z.entrada,
-    centro: z.centro, fila: z.fila, abanico: z.abanico
+    centro: z.centro, rejilla: z.rejilla
   })));
 
   eq(zonas.map(z => z.nombre), ['2-1-2','1-3-1','2-3','3-2'],
@@ -434,63 +432,94 @@ console.log('\n8 · Las cuatro zonas valen lo mismo\n');
        recordar que los otros tres. */
     si(z.entrada.length === 2, z.nombre + ' · dos bolas de entrada (' + z.entrada.join(', ') + ')');
 
-    si(z.pases[z.centro].length === 4 && z.abanico[z.centro][0] === 0,
-       z.nombre + ' · la del medio ayuda a las cuatro y está en x=0');
+    /* La del medio ayuda a las cuatro Y está en la columna del medio
+       de la rejilla, que es la que está siempre al frente y no hay que
+       buscar. En el 2-3 es la del fondo y en el 3-2 la de arriba, pero
+       en las cuatro cae en la columna 2. */
+    si(z.pases[z.centro].length === 4 && z.rejilla[z.centro] % 5 === 2,
+       z.nombre + ' · la del medio ayuda a las cuatro y está en la columna del medio');
 
-    /* La fila del casco: las cinco una vez, y cada salto un pase
-       legal — así, en fila, el balón sigue yendo al de al lado. */
-    si(z.fila.slice().sort().join() === '0,1,2,3,4',
-       z.nombre + ' · la fila usa las cinco una vez (' + z.fila.join(' ') + ')');
-    const saltos = [];
-    for (let k = 0; k+1 < 5; k++)
-      if (!z.pases[z.fila[k]].includes(z.fila[k+1])) saltos.push(z.fila[k]+'→'+z.fila[k+1]);
-    si(saltos.length === 0, z.nombre + ' · y la fila es un camino de pases legales' +
-       (saltos.length ? ' — ilegal: ' + saltos.join(', ') : ''));
-  }
+    /* Las cinco casillas: distintas, dentro del tablero, y en orden de
+       lectura — que es lo que hace que las teclas 1 a 5 coincidan con
+       lo que se ve, en las cuatro zonas y no sólo en una. */
+    const r = z.rejilla;
+    si(r.length === 5 && new Set(r).size === 5 &&
+       r.every((c) => Number.isInteger(c) && c >= 0 && c < 25),
+       z.nombre + ' · cinco casillas distintas dentro del 5×5 (' + r.join(' ') + ')');
+    si(r.every((c, k) => k === 0 || c > r[k-1]),
+       z.nombre + ' · y van en orden de lectura, igual que las teclas 1 a 5');
 
-  // ── Que ninguna bola se monte, con el código de verdad ───────────
-  for (const [etq, w, h, cabeza] of [
-      ['abanico · teléfono de pie',  390,  800, false],
-      ['abanico · monitor',         1440,  900, false],
-      ['fila · casco apaisado',     1600,  900, true],
-      ['fila · teléfono de pie',     390,  800, true]]) {
-    await pag.setViewportSize({ width: w, height: h });
-    await pag.waitForTimeout(150);
-    const pegadas = await pag.evaluate(({ cabeza }) => {
-      const H = window.__zonas, Z = H.ZONAS, B = H.balls;
-      const modoAntes = H.g('MODO'), cabeceoAntes = H.g('hayCabeceo'), zonaAntes = H.g('ZONA');
-      H.s('MODO', cabeza ? 'cabeza' : 'puntero');
-      H.s('hayCabeceo', !cabeza);
-      const malas = [];
-      for (let z = 0; z < Z.length; z++) {
-        H.s('ZONA', z); H.colocarBolas();
-        /* El radio que de verdad tiene la bola pintada, no el que
-           pedía la constante: colocarBolas lo recorta si no cabe. */
-        const r = B[0].userData.base * H.RADIO_GEO;
-        for (let a = 0; a < 5; a++) for (let b = a+1; b < 5; b++)
-          if (B[a].position.distanceTo(B[b].position) < r*2)
-            malas.push(Z[z].nombre + ' ' + a + '/' + b);
-      }
-      H.s('MODO', modoAntes); H.s('hayCabeceo', cabeceoAntes);
-      H.s('ZONA', zonaAntes); H.colocarBolas();
-      return malas;
-    }, { cabeza });
-    si(pegadas.length === 0, etq + ' — ninguna bola se monta en ninguna zona' +
+    /* NINGUNA VIVA PEGADA A OTRA. En un teléfono, dos casillas
+       contiguas son un dedo gordo y un punto perdido — y un punto
+       perdido es dinero. Por eso las cuatro zonas se quedan en las
+       filas 0, 2 y 4: así siempre hay una casilla vacía de por medio. */
+    const pegadas = [];
+    for (let a = 0; a < 5; a++) for (let b = a+1; b < 5; b++)
+      if (Math.abs(Math.floor(r[a]/5) - Math.floor(r[b]/5)) <= 1 &&
+          Math.abs(r[a]%5 - r[b]%5) <= 1) pegadas.push(r[a] + '/' + r[b]);
+    si(pegadas.length === 0, z.nombre + ' · ninguna casilla viva toca a otra' +
        (pegadas.length ? ' — pegadas: ' + pegadas.join(', ') : ''));
   }
+
+  /* ── LO DECLARADO ES LO PINTADO, EN CUALQUIER PANTALLA ───────────
+     La tabla de arriba se lee de la página, pero una tabla buena con
+     un bucle malo pinta otras casillas. Así que se mira la cancha de
+     verdad: qué cinco llevan la clase 'viva' en cada zona.
+
+     Y de paso lo que antes comprobaba el solape de las esferas: que
+     la cancha quepa entera. En una rejilla dos casillas no se pueden
+     montar —las pone el navegador— pero sí se puede salir del borde o
+     meterse debajo del marcador, y eso pasó: estaba escrito a mano
+     que el marcador medía 76 píxeles, y en un teléfono acostado y en
+     un monitor la chapa del set caía encima del reloj. */
+  for (const [etq, w, h] of [
+      ['teléfono de pie',   390, 844],
+      ['teléfono chico',    320, 568],
+      ['teléfono acostado', 844, 390],
+      ['tablet',            768,1024],
+      ['monitor',          1440, 900]]) {
+    await pag.setViewportSize({ width: w, height: h });
+    await pag.waitForTimeout(320);
+    const m = await pag.evaluate(() => {
+      const H = window.__zonas, Z = H.ZONAS, malas = [];
+      const zonaAntes = H.g('ZONA');
+      for (let z = 0; z < Z.length; z++) {
+        H.s('ZONA', z); H.colocarBolas();
+        const vivas = [...document.querySelectorAll('#rej .celda')]
+          .map((c, i) => c.classList.contains('viva') ? i : -1).filter((i) => i >= 0);
+        if (vivas.join() !== Z[z].rejilla.join())
+          malas.push(Z[z].nombre + ' pinta [' + vivas.join(' ') +
+                     '] y declara [' + Z[z].rejilla.join(' ') + ']');
+      }
+      H.s('ZONA', zonaAntes); H.colocarBolas(); H.ajustarCancha();
+      const r = document.getElementById('rej').getBoundingClientRect();
+      const una = document.querySelector('#rej .celda').getBoundingClientRect();
+      const hud = document.getElementById('hud').getBoundingClientRect();
+      const pista = document.getElementById('pista').getBoundingClientRect();
+      const chapa = document.getElementById('chapa').getBoundingClientRect();
+      return { malas,
+        cuadrada: Math.abs(r.width - r.height) <= 1,
+        casilla: Math.round(una.width),
+        dentro: r.left >= -1 && r.top >= -1 &&
+                r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1,
+        chapaDentro: chapa.top >= -1,
+        libreArriba: r.top >= hud.bottom,
+        libreAbajo: r.bottom <= pista.top };
+    });
+    si(m.malas.length === 0, etq + ' — las cinco vivas son las declaradas, en las cuatro zonas' +
+       (m.malas.length ? ' — ' + m.malas.join('; ') : ''));
+    si(m.cuadrada && m.dentro && m.chapaDentro && m.libreArriba && m.libreAbajo,
+       etq + ' — cuadrada, cabe entera y no pisa el marcador ni la pista (casilla de ' +
+       m.casilla + 'px)' + (m.cuadrada ? '' : ' — NO es cuadrada') +
+       (m.dentro ? '' : ' — se sale del borde') +
+       (m.chapaDentro ? '' : ' — la chapa se sale por arriba') +
+       (m.libreArriba ? '' : ' — pisa el marcador') +
+       (m.libreAbajo ? '' : ' — pisa la pista'));
+    /* Una casilla de menos de 34px no se toca con el dedo. */
+    si(m.casilla >= 34, etq + ' — la casilla se puede tocar (' + m.casilla + 'px)');
+  }
   await pag.setViewportSize({ width: 390, height: 800 });
-  await pag.waitForTimeout(200);
-
-  /* AQUÍ SE COMPROBABA QUE NINGUNA BOLA TAPARA EL ARO, y ya no hay
-     aro que tapar: el tablero, el aro y las líneas de cancha se
-     fueron cuando el juego dejó de ser sólo de baloncesto. Lo que
-     hay debajo ahora es una rejilla y una sombra por bola, y ninguna
-     de las dos se puede tapar — están en el suelo, debajo de todo.
-
-     Se quita entera en vez de adaptarla: una comprobación que ya no
-     protege nada es ruido, y la que sí hace falta —que las cinco no
-     se monten unas sobre otras— está justo arriba y sigue corriendo
-     en las cuatro pantallas. */
+  await pag.waitForTimeout(320);
 
   // ── Las cadenas: legales en las dos formas de crecer ─────────────
   const cad = await pag.evaluate(() => {
@@ -567,9 +596,63 @@ console.log('\n8 · Las cuatro zonas valen lo mismo\n');
   });
   eq(porCuarto, ['2-1-2','1-3-1','2-3','3-2'], 'cada cuarto se arma en su zona');
 
+  /* ── UN COLOR POR SET, Y LAS SEÑALES IGUALES EN LOS CUATRO ───────
+     Esto es lo que protege el color. Cada set pinta la cancha de otro
+     color, y eso es sólo decorado: el marco, las vacías y el halo. Lo
+     que NO puede cambiar de un set a otro es lo que significan los
+     tres colores que valen puntos — encendida, buena y fallada. Si en
+     el set 3 el "encendido" fuera verde, el nene que aprendió el color
+     en el set 1 leería mal su propio juego, y lo que lee mal es plata.
+
+     Se lee del estilo calculado y no del fichero, y con una espera por
+     delante: el marco se funde en 0,45s y las casillas en 0,08s, y
+     medido antes de tiempo lo que sale es el color de antes. Esa
+     espera no es paranoia — midiendo sin ella, los cuatro sets daban
+     violeta y parecía que el color no funcionaba. */
+  const marcos = [], senales = [];
+  for (let q = 1; q <= 4; q++) {
+    await pag.evaluate((q) => {
+      const H = window.__zonas;
+      H.s('cuartoActual', q); H.s('enPractica', false); H.s('AMISTOSO', true);
+      H.s('ZONA', q-1); H.colocarBolas();
+    }, q);
+    await pag.waitForTimeout(640);
+    marcos.push(await pag.evaluate(() =>
+      getComputedStyle(document.getElementById('rej')).borderTopColor));
+    const tres = {};
+    for (const clase of ['on','ok','mal']) {
+      await pag.evaluate((clase) => {
+        const H = window.__zonas, z = H.ZONAS[H.g('ZONA')];
+        document.querySelectorAll('#rej .celda')[z.rejilla[0]].className = 'celda viva ' + clase;
+      }, clase);
+      await pag.waitForTimeout(170);
+      tres[clase] = await pag.evaluate(() => {
+        const H = window.__zonas, z = H.ZONAS[H.g('ZONA')];
+        const s = getComputedStyle(document.querySelectorAll('#rej .celda')[z.rejilla[0]]);
+        return s.backgroundColor + ' / ' + s.borderTopColor;
+      });
+    }
+    senales.push(JSON.stringify(tres));
+    await pag.evaluate(() => window.__zonas.colocarBolas());
+  }
+  si(new Set(marcos).size === 4,
+     'los cuatro sets enmarcan la cancha de un color distinto (' + marcos.join('  ') + ')');
+  si(new Set(senales).size === 1,
+     'y las tres señales son idénticas en los cuatro: ' + (senales[0] || ''));
+
+  /* El nombre de la zona vive en la chapa del marco y el modo de
+     crecer en la pista. Antes iban los dos en la pista y en un
+     teléfono de pie la línea partía en dos renglones. */
+  await pag.evaluate(() => {
+    const H = window.__zonas;
+    H.s('cuartoActual', 1); H.s('ZONA', 0); H.colocarBolas();
+  });
+  const chapa = (await pag.locator('#chapa').textContent() || '');
   const pista = (await pag.locator('#pista').textContent() || '');
-  si(/2-1-2/.test(pista) && /(crece|grows)/.test(pista),
-     'y la pantalla dice en qué zona estás y cómo crece («' + pista.trim() + '»)');
+  si(/2-1-2/.test(chapa) && /\bSET\b/i.test(chapa),
+     'la chapa del marco dice qué set y en qué zona («' + chapa.trim() + '»)');
+  si(/(crece|grows)/.test(pista),
+     'y la pista dice cómo crece la cadena («' + pista.trim() + '»)');
   /* Un minuto es un minuto, no «1 minutes». Sale en el scrimmage y en
      la demostración, que es la pantalla que más gente ve. */
   si(!/\b1 (minutes|minutos)\b/.test(pista), 'y dice «1 minute», no «1 minutes»');
@@ -587,9 +670,118 @@ console.log('\n8 · Las cuatro zonas valen lo mismo\n');
   await pag.close();
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   9 · EL TABLERO DEL CASCO SIGUE EN PIE
+
+   fortress-casco.html es la escena de tres dimensiones de siempre, y
+   es el único sitio donde se juega con la cabeza: el giroscopio, la
+   medida en tres pasos y el punto de mira que se llena. Eso no cabe en
+   una rejilla plana, así que cuando el tablero de todos los días pasó
+   al 5×5, esta página se quedó entera para los veintiún Pico.
+
+   Entera y sin nadie mirándola, que es como se pudre el código. Así
+   que las comprobaciones que protegían la escena se mudaron aquí con
+   ella en vez de borrarse: la fila del casco y que ninguna bola se
+   monte sobre otra. Lo que vale una cadena es lo mismo en las dos
+   páginas —misma rotación, mismos puntos— y eso ya lo mide la sección
+   8 sobre la rejilla; aquí se mide lo que sólo existe en la escena.
+   ══════════════════════════════════════════════════════════════════ */
+console.log('\n9 · El tablero del casco sigue en pie\n');
+{
+  const pag = await navegador.newPage({ viewport: { width: 390, height: 800 } });
+  pag.on('pageerror', (e) => mal('la página del casco reventó: ' + e.message));
+  await pag.route('**/three.min.js', (ruta) =>
+    ruta.fulfill({ path: '/opt/node-tools/vendor/three.min.js',
+                   contentType: 'application/javascript' }));
+
+  const ASA = '\nwindow.__casco={ZONAS:ZONAS,balls:balls,colocarBolas:colocarBolas,' +
+              'RADIO_GEO:RADIO_GEO,g:function(k){return eval(k)},s:function(k,v){eval(k+"=v")}};\n';
+  const fuente = require('fs').readFileSync(path.join(AQUI, 'fortress-casco.html'), 'utf8');
+  const CIERRE = '\n})();\n</script>';
+  si(fuente.indexOf(CIERRE) > 0, 'el juego del casco se cierra donde la prueba espera');
+  await pag.route('**/fortress-casco.html', (ruta) =>
+    ruta.fulfill({ contentType: 'text/html',
+                   body: fuente.replace(CIERRE, ASA + CIERRE) }));
+
+  await pag.goto('file://' + path.join(AQUI, 'fortress-casco.html'));
+  await pag.waitForTimeout(700);
+
+  /* Su razón de existir: el botón del casco. Si un día desaparece, es
+     que alguien dejó esta página sin lo único que no está en la otra. */
+  si(await pag.locator('#goCabeza').count() === 1,
+     'la página del casco ofrece el botón de jugar con la cabeza');
+  si(/deviceorientation/.test(fuente) && /casco=1/.test(fuente),
+     'y conserva el giroscopio y su enlace ?casco=1');
+
+  await pag.locator('#go').click();
+  await pag.waitForTimeout(600);
+
+  const zc = await pag.evaluate(() => window.__casco.ZONAS.map((z) => ({
+    nombre: z.nombre, pases: z.pases, fila: z.fila, centro: z.centro
+  })));
+  eq(zc.map((z) => z.nombre), ['2-1-2','1-3-1','2-3','3-2'],
+     'las mismas cuatro zonas que en la rejilla, en el mismo orden');
+
+  for (const z of zc) {
+    /* La fila del casco: las cinco una vez, y cada salto un pase legal
+       — así, en fila, el balón sigue yendo al de al lado y el nene que
+       juega con el casco aprende la misma rotación. */
+    si(z.fila.slice().sort().join() === '0,1,2,3,4',
+       z.nombre + ' · la fila usa las cinco una vez (' + z.fila.join(' ') + ')');
+    const saltos = [];
+    for (let k = 0; k+1 < 5; k++)
+      if (!z.pases[z.fila[k]].includes(z.fila[k+1])) saltos.push(z.fila[k]+'→'+z.fila[k+1]);
+    si(saltos.length === 0, z.nombre + ' · y la fila es un camino de pases legales' +
+       (saltos.length ? ' — ilegal: ' + saltos.join(', ') : ''));
+  }
+
+  // ── Que ninguna bola se monte sobre otra, con el código de verdad ─
+  for (const [etq, w, h, cabeza] of [
+      ['abanico · teléfono de pie',  390,  800, false],
+      ['abanico · monitor',         1440,  900, false],
+      ['fila · casco apaisado',     1600,  900, true],
+      ['fila · teléfono de pie',     390,  800, true]]) {
+    await pag.setViewportSize({ width: w, height: h });
+    await pag.waitForTimeout(170);
+    const pegadas = await pag.evaluate(({ cabeza }) => {
+      const H = window.__casco, Z = H.ZONAS, B = H.balls;
+      const modoAntes = H.g('MODO'), cabeceoAntes = H.g('hayCabeceo'), zonaAntes = H.g('ZONA');
+      H.s('MODO', cabeza ? 'cabeza' : 'puntero');
+      H.s('hayCabeceo', !cabeza);
+      const malas = [];
+      for (let z = 0; z < Z.length; z++) {
+        H.s('ZONA', z); H.colocarBolas();
+        /* El radio que de verdad tiene la bola pintada, no el que
+           pedía la constante: colocarBolas lo recorta si no cabe. */
+        const r = B[0].userData.base * H.RADIO_GEO;
+        for (let a = 0; a < 5; a++) for (let b = a+1; b < 5; b++)
+          if (B[a].position.distanceTo(B[b].position) < r*2)
+            malas.push(Z[z].nombre + ' ' + a + '/' + b);
+      }
+      H.s('MODO', modoAntes); H.s('hayCabeceo', cabeceoAntes);
+      H.s('ZONA', zonaAntes); H.colocarBolas();
+      return malas;
+    }, { cabeza });
+    si(pegadas.length === 0, etq + ' — ninguna bola se monta en ninguna zona' +
+       (pegadas.length ? ' — pegadas: ' + pegadas.join(', ') : ''));
+  }
+
+  await pag.close();
+}
+
+/* Y que la rejilla mande a quien llegue con un enlace viejo del casco:
+   si el redirect se cae, ?casco=1 abre la rejilla y el que lleva el
+   Pico puesto se queda mirando un tablero que no puede tocar. */
+{
+  const rejilla = require('fs').readFileSync(path.join(AQUI, 'fortress-vr.html'), 'utf8');
+  si(/fortress-casco\.html/.test(rejilla) && /casco/.test(rejilla),
+     'y la rejilla manda los enlaces ?casco=1 a fortress-casco.html');
+}
+
 await navegador.close();
 console.log('\n' + (fallos === 0
-  ? '✓ la cuenta cuadra, el viaje cierra, las cuatro zonas valen lo mismo'
+  ? '✓ la cuenta cuadra, el viaje cierra, las cuatro zonas valen lo mismo\n' +
+    '  y el tablero del casco sigue en pie'
   : '✗ ' + fallos + ' fallo(s)'));
 process.exit(fallos === 0 ? 0 : 1);
 })().catch(e => { console.error('\n✗ la prueba reventó:', e); process.exit(1) });
