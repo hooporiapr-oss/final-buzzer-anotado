@@ -1,0 +1,2061 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Fortress en la cancha — Cada Punto Cuenta</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800;900&display=swap" rel="stylesheet">
+
+<!-- El icono y la imagen de compartir. og:image va en absoluto
+     a propósito: WhatsApp y los demás no resuelven rutas
+     relativas, y con una relativa la vista previa sale en
+     blanco igual que sin imagen. -->
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   FORTRESS EN LA REJILLA — TELÉFONO, TABLET Y COMPUTADORA
+
+   Las cinco posiciones viven dentro de una CANCHA DE 5×5. Antes
+   flotaban en una escena de tres dimensiones con piso, sombras y
+   niebla; eso sigue existiendo y se juega en fortress-casco.html,
+   que es la que entra en los cascos. Aquí no hay escena: hay
+   veinticinco casillas y cinco encendidas.
+
+   POR QUÉ LA REJILLA, Y NO ES UN AHORRO
+
+   · La FORMA SE VE. En la escena, el 2-1-2 y el 2-3 eran cinco bolas
+     en sitios parecidos. Sobre veinticinco casillas son dos
+     formaciones que un entrenador nombra de un vistazo, porque las
+     veinte casillas vacías son las que dicen dónde NO hay nadie.
+   · En un teléfono no hay nada que negociar: una rejilla cuadrada
+     cabe de pie y acostada, y no hay bola que se salga del borde.
+   · Y abre sitio. Veinticinco casillas son veinticinco posiciones
+     posibles: la siguiente zona que se nos ocurra ya tiene dónde
+     ponerse, sin recalcular ángulos.
+
+   LO QUE NO CAMBIA, PORQUE ES DINERO
+
+   Una cadena de 7 vale 28 puntos, aquí y en las otras tres páginas.
+   Lo que hace difícil una cadena no es el dibujo: es la ROTACIÓN
+   —qué casilla puede seguir a cuál— y eso se lee de `pases`, que no
+   se ha tocado una coma. prueba-demo.js lo mide sobre la página
+   corriendo.
+
+   UN COLOR POR SET, Y SÓLO LA CANCHA CAMBIA
+
+   Cada set pinta la cancha de otro color: el marco, las casillas
+   vacías, el halo de atrás y la chapa del set. Lo que NO cambia
+   nunca son las tres señales que valen puntos — la bola apagada es
+   naranja, la encendida es blanco cálido, la fallada es roja — y son
+   idénticas en los cuatro sets. Se cambia el cuarto, no los
+   semáforos: si en el Q3 el "encendido" fuera verde, el nene que
+   aprendió en el Q1 leería mal su propio juego.
+
+   Y el número del set se queda escrito en la pantalla, no sólo en el
+   color: uno de cada doce varones no distingue dos de estos cuatro.
+   ══════════════════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+/* Esto no es adorno. 'hidden' esconde una cosa poniéndole
+   display:none desde el navegador, y CUALQUIER regla nuestra que diga
+   display gana por encima de eso. #hud dice display:flex, así que
+   esconderlo no escondía nada: el marcador se quedaba asomando por
+   detrás de la pantalla del final. Las pruebas no lo vieron porque
+   preguntaban si la propiedad estaba puesta, y lo estaba — lo que no
+   pasaba es que se viera. */
+[hidden]{display:none !important}
+html,body{height:100%;overflow:hidden;background:#0B1724;
+  font-family:Archivo,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  -webkit-text-size-adjust:100%;overscroll-behavior:none;
+  -webkit-tap-highlight-color:transparent}
+/* ══════════════════════════════════════════════════════════════════
+   LA CANCHA DE 5×5 — LA MISMA QUE THE REPLAY CHALLENGE
+
+   Esto no es una cancha nueva: es LA cancha. La rejilla de 5×5, el
+   marco violeta, el hueco del 2,2%, las casillas redondeadas y las
+   tres señales —encendida, buena, fallada— son las de Replay, copiadas
+   de ahí y no reinventadas aquí. Un nene que jugó Replay en la escuela
+   abre esto y ya sabe lo que significa cada color.
+
+   LAS TRES SEÑALES, Y SON INTOCABLES
+
+     · encendida (.on)   violeta #A78BFA con borde cian — MIRA
+     · buena      (.ok)  verde   #00D9A5 — acertaste
+     · fallada    (.mal) rosa    #FF1493 y un temblor — se rompió
+
+   Son idénticas en los cuatro sets a propósito. Lo que cambia de set
+   a set es la CANCHA: el marco, las casillas vacías y el halo. Si en
+   el set 3 el "encendido" fuera verde, el nene que aprendió el color
+   en el set 1 leería mal su propio juego — y lo que lee mal vale
+   puntos, y los puntos son dinero.
+
+   CUADRADA Y MEDIDA EN JS, también como en Replay: el lado es el
+   menor del ancho y el alto que le quedan, puesto en píxeles. Con
+   aspect-ratio y max-height a la vez el navegador recorta el alto y
+   deja el ancho, y las casillas dejan de ser cuadradas.
+   ══════════════════════════════════════════════════════════════════ */
+/* El hueco donde cabe la cancha: entre el marcador y la pista, con el
+   cristal curvo descontado. En vez de padding va con inset, para que
+   clientWidth y clientHeight de ahí dentro sean exactamente el sitio
+   disponible y la medida de Replay valga sin tocarle un número. */
+#cancha{position:fixed;z-index:1;
+  left:10px;right:10px;
+  top:calc(76px + env(safe-area-inset-top,0px));
+  bottom:calc(40px + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:center;justify-content:center;min-height:0;
+  -webkit-user-select:none;user-select:none}
+body.conVolver #cancha{bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+@media (max-height:470px){
+  #cancha{top:calc(48px + env(safe-area-inset-top,0px));
+          bottom:calc(32px + env(safe-area-inset-bottom,0px))}
+  body.conVolver #cancha{bottom:calc(58px + env(safe-area-inset-bottom,0px))}
+}
+
+#rej{position:relative;
+  display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);
+  gap:2.2%;padding:2.2%;
+  border:2px solid var(--marco);border-radius:16px;
+  background:#0D1826;
+  box-shadow:0 0 60px var(--halo),inset 0 0 40px var(--halint),0 20px 60px rgba(0,0,0,.8);
+  transition:border-color .45s ease, box-shadow .45s ease}
+
+/* Las veinte vacías son parte del juego, no relleno: son las que dicen
+   dónde NO hay nadie, y por eso un 2-3 se lee como un 2-3.
+
+   LA VIVA VA MÁS FUERTE QUE EN REPLAY, y es a propósito. Allí las
+   veinticinco se juegan, así que no hay nada de qué distinguirlas y el
+   borde al 28% basta. Aquí la viva tiene que ganarle a veinte vecinas:
+   con los valores de Replay tal cual, mirando la cancha de lejos no se
+   sabía cuáles cinco estaban en juego — que es lo primero que hay que
+   saber. Así que la viva sube y la vacía baja hasta quedarse en una
+   insinuación de rejilla. Las tres señales no se tocan. */
+.celda{border-radius:10px;background:rgba(0,0,0,0);
+  border:2px solid var(--rejaMuerta);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .08s;touch-action:manipulation}
+.celda.viva{background:var(--piso);border-color:var(--reja);cursor:pointer;
+  box-shadow:inset 0 0 14px var(--halint)}
+
+/* LAS TRES SEÑALES DE REPLAY, tal cual. */
+.celda.on{background:#A78BFA;border-color:#22D3EE;
+  box-shadow:0 0 22px rgba(167,139,250,.9);transform:scale(1.04)}
+.celda.ok{background:#00D9A5;border-color:#00D9A5;
+  box-shadow:0 0 16px rgba(0,217,165,.7)}
+.celda.mal{background:rgba(255,20,147,.35);border-color:#FF1493;
+  animation:temblar .3s}
+@keyframes temblar{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* Sólo las que de verdad responden ahora mismo se encienden al pasar
+   el ratón por encima. Antes de arrancar eso es una sola: la del
+   medio. Encender otra sería prometer algo que no pasa. */
+@media (hover:hover){
+  .celda.puede:hover:not(.on):not(.ok):not(.mal){
+    background:rgba(167,139,250,.16);border-color:rgba(34,211,238,.55)}
+}
+
+/* La del medio late mientras la tanda está armada: es lo que dice "yo
+   soy el botón" sin escribirlo en ningún sitio. Late con el violeta de
+   "encendida", que es el color que ya significa "esto es el juego". */
+@keyframes latir{
+  0%,100%{background:var(--piso);border-color:var(--reja);
+          box-shadow:0 0 0 rgba(167,139,250,0)}
+  50%    {background:rgba(167,139,250,.5);border-color:#22D3EE;
+          box-shadow:0 0 22px rgba(167,139,250,.65)}
+}
+.celda.late{animation:latir 900ms ease-in-out infinite}
+/* A quien le molesta el movimiento se le deja la casilla marcada y
+   quieta: la pista sigue ahí, sin latido. */
+@media (prefers-reduced-motion:reduce){
+  .celda.late{animation:none;background:rgba(167,139,250,.34);border-color:#22D3EE}
+  .celda,#rej{transition:none}
+  .celda.mal{animation:none}
+}
+
+/* La chapa del set, montada en el borde de arriba del marco. Dice el
+   número y el nombre de la zona, porque el color solo no vale: uno de
+   cada doce varones no distingue dos de estos cuatro. */
+#chapa{position:absolute;top:0;left:50%;transform:translate(-50%,-50%);
+  z-index:2;padding:4px 13px;border-radius:999px;
+  background:#0B1724;border:2px solid var(--marco);color:var(--set);
+  font-size:.6rem;font-weight:900;letter-spacing:.14em;
+  text-transform:uppercase;white-space:nowrap;
+  transition:color .45s ease, border-color .45s ease}
+
+/* UN COLOR DE CANCHA POR SET. Set 1 el 2-1-2, set 2 el 1-3-1, set 3
+   el 2-3, set 4 el 3-2 — el orden fijo de siempre.
+   El set 1 es la cancha de Replay: violeta. Los otros tres la retiñen.
+   Ninguno usa el verde ni el rosa, que son señales.
+
+   El cuarto es blanco. Primero fue gris de acero y era un error que se
+   vio en la primera foto: una cancha gris no parece otro set, parece
+   la página apagada. Blanco a tope es lo contrario — el último set
+   enciende las luces, y de paso no hace falta inventarse un quinto
+   color metido entre el cian y el naranja. */
+#cancha,#cancha[data-set="1"]{--set:#A78BFA;
+  --marco:rgba(167,139,250,.5);--halo:rgba(167,139,250,.22);
+  --halint:rgba(167,139,250,.1);
+  --piso:rgba(167,139,250,.12);--reja:rgba(167,139,250,.55);
+  --rejaMuerta:rgba(167,139,250,.07)}
+#cancha[data-set="2"]{--set:#22D3EE;
+  --marco:rgba(34,211,238,.5);--halo:rgba(34,211,238,.2);
+  --halint:rgba(34,211,238,.1);
+  --piso:rgba(34,211,238,.12);--reja:rgba(34,211,238,.55);
+  --rejaMuerta:rgba(34,211,238,.07)}
+#cancha[data-set="3"]{--set:#FF9A3C;
+  --marco:rgba(255,154,60,.5);--halo:rgba(255,154,60,.18);
+  --halint:rgba(255,154,60,.1);
+  --piso:rgba(255,154,60,.12);--reja:rgba(255,154,60,.55);
+  --rejaMuerta:rgba(255,154,60,.08)}
+#cancha[data-set="4"]{--set:#E8F1FF;
+  --marco:rgba(232,241,255,.55);--halo:rgba(232,241,255,.14);
+  --halint:rgba(232,241,255,.08);
+  --piso:rgba(232,241,255,.1);--reja:rgba(232,241,255,.5);
+  --rejaMuerta:rgba(232,241,255,.07)}
+
+/* ── El marcador. Encima del lienzo y sin robar toques. ─────────── */
+#hud{position:fixed;top:0;left:0;right:0;z-index:5;pointer-events:none;
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 14px 0;color:#fff}
+#hud .col{text-align:center;min-width:72px}
+#hud .n{display:block;font-weight:900;font-size:clamp(1.5rem,6vw,2.2rem);
+  line-height:1;letter-spacing:-.02em}
+#hud .k{display:block;font-size:.62rem;font-weight:900;letter-spacing:.12em;
+  text-transform:uppercase;color:#7F93A6;margin-top:3px}
+#hud .centro{display:flex;flex-direction:column;align-items:center;gap:7px;
+  flex:0 1 auto;min-width:0}
+/* El reloj de la tanda. Cifras de ancho fijo: si no, el marcador
+   tiembla de un segundo a otro y no hay nada que distraiga más. */
+#reloj{font-weight:900;font-size:clamp(1.5rem,6vw,2.2rem);line-height:1;
+  letter-spacing:.01em;font-variant-numeric:tabular-nums;color:#fff}
+#reloj.poco{color:#FFC247}
+#reloj.nada{color:#FF5A4A}
+#estado{font-weight:900;font-size:clamp(.78rem,3.2vw,1.05rem);letter-spacing:.09em;
+  padding:8px 14px;border-radius:999px;background:rgba(5,14,24,.72);
+  color:#FFC247;text-align:center;white-space:nowrap}
+#estado.tu{color:#6FD83C}
+#estado.listo{color:#6FD83C;background:rgba(5,14,24,.9)}
+
+/* Un teléfono acostado deja 390 puntos de alto y el marcador se come
+   el tablero. Se encoge y deja de estorbar. */
+@media (max-height:470px){
+  #hud{padding-top:6px}
+  #hud .n{font-size:1.25rem}
+  #hud .k{font-size:.56rem}
+  #estado{font-size:.72rem;padding:5px 10px}
+  #reloj{font-size:1.25rem}
+  #hud .centro{gap:4px}
+}
+/* El padding no es adorno: con left:0;right:0 a secas la línea llega
+   hasta el filo del cristal, y desde que lleva delante el nombre de
+   la zona es larga de verdad — en un teléfono de pie parte en dos y
+   la primera mitad acaba tocando el borde. */
+#pista{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom,0px));
+  z-index:5;pointer-events:none;text-align:center;color:#5E7488;
+  padding:0 16px;font-size:.72rem;font-weight:800;letter-spacing:.04em}
+
+/* ── La portada y el final. Mismo molde. ────────────────────────── */
+.capa{position:fixed;inset:0;z-index:10;background:rgba(11,23,36,.94);color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:24px;gap:13px}
+.capa h1{font-size:clamp(1.7rem,7vw,2.9rem);font-weight:900;letter-spacing:-.02em}
+.capa h1 em{font-style:normal;color:#FF7A18}
+.capa p{color:#C8D6E2;font-size:.98rem;max-width:36ch;line-height:1.55}
+.capa small{color:#7F93A6;font-size:.78rem;max-width:34ch;line-height:1.5}
+/* Los tres tienen que parecer botones. Dos de ellos eran un borde
+   fino sobre el fondo y, puestos debajo de un párrafo, se leían como
+   una línea más de texto: nadie los tocaba porque no parecían tocables.
+   Ahora los tres llevan fondo propio, el mismo ancho y la misma
+   altura — se ven como un juego de tres cosas que se pueden apretar,
+   y el color dice cuál es cuál. */
+.capa button{background:#FF7A18;color:#0B1724;border:2px solid #FF7A18;border-radius:8px;
+  font:inherit;font-weight:900;font-size:1.05rem;padding:15px 24px;cursor:pointer;
+  min-width:min(320px,82vw);line-height:1.25;
+  box-shadow:0 8px 22px rgba(0,0,0,.38);transition:transform .08s ease}
+.capa button:active{transform:translateY(1px)}
+.marca{font-size:1.6rem;font-weight:900;line-height:1;color:#6FD83C}
+.grande{font-size:clamp(3.4rem,18vw,6rem);font-weight:900;line-height:.95;
+  color:#FF7A18;letter-spacing:-.03em}
+.capa button.otro{background:#16293F;color:#EAF4FB;border-color:#3C566F;font-size:1rem}
+/* El aviso va pegado al botón y encima de la explicación: ahí se lee
+   antes de apretar, y no después. */
+.capa .req{color:#FFC247;font-size:.72rem;font-weight:900;letter-spacing:.12em;
+  text-transform:uppercase;margin-top:-4px}
+.capa .req.mod{color:#8EA3B5}
+#cuenta{color:#6FD83C;font-weight:900;font-size:.95rem;letter-spacing:.06em;min-height:1.2em}
+
+/* ── La caja de cuartos ─────────────────────────────────────────────
+   Q1 Q2 Q3 Q4 y el total, como un marcador de verdad. Un padrino que
+   mira esto entiende el juego sin que nadie se lo explique, y el nene
+   ve de un vistazo cuál tiene que superar. */
+.caja{display:flex;gap:2px;justify-content:center;margin:4px 0 2px}
+.caja div{min-width:54px;padding:7px 4px;background:rgba(255,255,255,.05);
+  border-radius:4px;text-align:center}
+.caja div.tot{background:rgba(255,122,24,.16)}
+.caja div.vivo{background:rgba(111,216,60,.18)}
+.caja b{display:block;font-size:.58rem;font-weight:900;letter-spacing:.1em;
+  color:#7F93A6;text-transform:uppercase}
+.caja span{display:block;font-size:1.15rem;font-weight:900;line-height:1.25;
+  font-variant-numeric:tabular-nums;color:#fff}
+.caja div.tot span{color:#FF7A18}
+.caja div.cero span{color:#5A6B7C}
+#tanda{color:#7F93A6;font-weight:800;font-size:.82rem;letter-spacing:.06em}
+
+#lang{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:12;
+  border:1px solid #33465A;background:rgba(11,23,36,.6);color:#C8D6E2;border-radius:999px;
+  padding:7px 14px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer}
+/* Volver a la portada. Enfrente del botón de idioma, con su misma
+   pinta, y sólo se ve cuando hay algo que leer: en la portada y en
+   la pantalla de final. Mientras se juega no está, que un toque sin
+   querer en una esquina no se lleve una corrida oficial. */
+#atras{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;z-index:12;
+  border:1px solid #33465A;background:rgba(11,23,36,.6);color:#C8D6E2;border-radius:999px;
+  padding:7px 14px;font:inherit;font-size:.72rem;font-weight:800;text-decoration:none}
+/* Y el de abajo, el que no sale del tablero: devuelve a la portada
+   de ESTA página, que es de donde salen los dos juegos. Centrado
+   abajo, que es donde la mano ya está. */
+#volver{position:fixed;left:50%;transform:translateX(-50%);
+  bottom:calc(9px + env(safe-area-inset-bottom,0px));z-index:12;
+  border:1px solid #33465A;background:rgba(11,23,36,.82);color:#C8D6E2;
+  border-radius:999px;padding:9px 18px;font:inherit;font-size:.72rem;
+  font-weight:800;cursor:pointer}
+/* Con el botón puesto, la pista sube: si no, el texto de "tu mejor"
+   le queda justo debajo y se leen como una sola cosa. */
+body.conVolver #pista{bottom:calc(50px + env(safe-area-inset-bottom,0px))}
+/* La foto de la marca, arriba de la portada.
+
+   El height:auto no es relleno: el atributo height="630" del <img>
+   llega como alto fijo, y aspect-ratio sólo manda cuando uno de los
+   dos lados es auto. Sin él la caja sale de 630 de alto y el
+   object-fit:cover recorta por arriba — justo donde está el 21.
+
+   Y se va sola en pantalla baja: en un teléfono tumbado o dentro del
+   casco lo que hace falta es el botón de empezar, y una foto que lo
+   empuja fuera de la vista es peor que no tener foto. */
+#tapaFoto{width:100%;max-width:520px;height:auto;aspect-ratio:1200/630;
+  object-fit:cover;border-radius:14px;display:block;background:#1b2937;
+  border:1px solid #ffffff1f;box-shadow:0 18px 50px #0006;margin-bottom:4px}
+@media (max-height:640px){ #tapaFoto{display:none} }
+</style>
+</head>
+<body>
+
+<a id="atras" href="index.html">&larr; Inicio</a>
+<button id="lang">EN</button>
+
+<div id="hud" hidden>
+  <div class="col"><span class="n" id="hNivel">0</span><span class="k" id="kNivel">cadena</span></div>
+  <div class="centro">
+    <div id="reloj">5:00</div>
+    <div id="estado">MIRA</div>
+  </div>
+  <div class="col"><span class="n" id="hPts">0</span><span class="k" id="kPts">puntos</span></div>
+</div>
+<div id="pista" hidden></div>
+
+<!-- La cancha. Las veinticinco casillas las pone construir() en un
+     bucle: son veinticinco líneas idénticas, y el sitio donde se
+     decide cuáles cinco están vivas es ese mismo bucle. Escribirlas
+     aquí a mano sería tener la misma lista en dos ficheros. -->
+<div id="cancha" data-set="1" hidden>
+  <div id="rej"><div id="chapa"></div></div>
+</div>
+
+<button id="volver" hidden></button>
+
+<div class="capa" id="tapa">
+  <img id="tapaFoto" src="compartir.jpg" width="1200" height="630"
+       loading="eager" decoding="async"
+       alt="Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21">
+  <h1>Fortress <em>en la cancha</em></h1>
+  <div class="marca" id="tapaQuien" hidden></div>
+  <p id="tapaP"></p>
+  <div class="caja" id="cajaTapa" hidden></div>
+  <small id="tapaVentana" class="req" hidden></small>
+  <button id="go"></button>
+  <button id="goAmistoso" class="otro"></button>
+  <small id="tapaMod" class="req mod"></small>
+  <small id="tapaS"></small>
+</div>
+
+<div class="capa" id="fin" hidden>
+  <div class="marca" id="finK"></div>
+  <div class="grande" id="finN">0</div>
+  <div class="caja" id="caja" hidden></div>
+  <p id="finP"></p>
+  <button id="otra"></button>
+  <button id="practicar" class="otro" hidden></button>
+  <div id="cuenta"></div>
+  <div id="tanda"></div>
+  <small id="finS"></small>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* EL CASCO SE MUDÓ, Y SUS ENLACES SIGUEN VALIENDO.
+
+   Jugar con la cabeza —el giroscopio, la medida en tres pasos, el
+   punto de mira que se llena— necesita una escena de tres dimensiones
+   y no se puede hacer sobre una rejilla plana. Así que ese tablero no
+   se borró: vive entero en fortress-casco.html, que es la que entra en
+   los Pico.
+
+   Quien tenga guardado un enlace con ?casco=1 va para allá solo, con
+   los demás parámetros intactos. Nunca pasa en una corrida oficial:
+   ahí el casco no se ofrecía ni antes. */
+try{
+  var _casco=new URLSearchParams(location.search).get('casco');
+  if(_casco==='1'||_casco==='si'||_casco==='yes'){
+    location.replace('fortress-casco.html'+location.search);
+  }
+}catch(e){}
+
+// ──────────────────────────────────────────────────────────────────
+//  IDIOMA. Las mismas llaves que el resto del sitio, para que elegir
+//  inglés en una página lo deje elegido en todas.
+// ──────────────────────────────────────────────────────────────────
+var S={
+  es:{
+    /* Ya no se puede decir «la cadena crece de una en una»: en dos de
+       los cuatro cuartos la cadena es otra cada ronda. Lo que vale
+       para los cuatro es que crece de largo y que se repite en orden,
+       y que la pista de arriba dice de qué cuarto se trata. */
+    p:'La cadena se alarga una ronda tras otra. Mira bien dónde se '+
+      'encienden y repítelas en el mismo orden. Un fallo acaba la '+
+      'tirada. Cada set se juega en otra zona, y en dos de los '+
+      'cuatro la cadena es nueva cada ronda — la pantalla te lo dice.',
+    go:'Práctica · sin reloj',
+    sDedo:'Toca la casilla. Nada que instalar.',
+    sRaton:'Haz clic en la casilla, o usa las teclas 1 a 5.',
+    mira:'MIRA',
+    turno:'AHORA TÚ',
+    nivel:'cadena',
+    puntos:'puntos',
+    finK:'SE ROMPIÓ',
+    fin:'Cadena más larga',
+    otra:'Otra vez',
+    mejor:'Tu mejor cadena: ',
+    /* Las cinco van siempre en orden de lectura dentro de su zona —de
+       arriba abajo y de izquierda a derecha— en las cuatro. Así que la
+       pista vale para las cuatro y no hay que nombrar posiciones de
+       una sola. */
+    teclas:'Teclas 1 a 5, de arriba abajo y de izquierda a derecha',
+    mod:'Computadora · tablet · celular',
+    amistoso:'Scrimmage · 4 sets',
+    demoSigue:'Ver lo que esto recauda →',
+    finAmistoso:'FIN DEL SCRIMMAGE',
+    otroAmistoso:'Otro scrimmage',
+    otraTirada:'OTRA TIRADA',
+    empiezaEn:'empieza en ',
+    tanda:'Esta tanda: ',
+    listoPill:'TOCA EL MEDIO',
+    /* «tus {M}» daba «tus 1 minuto» en cada scrimmage y en cada
+       demostración — la pantalla que más gente ve. «tu tanda de {M}»
+       sale bien con uno y con cinco. */
+    listoLinea:'Toca la casilla del medio para empezar tu tanda de {M}.',
+    /* La chapa del marco. Lleva el número del set además del color,
+       porque el color solo deja fuera al que no distingue dos de los
+       cuatro. Practicando suelto no hay número de set que poner. */
+    chapaSet:'SET {N} · {Z}',
+    /* Uno en singular. Con un solo molde salía «tus 1 minutos» en
+       cada scrimmage y en cada demostración — es decir, en la
+       pantalla que más gente ve de todo el sitio. */
+    minutos:'{N} minutos',
+    minuto1:'{N} minuto',
+    segundos:'{N} segundos',
+    seAcabo:'SE ACABÓ EL TIEMPO',
+    total:'Tot',
+    ventanaQueda:'La ventana cierra en {T}',
+    ventanaCerrada:'La ventana ya cerró',
+    juegoP:'Cuatro sets de {M}. Cada set vale tu MEJOR tirada, '+
+           'y los cuatro se suman. Eso es tu juego.',
+    juegoS:'Entre set y set puedes practicar lo que quieras.',
+    juegoHecho:'Tu juego está completo. Gracias — esto es lo que verán tus padrinos.',
+    empezarQ:'Empezar el Q{Q}',
+    seguirQ:'Jugar el Q{Q}',
+    cargando:'Buscando tu juego…',
+    juegoNo:'Este enlace no abre un juego.',
+    juegoNoLlave:'Este enlace no es el tuyo.',
+    juegoNoVentana:'Todavía no es la hora, o la ventana ya cerró.',
+    sinRed:'Sin conexión. Reintentando…',
+    cuartoPill:'S{Q}',
+    aBatir:'Tu mejor de este set: {P}',
+    /* El nombre de la zona se queda a la vista toda la tanda: es lo
+       que le dice al nene POR QUÉ las cinco están en otro sitio que
+       en el cuarto anterior. Sin esto parece que se movieron solas. */
+    zonaPista:'Zona {Z}',
+    /* Y la regla del cuarto, al lado del nombre. Un cuarto que renueva
+       sin avisar no es difícil, es un fallo: el nene cree que se le
+       olvidó la cadena de antes cuando lo que pasó es que ya no es
+       ésa. Avisado, la ronda en frío es el reto que queríamos. */
+    zonaCrece:'la cadena crece',
+    zonaNueva:'cadena nueva cada ronda',
+    finCuarto:'FIN DEL SET {Q}',
+    finJuego:'JUEGO TERMINADO',
+    porVentana:'Cerró la ventana a mitad del set, así que ese set vale 0.',
+    totalJuego:'Total del juego',
+    siguienteCuarto:'Jugar el set {Q}',
+    practicar:'Practicar',
+    volverJuego:'Volver a mi juego',
+    otraTanda:'Otra tanda',
+    reintentar:'Reintentar',
+    guardando:'Guardando el set…',
+    noGuardo:'No se pudo guardar. Revisa la conexión y vuelve a abrir tu enlace.',
+    mejorTanda:'Tu mejor cadena de la tanda',
+    siguienteBtn:'Siguiente jugador',
+    atras:'← Inicio',
+    volver:'← Volver al tablero',
+    fotoAlt:'Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21'
+  },
+  en:{
+    p:'The chain gets one longer every round. Watch which cells light '+
+      'up and repeat them in the same order. One miss ends the run. Each '+
+      'set is played in a different zone, and in two of the four the '+
+      'chain is brand new every round — the screen tells you which.',
+    go:'Practice · no clock',
+    sDedo:'Tap the cell. Nothing to install.',
+    sRaton:'Click the cell, or use keys 1 to 5.',
+    mira:'WATCH',
+    turno:'YOUR TURN',
+    nivel:'chain',
+    puntos:'points',
+    finK:'BROKEN',
+    fin:'Longest chain',
+    otra:'Play again',
+    mejor:'Your best chain: ',
+    teclas:'Keys 1 to 5, top to bottom and left to right',
+    mod:'Computer · tablet · phone',
+    amistoso:'Scrimmage · 4 sets',
+    demoSigue:'See what this raises →',
+    finAmistoso:'SCRIMMAGE OVER',
+    otroAmistoso:'Another scrimmage',
+    otraTirada:'ANOTHER GO',
+    empiezaEn:'starts in ',
+    tanda:'This round: ',
+    listoPill:'TAP THE MIDDLE',
+    listoLinea:'Tap the middle cell to start your {M}.',
+    chapaSet:'SET {N} · {Z}',
+    minutos:'{N} minutes',
+    minuto1:'{N} minute',
+    segundos:'{N} seconds',
+    seAcabo:"TIME'S UP",
+    total:'Tot',
+    ventanaQueda:'The window closes in {T}',
+    ventanaCerrada:'The window has closed',
+    juegoP:'Four sets of {M}. Each set counts your BEST run, '+
+           'and the four add up. That is your game.',
+    juegoS:'Between sets you can practise as much as you like.',
+    juegoHecho:'Your game is complete. This is what your sponsors will see.',
+    empezarQ:'Start Q{Q}',
+    seguirQ:'Play Q{Q}',
+    cargando:'Finding your game…',
+    juegoNo:'This link does not open a game.',
+    juegoNoLlave:'This link is not yours.',
+    juegoNoVentana:'Not time yet, or the window has closed.',
+    sinRed:'No connection. Retrying…',
+    cuartoPill:'S{Q}',
+    aBatir:'Your best this set: {P}',
+    zonaPista:'{Z} zone',
+    zonaCrece:'the chain grows',
+    zonaNueva:'new chain every round',
+    finCuarto:'END OF SET {Q}',
+    finJuego:'GAME OVER',
+    porVentana:'The window closed mid-set, so that set counts 0.',
+    totalJuego:'Game total',
+    siguienteCuarto:'Play set {Q}',
+    practicar:'Practise',
+    volverJuego:'Back to my game',
+    otraTanda:'Another round',
+    reintentar:'Try again',
+    guardando:'Saving the set…',
+    noGuardo:'Could not save. Check your connection and reopen your link.',
+    mejorTanda:'Your best chain this round',
+    siguienteBtn:'Next player',
+    atras:'← Home',
+    volver:'← Back to the board',
+    fotoAlt:'A kid on a court at sunset, arm raised, as his score climbs: 1, 3, 6, 10, 15, 21'
+  }
+};
+var LANG='es';
+try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
+  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en') }catch(e){}
+function T(k){ return (S[LANG]&&S[LANG][k])||S.es[k] }
+function $(id){ return document.getElementById(id) }
+
+/* Hay ratón o hay dedo, y el texto de la portada cambia: decirle
+   "toca la bola" a quien está en una computadora es decirle nada. */
+var HAY_FINO=false;
+try{ HAY_FINO=!!(window.matchMedia&&matchMedia('(pointer:fine)').matches) }catch(e){}
+
+function pintarTextos(){
+  document.documentElement.lang=LANG;
+  $('lang').textContent=LANG==='es'?'EN':'ES';
+  $('atras').textContent=T('atras');
+  $('volver').textContent=T('volver');
+  /* El alt se pone aquí y no con data-i18n porque es un atributo:
+     lo otro reescribe el contenido del elemento, y una <img> no
+     tiene contenido que reescribir. */
+  $('tapaFoto').alt=T('fotoAlt');
+  $('tapaP').textContent=T('p');
+  $('go').textContent=T('go');
+  $('tapaS').textContent=HAY_FINO?T('sRaton'):T('sDedo');
+  $('tapaMod').textContent=T('mod');
+  $('goAmistoso').textContent=T('amistoso');
+  $('kNivel').textContent=T('nivel');
+  $('kPts').textContent=T('puntos');
+  $('finK').textContent=T('finK');
+  $('otra').textContent=T('siguienteBtn');
+  pintarChapa();
+  pintarPista();
+}
+/* Cuánto dura la tanda, dicho en palabras. Estaba escrito a mano —
+   "tus 5 minutos" — y con ?min=3 la página mentía. */
+function cuantoDura(){
+  /* Lo que dura DE VERDAD esta tanda, que en demostración es un
+     minuto y no cinco. Leía SESION_MS a secas y la portada prometía
+     cinco minutos antes de un cuarto de uno. */
+  var ms=duracionSesion();
+  var min=ms/60000;
+  if(min>=1 && min===Math.round(min))
+    return T(min===1?'minuto1':'minutos').replace('{N}',min);
+  var seg=Math.round(ms/1000);
+  if(seg<60) return T('segundos').replace('{N}',seg);
+  return Math.floor(seg/60)+':'+('0'+(seg%60)).slice(-2);
+}
+/* CUÁL ES LA ZONA: en la chapa del marco, no en la pista.
+   El nombre de la zona estaba al principio de la pista porque no había
+   otro sitio donde ponerlo. Ahora la cancha lleva su chapa encima y
+   decirlo dos veces en la misma pantalla es ruido — en un teléfono de
+   pie la pista partía en dos renglones por eso. Así que la chapa dice
+   QUÉ zona es y la pista dice CÓMO crece, que es lo otro que hay que
+   saber al abrir los ojos en un set nuevo. */
+function pintarChapa(){
+  var c=$('chapa'), z=zona();
+  /* El número del set sólo existe jugando sets. Practicando suelto se
+     rota una zona por tanda y no hay Q que poner. */
+  var q=(enCuartos() && !enPractica && cuartoActual) ? cuartoActual : 0;
+  c.textContent = q
+    ? T('chapaSet').replace('{N}', q).replace('{Z}', z.nombre)
+    : T('zonaPista').replace('{Z}', z.nombre);
+  /* El color de la cancha va por número de set. Practicando suelto va
+     por la zona que toca, que es lo mismo: la zona 1 es la del set 1. */
+  $('cancha').setAttribute('data-set', String(ZONA+1));
+}
+function etiquetaCrece(){
+  return T(zona().nueva ? 'zonaNueva' : 'zonaCrece');
+}
+function pintarPista(){
+  var z=etiquetaCrece()+'   ·   ';
+  $('pista').textContent = textoPista(z);
+  ajustarCancha();        // la pista también cambia de alto: una línea o dos
+}
+/* Partido en dos para que el ajuste de la cancha quede en UN sitio.
+   Con los tres «return» dentro de pintarPista, dos de los tres caminos
+   se iban sin volver a medir y la rejilla se quedaba con el hueco de
+   la pista anterior. */
+function textoPista(z){
+  if(enCuartos() && !enPractica && cuartoActual && fase!=='listo'){
+    /* Lo único que el nene necesita saber mientras juega: cuánto hay
+       que batir para subir este cuarto. */
+    return z+T('aBatir').replace('{P}', tanda.length?Math.max.apply(null,tanda):0);
+  }
+  if(fase==='listo') return z+T('listoLinea').replace('{M}',cuantoDura());
+  var teclas=HAY_FINO ? '   ·   '+T('teclas') : '';
+  return z+T('mejor')+mejor+teclas;
+}
+$('lang').onclick=function(){
+  LANG=LANG==='es'?'en':'es';
+  try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG) }catch(e){}
+  pintarTextos(); pintarHud();
+};
+
+/* ── Los dos botones de volver, y cuándo se ve cada uno ───────────
+   Son dos cosas distintas en dos momentos distintos.
+
+   · #atras, arriba, SALE del tablero: se va a la portada del sitio.
+     Se ve cuando hay algo que leer —la portada de este tablero o la
+     pantalla de final— y no se ve jugando.
+
+   · #volver, abajo, NO sale a ningún sitio: devuelve a la portada
+     de esta misma página, que es de donde salen los dos juegos (la
+     práctica y el scrimmage). Y por eso no es un enlace: recargar
+     la página perdería la tanda a medias. Se ve justo al revés que
+     el otro, mientras se juega.
+
+   Jugando, pero sólo en esos dos juegos abiertos. En una corrida
+   oficial no está: esa corrida es una sola en la vida de ese reto y
+   un toque en una esquina no se la puede llevar.
+
+   Los dos se atan al estado de las capas en vez de apagarse a mano
+   en cada sitio: la portada, el final y el marcador se encienden y
+   se apagan en una docena de puntos del fichero, y el que se olvide
+   de uno deja un botón encima del juego. Así no hay nada que
+   recordar. */
+(function botonesVolver(){
+  var atras=$('atras'), volver=$('volver'),
+      tapa=$('tapa'), fin=$('fin'), hud=$('hud');
+  function ver(){
+    atras.style.display=(!tapa.hidden||!fin.hidden)?'':'none';
+    var jugando=!hud.hidden && !JUEGO;
+    volver.hidden=!jugando;
+    document.body.classList.toggle('conVolver', jugando);
+    /* Y volver a medir la cancha, porque con el botón puesto la pista
+       sube 40 píxeles y la cancha se mide contra la pista. Esto corre
+       en un observador, o sea DESPUÉS de que pintarHud ya midió: sin
+       esta línea la rejilla se quedaba con el hueco de la pista baja y
+       en un teléfono acostado se montaba encima de ella. */
+    if(typeof ajustarCancha==='function') ajustarCancha();
+  }
+  if(window.MutationObserver){
+    var o=new MutationObserver(ver);
+    [tapa,fin,hud].forEach(function(el){
+      o.observe(el,{attributes:true,attributeFilter:['hidden']});
+    });
+  }
+  volver.onclick=function(){
+    volverAPortada();
+    /* El de idioma se esconde al arrancar la tanda. Si vuelve la
+       portada, vuelve él: es la única pantalla donde se usa. */
+    $('lang').style.display='';
+    ver();
+  };
+  ver();
+})();
+
+// ══════════════════════════════════════════════════════════════════
+//  LA ZONA SE MUEVE COMO SE MUEVE DE VERDAD
+//
+//  El balón pasa al de al lado o al del medio; lo único que no pasa
+//  nunca es el salto en diagonal. Y la primera bola sale por donde
+//  sube el balón.
+//
+//  El mapa de pases ya no vive aquí: vive en cada zona, arriba en
+//  ZONAS, porque cada una tiene el suyo. Lo que sí vive aquí es la
+//  regla de que se lee de la zona que se está jugando y de ninguna
+//  otra — mismo mapa que fortress.html, zona por zona, porque si la
+//  rotación fuera distinta una cadena de 7 no significaría lo mismo
+//  en los dos sitios y el padrino pagaría por un número que cambia
+//  de tablero.
+// ══════════════════════════════════════════════════════════════════
+function nextInRotation(prev){
+  var z=zona();
+  if(prev===undefined||prev===null)
+    return z.entrada[Math.floor(Math.random()*z.entrada.length)];
+  var opts=z.pases[prev]||[0,1,2,3,4];
+  return opts[Math.floor(Math.random()*opts.length)];
+}
+
+// Puntos triangulares: llegar a 7 vale mucho más que siete veces 1.
+function pointsFor(level){ return level>0 ? (level*(level+1))/2 : 0 }
+
+/* Las notas de corneta. La posición manda, no el color: una esquina
+   canta siempre la misma nota, y eso es lo que convierte un patrón en
+   una tonada que se queda. 110 × 2,3,4,5,6 — serie armónica. */
+var TONES=[220,330,440,550,660];
+var audioCtx=null;
+function abrirAudio(){
+  try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)() }catch(e){}
+}
+/* CADA CASILLA SUENA DONDE ESTÁ.
+
+   La nota ya venía del sitio —una esquina canta siempre la misma—
+   pero salía por los dos oídos a la vez, así que era un diagrama con
+   banda sonora y no un sitio. Panear por la columna de la casilla la
+   pone donde se ve: la de la izquierda suena a la izquierda.
+
+   Esto no hace el juego más difícil: AÑADE un canal para recordar,
+   no lo quita. Y se lee de la casilla que de verdad ocupa la bola en
+   esta zona, no de una tabla aparte.
+
+   0,75 y no 1: paneado del todo, una nota desaparece del oído que no
+   toca, y con un solo auricular puesto —que es como la mitad de la
+   gente escucha— desaparecería entera.
+
+   StereoPannerNode no está en los navegadores viejos. Si no está,
+   suena como siempre: centrado. */
+function playTone(i){
+  if(!audioCtx)return;
+  var f=TONES[i%TONES.length], now=audioCtx.currentTime;
+  try{
+    var o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type='triangle';
+    o.frequency.setValueAtTime(f,now);
+    g.gain.setValueAtTime(.0001,now);
+    g.gain.exponentialRampToValueAtTime(.3,now+0.012);
+    g.gain.exponentialRampToValueAtTime(.0001,now+0.30);
+    var salida=g, pan=null;
+    if(audioCtx.createStereoPanner && bolas[i]){
+      pan=audioCtx.createStereoPanner();
+      pan.pan.setValueAtTime(Math.max(-1,Math.min(1,panDe(i)))*0.75, now);
+      g.connect(pan); salida=pan;
+    }
+    o.connect(g); salida.connect(audioCtx.destination);
+    o.start(now);o.stop(now+0.32);
+  }catch(e){}
+}
+function playThump(){
+  if(!audioCtx)return;
+  var now=audioCtx.currentTime;
+  try{
+    var o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type='sine';
+    o.frequency.setValueAtTime(90,now);
+    o.frequency.exponentialRampToValueAtTime(42,now+0.13);
+    g.gain.setValueAtTime(.0001,now);
+    g.gain.exponentialRampToValueAtTime(.45,now+0.008);
+    g.gain.exponentialRampToValueAtTime(.0001,now+0.16);
+    o.connect(g);g.connect(audioCtx.destination);
+    o.start(now);o.stop(now+0.18);
+  }catch(e){}
+}
+
+// ──────────────────────────────────────────────────────────────────
+//  LA CANCHA
+// ──────────────────────────────────────────────────────────────────
+var LADO=5, CASILLAS=LADO*LADO;   // 5×5 = 25
+var celdas=[];     // las 25 casillas, por número de casilla (0..24)
+var bolas=[];      // las 5 vivas de esta zona, por número de bola (0..4)
+
+/* ══════════════════════════════════════════════════════════════════
+   DÓNDE VAN LAS CINCO, EN CASILLAS
+
+   Antes esto eran ángulos desde el ojo, porque las cinco flotaban en
+   una escena de tres dimensiones y había que calcular por dónde pasaba
+   el rayo de cada esquina de la pantalla. Eso sigue existiendo y se
+   juega en fortress-casco.html, que es la que entra en los cascos.
+
+   Aquí cada zona dice simplemente QUÉ CASILLAS ocupa, de la 0 a la 24,
+   contando de arriba abajo y de izquierda a derecha:
+
+        0  1  2  3  4
+        5  6  7  8  9
+       10 11 12 13 14
+       15 16 17 18 19
+       20 21 22 23 24
+
+   SE DECLARAN, NO SE PROYECTAN. Se podría sacar la casilla de los
+   ángulos viejos redondeando, y sale mal: el 0,75 del 3-2 cae justo en
+   la mitad entre dos columnas y redondea a un lado por la izquierda y
+   al otro por la derecha, así que el 3-2 salía torcido. Una lista de
+   cinco números no se puede redondear mal.
+
+   LAS CUATRO USAN LAS FILAS 0, 2 Y 4, y las filas 1 y 3 se quedan
+   vacías en las cuatro. No es casualidad ni desperdicio: dos cosas a
+   la vez. Una, las cuatro formaciones se leen sobre las mismas tres
+   bandas —arriba, el medio, el fondo— que es como las dibuja un
+   entrenador. Y dos, ninguna casilla viva toca a otra, así que un dedo
+   gordo en un teléfono no puede dar en la de al lado por un píxel.
+
+   ──────────────────────────────────────────────────────────────────
+   CUATRO ZONAS, UNA POR SET
+
+   Antes había una sola: el 2-1-2, los cuatro sets. Jugándolo se nota —
+   la mano aprende dónde están las cinco en el primer set y los otros
+   tres son el mismo set otra vez.
+
+   Ahora cada set se juega en una zona distinta: set 1 el 2-1-2, set 2
+   el 1-3-1, set 3 el 2-3, set 4 el 3-2. Son cuatro zonas de verdad, de
+   las que un entrenador reconoce de un vistazo, y sobre 25 casillas se
+   reconocen MEJOR que flotando: las veinte vacías son las que dicen
+   dónde no hay nadie.
+
+   LO QUE NO PUEDE CAMBIAR, Y ES TODO EL ASUNTO: lo que vale una
+   cadena. Un padrino promete por punto, así que si una zona fuera más
+   fácil que otra, el mismo esfuerzo valdría distinto dinero según el
+   set. Y lo que hace difícil una cadena no es el dibujo — es la
+   ROTACIÓN, qué casilla puede seguir a cuál. Eso vive en `pases`, y
+   `pases` no se ha tocado una coma al pasar de la escena a la rejilla:
+   una cadena de 7 valía 28 puntos antes y vale 28 ahora.
+
+   Las cuatro están construidas con la MISMA dificultad, y eso no es
+   una opinión — son tres números iguales en las cuatro:
+
+     · ramificación {3,3,3,3,4} — cada casilla puede pasar a tres,
+       menos la del centro que ayuda a las cuatro
+     · dos parejas excluidas, siempre las diagonales largas
+     · dos casillas de entrada, por donde sube el balón
+
+   Y EL ORDEN ES FIJO, el mismo para todo el mundo. Sorteadas, un nene
+   le tocaría una tanda más fácil que a otro y sus padrinos pagarían
+   más por lo mismo. Fijas es como cuatro sets de un partido: a todos
+   les toca la misma cancha.
+
+   ──────────────────────────────────────────────────────────────────
+   Y DOS FORMAS DE CRECER — `nueva`
+
+   Dos sets CRECEN (nueva:false). La cadena de la ronda es la de la
+   ronda anterior más un destello al final. Es lo que hacía siempre:
+   cada ronda tienes una sola cosa nueva que aprender y las anteriores
+   te las han repetido una vez por ronda.
+
+   Dos sets SE RENUEVAN (nueva:true). La cadena crece igual —en la
+   ronda 7 son siete— pero es OTRA cadena entera, trazada de nuevo por
+   la zona. No te repiten nada: cada ronda es un recuerdo en frío.
+
+   Set 1 crece · set 2 renueva · set 3 crece · set 4 renueva.
+   Alternando, ningún set se parece al anterior, y el último del
+   partido es de los duros, que es como se acaban los partidos.
+
+   ESTO SÍ MUEVE EL DINERO, y hay que decirlo claro: una cadena en frío
+   llega menos lejos que una que te han repetido seis veces. Los sets
+   que renuevan van a puntuar más bajo que los que crecen, y como el
+   padrino promete por punto, una corrida con dos sets así recauda
+   menos que una de cuatro que crecen. No es injusto —a todo el mundo
+   le tocan los mismos cuatro sets— pero es otro precio. Si los números
+   salen demasiado bajos jugándolo, la compensación de una línea es
+   enseñar la cadena DOS VECES en los sets que renuevan: sigue siendo
+   nueva cada ronda y vuelve a ser recordable.
+
+   prueba-demo.js comprueba los tres números en las cuatro. Si alguien
+   añade una quinta zona y le sale la ramificación torcida, la prueba
+   lo para antes de que repique un precio.
+   ══════════════════════════════════════════════════════════════════ */
+var ZONAS=[
+  /* ── SET 1 · EL 2-1-2 ───────────────────────────────────────────
+         ·  0  ·  1  ·
+         ·  ·  ·  ·  ·
+         ·  ·  2  ·  ·
+         ·  ·  ·  ·  ·
+         3  ·  ·  ·  4
+     Dos arriba, uno en el medio, dos abajo. Es la de siempre. */
+  { nombre:'2-1-2', nueva:false,
+    rejilla:[1, 3, 12, 20, 24],
+    pases:{ 0:[1,2,3], 1:[0,2,4], 2:[0,1,3,4], 3:[0,2,4], 4:[1,2,3] },
+    entrada:[0,1],          // el balón sube por arriba
+    centro:2 },
+
+  /* ── SET 2 · EL 1-3-1 ───────────────────────────────────────────
+         ·  ·  0  ·  ·
+         ·  ·  ·  ·  ·
+         1  ·  2  ·  3
+         ·  ·  ·  ·  ·
+         ·  ·  4  ·  ·
+     El punto arriba, tres cruzados en el medio, uno en la línea de
+     fondo. Las diagonales que no pasan nunca: el punto con el de
+     fondo (0-4), y ala con ala sin pasar por el medio (1-3).
+     El balón entra por las alas: se sube por un lado y el ala lo
+     recoge. Dos entradas, las mismas que el 2-1-2 — si entrara sólo
+     por el punto, el primer destello sería siempre el mismo y habría
+     un bit menos que recordar que en los otros tres sets. */
+  { nombre:'1-3-1', nueva:true,
+    rejilla:[2, 10, 12, 14, 22],
+    pases:{ 0:[1,2,3], 1:[0,2,4], 2:[0,1,3,4], 3:[0,2,4], 4:[1,2,3] },
+    entrada:[1,3],
+    centro:2 },
+
+  /* ── SET 3 · EL 2-3 ─────────────────────────────────────────────
+         ·  0  ·  1  ·
+         ·  ·  ·  ·  ·
+         ·  ·  ·  ·  ·
+         ·  ·  ·  ·  ·
+         2  ·  3  ·  4
+     Dos arriba y tres atrás. El que ayuda a los cuatro lados es el
+     del fondo del medio, el 3 — en un 2-3 ése es el que no para.
+     Diagonales excluidas: 0-4 y 1-2. */
+  { nombre:'2-3', nueva:false,
+    rejilla:[1, 3, 20, 22, 24],
+    pases:{ 0:[1,2,3], 1:[0,3,4], 2:[0,3,4], 3:[0,1,2,4], 4:[1,2,3] },
+    entrada:[0,1],
+    centro:3 },
+
+  /* ── SET 4 · EL 3-2 ─────────────────────────────────────────────
+         0  ·  1  ·  2
+         ·  ·  ·  ·  ·
+         ·  ·  ·  ·  ·
+         ·  ·  ·  ·  ·
+         ·  3  ·  4  ·
+     Tres arriba y dos atrás. Aquí el que ayuda a todos es el de
+     arriba en el medio, el 1. El balón entra por las puntas de
+     arriba (0 y 2), no por el del medio. Diagonales: 0-4 y 2-3. */
+  { nombre:'3-2', nueva:true,
+    rejilla:[0, 2, 4, 21, 23],
+    pases:{ 0:[1,2,3], 1:[0,2,3,4], 2:[0,1,4], 3:[0,1,4], 4:[1,2,3] },
+    entrada:[0,2],
+    centro:1 }
+];
+
+/* Cuál se está jugando. Se elige al armar la tanda y no se mueve
+   hasta la siguiente. */
+var ZONA=0;
+function zona(){ return ZONAS[ZONA] }
+function centroZona(){ return ZONAS[ZONA].centro }
+
+/* Las notas de corneta salen de la POSICIÓN, no del color: una esquina
+   canta siempre la misma nota. Para panearla hace falta saber en qué
+   columna está la casilla, de -1 (izquierda) a 1 (derecha). */
+function columnaDe(casilla){ return casilla % LADO }
+function panDe(bola){
+  var c=bolas[bola];
+  if(!c) return 0;
+  var col=columnaDe(c.__casilla);
+  return (col-(LADO-1)/2)/((LADO-1)/2);          // -1 .. 1
+}
+
+/* PONER LAS CINCO EN SU SITIO.
+   Se apaga la cancha entera y se encienden las cinco casillas de esta
+   zona. `bolas` queda indexado por número de bola, que es lo que usa
+   el juego de punta a punta: la cadena habla de bolas, no de casillas,
+   y así `pases` sigue significando lo mismo que significaba con la
+   escena. */
+function colocarBolas(){
+  if(!celdas.length) return;
+  var z=zona(), i;
+  for(i=0;i<celdas.length;i++){
+    celdas[i].className='celda';
+    celdas[i].__bola=-1;
+  }
+  bolas=[];
+  for(i=0;i<z.rejilla.length;i++){
+    var c=celdas[z.rejilla[i]];
+    c.className='celda viva';
+    c.__bola=i;
+    bolas.push(c);
+  }
+  pintarChapa();
+}
+
+/* CUÁLES RESPONDEN AHORA MISMO, Y CUÁL LATE.
+   Jugando, responden las cinco. Armada la tanda y sin arrancar, sólo
+   la del medio — encender otra al pasar el ratón sería prometer algo
+   que no pasa. Y en cualquier otro momento, ninguna.
+
+   El latido es la misma condición dicha de otra manera: la del medio
+   late mientras la tanda está armada, y eso es lo que dice "yo soy el
+   botón" sin escribirlo en ningún sitio. Por eso van juntos en una
+   sola función — separados, uno de los dos se quedaba sin apagar. */
+function pintarTocables(){
+  var turno = (fase==='turno');
+  var medio = (fase==='listo') ? centroZona() : -1;
+  for(var i=0;i<bolas.length;i++){
+    bolas[i].classList.toggle('puede', turno || i===medio);
+    bolas[i].classList.toggle('late', i===medio);
+  }
+}
+
+/* LA CANCHA ES CUADRADA Y SE MIDE, igual que en Replay: el lado es el
+   menor del ancho y el alto que le quedan. El reintento por cuadro no
+   es paranoia — si se mide mientras la capa de la portada todavía está
+   encima, el hueco mide cero y la cancha saldría de un píxel.
+
+   EL HUECO SE MIDE, NO SE ADIVINA. Estaba escrito a mano —76 arriba,
+   40 abajo— y en un teléfono acostado y en un monitor la cancha se
+   subía por debajo del marcador: la chapa del set caía justo encima
+   del reloj. Y no hay un número bueno que escribir, porque el alto del
+   marcador cambia con el idioma (la pastilla dice «TOCA EL MEDIO» o
+   «TAP THE MIDDLE»), con el set que se esté jugando y con que haya
+   reloj o no.
+
+   Así que se le pregunta al marcador dónde acaba y a la pista dónde
+   empieza. Los 14 de arriba son por la chapa, que va montada en el
+   borde del marco y asoma media pastilla por encima. */
+function ajustarCancha(){
+  var hueco=$('cancha'), rej=$('rej');
+  if(!hueco||!rej||hueco.hidden) return;
+  var hud=$('hud'), pista=$('pista');
+  var arriba = hud.hidden ? 12 : Math.ceil(hud.getBoundingClientRect().bottom)+14;
+  var abajo  = pista.hidden ? 12
+             : Math.ceil(innerHeight - pista.getBoundingClientRect().top)+8;
+  hueco.style.top = arriba+'px';
+  hueco.style.bottom = abajo+'px';
+  var lado=Math.min(hueco.clientWidth, hueco.clientHeight);
+  if(lado<80){ requestAnimationFrame(ajustarCancha); return }
+  rej.style.width=lado+'px';
+  rej.style.height=lado+'px';
+}
+addEventListener('resize', ajustarCancha);
+addEventListener('orientationchange', function(){ setTimeout(ajustarCancha,220) });
+document.addEventListener('fullscreenchange', function(){ setTimeout(ajustarCancha,220) });
+
+/* LAS VEINTICINCO CASILLAS, UNA VEZ.
+   Se construyen las 25 y no sólo las cinco vivas: cambiar de set es
+   mover qué cinco están vivas, no rehacer la cancha, y así la
+   formación nueva aparece en el sitio sin un parpadeo de rejilla vacía.
+
+   El toque se ata A LA CASILLA, con su número de bola leído en el
+   momento del toque y no al construirla: la misma casilla es la bola 2
+   en un set y no es nada en el siguiente. */
+function construir(){
+  var rej=$('rej');
+  celdas=[];
+  /* La chapa vive dentro del marco y hay que conservarla: innerHTML=''
+     se la llevaría y el set se quedaría sin nombre en la pantalla. */
+  var chapa=$('chapa');
+  rej.innerHTML='';
+  rej.appendChild(chapa);
+  for(var i=0;i<CASILLAS;i++){
+    var c=document.createElement('div');
+    c.className='celda';
+    c.__casilla=i;
+    c.__bola=-1;
+    c.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      if(this.__bola>=0) elegir(this.__bola);
+    });
+    rej.appendChild(c);
+    celdas.push(c);
+  }
+  $('cancha').hidden=false;
+  colocarBolas();
+  ajustarCancha();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  EL JUEGO
+//
+//  Igual que fortress.html, nota por nota: la cadena crece de una en
+//  una, se repite, un fallo acaba la tirada, y la puntuación es el
+//  último nivel que se aguantó COMPLETO — el que se estaba intentando
+//  cuando se rompió no cuenta.
+// ══════════════════════════════════════════════════════════════════
+var LIGHT_MS=333, GAP_MS=167, LEVEL_PAUSE_MS=800;
+
+var fase='tapa';          // tapa | mirando | turno | roto | fin
+var cadena=[], nivel=0, voy=0;
+var temporizadores=[];
+
+/* La mejor cadena se guarda aquí y SÓLO aquí. fortress.html manda la
+   suya a la base, porque allí el nene juega con su código y el padrino
+   la ve en la página del pledge. Esta página es práctica suelta: sin
+   código, sin campaña, sin nada que mandar. Llave propia para que
+   practicar no infle el número que ven los padrinos. */
+var LLAVE='f3d-best', mejor=0;
+try{ mejor=parseInt(localStorage.getItem(LLAVE)||'0',10)||0 }catch(e){}
+
+function limpiarT(){ temporizadores.forEach(clearTimeout); temporizadores=[] }
+/* LAS TRES SEÑALES, cada una en lo suyo y ninguna compartida.
+
+   En la escena el destello de la cadena y la confirmación de un
+   acierto eran el mismo encendido, porque una esfera sólo tenía un
+   color de luz. La cancha de Replay distingue los dos, y es mejor
+   juego: MIRA es violeta y ACERTASTE es verde, así que el nene sabe en
+   qué mitad del turno está sin levantar la vista al marcador.
+
+   Todas pasan por marcar(), que reescribe la clase entera en vez de
+   quitar la de antes: así no queda nunca una casilla verde y violeta a
+   la vez porque alguien se olvidó de apagar una. */
+function marcar(i,clase){
+  var c=bolas[i];
+  if(!c) return;
+  c.className='celda viva'+(clase?' '+clase:'');
+  pintarTocables();
+}
+function apagarTodas(){
+  for(var i=0;i<bolas.length;i++) bolas[i].className='celda viva';
+  pintarTocables();
+}
+function encender(i){            // MIRA — el destello de la cadena
+  marcar(i,'on');
+  playThump(); playTone(i);
+}
+function buena(i){               // ACERTASTE — la casilla que tocó bien
+  marcar(i,'ok');
+  playThump(); playTone(i);
+}
+function fallar(i){              // SE ROMPIÓ — rosa y un temblor
+  marcar(i,'mal');
+}
+function apagar(i){
+  marcar(i,'');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   EL RELOJ DE LA TANDA
+
+   Cinco minutos por jugador, y es TIEMPO CORRIDO. No se compite
+   contra el reloj: dentro de esos cinco minutos caben las tiradas
+   que quepan, se rompa la cadena las veces que se rompa. El reloj no
+   para nunca — tampoco mientras se enseña la puntuación y corre la
+   cuenta para la tirada siguiente. Como en el juego: el cronómetro
+   sigue andando, y lo que termina la cosa es la chicharra.
+
+   Eso es lo que hace que el casco se pueda pasar de mano en mano sin
+   que nadie lleve la cuenta: cada uno tiene su turno de cinco
+   minutos y la chicharra se lo dice.
+   ══════════════════════════════════════════════════════════════════ */
+var SESION_MS=5*60*1000;
+/* EL CUARTO DE UN SCRIMMAGE DURA UN MINUTO.
+
+   Cinco minutos por cuarto son veinte minutos de juego, y eso lo
+   aguanta quien tiene padrinos esperando el número. Un scrimmage no
+   tiene a nadie esperando: se juega para probarlo, para enseñarlo en
+   una banda, o para que un nene sepa a qué se va a enfrentar. Veinte
+   minutos para eso es una reunión, no una prueba.
+
+   Se acorta el RELOJ y no el juego: el cuarto sigue teniendo varias
+   tiradas, sigue contando la mejor y sigue acabando en chicharra.
+   Esa es la parte que hay que sentir —apretar al final, fallar y
+   que te quede tiempo para otra—, y una sola tirada por cuarto se la
+   llevaría por delante. Un minuto da para tres o cuatro.
+
+   La corrida OFICIAL no se toca: cinco minutos por cuarto. Es la que
+   tiene dinero detrás. Y la práctica con casco también se queda en
+   cinco, que ahí el reloj es la sesión entera y no un cuarto. */
+var CUARTO_CORTO_MS=60*1000;   // ?min= puede moverlo; SESION_MS no
+function duracionSesion(){
+  return (AMISTOSO && !enPractica) ? CUARTO_CORTO_MS : SESION_MS;
+}
+/* ?min= ACORTA EL CUARTO — PERO NUNCA EL DE UNA CORRIDA OFICIAL.
+
+   Existe por dos motivos buenos: acortar los cuartos cuando hay cola
+   de nenes esperando el teléfono, y poder probar la chicharra sin
+   sentarse cinco minutos cada vez.
+
+   Y estaba al revés. Escribía sobre SESION_MS, que es justo el
+   número de la corrida oficial, y no tocaba ni el scrimmage ni la
+   demostración —que llevan el suyo— así que funcionaba sólo donde no
+   debía y no funcionaba donde hacía falta.
+
+   Lo que eso permitía: pegarle &min=30 al enlace de jugar y hacer
+   cuartos de media hora en una corrida con padrinos detrás. Más
+   tiempo son más tiradas, sólo cuenta la mejor, y los puntos suben
+   por el cuadrado — así que la tía del nene acabaría debiendo varias
+   veces lo que prometió, y el reporte no enseñaría nada raro: diría
+   que anotó mucho.
+
+   Ahora escribe sobre CUARTO_CORTO_MS, que es el del scrimmage y el
+   de la demostración. La corrida oficial lee SESION_MS y nadie más
+   lo toca: ahí está la seguridad, en el número que se escribe.
+
+   Y NO lleva un if(!JUEGO), que es lo primero que uno escribe aquí:
+   JUEGO se asigna ochocientas líneas más abajo, así que en este
+   punto vale undefined y la comprobación pasaría para todo el
+   mundo. Una guardia que parece proteger y no protege es peor que
+   ninguna — quien la lea dará el caso por cubierto. */
+try{
+  var mm=(location.search.match(/[?&]min=([0-9.]+)/)||[])[1];
+  if(mm){
+    mm=parseFloat(mm);
+    if(mm>=0.1&&mm<=30) CUARTO_CORTO_MS=Math.round(mm*60*1000);
+  }
+}catch(e){}
+var relojHasta=0, relojCorriendo=false, relojTexto='';
+
+function quedaMs(){ return relojCorriendo ? Math.max(0, relojHasta-performance.now()) : duracionSesion() }
+function arrancarReloj(){ relojHasta=performance.now()+duracionSesion(); relojCorriendo=true }
+function pintarReloj(){
+  var ms=quedaMs(), seg=Math.ceil(ms/1000);
+  var txt=Math.floor(seg/60)+':'+('0'+(seg%60)).slice(-2);
+  var e=$('reloj');
+  // Sólo se toca el DOM cuando cambia el segundo, no en cada cuadro.
+  if(txt!==relojTexto){ relojTexto=txt; e.textContent=txt }
+  var clase = ms<=10000 ? 'nada' : (ms<=30000 ? 'poco' : '');
+  if(e.className!==clase) e.className=clase;
+}
+
+/* La chicharra. Dos cuadradas desafinadas a propósito y sostenidas:
+   eso es lo que suena como el final de un período y no como un
+   pitido de microondas. */
+function sonarChicharra(){
+  if(!audioCtx)return;
+  var now=audioCtx.currentTime;
+  try{
+    [152,113].forEach(function(f){
+      var o=audioCtx.createOscillator(), g=audioCtx.createGain();
+      o.type='square';
+      o.frequency.setValueAtTime(f,now);
+      g.gain.setValueAtTime(.0001,now);
+      g.gain.exponentialRampToValueAtTime(.38,now+0.02);
+      g.gain.setValueAtTime(.38,now+1.25);
+      g.gain.exponentialRampToValueAtTime(.0001,now+1.5);
+      o.connect(g);g.connect(audioCtx.destination);
+      o.start(now);o.stop(now+1.55);
+    });
+  }catch(e){}
+}
+
+function pintarHud(){
+  $('hNivel').textContent=String(nivel);
+  $('hPts').textContent=String(pointsFor(Math.max(0,nivel-1)));
+  var e=$('estado');
+  if(fase==='listo'){
+    e.textContent = T('listoPill');
+    e.className='listo';
+  }else if(enCuartos() && !enPractica && cuartoActual){
+    /* Jugando un cuarto, lo que manda arriba es QUÉ CUARTO ES. Que no
+       quepa duda de si esto cuenta. */
+    e.textContent = T('cuartoPill').replace('{Q}',cuartoActual) + ' · ' +
+                    (fase==='turno' ? T('turno') : T('mira'));
+    e.className = fase==='turno' ? 'tu' : '';
+  }else{
+    e.textContent = fase==='turno' ? T('turno') : T('mira');
+    e.className = fase==='turno' ? 'tu' : '';
+  }
+  /* El marcador acaba de cambiar de alto —la pastilla dice otra cosa,
+     o apareció el reloj— y la cancha se mide contra él. Si no se
+     vuelve a medir aquí, la rejilla se queda con el hueco de antes y
+     la chapa se monta encima del reloj. */
+  ajustarCancha();
+}
+
+/* ARMAR, Y QUE ARRANQUE EL QUE JUEGA.
+
+   El casco no empieza a contar en cuanto se lo ponen: eso regalaría
+   medio minuto al forcejeo de la correa. Queda armado, con la bola
+   del medio latiendo, y el reloj parado en 5:00. El que juega la
+   mira — o la toca, si es teléfono — y ahí arrancan sus cinco
+   minutos. Es él quien decide cuándo está listo.
+
+   Y es la del medio a propósito: es la única que está siempre al
+   frente, se mide ya con ella y no hay que buscarla. */
+/* Un cuarto se arma igual que una práctica: la bola del medio, cinco
+   minutos, chicharra. Lo único que cambia es qué se hace al final y
+   que la pantalla lo dice en todo momento, para que nadie crea que
+   está calentando cuando está jugando su Q3. */
+function armarCuarto(q){
+  if(!q){ finDelJuego=true; volverAPortada(); return }
+  cuartoActual=q; enPractica=false; armarSesion();
+}
+function armarPractica(){
+  /* Practicar después de un scrimmage es empezar otra cosa: si se
+     quedara marcado como scrimmage, la tarjeta al fallar ofrecería
+     volver a un juego que ya terminó. */
+  if(AMISTOSO && finDelJuego) AMISTOSO=false;
+  cuartoActual=0; enPractica=true; armarSesion();
+}
+/* Volver a la portada del juego — es donde vive el marcador y el
+   botón del cuarto siguiente. */
+function volverAPortada(){
+  limpiarT(); pararCuenta(); apagarTodas();
+  relojCorriendo=false; relojTexto='';
+  fase='tapa';
+  $('fin').hidden=true; $('hud').hidden=true; $('pista').hidden=true;
+  $('tapa').hidden=false;
+  pintarTapaJuego();
+}
+
+/* ¿Lleva reloj esta tanda?
+
+   Sólo donde el tiempo significa algo. En el casco sí: hay una fila
+   de nenes esperando y cinco minutos es el turno de cada uno. En un
+   cuarto sí: es el juego. Practicando solo en el teléfono, no — ahí
+   no hay nadie detrás a quien pasarle el casco, y una chicharra que
+   te corta para decirte "siguiente jugador" cuando no hay siguiente
+   jugador es una pantalla hablándole a nadie.
+
+   Sin reloj tampoco hace falta armar nada: la bola del medio existe
+   para que el que juega decida cuándo empiezan SUS minutos, y si no
+   hay minutos que empezar, se juega y ya. */
+var conReloj=false;
+
+/* QUÉ ZONA LE TOCA A ESTA TANDA.
+
+   Jugando un cuarto, la del cuarto: Q1 el 2-1-2, Q2 el 1-3-1, Q3 el
+   2-3, Q4 el 3-2. Fijas y en ese orden, las mismas para todo el mundo
+   — sorteadas, a un nene le tocaría una tanda más fácil que a otro y
+   sus padrinos pagarían distinto por lo mismo.
+
+   Practicando entre cuartos, la del cuarto QUE VIENE: practicar es
+   calentar para el siguiente, y calentar en una zona que no vas a
+   jugar es perder el rato.
+
+   Practicando suelto —un teléfono, sin juego y sin scrimmage— van
+   rotando una por tanda, para que el que practica solo acabe viendo
+   las cuatro y no se encuentre el 3-2 por primera vez en Q4. */
+var zonaSuelta=0;
+function elegirZona(){
+  if(enCuartos() && !enPractica && cuartoActual){
+    ZONA=(cuartoActual-1)%ZONAS.length;
+  }else if(enCuartos() && enPractica){
+    ZONA=cuartos.length%ZONAS.length;
+  }else{
+    ZONA=zonaSuelta; zonaSuelta=(zonaSuelta+1)%ZONAS.length;
+  }
+}
+
+function armarSesion(){
+  limpiarT(); apagarTodas(); pararCuenta();
+  /* La zona primero, y recolocar: las cinco bolas se mueven de sitio
+     entre cuarto y cuarto, y si se eligiera después de encender nada
+     el nene vería la forma vieja un cuadro antes de la nueva. */
+  elegirZona(); colocarBolas();
+  cadena=[]; nivel=0; voy=0; tanda=[];
+  relojCorriendo=false; relojHasta=0; relojTexto='';
+  conReloj = (enCuartos() && !enPractica);
+  fase='listo';
+  $('fin').hidden=true;
+  $('hud').hidden=false;
+  $('pista').hidden=false;
+  $('reloj').hidden=!conReloj;
+  pintarTocables();
+  ajustarCancha();
+  if(!conReloj){ empezarTirada(); return }
+  pintarReloj(); pintarHud(); pintarPista();
+}
+
+function empezarJuego(){
+  if(fase!=='listo') return;
+  arrancarReloj();
+  empezarTirada();
+}
+
+function empezarTirada(){
+  limpiarT(); apagarTodas(); pararCuenta();
+  cadena=[]; nivel=0; voy=0;
+  $('fin').hidden=true;
+  $('hud').hidden=false;
+  $('pista').hidden=false;
+  fase='mirando';
+  pintarTocables();         // se va el latido de la del medio
+  pintarPista();            // y la línea de "toca el medio"
+  pintarHud();
+  /* Un respiro antes de la primera: si la primera bola se enciende en
+     el mismo instante en que desaparece la portada, nadie la ve. */
+  temporizadores.push(setTimeout(siguienteNivel, 600));
+}
+
+/* Una cadena entera, trazada de nuevo por la zona: n destellos, cada
+   uno un pase legal desde el anterior, el primero por donde sube el
+   balón. La misma regla que usa la que crece — lo único que cambia es
+   que aquí se tira la anterior. */
+function cadenaNueva(n){
+  var c=[];
+  for(var i=0;i<n;i++) c.push(nextInRotation(i?c[i-1]:null));
+  return c;
+}
+
+function siguienteNivel(){
+  if(fase==='roto'||fase==='fin') return;
+  voy=0;
+  nivel=nivel+1;
+  /* Crece: la de antes más uno al final. Renueva: otra entera del
+     largo que toca. El nivel sube igual en las dos, y los puntos
+     salen del nivel, así que pointsFor no se entera de la diferencia
+     y el reporte sigue diciendo lo mismo. */
+  if(zona().nueva) cadena=cadenaNueva(nivel);
+  else cadena.push(nextInRotation(cadena.length?cadena[cadena.length-1]:null));
+  fase='mirando';
+  pintarHud();
+  mostrar(0);
+}
+
+function mostrar(i){
+  if(fase==='roto'||fase==='fin') return;
+  if(i>=cadena.length){
+    fase='turno'; pintarHud(); pintarTocables();
+    return;
+  }
+  var idx=cadena[i];
+  encender(idx);
+  temporizadores.push(setTimeout(function(){
+    apagar(idx);
+    temporizadores.push(setTimeout(function(){ mostrar(i+1) }, GAP_MS));
+  }, LIGHT_MS));
+}
+
+/* La única entrada del juego. Da igual si vino de un dedo, de un clic,
+   de una tecla o de la mirada: llega aquí con un número de bola y nada
+   más. Y antes de que empiece la tanda, la única bola que hace algo es
+   la del medio. */
+function elegir(idx){
+  if(fase==='listo'){
+    var c=centroZona();
+    if(idx===c){ encender(c); temporizadores.push(setTimeout(function(){ apagar(c) },220));
+                 empezarJuego() }
+    return;
+  }
+  contestar(idx);
+}
+
+function contestar(idx){
+  if(fase!=='turno') return;
+  if(idx===cadena[voy]){
+    buena(idx);
+    temporizadores.push(setTimeout(function(){ apagar(idx) },220));
+    voy++;
+    if(voy>=cadena.length){
+      fase='mirando'; pintarHud(); pintarTocables();
+      temporizadores.push(setTimeout(siguienteNivel, LEVEL_PAUSE_MS));
+    }
+  }else{
+    fallar(idx);
+    romper();
+  }
+}
+
+function romper(){
+  if(fase==='roto'||fase==='fin') return;
+  fase='roto'; limpiarT();
+  /* La cancha deja de responder en el acto. La casilla fallada se
+     queda rosa —es lo último que hay que ver— pero ninguna se
+     enciende ya al pasarle el ratón por encima: la tirada se acabó. */
+  pintarTocables();
+  /* El nivel que se estaba intentando no se completó, así que la
+     puntuación es el último que se aguantó entero. */
+  var final=Math.max(0, nivel-1);
+  if(final>mejor){
+    mejor=final;
+    try{ localStorage.setItem(LLAVE,String(mejor)) }catch(e){}
+  }
+  tanda.push(final);
+  if(tanda.length>12) tanda.shift();
+  temporizadores.push(setTimeout(function(){
+    apagarTodas();
+    fase='fin';
+    $('finK').textContent=T('finK');
+    $('finN').textContent=String(final);
+    $('finP').textContent=T('fin')+'  ·  '+pointsFor(final)+' '+T('puntos');
+    $('finS').textContent=T('mejor')+mejor;
+    $('tanda').textContent=tanda.length>1 ? T('tanda')+tanda.join('  ·  ') : '';
+    /* ¿Cuenta atrás o botón? Lo decide si hay reloj corriendo.
+    
+       Con reloj — el casco, un cuarto — la siguiente tirada entra
+       sola: son TUS cinco minutos los que están pasando, y un botón
+       ahí es tiempo tuyo gastado en apretarlo.
+    
+       Sin reloj no hay prisa de nadie. Se rompió la cadena, se acabó
+       la tanda, y empieza otra cuando tú quieras. Meterle una cuenta
+       atrás a una práctica es inventarle una urgencia que no tiene. */
+    if(conReloj){
+      $('otra').hidden=true;
+      $('practicar').hidden=true;
+      arrancarCuenta();
+    }else if(JUEGO && enPractica){
+      $('otra').hidden=false;  $('otra').textContent=T('volverJuego');
+      $('practicar').hidden=false; $('practicar').textContent=T('otraTanda');
+      $('cuenta').textContent='';
+    }else{
+      $('otra').hidden=false;  $('otra').textContent=T('otra');
+      $('practicar').hidden=true;
+      $('cuenta').textContent='';
+    }
+    $('fin').hidden=false;
+    $('hud').hidden=true;
+    $('pista').hidden=true;
+  },750));
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LA CHICHARRA
+
+   Se acabaron los cinco minutos. Lo que esté pasando se para donde
+   esté — a mitad de una cadena, en la pantalla de la puntuación, da
+   igual: la chicharra no espera a que termines, igual que en un
+   juego. La tirada que estaba en el aire se cuenta como se cuenta
+   siempre, por el último nivel que se aguantó entero.
+
+   Y AQUÍ SÍ hay botón, que es lo único que separa a un jugador del
+   siguiente. En el casco se aprieta mirándolo.
+   ══════════════════════════════════════════════════════════════════ */
+function terminarSesion(porVentana){
+  if(fase==='tiempo') return;
+  var enElAire=(fase==='mirando'||fase==='turno');
+  limpiarT(); pararCuenta();
+  relojCorriendo=false;
+  if(enElAire){
+    var corte=Math.max(0, nivel-1);
+    if(corte>mejor){ mejor=corte; try{ localStorage.setItem(LLAVE,String(mejor)) }catch(e){} }
+    tanda.push(corte);
+    if(tanda.length>12) tanda.shift();
+  }
+  fase='tiempo';
+  sonarChicharra();
+  apagarTodas();
+  var mejorDeLaTanda=tanda.length ? Math.max.apply(null,tanda) : 0;
+
+  /* EN UN CUARTO, la chicharra no acaba la tanda: cierra el cuarto,
+     lo manda al servidor y enseña el marcador. */
+  if(enCuartos() && !enPractica && cuartoActual){
+    cerrarCuarto(cuartoActual, porVentana?0:mejorDeLaTanda, porVentana);
+    return;
+  }
+
+  $('finK').textContent=T('seAcabo');
+  $('finN').textContent=String(mejorDeLaTanda);
+  $('finP').textContent=T('mejorTanda')+'  ·  '+pointsFor(mejorDeLaTanda)+' '+T('puntos');
+  $('tanda').textContent=tanda.length ? T('tanda')+tanda.join('  ·  ') : '';
+  $('finS').textContent=T('mejor')+mejor;
+  $('cuenta').textContent='';
+  $('caja').hidden=true;
+  $('otra').hidden=false;
+  $('otra').textContent = JUEGO ? T('volverJuego') : T('siguienteBtn');
+  $('practicar').hidden=true;
+  $('fin').hidden=false;
+  $('hud').hidden=true;
+  $('pista').hidden=true;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CERRAR UN CUARTO
+
+   La mejor tirada del cuarto es el cuarto. Se manda, se espera a que
+   el servidor diga que quedó — y sólo entonces se enseña el marcador
+   y el botón del siguiente. Enseñar el número antes de que esté
+   guardado sería enseñarle a un nene unos puntos que a lo mejor no
+   existen.
+
+   Si cerró la ventana a mitad, el cuarto vale 0 y no se manda nada:
+   el servidor lo rechazaría de todas formas, y un cuarto sin fila
+   ya cuenta como cero al sumar.
+   ══════════════════════════════════════════════════════════════════ */
+/* El cuarto que se jugó y todavía no está guardado. Mientras haya
+   uno aquí, lo ÚNICO que ofrece la pantalla es volver a mandarlo: si
+   el botón dejara seguir al cuarto siguiente, un teléfono sin señal
+   serviría para repetir un cuarto que salió malo. */
+var cuartoPendiente=null;
+
+function empezarAmistoso(){
+  AMISTOSO=true; finDelJuego=false; enPractica=false;
+  cuartos=[]; cuartoActual=0; cuartoPendiente=null;
+  armarCuarto(1);
+}
+
+function cerrarCuarto(q, nivel, porVentana){
+  var puntos=pointsFor(nivel);
+  fase='tiempo';
+  $('finK').textContent=T('finCuarto').replace('{Q}',q);
+  $('finN').textContent=String(puntos);
+  $('tanda').textContent=tanda.length ? T('tanda')+tanda.join('  ·  ') : '';
+  $('finS').textContent='';
+  $('cuenta').textContent='';
+  $('otra').hidden=true; $('practicar').hidden=true; $('caja').hidden=true;
+  $('fin').hidden=false; $('hud').hidden=true; $('pista').hidden=true;
+
+  if(porVentana){
+    finDelJuego=true;
+    $('finP').textContent=T('porVentana');
+    temporizadores.push(setTimeout(finDeJuego, 1800));
+    return;
+  }
+
+  /* En un scrimmage no hay nada que mandar: el cuarto se apunta aquí
+     y ya. Mismo marcador, mismas reglas, cero consecuencias. */
+  if(AMISTOSO){
+    cuartos.push({q:q, points:puntos, level:nivel});
+    cuartos.sort(function(a,b){ return a.q-b.q });
+    pintarCaja($('caja'), 0);
+    var sigA=proximoCuarto();
+    if(!sigA){ finDeJuego(); return }
+    $('finP').textContent=T('totalJuego')+': '+totalJuego();
+    $('otra').hidden=false;
+    $('otra').textContent=T('siguienteCuarto').replace('{Q}',sigA);
+    $('practicar').hidden=true;
+    return;
+  }
+
+  cuartoPendiente={q:q, nivel:nivel, puntos:puntos};
+  $('finP').textContent=T('guardando');
+  guardarCuarto(q, nivel, puntos, function(ok){
+    if(!ok && !finDelJuego){
+      /* Sin esto la pantalla se quedaba sin un solo botón: el cuarto
+         jugado, sin guardar, y nada que tocar. */
+      $('finP').textContent=T('noGuardo');
+      $('otra').hidden=false; $('otra').textContent=T('reintentar');
+      return;
+    }
+    cuartoPendiente=null;
+    pintarCaja($('caja'), 0);
+    var sig=proximoCuarto();
+    if(finDelJuego || !sig || quedaVentana()<=0){ finDeJuego(); return }
+    $('finP').textContent=T('totalJuego')+': '+totalJuego();
+    $('otra').hidden=false;
+    $('otra').textContent=T('siguienteCuarto').replace('{Q}',sig);
+    $('practicar').hidden=false;
+    $('practicar').textContent=T('practicar');
+  });
+}
+
+function finDeJuego(){
+  finDelJuego=true;
+  fase='tiempo';
+  $('finK').textContent=AMISTOSO ? T('finAmistoso') : T('finJuego');
+  $('finN').textContent=String(totalJuego());
+  if($('finP').textContent!==T('porVentana')) $('finP').textContent=T('totalJuego');
+  pintarCaja($('caja'), 0);
+  $('practicar').hidden=false;
+  $('practicar').textContent=T('practicar');
+  if(DEMO){
+    /* En demostración el botón no ofrece otro scrimmage: lleva a lo
+       que el entrenador vino a ver, que es el dinero. */
+    $('otra').hidden=false; $('otra').textContent=T('demoSigue');
+  }else if(AMISTOSO){
+    $('otra').hidden=false; $('otra').textContent=T('otroAmistoso');
+  }else{
+    $('otra').hidden=true;
+  }
+  $('fin').hidden=false;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ENTRE UNA TIRADA Y LA SIGUIENTE
+
+   Se rompió la cadena pero quedan minutos: se enseña lo que hizo, se
+   cuentan cuatro segundos y entra otra sola. Nadie aprieta nada, y
+   sobre todo EL RELOJ NO SE PARA — estos cuatro segundos son de su
+   tiempo, como lo son los de la cancha mientras se cobra una falta.
+
+   Cuatro y no siete: dentro de cinco minutos las roturas se cuentan
+   por decenas, y a siete segundos cada una se iría media tanda
+   mirando un número.
+
+   Abajo queda la lista de la tanda: lo que hizo en cada tirada, una
+   al lado de la otra. Eso es lo que convierte pasarse el casco en una
+   competencia.
+   ══════════════════════════════════════════════════════════════════ */
+var AUTO_MS=4000, cuentaHasta=0, tanda=[];
+function arrancarCuenta(){ cuentaHasta=performance.now()+AUTO_MS }
+function pararCuenta(){ cuentaHasta=0; $('cuenta').textContent='' }
+function cuentaEnElBucle(){
+  if(!cuentaHasta) return;
+  var q=Math.ceil((cuentaHasta-performance.now())/1000);
+  if(q<=0){ pararCuenta(); empezarTirada(); return }
+  $('cuenta').textContent=T('otraTirada')+' — '+T('empiezaEn')+q;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   EL JUEGO DE CADA PUNTO CUENTA
+
+   La misma cancha y las mismas reglas, pero jugando por plata.
+
+   Cuatro cuartos de cinco minutos. El cuarto se puntúa por la MEJOR
+   tirada que hiciste dentro de él — no por la suma. Eso es lo que
+   hace que cada tirada importe: la única forma de subir tu cuarto es
+   aguantar una cadena más larga de la que ya aguantaste. Sumar
+   premiaría correr, que es lo contrario del ejercicio.
+
+   Los cuatro cuartos se suman y eso es el juego. Un padrino promete
+   por punto sobre ese total.
+
+   LA VENTANA. El día del juego se abre durante un rato — dos horas
+   por defecto — y dentro de ese rato juegas tus cuartos cuando
+   quieras: uno ahora, practicas un poco, el siguiente más tarde. El
+   reloj del cuarto es el de siempre. Lo que manda es la hora del
+   servidor, no la del teléfono, que se cambia en dos toques.
+
+   SE CIERRA LA VENTANA Y SE ACABÓ. Lo que no jugaste vale cero. Un
+   cuarto a medias cuando cierra también vale cero: por eso el que va
+   quedando corto conviene que lo empiece con tiempo.
+
+   CADA CUARTO SE GUARDA SOLO. En cuanto suena la chicharra, ese
+   cuarto se manda y queda en el servidor. Si se muere el teléfono en
+   el tercero, los dos primeros ya están puestos y se puede seguir
+   desde donde iba mientras la ventana siga abierta. Un juego es uno
+   solo: no se puede repetir un cuarto ya guardado.
+
+   NUNCA EN EL CASCO. En un enlace de juego el botón de la cabeza no
+   existe. El casco es para practicar.
+   ══════════════════════════════════════════════════════════════════ */
+var SB_URL='https://sdaphocueugzfvjovuxd.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
+
+var par=null;
+try{ par=new URLSearchParams(location.search) }catch(e){}
+function pr(k){ try{ return par?par.get(k):null }catch(e){ return null } }
+
+var RETO=pr('c'), JUGADOR=pr('p'), LLAVE_RUN=pr('k');
+/* LA DEMOSTRACIÓN.
+
+   ?demo=1 arranca el scrimmage sin pasar por la portada y, al
+   sonar la chicharra del cuarto cuarto, ofrece volver a
+   demo.html con el total. Nada más: el scrimmage ya era un
+   juego entero sin reto, sin padrinos y sin servidor.
+
+   Existe porque enseñar esto en una banda son cuatro minutos y
+   un teléfono prestado. El entrenador juega, ve su número, y la
+   página siguiente le dice qué habría recaudado. Sin eso, el
+   juego termina en una puntuación y la conversación se queda
+   ahí. */
+var JUEGO = !!(RETO && JUGADOR && LLAVE_RUN && pr('official')==='1');
+/* ?demo=1 ya no toca el reloj —eso lo decide el scrimmage— y sólo
+   cambia a dónde lleva el botón del final: a demo.html con el
+   total, en vez de ofrecer otro scrimmage.
+
+   Sigue apagado en una corrida oficial. Ahí el final manda el
+   cuarto al servidor y la pantalla es la del juego de verdad; un
+   parámetro pegado al final de un enlace no tiene por qué poder
+   desviar eso a una página de venta. Va DESPUÉS de JUEGO a
+   propósito: escrito antes, JUEGO todavía vale undefined. */
+var DEMO = pr('demo')==='1' && !JUEGO;
+var CUARTOS=4;
+
+/* EL SCRIMMAGE.
+
+   El juego completo — cuatro cuartos, reloj, chicharra, marcador —
+   pero sin reto, sin padrinos y sin servidor. Nada sale de este
+   teléfono.
+
+   Hace falta porque practicar y jugar son cosas distintas, y hasta
+   ahora sólo se podía ensayar la primera. Una tirada suelta no
+   enseña a administrar cuatro cuartos: cuándo apretar, qué se siente
+   ir corto en el tercero, cuánto cansa. Eso sólo se aprende jugándolo
+   entero, y nadie debería estrenarse en eso el día que hay dinero
+   encima.
+
+   Y de paso sirve para enseñarlo: se juega uno delante de quien sea,
+   con cero papeleo. */
+var AMISTOSO=false;
+function enCuartos(){ return JUEGO || AMISTOSO }
+
+var cuartos=[];          // [{q,points,level}] lo que ya está guardado
+var cuartoActual=0;      // el que se está jugando ahora, 0 = ninguno
+var enPractica=false;    // practicando entre cuartos
+var quienJuega='', programa='';
+var ventanaBase=0, ventanaMs=0, ventanaViva=false;
+var finDelJuego=false;
+
+function quedaVentana(){
+  if(!ventanaViva) return 0;
+  return ventanaMs - (performance.now()-ventanaBase);
+}
+function cuartosHechos(){ return cuartos.length }
+function totalJuego(){
+  var t=0; for(var i=0;i<cuartos.length;i++) t+=cuartos[i].points||0; return t;
+}
+function cuartoDe(q){
+  for(var i=0;i<cuartos.length;i++) if(cuartos[i].q===q) return cuartos[i];
+  return null;
+}
+function proximoCuarto(){
+  for(var q=1;q<=CUARTOS;q++) if(!cuartoDe(q)) return q;
+  return 0;
+}
+
+function rpc(nombre, cuerpo, listo, falla){
+  fetch(SB_URL+'/rest/v1/rpc/'+nombre,{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,
+             'Content-Type':'application/json'},
+    body:JSON.stringify(cuerpo)
+  })
+  .then(function(r){ if(!r.ok) throw new Error('http '+r.status); return r.json() })
+  .then(function(d){ listo(d) })
+  .catch(function(e){ if(falla) falla(e) });
+}
+
+/* El marcador de cuartos, pintado en cualquier sitio donde quepa. */
+function pintarCaja(el, resalta){
+  if(!el) return;
+  var h='';
+  for(var q=1;q<=CUARTOS;q++){
+    var c=cuartoDe(q);
+    var clase = q===resalta ? ' class="vivo"' : (c ? (c.points?'':' class="cero"') : ' class="cero"');
+    var val = c ? String(c.points) : (q===resalta ? '·' : '—');
+    h += '<div'+clase+'><b>S'+q+'</b><span>'+val+'</span></div>';
+  }
+  h += '<div class="tot"><b>'+T('total')+'</b><span>'+totalJuego()+'</span></div>';
+  el.innerHTML=h;
+  el.hidden=false;
+}
+
+/* Cuánto queda de ventana, en palabras cortas para la portada. */
+function textoVentana(){
+  var ms=quedaVentana();
+  if(ms<=0) return T('ventanaCerrada');
+  var min=Math.ceil(ms/60000);
+  if(min>=60){
+    var h=Math.floor(min/60), m=min%60;
+    return T('ventanaQueda').replace('{T}', h+'h'+(m?' '+m+'m':''));
+  }
+  return T('ventanaQueda').replace('{T}', min+' min');
+}
+
+function pintarTapaJuego(){
+  if(!JUEGO) return;
+  $('goAmistoso').hidden=true;    // no se practica a medias: es su juego
+  $('tapaMod').hidden=true;
+  $('tapaQuien').hidden=false;
+  $('tapaQuien').textContent=(programa?programa+' · ':'')+(quienJuega||'');
+  pintarCaja($('cajaTapa'), 0);
+  $('tapaVentana').hidden=false;
+  $('tapaVentana').textContent=textoVentana();
+
+  var q=proximoCuarto();
+  if(finDelJuego || !q || quedaVentana()<=0){
+    $('tapaP').textContent=T('juegoHecho');
+    $('go').hidden=true;
+  }else{
+    /* {M} y no un «5 minutos» escrito a mano: un scrimmage son
+       cuartos de un minuto y una corrida oficial de cinco, y esta
+       misma línea la leen los dos. */
+    $('tapaP').textContent=T('juegoP').replace('{Q}', q).replace('{M}', cuantoDura());
+    $('go').hidden=false;
+    $('go').textContent=(q===1?T('empezarQ'):T('seguirQ')).replace('{Q}', q);
+  }
+  $('tapaS').textContent=T('juegoS');
+}
+
+/* Traer del servidor quién es, cuándo cierra, y qué cuartos ya tiene.
+   Es también lo que hace que volver a abrir el enlace después de un
+   teléfono muerto continúe donde iba. */
+function traerEstadoJuego(){
+  $('tapaP').textContent=T('cargando');
+  $('go').hidden=true;
+  rpc('cp_game_state',{p_challenge:RETO,p_player:JUGADOR,p_key:LLAVE_RUN},
+    function(d){
+      if(!d || !d.ok){
+        $('tapaP').textContent = T('juegoNo'+(d&&d.reason==='key'?'Llave':
+                                 (d&&d.reason==='window'?'Ventana':'')))||T('juegoNo');
+        $('go').hidden=true;
+        return;
+      }
+      quienJuega=d.name||''; programa=d.program||'';
+      cuartos=(d.quarters||[]).slice();
+      var cierra=Date.parse(d.closes_at||''), ahora=Date.parse(d.now||'');
+      if(cierra && ahora){
+        ventanaMs=cierra-ahora; ventanaBase=performance.now(); ventanaViva=true;
+      }
+      pintarTapaJuego();
+    },
+    function(){
+      $('tapaP').textContent=T('sinRed');
+      $('go').hidden=true;
+      temporizadores.push(setTimeout(traerEstadoJuego, 4000));
+    });
+}
+
+/* Guardar un cuarto. Si la red falla se reintenta sola: el nene ya
+   jugó esos cinco minutos y perderlos por una barra de señal sería
+   imperdonable. */
+var mandando=false;
+function guardarCuarto(q, nivel, puntos, cuandoTermine){
+  mandando=true;
+  var intentos=0;
+  function va(){
+    intentos++;
+    rpc('cp_record_quarter',
+      {p_challenge:RETO,p_player:JUGADOR,p_key:LLAVE_RUN,
+       p_quarter:q,p_level:nivel,p_points:puntos},
+      function(d){
+        mandando=false;
+        if(d && d.ok){
+          cuartos=(d.quarters||[]).slice();
+        }else if(d && d.reason==='already'){
+          cuartos=(d.quarters||cuartos).slice();   // ya estaba: no se repite
+        }else{
+          // ventana cerrada, llave mala: el cuarto no entra y se dice
+          finDelJuego = (d && d.reason==='window') || finDelJuego;
+        }
+        cuandoTermine(d&&d.ok);
+      },
+      function(){
+        if(intentos<6){ temporizadores.push(setTimeout(va, 1500*intentos)); return }
+        mandando=false;
+        cuandoTermine(false);
+      });
+  }
+  va();
+}
+
+// ──────────────────────────────────────────────────────────────────
+//  TOCAR, HACER CLIC, O LAS TECLAS
+//
+//  El toque ya no se busca con un rayo: cada casilla lo escucha ella
+//  misma, atado en construir(). Y es pointerdown y no click, igual que
+//  en Replay, para que la casilla responda en el instante en que se
+//  toca — con click hay un retraso de medio parpadeo en algunos
+//  teléfonos y se siente flojo.
+//
+//  Lo de "encender la bola bajo el cursor" se fue al CSS: la regla
+//  .celda.puede:hover hace lo mismo sin un listener que recalcule
+//  nada en cada movimiento del ratón.
+// ──────────────────────────────────────────────────────────────────
+
+/* Teclas para la computadora: repetir una cadena de nueve con el
+   ratón cansa, y el que practica en serio practica más rápido con los
+   dedos ya puestos. Del 1 al 5 en orden de lectura dentro de la zona
+   —de arriba abajo y de izquierda a derecha— que es el orden en que
+   están declaradas las cinco en las cuatro zonas. */
+var TECLAS={'1':0,'2':1,'3':2,'4':3,'5':4};
+addEventListener('keydown',function(e){
+  if(fase==='tiempo' && (e.key==='Enter'||e.key===' ')){ armarSesion(); return }
+  var i=TECLAS[e.key];
+  if(i!==undefined) elegir(i);
+});
+
+// ──────────────────────────────────────────────────────────────────
+//  EL BUCLE. Aquí no decide nada: pinta. Lo que cambia el juego lo
+//  cambian los toques y los temporizadores.
+// ──────────────────────────────────────────────────────────────────
+function bucle(){
+  requestAnimationFrame(bucle);
+  if(!celdas.length) return;
+
+  /* El reloj se pinta y se vence aquí, en un solo sitio, pase lo que
+     pase por debajo. Por eso sigue corriendo mientras se enseña la
+     puntuación: es tiempo corrido, no se para entre tiradas. */
+  /* La ventana manda por encima del reloj del cuarto: si cierra a
+     mitad, ese cuarto vale 0 y el juego se acaba ahí. */
+  if(JUEGO && ventanaViva && !finDelJuego && fase!=='tiempo' &&
+     fase!=='tapa' && quedaVentana()<=0){
+    /* Si cerró mientras calentaba, el juego se acabó igual: lo que
+       no jugó vale cero, y seguir practicando sobre un juego cerrado
+       sería dejarle creer que todavía cuenta. */
+    if(enPractica){ limpiarT(); pararCuenta(); enPractica=false; finDeJuego() }
+    else terminarSesion(true);
+    return;
+  }
+  if(relojCorriendo){
+    pintarReloj();
+    if(quedaMs()<=0){ terminarSesion(); return }
+  }
+
+  /* El latido de la del medio ya no se calcula aquí: es una animación
+     de CSS puesta por pintarTocables(). Sesenta cuadros de JavaScript
+     para hacer latir una casilla era trabajo que el navegador hace
+     solo, y de paso se respeta a quien pidió que nada se mueva. */
+  if(fase==='fin') cuentaEnElBucle();
+}
+
+// ──────────────────────────────────────────────────────────────────
+//  ARRANQUE
+// ──────────────────────────────────────────────────────────────────
+pintarTextos();
+if(JUEGO) traerEstadoJuego();
+
+function arrancar(que){
+  abrirAudio();          // el audio sólo abre dentro de un toque de verdad
+  $('tapa').hidden=true;
+  $('lang').style.display='none';
+  if(!celdas.length){ construir(); bucle() }
+  colocarBolas();
+  ajustarCancha();
+  if(JUEGO){ armarCuarto(proximoCuarto()); return }
+  /* En demostración NO se arranca solo. El cuarto lleva reloj, y
+     cinco minutos corriendo mientras el teléfono todavía está
+     cambiando de mano son cinco minutos del entrenador. El toque
+     en «Scrimmage» es él diciendo que está listo. */
+  if(que==='amistoso'){ empezarAmistoso(); return }
+  armarSesion();
+}
+$('go').onclick=function(){ arrancar('practica') };
+$('otra').onclick=function(){
+  pararCuenta();
+  if(DEMO && finDelJuego && !enPractica){
+    location.href = 'demo.html?p=' + encodeURIComponent(String(totalJuego()));
+    return;
+  }
+  if(AMISTOSO && !enPractica){
+    if(finDelJuego){ empezarAmistoso(); return }   // otro scrimmage entero
+    var qa=proximoCuarto();
+    if(qa) armarCuarto(qa); else empezarAmistoso();
+    return;
+  }
+  if(!JUEGO){ armarSesion(); return }
+  /* Hay un cuarto sin guardar: lo único que se puede hacer es
+     volver a mandarlo. */
+  if(cuartoPendiente){
+    var c=cuartoPendiente;
+    $('otra').hidden=true; $('finP').textContent=T('guardando');
+    cerrarCuarto(c.q, c.nivel, false);
+    return;
+  }
+  if(enPractica){ volverAPortada(); return }
+  var q=proximoCuarto();
+  if(q && !finDelJuego && quedaVentana()>0) armarCuarto(q); else volverAPortada();
+};
+$('practicar').onclick=function(){ pararCuenta(); armarPractica() };
+$('goAmistoso').onclick=function(){ arrancar('amistoso') };
+})();
+</script>
+</body>
+</html>
