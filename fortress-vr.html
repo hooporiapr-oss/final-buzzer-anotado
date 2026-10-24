@@ -147,12 +147,26 @@ body.conVolver #cancha{bottom:calc(68px + env(safe-area-inset-bottom,0px))}
    sabía cuáles cinco estaban en juego — que es lo primero que hay que
    saber. Así que la viva sube y la vacía baja hasta quedarse en una
    insinuación de rejilla. Las tres señales no se tocan. */
-.celda{border-radius:10px;background:rgba(0,0,0,0);
+/* EL MISMO FORMATO DE TABLERO QUE FORTRESS, en los cuatro sets.
+   Las veinte vacías se ven como cajas de verdad, no como una
+   insinuación, y las cinco vivas son cuadrados llenos del color del
+   set que ocupan la casilla entera. El contraste ya no viene de
+   "fuerte contra apagada" sino de LLENO contra CONTORNO, que se lee
+   de lejos y de un vistazo: cinco cuadrados de color sobre veinte
+   recuadros vacíos.
+
+   EL RELLENO NO LLEGA AL TOPE, y eso es deliberado. El color del set
+   1 es el mismo violeta que la señal de "mira" — si la viva en reposo
+   fuera violeta puro, en el primer set no se distinguiría una casilla
+   dormida de una encendida. Al .45 el cuadrado se lee lleno y de su
+   color, y la señal le saca encima el violeta pleno, el borde cian,
+   el halo y la escala. Las tres señales no se tocan. */
+.celda{border-radius:6px;background:rgba(0,0,0,0);
   border:2px solid var(--rejaMuerta);
   display:flex;align-items:center;justify-content:center;
   transition:all .08s;touch-action:manipulation}
-.celda.viva{background:var(--piso);border-color:var(--reja);cursor:pointer;
-  box-shadow:inset 0 0 14px var(--halint)}
+.celda.viva{background:var(--lleno);border-color:var(--set);cursor:pointer;
+  box-shadow:0 0 12px var(--halint)}
 
 /* LAS TRES SEÑALES DE REPLAY, tal cual. */
 .celda.on{background:#A78BFA;border-color:#22D3EE;
@@ -174,8 +188,12 @@ body.conVolver #cancha{bottom:calc(68px + env(safe-area-inset-bottom,0px))}
 /* La del medio late mientras la tanda está armada: es lo que dice "yo
    soy el botón" sin escribirlo en ningún sitio. Late con el violeta de
    "encendida", que es el color que ya significa "esto es el juego". */
+/* El latido sale y vuelve al cuadrado lleno, no al vacío de antes:
+   con el formato nuevo la viva en reposo es --lleno, y si el latido
+   bajara a --piso el cuadrado se vaciaría en cada pulso y parecería
+   apagarse en vez de latir. */
 @keyframes latir{
-  0%,100%{background:var(--piso);border-color:var(--reja);
+  0%,100%{background:var(--lleno);border-color:var(--set);
           box-shadow:0 0 0 rgba(167,139,250,0)}
   50%    {background:rgba(167,139,250,.5);border-color:#22D3EE;
           box-shadow:0 0 22px rgba(167,139,250,.65)}
@@ -267,22 +285,22 @@ body.conVolver #cancha{bottom:calc(68px + env(safe-area-inset-bottom,0px))}
   --marco:rgba(167,139,250,.5);--halo:rgba(167,139,250,.22);
   --halint:rgba(167,139,250,.1);
   --piso:rgba(167,139,250,.12);--reja:rgba(167,139,250,.55);
-  --rejaMuerta:rgba(167,139,250,.07)}
+  --rejaMuerta:rgba(167,139,250,.30);--lleno:rgba(167,139,250,.45)}
 #cancha[data-set="2"]{--set:#22D3EE;
   --marco:rgba(34,211,238,.5);--halo:rgba(34,211,238,.2);
   --halint:rgba(34,211,238,.1);
   --piso:rgba(34,211,238,.12);--reja:rgba(34,211,238,.55);
-  --rejaMuerta:rgba(34,211,238,.07)}
+  --rejaMuerta:rgba(34,211,238,.30);--lleno:rgba(34,211,238,.45)}
 #cancha[data-set="3"]{--set:#FF9A3C;
   --marco:rgba(255,154,60,.5);--halo:rgba(255,154,60,.18);
   --halint:rgba(255,154,60,.1);
   --piso:rgba(255,154,60,.12);--reja:rgba(255,154,60,.55);
-  --rejaMuerta:rgba(255,154,60,.08)}
+  --rejaMuerta:rgba(255,154,60,.30);--lleno:rgba(255,154,60,.45)}
 #cancha[data-set="4"]{--set:#E8F1FF;
   --marco:rgba(232,241,255,.55);--halo:rgba(232,241,255,.14);
   --halint:rgba(232,241,255,.08);
   --piso:rgba(232,241,255,.1);--reja:rgba(232,241,255,.5);
-  --rejaMuerta:rgba(232,241,255,.07)}
+  --rejaMuerta:rgba(232,241,255,.28);--lleno:rgba(232,241,255,.40)}
 
 /* ── El marcador. Encima del lienzo y sin robar toques. ─────────── */
 #hud{position:fixed;top:0;left:0;right:0;z-index:5;pointer-events:none;
