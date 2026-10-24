@@ -475,7 +475,6 @@ console.log('\n8 · Las cuatro zonas valen lo mismo\n');
   for (const [etq, w, h] of [
       ['teléfono de pie',   390, 844],
       ['teléfono chico',    320, 568],
-      ['teléfono acostado', 844, 390],
       ['tablet',            768,1024],
       ['monitor',          1440, 900]]) {
     await pag.setViewportSize({ width: w, height: h });
@@ -503,6 +502,14 @@ console.log('\n8 · Las cuatro zonas valen lo mismo\n');
         dentro: r.left >= -1 && r.top >= -1 &&
                 r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1,
         chapaDentro: chapa.top >= -1,
+        /* La chapa del set va ENTERA por encima del marco y despegada
+           de él: ni partida por la línea del marco —que es como estaba
+           y en el teléfono se leía como un botón pegado al tablero— ni
+           metida por debajo del reloj. */
+        chapaArriba: chapa.bottom <= r.top + 1 ||
+                     chapa.right <= r.left + 1,     // o al lado, si está acostado
+        chapaBajoElHud: chapa.top >= hud.bottom - 1,
+        chapaAlLado: getComputedStyle(document.getElementById('chapa')).bottom === 'auto',
         libreArriba: r.top >= hud.bottom,
         libreAbajo: r.bottom <= pista.top };
     });
@@ -515,11 +522,52 @@ console.log('\n8 · Las cuatro zonas valen lo mismo\n');
        (m.chapaDentro ? '' : ' — la chapa se sale por arriba') +
        (m.libreArriba ? '' : ' — pisa el marcador') +
        (m.libreAbajo ? '' : ' — pisa la pista'));
+    si(m.chapaArriba && m.chapaBajoElHud && m.chapaDentro,
+       etq + ' — la chapa del set va ' + (m.chapaAlLado ? 'al lado del' : 'encima del') +
+       ' marco, despegada y sin tocar el reloj' +
+       (m.chapaArriba ? '' : ' — se monta sobre el marco') +
+       (m.chapaBajoElHud ? '' : ' — se mete debajo del marcador') +
+       (m.chapaDentro ? '' : ' — se sale de la pantalla'));
     /* Una casilla de menos de 34px no se toca con el dedo. */
     si(m.casilla >= 34, etq + ' — la casilla se puede tocar (' + m.casilla + 'px)');
   }
   await pag.setViewportSize({ width: 390, height: 800 });
   await pag.waitForTimeout(320);
+
+  /* ── ACOSTADO NO SE JUEGA, SE TAPA ───────────────────────────────
+     Un teléfono tumbado dejaba la casilla en 33px y el dedo le daba a
+     la de al lado — un punto perdido es dinero. No se puede trancar la
+     orientación de verdad (el lock pide pantalla completa y en el
+     Safari del iPhone no existe), así que encima va una pantalla que
+     pide ponerlo de pie.
+
+     Y tiene que distinguir un teléfono de una ventana de computadora
+     bajita, que sí se juega: la regla pide pointer:coarse. Playwright
+     emula el dedo con hasTouch, así que se prueban las dos. */
+  for (const [etq, w, h, dedo, tapado] of [
+      ['teléfono acostado', 844, 390, true,  true ],
+      ['tablet acostada',  1024, 768, true,  false],
+      ['ventana bajita',    900, 420, false, false]]) {
+    const p2 = await navegador.newPage({ viewport: { width: w, height: h }, hasTouch: dedo });
+    await p2.route('**/fortress-vr.html', (ruta) =>
+      ruta.fulfill({ contentType: 'text/html', body: fuente }));
+    await p2.goto('file://' + path.join(AQUI, 'fortress-vr.html'));
+    await p2.waitForTimeout(400);
+    const r = await p2.evaluate(() => {
+      const e = document.getElementById('rotar');
+      const b = e.getBoundingClientRect();
+      return { visible: getComputedStyle(e).display !== 'none',
+               cubre: b.width >= innerWidth - 1 && b.height >= innerHeight - 1,
+               dice: (document.getElementById('rotarT').textContent || '').trim() };
+    });
+    if (tapado) {
+      si(r.visible && r.cubre && r.dice.length > 0,
+         etq + ' — se tapa entero y pide ponerlo de pie («' + r.dice + '»)');
+    } else {
+      si(!r.visible, etq + ' — se sigue jugando, sin pantalla de rotar');
+    }
+    await p2.close();
+  }
 
   // ── Las cadenas: legales en las dos formas de crecer ─────────────
   const cad = await pag.evaluate(() => {
