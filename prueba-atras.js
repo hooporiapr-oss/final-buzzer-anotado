@@ -12,7 +12,7 @@
    · fortress.html y fortress131.html sí tenían botones, pero los
      tres iban a index.html. Desde que la portada enseña un solo
      tablero, a estas dos páginas se llega por un enlace, y quien
-     cae ahí buscando los cuatro cuartos tenía que volver a la
+     cae ahí buscando los cuatro sets tenía que volver a la
      portada y empezar otra vez.
 
    Lo que se comprueba aquí no es que exista un <a>, que eso lo ve
@@ -157,11 +157,13 @@ const url = (f, q) => 'file://' + path.resolve(__dirname, f) + (q || '');
     const p = await abrir('fortress-vr.html');
     p.on('pageerror', e => err.push(String(e).split('\n')[0]));
 
-    /* Con three.js, se juega de verdad: se toca "Práctica · sin
-       reloj", que es uno de los dos juegos de los que hablamos.
-       Sin three.js, se mueven las capas a mano. */
+    /* Se juega de verdad tocando el scrimmage, que desde que
+       practicar se mudó al Cognitivo Gym es el ÚNICO juego que
+       empieza en esta página: el otro botón de la portada ya no
+       arranca nada, sale del sitio. Para apagarlo se mueven las
+       capas a mano, que no hay forma de "dejar de jugar" tocando. */
     const jugar = async (si) => {
-      if (TRES && si) { await p.click('#go'); await p.waitForTimeout(700); return }
+      if (si) { await p.click('#goAmistoso'); await p.waitForTimeout(700); return }
       await p.evaluate(s => {
         document.getElementById('tapa').hidden = s;
         document.getElementById('hud').hidden = !s;
@@ -174,8 +176,7 @@ const url = (f, q) => 'file://' + path.resolve(__dirname, f) + (q || '');
              && el.getBoundingClientRect().width > 0;
     });
 
-    eq(await volverVisible(), false, 'en la portada no está — ahí ya están los dos juegos');
-    if (!TRES) console.log('       (sin three.js local: se mueven las capas a mano)');
+    eq(await volverVisible(), false, 'en la portada no está — ahí está el juego, sin empezar');
 
     await jugar(true);
     await p.waitForTimeout(60);
@@ -221,13 +222,35 @@ const url = (f, q) => 'file://' + path.resolve(__dirname, f) + (q || '');
     await p.close();
   }
 
+  /* ── 1b-sal · El botón de practicar es una salida, no un juego ──
+     Practicar se mudó al Cognitivo Gym, así que el primer botón de la
+     portada ya no arranca nada aquí: sale del sitio. Esto va en su
+     propia página porque tocarlo desmonta el documento, y lo que
+     venga detrás se encuentra la página a medio irse.
+
+     Lo que protege: que nadie le devuelva el arranque local sin
+     querer. Ese mismo botón, con un juego atado, es con el que se
+     empieza un cuarto oficial — y ahí NO puede salir del sitio. */
+  {
+    console.log('\n1b-sal · el botón de practicar sale al gimnasio\n');
+    const p = await abrir('fortress-vr.html');
+    const rotulo = await p.$eval('#go', e => e.textContent.trim());
+    eq(/Cognitivo Gym/i.test(rotulo), true,
+       'el primer botón nombra el gimnasio («' + rotulo + '»)');
+    await p.click('#go');
+    await p.waitForTimeout(400);
+    eq(p.fuera.includes('hooporia.mobi'), true, 'y al tocarlo sale hacia hooporia.mobi' +
+       (p.fuera.length ? ' — pidió: ' + p.fuera.join(', ') : ' — no pidió nada fuera'));
+    await p.close();
+  }
+
   // ── 1b-bis · Y el otro de los dos juegos, el scrimmage ─────────
-  if (TRES) {
-    console.log('\n1b-bis · y en el scrimmage de cuatro cuartos, igual\n');
+  {
+    console.log('\n1b-bis · y en el scrimmage de cuatro sets, igual\n');
     const p = await abrir('fortress-vr.html');
     const err = []; p.on('pageerror', e => err.push(String(e).split('\n')[0]));
 
-    eq(await p.$eval('#goAmistoso', e => e.textContent.trim()), 'Scrimmage · 4 cuartos',
+    eq(await p.$eval('#goAmistoso', e => e.textContent.trim()), 'Scrimmage · 4 sets',
        'el segundo botón de la portada es el scrimmage');
     await p.click('#goAmistoso');
     await p.waitForTimeout(700);
@@ -260,7 +283,7 @@ const url = (f, q) => 'file://' + path.resolve(__dirname, f) + (q || '');
     });
     if (!foto) { mal('no hay foto en la portada del tablero'); }
     else {
-      eq(foto.src, 'hooporia-share.jpg', 'es nuestra imagen de compartir');
+      eq(foto.src, 'compartir.jpg', 'es nuestra imagen de compartir');
       /* Lo que de verdad se comprueba: que la caja tenga la
          proporción del fichero. El atributo height="630" del <img>
          llega como alto fijo y, sin height:auto, aspect-ratio no
@@ -271,13 +294,29 @@ const url = (f, q) => 'file://' + path.resolve(__dirname, f) + (q || '');
       eq(Math.abs(foto.proporcion - 1200 / 630) < 0.02, true,
          'y se ve entera, sin recortar el 21 (' + foto.ancho + '×' + foto.alto + ')');
       eq(foto.botonALaVista, true, 'sin empujar el botón de empezar fuera de la pantalla');
-      eq(foto.alt, 'Un nene tira al aro al atardecer y su puntuación sube: 1, 3, 6, 10, 15, 21',
-         'con su alt en español');
+      /* El alt se comprueba por lo que TIENE que cumplir, no por la
+         frase exacta. Llevaba la frase escrita a mano y el día que
+         cambió la imagen —se fue el aro, el nene ya no tira— la
+         prueba cantó dos fallos por un alt que era correcto y
+         describía bien el dibujo nuevo. Una prueba que hay que
+         editar cada vez que mejora la página no vigila: estorba.
+
+         Lo que de verdad importa: que diga algo, que nombre la
+         cuenta que cuenta la historia, y que CAMBIE de idioma — que
+         es un atributo y no texto de la etiqueta, y por eso se
+         olvida. */
+      eq(foto.alt.length > 25, true, 'con un alt que dice algo');
+      eq(/1, *3, *6, *10, *15, *21/.test(foto.alt), true,
+         'y que nombra la escalera de puntos');
+      var altEs = foto.alt;
     }
     await p.click('#lang');
     await p.waitForTimeout(80);
-    eq(await p.$eval('#tapaFoto', e => /A kid shoots at sunset/.test(e.alt)), true,
+    var altEn = await p.$eval('#tapaFoto', e => e.alt);
+    eq(altEn.length > 25 && altEn !== altEs, true,
        'y en inglés el alt cambia — es un atributo, no texto de la etiqueta');
+    eq(/1, *3, *6, *10, *15, *21/.test(altEn), true,
+       'y el inglés también nombra la escalera');
     await p.close();
 
     /* En pantalla baja —un teléfono tumbado, el casco— la foto
