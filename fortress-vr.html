@@ -355,6 +355,26 @@ body.conVolver #cancha{bottom:calc(68px + env(safe-area-inset-bottom,0px))}
 .capa .req.mod{color:#8EA3B5}
 #cuenta{color:#6FD83C;font-weight:900;font-size:.95rem;letter-spacing:.06em;min-height:1.2em}
 
+/* ══════════════════════════════════════════════════════════════════
+   EL SELLO: UN TOQUE DEL JUEGO NO PUEDE EMPEZAR OTRO JUEGO
+
+   El nene acaba el cuarto set tocando casillas lo más rápido que
+   puede. Suena la chicharra, y la pantalla del total aparece DEBAJO
+   DEL DEDO que ya venía bajando. Ese toque cae en el primer botón que
+   se encuentre, y el primer botón empezaba otra tanda: el total que
+   acababa de hacer desaparecía de la pantalla sin que nadie lo
+   hubiera leído.
+
+   Así que los botones del final nacen muertos durante un segundo y
+   pico, y además se ven muertos —medio apagados— para que no parezca
+   que la pantalla se trabó. Pasado ese rato entran solos.
+
+   Un segundo y medio es lo que tarda una mano en parar: menos no
+   atrapa el toque de rebote, y más se siente como una pantalla rota.
+   ══════════════════════════════════════════════════════════════════ */
+#fin button{transition:opacity .4s ease}
+#fin.sellado button{pointer-events:none;opacity:.3}
+
 /* ── La caja de cuartos ─────────────────────────────────────────────
    Q1 Q2 Q3 Q4 y el total, como un marcador de verdad. Un padrino que
    mira esto entiende el juego sin que nadie se lo explique, y el nene
@@ -1704,6 +1724,10 @@ function cerrarCuarto(q, nivel, porVentana){
   $('cuenta').textContent='';
   $('otra').hidden=true; $('practicar').hidden=true; $('caja').hidden=true;
   $('fin').hidden=false; $('hud').hidden=true; $('pista').hidden=true;
+  /* La pantalla de entre sets se sella igual, y aquí el toque perdido
+     es todavía más caro: el botón de al lado empieza el set siguiente
+     con su reloj, y esos segundos salen del tiempo del nene. */
+  sellarFinal();
 
   if(porVentana){
     finDelJuego=true;
@@ -1756,8 +1780,12 @@ function finDeJuego(){
   $('finN').textContent=String(totalJuego());
   if($('finP').textContent!==T('porVentana')) $('finP').textContent=T('totalJuego');
   pintarCaja($('caja'), 0);
-  $('practicar').hidden=false;
-  $('practicar').textContent=T('practicar');
+  /* SE ACABÓ EL JUEGO, ASÍ QUE NO SE PRACTICA MÁS. Este botón decía
+     «Practicar» justo debajo del total, y practicar con los cuatro
+     sets ya guardados no cambia ni un punto: lo único que hacía era
+     borrar de la pantalla el número que el nene y su padrino vinieron
+     a ver. Entre set y set sí tiene sentido, y ahí sigue estando. */
+  $('practicar').hidden=true;
   if(DEMO){
     /* En demostración el botón no ofrece otro scrimmage: lleva a lo
        que el entrenador vino a ver, que es el dinero. */
@@ -1768,6 +1796,7 @@ function finDeJuego(){
     $('otra').hidden=true;
   }
   $('fin').hidden=false;
+  sellarFinal();
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -1786,6 +1815,25 @@ function finDeJuego(){
    al lado de la otra. Eso es lo que convierte pasarse el casco en una
    competencia.
    ══════════════════════════════════════════════════════════════════ */
+/* El sello de la pantalla final. Su temporizador vive aparte de
+   `temporizadores` a propósito: ésos los borra limpiarT() en media
+   docena de sitios, y si se llevara por delante el que quita el sello,
+   la pantalla se quedaría con los botones muertos para siempre. */
+var SELLO_MS=1500, tSello=0;
+function sellarFinal(){
+  var f=$('fin');
+  f.classList.add('sellado');
+  clearTimeout(tSello);
+  tSello=setTimeout(function(){ f.classList.remove('sellado') }, SELLO_MS);
+}
+/* Y el sello se pregunta TAMBIÉN desde los manejadores, no sólo desde
+   el CSS. pointer-events:none para un dedo de verdad, sí — pero un
+   clic que no venga de un dedo (el teclado de aquí abajo, un lector de
+   pantalla, un .click() de cualquier sitio) se lo salta sin enterarse.
+   Dicho en los dos lados, el sello es verdad venga el clic de donde
+   venga, y el CSS se queda con lo que sabe hacer: que se vea. */
+function selladoAhora(){ return $('fin').classList.contains('sellado') }
+
 var AUTO_MS=4000, cuentaHasta=0, tanda=[];
 function arrancarCuenta(){ cuentaHasta=performance.now()+AUTO_MS }
 function pararCuenta(){ cuentaHasta=0; $('cuenta').textContent='' }
@@ -2051,7 +2099,21 @@ function guardarCuarto(q, nivel, puntos, cuandoTermine){
    están declaradas las cinco en las cuatro zonas. */
 var TECLAS={'1':0,'2':1,'3':2,'4':3,'5':4};
 addEventListener('keydown',function(e){
-  if(fase==='tiempo' && (e.key==='Enter'||e.key===' ')){ armarSesion(); return }
+  /* ENTER Y ESPACIO HACEN LO QUE DICE EL BOTÓN, NI MÁS NI MENOS.
+     Llamaban a armarSesion() por su cuenta, y eso no era «seguir»:
+     era empezar una tanda del cuarto que FUERA cuartoActual. En la
+     pantalla de entre sets eso volvía a jugar un set ya guardado, y
+     en la del final —donde no hay ningún botón— arrancaba una tanda
+     encima del total. Pasando por el botón visible, la tecla no puede
+     hacer nada que la pantalla no esté ofreciendo: si el botón está
+     escondido, no pasa nada; y si la pantalla está sellada, espera
+     como esperaría un dedo. */
+  if(fase==='tiempo' && (e.key==='Enter'||e.key===' ')){
+    if($('fin').classList.contains('sellado')) return;
+    var b=$('otra');
+    if(!b.hidden) b.click();
+    return;
+  }
   var i=TECLAS[e.key];
   if(i!==undefined) elegir(i);
 });
@@ -2113,6 +2175,7 @@ function arrancar(que){
 }
 $('go').onclick=function(){ arrancar('practica') };
 $('otra').onclick=function(){
+  if(selladoAhora()) return;
   pararCuenta();
   if(DEMO && finDelJuego && !enPractica){
     location.href = 'demo.html?p=' + encodeURIComponent(String(totalJuego()));
@@ -2137,7 +2200,10 @@ $('otra').onclick=function(){
   var q=proximoCuarto();
   if(q && !finDelJuego && quedaVentana()>0) armarCuarto(q); else volverAPortada();
 };
-$('practicar').onclick=function(){ pararCuenta(); armarPractica() };
+$('practicar').onclick=function(){
+  if(selladoAhora()) return;
+  pararCuenta(); armarPractica();
+};
 $('goAmistoso').onclick=function(){ arrancar('amistoso') };
 })();
 </script>
