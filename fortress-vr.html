@@ -107,12 +107,20 @@ html,body{height:100%;overflow:hidden;background:#0B1724;
 /* El hueco donde cabe la cancha: entre el marcador y la pista, con el
    cristal curvo descontado. En vez de padding va con inset, para que
    clientWidth y clientHeight de ahí dentro sean exactamente el sitio
-   disponible y la medida de Replay valga sin tocarle un número. */
+   disponible y la medida de Replay valga sin tocarle un número.
+
+   ARRIBA DEL TODO, NO EN EL MEDIO. La cancha es cuadrada y un teléfono
+   es alargado, así que en un teléfono de pie sobran trescientos
+   píxeles de alto. Centrada, ese sobrante se parte en dos y la chapa
+   del set se quedaba flotando a media pantalla, lejos del marcador y
+   lejos de todo. Pegada arriba, la chapa queda justo debajo del reloj
+   —que es con lo que se lee, los dos dicen en qué set vas— y el
+   sobrante se junta todo abajo, donde está el pulgar y no estorba. */
 #cancha{position:fixed;z-index:1;
   left:10px;right:10px;
   top:calc(76px + env(safe-area-inset-top,0px));
   bottom:calc(40px + env(safe-area-inset-bottom,0px));
-  display:flex;align-items:center;justify-content:center;min-height:0;
+  display:flex;align-items:flex-start;justify-content:center;min-height:0;
   -webkit-user-select:none;user-select:none}
 body.conVolver #cancha{bottom:calc(68px + env(safe-area-inset-bottom,0px))}
 @media (max-height:470px){
@@ -181,15 +189,69 @@ body.conVolver #cancha{bottom:calc(68px + env(safe-area-inset-bottom,0px))}
   .celda.mal{animation:none}
 }
 
-/* La chapa del set, montada en el borde de arriba del marco. Dice el
-   número y el nombre de la zona, porque el color solo no vale: uno de
-   cada doce varones no distingue dos de estos cuatro. */
-#chapa{position:absolute;top:0;left:50%;transform:translate(-50%,-50%);
+/* La chapa del set, ENCIMA del marco y despegada de él. Dice el número
+   y el nombre de la zona, porque el color solo no vale: uno de cada
+   doce varones no distingue dos de estos cuatro.
+
+   Iba montada a caballo sobre el borde de arriba, partida por la línea
+   del marco. En el teléfono eso se lee como un botón pegado al
+   tablero, y encima la línea del marco le cruza el texto por la mitad.
+   Despegada se lee como lo que es: la etiqueta del set.
+
+   bottom:100% y no un top negativo: así se apoya sola en el borde de
+   arriba del marco sin que haya que saber cuánto mide la chapa, y
+   ajustarCancha le mide el alto para dejarle sitio. */
+#chapa{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+  margin-bottom:12px;
   z-index:2;padding:4px 13px;border-radius:999px;
   background:#0B1724;border:2px solid var(--marco);color:var(--set);
   font-size:.6rem;font-weight:900;letter-spacing:.14em;
   text-transform:uppercase;white-space:nowrap;
   transition:color .45s ease, border-color .45s ease}
+
+/* ══════════════════════════════════════════════════════════════════
+   ESTE TABLERO ES DE PIE, Y PUNTO
+
+   Un teléfono acostado no da una cancha jugable. El alto que queda
+   entre el marcador y la pista son 250 píxeles: a cinco casillas por
+   lado salen de 33, y una casilla de 33 no se toca con el dedo — se
+   toca la de al lado, y la de al lado es un punto perdido. Probado en
+   el teléfono y la respuesta fue la misma: acostado no sirve.
+
+   NO SE PUEDE TRANCAR DE VERDAD, y conviene decirlo. screen.orientation
+   .lock('portrait') sólo obedece a pantalla completa, y en el Safari
+   del iPhone no existe. Así que el tablero no se trancа: se TAPA. Si
+   el teléfono se acuesta, encima va una pantalla que pide volver a
+   ponerlo de pie, y debajo el juego sigue exactamente donde estaba.
+
+   Y EL RELOJ NO SE PARA mientras está tapado, igual que no se para
+   entre una tirada y la siguiente. Dos razones: es tiempo corrido por
+   diseño, y si se parara, acostar el teléfono sería un botón de pausa
+   para pensarse la cadena con calma. Acostarlo cuesta tiempo, que es
+   como cuesta en la cancha.
+
+   Sólo en teléfonos: 'pointer:coarse' deja fuera la computadora, y el
+   tope de alto deja fuera la tablet acostada, que sí da una cancha
+   grande. Una ventana de computadora bajita se sigue jugando.
+   ══════════════════════════════════════════════════════════════════ */
+#rotar{display:none;position:fixed;inset:0;z-index:50;
+  background:#0B1724;color:#fff;
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;padding:28px;text-align:center}
+#rotar .icono{width:54px;height:88px;border:3px solid #A78BFA;border-radius:10px;
+  position:relative;animation:girar 1.8s ease-in-out infinite}
+#rotar .icono::after{content:'';position:absolute;left:50%;bottom:6px;
+  width:18px;height:3px;background:#A78BFA;transform:translateX(-50%);border-radius:2px}
+@keyframes girar{
+  0%,45%{transform:rotate(-90deg)}
+  70%,100%{transform:rotate(0deg)}
+}
+#rotar h2{font-size:1.4rem;font-weight:900;letter-spacing:-.01em;max-width:18ch}
+#rotar p{color:#C8D6E2;font-size:.95rem;max-width:30ch;line-height:1.5}
+@media (prefers-reduced-motion:reduce){ #rotar .icono{animation:none} }
+@media (orientation:landscape) and (pointer:coarse) and (max-height:560px){
+  #rotar{display:flex}
+}
 
 /* UN COLOR DE CANCHA POR SET. Set 1 el 2-1-2, set 2 el 1-3-1, set 3
    el 2-3, set 4 el 3-2 — el orden fijo de siempre.
@@ -372,6 +434,15 @@ body.conVolver #pista{bottom:calc(50px + env(safe-area-inset-bottom,0px))}
 
 <button id="volver" hidden></button>
 
+<!-- La pantalla de "ponlo de pie". La enciende y la apaga el CSS con
+     la orientación: sin JavaScript de por medio, así no hay forma de
+     que se quede pegada por un listener que no saltó. -->
+<div id="rotar">
+  <div class="icono"></div>
+  <h2 id="rotarT"></h2>
+  <p id="rotarS"></p>
+</div>
+
 <div class="capa" id="tapa">
   <img id="tapaFoto" src="compartir.jpg" width="1200" height="630"
        loading="eager" decoding="async"
@@ -464,6 +535,9 @@ var S={
        demostración — la pantalla que más gente ve. «tu tanda de {M}»
        sale bien con uno y con cinco. */
     listoLinea:'Toca la casilla del medio para empezar tu tanda de {M}.',
+    rotarT:'Pon el teléfono de pie',
+    rotarS:'Esta cancha se juega de pie. Acostado, las casillas quedan '+
+           'tan chicas que el dedo le da a la de al lado.',
     /* La chapa del marco. Lleva el número del set además del color,
        porque el color solo deja fuera al que no distingue dos de los
        cuatro. Practicando suelto no hay número de set que poner. */
@@ -545,6 +619,9 @@ var S={
     tanda:'This round: ',
     listoPill:'TAP THE MIDDLE',
     listoLinea:'Tap the middle cell to start your {M}.',
+    rotarT:'Turn your phone upright',
+    rotarS:'This court is played upright. Sideways the cells get so '+
+           'small your finger hits the one next door.',
     chapaSet:'SET {N} · {Z}',
     minutos:'{N} minutes',
     minuto1:'{N} minute',
@@ -612,6 +689,8 @@ function pintarTextos(){
   $('tapaS').textContent=HAY_FINO?T('sRaton'):T('sDedo');
   $('tapaMod').textContent=T('mod');
   $('goAmistoso').textContent=T('amistoso');
+  $('rotarT').textContent=T('rotarT');
+  $('rotarS').textContent=T('rotarS');
   $('kNivel').textContent=T('nivel');
   $('kPts').textContent=T('puntos');
   $('finK').textContent=T('finK');
@@ -1057,13 +1136,18 @@ function pintarTocables(){
    reloj o no.
 
    Así que se le pregunta al marcador dónde acaba y a la pista dónde
-   empieza. Los 14 de arriba son por la chapa, que va montada en el
-   borde del marco y asoma media pastilla por encima. */
+   empieza. Y a la chapa cuánto mide: va entera por encima del marco,
+   así que ese alto hay que descontarlo del sitio de la cancha o la
+   chapa se sube por debajo del reloj. Se le pregunta a ella en vez de
+   escribir un número porque la chapa crece con el texto — «SET 1 ·
+   2-1-2» y «ZONA 1-3-1» no miden lo mismo. */
 function ajustarCancha(){
   var hueco=$('cancha'), rej=$('rej');
   if(!hueco||!rej||hueco.hidden) return;
-  var hud=$('hud'), pista=$('pista');
-  var arriba = hud.hidden ? 12 : Math.ceil(hud.getBoundingClientRect().bottom)+14;
+  var hud=$('hud'), pista=$('pista'), chapa=$('chapa');
+  var sitioChapa = (chapa.offsetHeight||20)+14;
+  var arriba = (hud.hidden ? 12 : Math.ceil(hud.getBoundingClientRect().bottom)+8)
+             + sitioChapa;
   var abajo  = pista.hidden ? 12
              : Math.ceil(innerHeight - pista.getBoundingClientRect().top)+8;
   hueco.style.top = arriba+'px';
