@@ -817,6 +817,122 @@ console.log('\n9 · El tablero del casco sigue en pie\n');
   await pag.close();
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   10 · DEL FINAL NO SE SALE SIN QUERER
+
+   El nene acaba el cuarto set tocando casillas lo más rápido que
+   puede. Suena la chicharra y la pantalla del total aparece debajo del
+   dedo que ya venía bajando: ese toque caía en el primer botón que
+   encontrara, y el primer botón empezaba otra tanda. El total —lo
+   único que el nene y su padrino vinieron a ver— desaparecía sin que
+   nadie lo hubiera leído. Pasó jugando de verdad, no en teoría.
+
+   Tres puertas había, y dos se abrían solas:
+     · «Practicar», justo debajo del número. Con los cuatro sets ya
+       guardados no cambia ni un punto: era sólo una forma de borrar
+       el total de la pantalla.
+     · el botón de al lado, que empieza otro scrimmage.
+     · Enter o espacio, que llamaban a armarSesion() por su cuenta y
+       arrancaban una tanda sin pasar por ningún botón.
+
+   Ahora la pantalla nace sellada segundo y medio. Y el sello se dice
+   en los dos sitios —CSS y manejador— porque pointer-events:none
+   sujeta un dedo pero no un clic que venga de una tecla o de un lector
+   de pantalla.
+   ══════════════════════════════════════════════════════════════════ */
+console.log('\n10 · Del final no se sale sin querer\n');
+{
+  const pag = await navegador.newPage({ viewport: { width: 390, height: 844 } });
+  pag.on('pageerror', (e) => mal('la página reventó: ' + e.message));
+  const ASA = '\nwindow.__fin={cerrarCuarto:cerrarCuarto,finDeJuego:finDeJuego,' +
+              'totalJuego:totalJuego,g:function(k){return eval(k)},s:function(k,v){eval(k+"=v")}};\n';
+  const fuente = require('fs').readFileSync(path.join(AQUI, 'fortress-vr.html'), 'utf8');
+  const CIERRE = '\n})();\n</script>';
+  await pag.route('**/fortress-vr.html', (ruta) =>
+    ruta.fulfill({ contentType: 'text/html', body: fuente.replace(CIERRE, ASA + CIERRE) }));
+  await pag.goto('file://' + path.join(AQUI, 'fortress-vr.html'));
+  await pag.waitForTimeout(300);
+  await pag.locator('#goAmistoso').click();
+  await pag.waitForTimeout(400);
+
+  /* Cuatro sets cerrados con una cadena de 6 cada uno: 21 puntos por
+     set, 84 en total — el orden de magnitud que sale jugando sets de
+     un minuto de verdad. */
+  for (let q = 1; q <= 4; q++) {
+    await pag.evaluate((q) => {
+      const H = window.__fin; H.s('cuartoActual', q); H.cerrarCuarto(q, 6, false);
+    }, q);
+    await pag.waitForTimeout(240);
+    if (q < 4) { await pag.waitForTimeout(1500); await pag.locator('#otra').click();
+                 await pag.waitForTimeout(240) }
+  }
+
+  const total = await pag.locator('#finN').textContent();
+  eq(total, '84', 'cuatro sets de 21 puntos hacen 84 en la pantalla del total');
+  si(await pag.locator('#practicar').isHidden(),
+     'y «Practicar» no está: con el juego cerrado no cambia ni un punto');
+
+  const sellado = await pag.evaluate(() => {
+    const f = document.getElementById('fin');
+    const b = [...f.querySelectorAll('button')].filter((x) => !x.hidden);
+    return { clase: f.classList.contains('sellado'),
+             muertos: b.every((x) => getComputedStyle(x).pointerEvents === 'none'),
+             apagados: b.every((x) => parseFloat(getComputedStyle(x).opacity) < 0.6) };
+  });
+  si(sellado.clase && sellado.muertos && sellado.apagados,
+     'la pantalla del total nace sellada: los botones no responden y se ven apagados');
+
+  /* El toque de rebote, por las tres puertas a la vez — y el clic va
+     con dispatchEvent a propósito: así entra por el manejador sin que
+     el CSS lo pare, que es justo lo que hace un lector de pantalla. */
+  await pag.evaluate(() => {
+    document.getElementById('otra').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    const p = document.getElementById('practicar');
+    if (p) p.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  });
+  await pag.keyboard.press('Enter');
+  await pag.keyboard.press('Space');
+  await pag.evaluate(() => {
+    document.querySelectorAll('#rej .celda').forEach((c) =>
+      c.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })));
+  });
+  await pag.waitForTimeout(200);
+
+  const tras = await pag.evaluate(() => ({
+    finALaVista: !document.getElementById('fin').hidden,
+    total: document.getElementById('finN').textContent,
+    fase: window.__fin.g('fase'),
+    marcador: !document.getElementById('hud').hidden }));
+  si(tras.finALaVista && tras.total === '84' && tras.fase === 'tiempo' && !tras.marcador,
+     'y aguanta el toque de rebote: sigue el total, no empieza nada' +
+     ' (fase ' + tras.fase + ', total ' + tras.total + ')');
+
+  // Pasado el sello, el botón vuelve a servir: esto no es una trampa.
+  await pag.waitForTimeout(1700);
+  const abierto = await pag.evaluate(() => {
+    const f = document.getElementById('fin');
+    const b = document.getElementById('otra');
+    return { sellado: f.classList.contains('sellado'),
+             vivo: getComputedStyle(b).pointerEvents !== 'none',
+             opaco: parseFloat(getComputedStyle(b).opacity) > 0.9 };
+  });
+  si(!abierto.sellado && abierto.vivo && abierto.opaco,
+     'pasado el segundo y medio, el botón vuelve solo — no se queda trancado');
+
+  /* En una corrida oficial no hay ni ese botón: terminado el juego, la
+     pantalla del total es lo último que hay, y punto. */
+  const oficial = await pag.evaluate(() => {
+    const H = window.__fin;
+    H.s('AMISTOSO', false); H.s('DEMO', false); H.s('JUEGO', true);
+    H.finDeJuego();
+    return [...document.querySelectorAll('#fin button')].filter((b) => !b.hidden)
+      .map((b) => b.textContent);
+  });
+  eq(oficial, [], 'y en una corrida oficial el final no tiene ni un botón que tocar');
+
+  await pag.close();
+}
+
 /* Y que la rejilla mande a quien llegue con un enlace viejo del casco:
    si el redirect se cae, ?casco=1 abre la rejilla y el que lleva el
    Pico puesto se queda mirando un tablero que no puede tocar. */
