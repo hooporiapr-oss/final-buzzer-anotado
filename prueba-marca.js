@@ -151,7 +151,23 @@ function buscar(cadena){
    Las tres páginas del juego no llevan ese elemento —son lienzo— y
    salen dichas por su nombre, que un hueco en silencio es como
    empezó todo esto. */
-const MARCA_ESPERADA = 'CADA PUNTO CUENTA.';
+/* DOS NOMBRES, Y CADA UNO EN SU SITIO.
+
+   Cognitivo Gym es la marca —la casa— y Cada Punto Cuenta es el
+   recaudador que corre dentro de ella. La portada ya lleva el nombre
+   de la casa; las demás páginas son páginas de recaudar y siguen
+   llevando el del recaudador.
+
+   Esto se irá moviendo página por página según avance el cambio de
+   marca. Mientras tanto, la lista dice exactamente cuáles ya pasaron
+   — que es mejor que una regla floja que deje pasar cualquiera de los
+   dos en cualquier sitio y no cante nada. */
+const MARCA_CASA = 'COGNITIVO GYM.';
+const MARCA_RECAUDA = 'CADA PUNTO CUENTA.';
+const PAGINAS_DE_LA_CASA = ['index.html'];
+function marcaEsperada(f){
+  return PAGINAS_DE_LA_CASA.indexOf(f) !== -1 ? MARCA_CASA : MARCA_RECAUDA;
+}
 function marca(s){
   const m = /<a[^>]*class="(?:mark|brand)"[^>]*>([\s\S]*?)<\/a>/i.exec(s);
   if (!m) return null;
@@ -185,18 +201,16 @@ for (const f of archivos){
      que llaman cuatro páginas, y renombrarlo cambiaría la url del
      webhook de Stripe. Que ninguna página lo diga de más se
      comprueba en prueba-servidores.js, que es su sitio. */
-  /* Y fuera también hooporia.mobi, por la misma razón y con la misma
-     incomodidad: lleva "hooporia" dentro y no es una marca que la
-     página esté usando — es el dominio donde vive el Cognitivo Gym, al
-     que sale el botón de practicar. El rótulo que lee el nene dice
-     "Cognitivo Gym"; la palabra retirada sólo está en la url.
+  /* El gimnasio ya no se nombra con una url que lleve "hooporia"
+     dentro: el botón de practicar sale a cognitivo.digital, que no
+     necesita excepción ninguna. La que había para hooporia.mobi se
+     retiró con la mudanza — una excepción que ya no tapa nada es una
+     excepción que tapará otra cosa por accidente.
 
-     Si algún día el gimnasio se muda a cognitivogym.com, esta línea
-     sobra y hay que quitarla: una excepción que ya no tapa nada es una
-     excepción que tapará otra cosa por accidente. */
+     Cuando se registre cognitivogym.com no hace falta tocar esto:
+     tampoco lleva la palabra retirada. */
   const limpio = sinComentarios(fs.readFileSync(path.join(__dirname, f), 'utf8'))
-                   .split('hooporia-server.onrender.com').join('EL-SERVIDOR')
-                   .split('hooporia.mobi').join('EL-GIMNASIO');
+                   .split('hooporia-server.onrender.com').join('EL-SERVIDOR');
 
   /* Las dos vistas: lo que se lee en pantalla y el código en crudo
      con sus atributos. Lo que salte en cualquiera de las dos cuenta,
@@ -224,9 +238,10 @@ for (const f of archivos){
 
   /* El elemento de marca, que es lo que mira una persona primero. */
   const m = marca(limpio);
-  if (m !== null && m !== MARCA_ESPERADA){
+  const esperada = marcaEsperada(f);
+  if (m !== null && m !== esperada){
     encontrados.push('la marca de la cabecera dice "' + m +
-                     '" y tendría que decir "' + MARCA_ESPERADA + '"');
+                     '" y tendría que decir "' + esperada + '"');
   }
 
   if (encontrados.length){
