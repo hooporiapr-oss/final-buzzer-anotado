@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101c2a">
-<title>Cada Punto Cuenta | Every point is recorded.</title>
+<title>Cognitivo Gym | Every point is recorded.</title>
 <meta name="description" content="Pledge management for scored challenges. Each player takes his run, the game records his points, and every padrino is told what their pledge came to.">
 
 <!-- El icono y la imagen de compartir. og:image va en absoluto
@@ -14,7 +14,7 @@
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:site_name" content="Cognitivo Gym">
 <meta property="og:image" content="https://cadapunto.com/compartir.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -326,9 +326,20 @@ button.lang{padding:0 10px;font-size:.8rem}
      .wrap: position:sticky ya hace de la cabecera un elemento
      posicionado, así que es ella la que le sirve de referencia y el
      panel sale de borde a borde en vez de con el margen del wrap. -->
+<!-- EL NOMBRE DE LA CASA Y EL NOMBRE DE LO QUE SE RECAUDA.
+
+     Cognitivo Gym es la marca: es de quien es esta página, y es lo
+     que va arriba y abajo. Cada Punto Cuenta es el recaudador que
+     corre dentro, así que se nombra donde se está hablando de
+     recaudar — el rótulo de la cabecera, y la línea de que esto es
+     software de manejo de promesas y nada más.
+
+     La frase legal NO se tocó. Dice qué es y qué no es este servicio,
+     y una pasada de marca no es sitio para reescribir eso: sigue
+     nombrando a Cada Punto Cuenta, que es el producto del que habla. -->
 <header>
 <div class="wrap nav">
-<a class="brand" href="#top">CADA PUNTO CUENTA<span>.</span></a>
+<a class="brand" href="#top">COGNITIVO GYM<span>.</span></a>
 <nav class="navlinks" id="menu">
 <!-- Tres entradas, y las tres llevan a algo que existe. Había
      cinco: «Play it» apuntaba a una sección que ya no está —la
@@ -354,7 +365,7 @@ button.lang{padding:0 10px;font-size:.8rem}
 <section class="hero" id="top">
 <div class="wrap hero-grid">
 <div>
-<div class="eyebrow" data-i="eyebrow">Automated Pledge Management</div>
+<div class="eyebrow" data-i="eyebrow">Cada Punto Cuenta &middot; Automated Pledge Management</div>
 <h1 data-i="headline">Play. Score. <em>Raise Money.</em></h1>
 <p class="herosub" data-i="heroSub">Play it before you read another word.</p>
 <!-- UNA SOLA ACCIÓN, Y ES VER.
@@ -535,7 +546,7 @@ button.lang{padding:0 10px;font-size:.8rem}
 <footer>
 <div class="wrap">
 <div>
-<strong>CADA PUNTO CUENTA</strong><br>
+<strong>COGNITIVO GYM</strong><br>
 <span data-i="footer">We manage the pledges. You manage the proceeds.</span>
 </div>
 <nav class="flinks">
@@ -595,7 +606,7 @@ navHow:'Cómo funciona',
 navPrice:'Cuánto cuesta',
 navFaq:'Preguntas',
 navCta:'Inscribir un programa',
-eyebrow:'Manejo de promesas automatizado',
+eyebrow:'Cada Punto Cuenta &middot; Manejo de promesas automatizado',
 headline:'Juega. Anota. <em>Recauda.</em>',
 heroSub:'Juégalo antes de seguir leyendo.',
 register:'Solicitar registro de programa',
@@ -749,8 +760,8 @@ _l.textContent = locale==='es' ? 'English' : 'Español';
 _l.setAttribute('aria-label', locale==='es' ? 'Switch to English' : 'Cambiar a español');
 document.getElementById('hamb').setAttribute('aria-label',
   locale==='es' ? 'Menú' : 'Menu');
-document.title=locale==='es'?'Cada Punto Cuenta | Cada punto queda anotado.'
-                            :'Cada Punto Cuenta | Every point is recorded.';
+document.title=locale==='es'?'Cognitivo Gym | Cada punto queda anotado.'
+                            :'Cognitivo Gym | Every point is recorded.';
 pintarEscalera();
 }
 document.getElementById('lang').addEventListener('click',()=>{
