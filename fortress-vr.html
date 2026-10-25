@@ -281,26 +281,37 @@ body.conVolver #cancha{bottom:calc(68px + env(safe-area-inset-bottom,0px))}
    la página apagada. Blanco a tope es lo contrario — el último set
    enciende las luces, y de paso no hace falta inventarse un quinto
    color metido entre el cian y el naranja. */
+/* EL CUADRADO DEL SET 1 VA UN TONO MÁS HONDO QUE SU MARCO, y es la
+   única excepción de los cuatro. El color del set 1 es #A78BFA, que
+   es exactamente el violeta de la señal «mira». Con el cuadrado
+   lleno de ese mismo violeta, la casilla encendida y las cuatro
+   dormidas quedaban del mismo color y lo único que las separaba era
+   el filo cian: a un metro, en una secuencia rápida, no se ve.
+
+   Así que el marco se queda en el violeta del set —la identidad del
+   cuarto no se toca— y el cuadrado baja a un índigo más hondo. La
+   señal sigue siendo la misma de siempre y ahora salta encima. Los
+   sets 2, 3 y 4 no lo necesitan: su color ya no es el de la señal. */
 #cancha,#cancha[data-set="1"]{--set:#A78BFA;
   --marco:rgba(167,139,250,.5);--halo:rgba(167,139,250,.22);
   --halint:rgba(167,139,250,.1);
   --piso:rgba(167,139,250,.12);--reja:rgba(167,139,250,.55);
-  --rejaMuerta:rgba(167,139,250,.30);--lleno:rgba(167,139,250,.45)}
+  --rejaMuerta:rgba(167,139,250,.30);--lleno:#6C4FD8}
 #cancha[data-set="2"]{--set:#22D3EE;
   --marco:rgba(34,211,238,.5);--halo:rgba(34,211,238,.2);
   --halint:rgba(34,211,238,.1);
   --piso:rgba(34,211,238,.12);--reja:rgba(34,211,238,.55);
-  --rejaMuerta:rgba(34,211,238,.30);--lleno:rgba(34,211,238,.45)}
+  --rejaMuerta:rgba(34,211,238,.30);--lleno:rgb(34,211,238)}
 #cancha[data-set="3"]{--set:#FF9A3C;
   --marco:rgba(255,154,60,.5);--halo:rgba(255,154,60,.18);
   --halint:rgba(255,154,60,.1);
   --piso:rgba(255,154,60,.12);--reja:rgba(255,154,60,.55);
-  --rejaMuerta:rgba(255,154,60,.30);--lleno:rgba(255,154,60,.45)}
+  --rejaMuerta:rgba(255,154,60,.30);--lleno:rgb(255,154,60)}
 #cancha[data-set="4"]{--set:#E8F1FF;
   --marco:rgba(232,241,255,.55);--halo:rgba(232,241,255,.14);
   --halint:rgba(232,241,255,.08);
   --piso:rgba(232,241,255,.1);--reja:rgba(232,241,255,.5);
-  --rejaMuerta:rgba(232,241,255,.28);--lleno:rgba(232,241,255,.40)}
+  --rejaMuerta:rgba(232,241,255,.28);--lleno:rgb(232,241,255)}
 
 /* ── El marcador. Encima del lienzo y sin robar toques. ─────────── */
 #hud{position:fixed;top:0;left:0;right:0;z-index:5;pointer-events:none;
@@ -1726,10 +1737,61 @@ function terminarSesion(porVentana){
    serviría para repetir un cuarto que salió malo. */
 var cuartoPendiente=null;
 
+/* ══════════════════════════════════════════════════════════════════
+   LA CORRIDA ARRANCA AQUÍ Y TERMINA AQUÍ, PERO NO SE JUEGA AQUÍ
+
+   Los cuatro sets ya no son cuatro zonas de este tablero: son cuatro
+   juegos distintos, cada uno en su página. Esta página se queda con
+   lo que siempre fue suyo — quién juega, de qué tipo es la corrida,
+   cuánto dura un set, y el total al final — y manda a jugar.
+
+   El estado de la corrida va a sessionStorage antes de salir de aquí.
+   Tiene que estar escrito ANTES de navegar: si se escribiera al
+   llegar, un set perdido en el camino sería un set sin dueño.
+   ══════════════════════════════════════════════════════════════════ */
+var LLAVE_CORRIDA='cp-corrida';
+var SETS_CORRIDA=['002-recall.html','003-recognition.html','004-replay.html','001-fortress.html'];
+
+function nuevaCorrida(tipo){
+  var c = {
+    tipo: tipo,                       // 'amistoso' u 'oficial'
+    /* Cinco minutos por set en una corrida oficial, uno en una
+       amistosa. Es la misma regla de siempre; lo único que cambia es
+       que ahora viaja con la corrida en vez de vivir en una variable
+       de esta página. */
+    ms: (tipo === 'oficial') ? SESION_MS : CUARTO_CORTO_MS,
+    q: 1,
+    cuartos: [],
+    lang: LANG,
+    demo: !!DEMO
+  };
+  if (tipo === 'oficial'){
+    c.reto = RETO; c.jugador = JUGADOR; c.llave = LLAVE_RUN;
+  }
+  try { sessionStorage.setItem(LLAVE_CORRIDA, JSON.stringify(c)) } catch(e){}
+  return c;
+}
+function leerCorrida(){
+  try {
+    var crudo = sessionStorage.getItem(LLAVE_CORRIDA);
+    return crudo ? JSON.parse(crudo) : null;
+  } catch(e){ return null }
+}
+function borrarCorrida(){
+  try { sessionStorage.removeItem(LLAVE_CORRIDA) } catch(e){}
+}
+function totalCorrida(c){
+  if(!c || !c.cuartos) return 0;
+  var t=0; c.cuartos.forEach(function(x){ t += (parseInt(x.puntos,10)||0) });
+  return t;
+}
+function irAlPrimerSet(tipo){
+  nuevaCorrida(tipo);
+  location.href = SETS_CORRIDA[0];
+}
+
 function empezarAmistoso(){
-  AMISTOSO=true; finDelJuego=false; enPractica=false;
-  cuartos=[]; cuartoActual=0; cuartoPendiente=null;
-  armarCuarto(1);
+  irAlPrimerSet('amistoso');
 }
 
 function cerrarCuarto(q, nivel, porVentana){
@@ -2183,7 +2245,7 @@ function arrancar(que){
   if(!celdas.length){ construir(); bucle() }
   colocarBolas();
   ajustarCancha();
-  if(JUEGO){ armarCuarto(proximoCuarto()); return }
+  if(JUEGO){ irAlPrimerSet('oficial'); return }
   /* En demostración NO se arranca solo. El cuarto lleva reloj, y
      cinco minutos corriendo mientras el teléfono todavía está
      cambiando de mano son cinco minutos del entrenador. El toque
@@ -2237,6 +2299,117 @@ $('practicar').onclick=function(){
   pararCuenta(); armarPractica();
 };
 $('goAmistoso').onclick=function(){ arrancar('amistoso') };
+
+/* ── ENTRE SET Y SET: ?entre=1 ────────────────────────────────────
+   Un set acabó de jugarse en su página y volvió aquí con el cuarto
+   ya escrito en la corrida. Lo que falta es lo que siempre fue de
+   esta página: guardarlo si la corrida es oficial, enseñar lo que
+   valió, y ofrecer el botón del set siguiente.
+
+   EL NIVEL SE SACA DE LOS PUNTOS. guardarCuarto quiere el nivel y el
+   juego guardó los puntos, pero pointsFor es triangular y se invierte
+   exacto: de L(L+1)/2 se vuelve a L con (-1+raíz(1+8p))/2. Diez
+   puntos son nivel cuatro, siempre. Así el juego guarda un solo
+   número y no hay dos versiones de la misma verdad. */
+function nivelDePuntos(p){
+  p = parseInt(p,10) || 0;
+  if (p <= 0) return 0;
+  return Math.round((-1 + Math.sqrt(1 + 8*p)) / 2);
+}
+
+function entreSets(){
+  var c = leerCorrida();
+  if(!c){ volverAPortada(); return }
+
+  AMISTOSO = (c.tipo === 'amistoso');
+  cuartos  = (c.cuartos || []).map(function(x){
+    return { q:x.q, points:parseInt(x.puntos,10)||0, level:nivelDePuntos(x.puntos) };
+  });
+
+  var jugado = cuartos[cuartos.length-1] || {q:0, points:0, level:0};
+  var sig = (c.q >= 1 && c.q <= 4) ? c.q : 0;
+
+  $('tapa').hidden=true; $('lang').style.display='none';
+  $('hud').hidden=true; $('pista').hidden=true; $('cancha').hidden=true;
+  fase='tiempo';
+  $('finK').textContent=T('finCuarto').replace('{Q}',jugado.q);
+  $('finN').textContent=String(jugado.points);
+  $('finS').textContent=''; $('cuenta').textContent='';
+  $('practicar').hidden=true; $('caja').hidden=true;
+  $('fin').hidden=false;
+  sellarFinal();
+
+  function seguir(){
+    pintarCaja($('caja'), 0);
+    if(!sig){
+      /* Los cuatro están jugados: esta misma pantalla pasa a ser la
+         del total. */
+      finDelJuego = true;
+      finDeJuego();
+      return;
+    }
+    $('finP').textContent = T('totalJuego')+': '+totalJuego();
+    $('otra').hidden=false;
+    $('otra').textContent=T('siguienteCuarto').replace('{Q}',sig);
+    $('otra').onclick=function(){
+      if(selladoAhora()) return;
+      location.href = SETS_CORRIDA[sig-1];
+    };
+  }
+
+  /* UNA CORRIDA AMISTOSA NO GUARDA NADA: no hay padrino detrás, no
+     hay fila en ninguna tabla, y pedirle al servidor que escriba algo
+     que nadie va a leer es una forma de fallar por nada. */
+  if(AMISTOSO){ seguir(); return }
+
+  cuartoPendiente={q:jugado.q, nivel:jugado.level, puntos:jugado.points};
+  $('finP').textContent=T('guardando');
+  $('otra').hidden=true;
+  guardarCuarto(jugado.q, jugado.level, jugado.points, function(ok){
+    if(!ok){
+      /* El cuarto se jugó y no se guardó. No se sigue: se ofrece
+         mandarlo otra vez, que es lo único que arregla esto. */
+      $('finP').textContent=T('noGuardo');
+      $('otra').hidden=false; $('otra').textContent=T('reintentar');
+      $('otra').onclick=function(){
+        if(selladoAhora()) return;
+        entreSets();
+      };
+      return;
+    }
+    cuartoPendiente=null;
+    seguir();
+  });
+}
+
+if (pr('entre') === '1'){ entreSets(); }
+
+/* ── EL REGRESO: ?fin=1 ───────────────────────────────────────────
+   El set 4 manda aquí cuando termina. La corrida todavía está en
+   sessionStorage, con sus cuatro cuartos guardados, así que esta
+   página sólo tiene que leerla, enseñar el total y cerrarla.
+
+   Se borra DESPUÉS de pintarla, no antes: si el nene recarga la
+   pantalla del total queriendo volver a verla, el número tiene que
+   seguir ahí. Lo que no puede es arrancar un set nuevo, y no puede,
+   porque la corrida ya marcó q=5. */
+if (pr('fin') === '1'){
+  var cFin = leerCorrida();
+  if (cFin){
+    AMISTOSO = (cFin.tipo === 'amistoso');
+    cuartos  = (cFin.cuartos || []).map(function(x){
+      return { q:x.q, points:parseInt(x.puntos,10)||0, level:0 };
+    });
+    finDelJuego = true;
+    $('tapa').hidden = true;
+    $('lang').style.display = 'none';
+    $('hud').hidden = true; $('pista').hidden = true; $('cancha').hidden = true;
+    finDeJuego();
+  } else {
+    /* Sin corrida que enseñar no hay total que enseñar: la portada. */
+    volverAPortada();
+  }
+}
 })();
 </script>
 </body>
