@@ -203,7 +203,8 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      arriba tiene su pareja aquí a propósito: un cambio de copy que
      se haga en un idioma y no en el otro es exactamente el fallo que
      esta sección existe para encontrar. */
-  has(en,/Play\. Score\. Raise Money\./,'the headline: three verbs');
+  has(en,/Cognitivo Gym\. Play\. Score\. Raise Money\./,
+      'el titular abre con la marca y sigue con los tres verbos');
   has(en,/Automated pledge management/i,'the category line');
   has(en,/The Game Is the Event/,'the game IS the event');
   has(en,/No gym to book/,'no gym to book');
@@ -242,7 +243,14 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   const hrefs=await p.evaluate(()=>[...document.querySelectorAll('a')].map(a=>a.getAttribute('href')));
   for(const h of ['equipo.html','mi-equipo.html','ayuda.html','cobro.html','terms.html','privacy.html','custodia.html'])
     hrefs.includes(h)?ok('a '+h):mal('falta '+h);
-  hrefs.some(h=>/cadapunto|prometer\.html/.test(h||''))?mal('enlaza fuera del producto'):ok('no enlaza a Cada Punto');
+  hrefs.some(h=>/cadapunto|cognitivo\.digital|prometer\.html/.test(h||''))?mal('enlaza fuera del producto'):ok('no enlaza a Cada Punto');
+  /* El botón de la cabecera sale a propósito, y es el único que
+     sale: el hub de los juegos vive en el gimnasio móvil. Va en
+     absoluto porque es otro dominio, así que la comprobación mira
+     la dirección entera y no un trozo. */
+  hrefs.some(h=>h==='https://hooporia.mobi/fortress-mobile-hub.html')
+    ?ok('y la cabecera entra al gimnasio')
+    :mal('la cabecera ya no entra al gimnasio');
 
   /* ── Las dos listas de llaves, una contra la otra ────────────────
      El inglés se recoge del MARCADO y el español vive en la tabla,
@@ -293,7 +301,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      ficheros existen de verdad vive en prueba-marca.js, que mira
      todas las páginas y no sólo ésta. */
   has(src,/<link[^>]+rel="icon"[^>]+href="logo\.png"/,'el icono de la pestaña');
-  has(src,/og:image"[^>]+content="https:\/\/cadapunto\.com\/compartir\.jpg"/,
+  has(src,/og:image"[^>]+content="https:\/\/cognitivo\.digital\/compartir\.jpg"/,
       'la imagen de compartir, en absoluto');
   errs.length?errs.forEach(e=>mal(e)):ok('sin errores de página');
 
