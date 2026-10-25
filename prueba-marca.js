@@ -201,16 +201,22 @@ for (const f of archivos){
      que llaman cuatro páginas, y renombrarlo cambiaría la url del
      webhook de Stripe. Que ninguna página lo diga de más se
      comprueba en prueba-servidores.js, que es su sitio. */
-  /* El gimnasio ya no se nombra con una url que lleve "hooporia"
-     dentro: el botón de practicar sale a cognitivo.digital, que no
-     necesita excepción ninguna. La que había para hooporia.mobi se
-     retiró con la mudanza — una excepción que ya no tapa nada es una
-     excepción que tapará otra cosa por accidente.
+  /* Y fuera también la dirección del gimnasio móvil, por la misma
+     razón: lleva "hooporia" dentro y no es marca, es dónde vive el
+     hub de los juegos. El botón de la cabecera de index.html sale
+     ahí. Esta excepción se había retirado cuando el botón de
+     practicar pasó a cognitivo.digital y no quedaba ninguna url con
+     la palabra dentro; volvió el 25 de octubre de 2026 con la
+     cabecera nueva.
 
-     Cuando se registre cognitivogym.com no hace falta tocar esto:
-     tampoco lleva la palabra retirada. */
+     Es a la DIRECCIÓN ENTERA, no a la palabra: "Hooporia" escrito
+     como marca sigue cayendo, que es lo que esto vigila. Cuando el
+     hub se mude a cognitivogym.com, esta excepción se retira —y hay
+     que retirarla, porque una excepción que ya no tapa nada acaba
+     tapando otra cosa por accidente. */
   const limpio = sinComentarios(fs.readFileSync(path.join(__dirname, f), 'utf8'))
-                   .split('hooporia-server.onrender.com').join('EL-SERVIDOR');
+                   .split('hooporia-server.onrender.com').join('EL-SERVIDOR')
+                   .split('hooporia.mobi').join('EL-GIMNASIO');
 
   /* Las dos vistas: lo que se lee en pantalla y el código en crudo
      con sus atributos. Lo que salte en cualquiera de las dos cuenta,
@@ -283,7 +289,7 @@ for (const img of IMAGENES){
 for (const f of archivos){
   const s = fs.readFileSync(path.join(__dirname, f), 'utf8');
   const icono = /<link[^>]+rel="icon"[^>]+href="logo\.png"/.test(s);
-  const abs   = /og:image"[^>]+content="https:\/\/cadapunto\.com\/compartir\.jpg"/.test(s);
+  const abs   = /og:image"[^>]+content="https:\/\/cognitivo\.digital\/compartir\.jpg"/.test(s);
   const rel   = /og:image"[^>]+content="(?!https?:)/.test(s);
   /* La imagen de compartir se exige donde compartir el enlace tiene
      sentido. Una página marcada noindex —el admin— no se manda por
