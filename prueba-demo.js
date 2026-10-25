@@ -338,14 +338,17 @@ console.log('\n7 · La corrida va de la portada al total, pasando por cuatro jue
   for (let n = 1; n <= 4; n++) {
     let cerro = false;
     for (let i = 0; i < 160; i++) {
-      const f = await pag.evaluate(() => ({
-        fin: !!document.getElementById('fin') && !document.getElementById('fin').hidden,
-        k: (document.getElementById('finK') || {}).textContent,
-        n: (document.getElementById('finN') || {}).textContent,
-        btn: document.getElementById('otra') && !document.getElementById('otra').hidden
-             ? document.getElementById('otra').textContent : null
-      }));
-      if (f.fin && f.btn) {
+      let f = null;
+      try {
+        f = await pag.evaluate(() => ({
+          fin: !!document.getElementById('fin') && !document.getElementById('fin').hidden,
+          k: (document.getElementById('finK') || {}).textContent,
+          n: (document.getElementById('finN') || {}).textContent,
+          btn: document.getElementById('otra') && !document.getElementById('otra').hidden
+               ? document.getElementById('otra').textContent : null
+        }));
+      } catch (e) { /* navegando entre set y portada */ }
+      if (f && f.fin && f.btn) {
         cierres.push({ set: n, titulo: f.k, puntos: f.n });
         /* Del cuarto set no se sigue: ahí ya es la pantalla del total
            y el botón ofrece OTRO scrimmage. Tocarlo empezaría una
@@ -423,15 +426,22 @@ console.log('\n8 · La corrida oficial no pierde un cuarto\n');
   });
   await pag.reload();
 
+  /* Se mira mientras la página puede estar navegando — del set a la
+     portada —, y una lectura justo en ese salto revienta sola. No es
+     un fallo de la página: es haber preguntado a mitad de un paso.
+     Se ignora esa lectura y se vuelve a preguntar. */
   let parada = null;
   for (let i = 0; i < 160; i++) {
-    const t = await pag.evaluate(() => ({
-      fin: !!document.getElementById('fin') && !document.getElementById('fin').hidden,
-      p: (document.getElementById('finP') || {}).textContent,
-      btn: document.getElementById('otra') && !document.getElementById('otra').hidden
-           ? document.getElementById('otra').textContent : null
-    }));
-    if (t.fin && t.btn) { parada = t; break }
+    let t = null;
+    try {
+      t = await pag.evaluate(() => ({
+        fin: !!document.getElementById('fin') && !document.getElementById('fin').hidden,
+        p: (document.getElementById('finP') || {}).textContent,
+        btn: document.getElementById('otra') && !document.getElementById('otra').hidden
+             ? document.getElementById('otra').textContent : null
+      }));
+    } catch (e) { /* navegando */ }
+    if (t && t.fin && t.btn) { parada = t; break }
     await pag.waitForTimeout(200);
   }
 
