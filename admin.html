@@ -115,6 +115,26 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 <!-- ── El panel ────────────────────────────────────────────────── -->
 <div id="panel" class="oculto">
 
+  <!-- ── LA COLA ──────────────────────────────────────────────────
+       Lo que pidió un programa desde equipo.html. Va primero porque
+       es lo único de esta página que llega solo: todo lo demás se
+       abre porque uno fue a buscarlo, y esto aparece sin que nadie
+       lo pida. Si estuviera al final, se vería el día que alguien
+       bajara hasta ahí.
+
+       Hasta hoy no se veía en ningún sitio: la solicitud era un
+       correo y nada más. -->
+  <section class="caja" id="secSolicitudes">
+    <h2>Signups</h2>
+    <p class="sub">Programs that asked for a campaign. Newest first.</p>
+    <div id="solicitudes"></div>
+    <div class="btns">
+      <button class="q sm" id="solTodas">Show handled too</button>
+      <button class="q sm" id="solRecargar">Reload</button>
+    </div>
+    <p class="m" id="mSol"></p>
+  </section>
+
   <section class="caja">
     <h2>Campaign</h2>
     <p class="sub">One program. Everything below belongs to whichever campaign you pick here.</p>
@@ -412,9 +432,91 @@ function arrancar(){
       $('panel').classList.remove('oculto');
       $('salir').classList.remove('oculto');
       cargarCampanas();
+      /* La cola se carga sola al entrar. Es lo único de esta página
+         que llega sin que nadie lo pida, así que tiene que estar ahí
+         ya puesto cuando se abre el admin — no detrás de un botón. */
+      cargarSolicitudes();
     })
     .catch(function(e){
       di('mEntrar', 'Could not check the session' + porque(e), 'mal');
+    });
+}
+
+/* ── LAS SOLICITUDES ──────────────────────────────────────────────
+   Las escribe el servidor en /team-signup con la llave de servicio;
+   aquí sólo se leen y se marcan atendidas. La política de la tabla
+   dice lo mismo: select y update para el admin, y ni insert ni
+   delete desde el navegador. Una solicitud entra por el formulario o
+   no entra. */
+var SOL_TODAS = false;
+
+function cargarSolicitudes(){
+  var q = 'solicitudes?select=*&order=creada.desc';
+  if (!SOL_TODAS) q += '&estado=eq.nueva';
+  di('mSol', '');
+  rest(q)
+    .then(pintarSolicitudes)
+    .catch(function(e){
+      /* Si la tabla todavía no existe —el SQL no se ha corrido— se
+         dice con todas las letras en vez de dejar un hueco mudo.
+
+         El nombre del fichero NO va en el mensaje: empieza por el
+         nombre retirado, y lo que se pinta en esta página no lo
+         nombra. Está aquí, que es donde lo busca quien lo necesita:
+         el SQL de esta tabla es hooporia-solicitudes.sql. */
+      $('solicitudes').innerHTML = '';
+      di('mSol', 'Could not read the signups' + porque(e) +
+         ' If this is the first time you see it, the signups table is not created yet.', 'mal');
+    });
+}
+
+function pintarSolicitudes(rows){
+  rows = rows || [];
+  var caja = $('solicitudes');
+  if (!rows.length){
+    caja.innerHTML = '<p class="pista">' +
+      (SOL_TODAS ? 'No signups yet.' : 'Nothing waiting. Every signup has been handled.') +
+      '</p>';
+    return;
+  }
+  caja.innerHTML = rows.map(function(s){
+    /* El acuse de la licencia se enseña como lo que es: quién lo
+       marcó y cuándo. El texto completo queda en la fila, que es
+       donde hace falta si alguna vez se discute. */
+    var lic = s.licencia_ok
+      ? 'Licence accepted by ' + esc(s.licencia_por || s.coach || '—') +
+        (s.licencia_el ? ' · ' + esc(s.licencia_el) : '')
+      : 'No licence acknowledgement';
+    return '<div class="item">' +
+      '<div>' +
+        '<b>' + esc(s.equipo) + '</b>' +
+        (s.estado === 'atendida' ? ' <small style="display:inline">· handled</small>' : '') +
+        '<small>' + esc(s.programa || '—') + ' · ' + esc(s.coach || '—') + '</small>' +
+        '<small><a href="mailto:' + esc(s.email) + '">' + esc(s.email) + '</a>' +
+          (s.telefono ? ' · ' + esc(s.telefono) : '') + '</small>' +
+        '<small>' + cuando(s.creada) + ' · ' + lic + '</small>' +
+      '</div>' +
+      (s.estado === 'nueva'
+        ? '<button class="q sm" data-atender="' + esc(s.id) + '">Mark handled</button>'
+        : '') +
+    '</div>';
+  }).join('');
+
+  [].slice.call(caja.querySelectorAll('[data-atender]')).forEach(function(b){
+    b.onclick = function(){ atender(b.getAttribute('data-atender'), b) };
+  });
+}
+
+function atender(id, boton){
+  boton.disabled = true;
+  rest('solicitudes?id=eq.' + encodeURIComponent(id), {
+    method: 'PATCH',
+    body: { estado: 'atendida', atendida_el: new Date().toISOString() }
+  })
+    .then(function(){ cargarSolicitudes() })
+    .catch(function(e){
+      boton.disabled = false;
+      di('mSol', 'Could not mark it handled' + porque(e), 'mal');
     });
 }
 
@@ -474,6 +576,12 @@ $('guardarPago').onclick = function(){
 };
 $('camp').onchange = function(){ escoger(this.value) };
 $('recargar').onclick = cargarCampanas;
+$('solRecargar').onclick = cargarSolicitudes;
+$('solTodas').onclick = function(){
+  SOL_TODAS = !SOL_TODAS;
+  $('solTodas').textContent = SOL_TODAS ? 'Show only waiting' : 'Show handled too';
+  cargarSolicitudes();
+};
 
 var tCodigo = null;
 $('codigoUso').oninput = function(){
