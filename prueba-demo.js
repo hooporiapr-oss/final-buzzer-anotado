@@ -122,12 +122,26 @@ console.log('\n2 · Y dice lo que cuesta\n');
      que es de donde la página lo saca. Escribirlo a mano en la
      prueba sería poner una cuarta copia del precio justo en el
      fichero que existe para que no haya copias desfasadas. */
-  const lic = (require('fs').readFileSync(
-    require('path').join(__dirname, 'demo.html'), 'utf8')
-    .match(/var LICENCIA\s*=\s*(\d+)/) || [])[1];
-  si(!!lic, 'demo.html tiene su constante del precio');
-  si(lic && t.indexOf('$' + lic + '.00') !== -1,
-     'y la página dice ese precio: $' + lic + '.00');
+  /* EL PRECIO YA NO ES UNA CONSTANTE: es un peldaño que depende de
+     cuántas promesas recoge el juego que modela la demostración.
+     Se saca de su propia escalera, como lo hace la página, en vez de
+     escribirlo aquí — una cuarta copia del precio en el fichero que
+     existe para que no haya copias desfasadas. */
+  const d = require('fs').readFileSync(
+    require('path').join(__dirname, 'demo.html'), 'utf8');
+  const i = d.indexOf('var TARIFAS_LIC = [');
+  const esc = i < 0 ? null
+    : new Function('return ' + d.slice(d.indexOf('[', i), d.indexOf('];', i) + 1))();
+  const pad = (d.match(/PADRINOS\s*=\s*(\d+)/) || [])[1];
+  const pla = (d.match(/PLANTILLA\s*=\s*(\d+)/) || [])[1];
+  si(!!esc && !!pad && !!pla, 'demo.html tiene su escalera y lo que modela');
+  let lic = null;
+  if (esc && pad && pla){
+    const n = +pad * +pla;
+    for (const x of esc) if (x.hasta === null || n <= x.hasta) { lic = x.precio; break }
+    si(lic !== null && t.indexOf('$' + lic + '.00') !== -1,
+       'y la página dice el peldaño de sus ' + n + ' promesas: $' + lic + '.00');
+  }
   si(t.indexOf('$29.00') === -1 && t.indexOf('$49.00') === -1,
      'y no se quedó con ninguna de las dos tarifas por plantilla');
   si(/directly|directo/i.test(t), 'y que los padrinos le pagan al programa directo');
