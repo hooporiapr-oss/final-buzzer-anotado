@@ -203,8 +203,13 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      arriba tiene su pareja aquí a propósito: un cambio de copy que
      se haga en un idioma y no en el otro es exactamente el fallo que
      esta sección existe para encontrar. */
-  has(en,/Cognitivo Gym\. Play\. Score\. Raise Money\./,
-      'el titular abre con la marca y sigue con los tres verbos');
+  /* El titular son los tres verbos y nada más. Llevó la marca
+     delante del 25 al 26 de octubre de 2026, mientras la página fue
+     Cognitivo Gym; con el nombre de vuelta sobra, porque el rótulo
+     que va justo encima ya dice Cada Punto Cuenta y repetirlo dos
+     renglones seguidos no añade nada. */
+  has(en,/Play\. Score\. Raise Money\./,'el titular: los tres verbos');
+  not(en,/Cognitivo Gym\. Play/,'y no se quedó con la marca de la casa delante');
   has(en,/Automated pledge management/i,'the category line');
   has(en,/The Game Is the Event/,'the game IS the event');
   has(en,/No gym to book/,'no gym to book');
@@ -248,9 +253,14 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      sale: el hub de los juegos vive en el gimnasio móvil. Va en
      absoluto porque es otro dominio, así que la comprobación mira
      la dirección entera y no un trozo. */
-  hrefs.some(h=>h==='https://hooporia.mobi/fortress-mobile-hub.html')
-    ?ok('y la cabecera entra al gimnasio')
-    :mal('la cabecera ya no entra al gimnasio');
+  /* Y CON SU COLA. ?e=demo es lo que mete al que entra por aquí en el
+     equipo abierto. El equipo se fija al emitir el código y no cambia
+     después, así que sin la cola todo el que entrara por la portada
+     jugaría solo para siempre — y el tablero no tiene cómo decírselo.
+     Por eso se comprueba la dirección entera y no sólo el fichero. */
+  hrefs.some(h=>h==='https://hooporia.mobi/fortress-mobile-hub.html?e=demo')
+    ?ok('y la cabecera entra al gimnasio, con equipo')
+    :mal('la cabecera ya no entra al gimnasio con su equipo');
 
   /* ── Las dos listas de llaves, una contra la otra ────────────────
      El inglés se recoge del MARCADO y el español vive en la tabla,
