@@ -1,23 +1,39 @@
 /* ══════════════════════════════════════════════════════════════════
    EL PRECIO DICE LO MISMO EN TODAS PARTES
 
-   El precio vive en cuatro sitios: la escalera de index.html, los
-   términos, la divulgación del dinero y el admin. Son cuatro copias
-   de un número que un día va a cambiar, y nada obligaba a que
-   cambiaran juntas.
+   El precio vive en siete sitios: PRECIO en index.html, los términos,
+   la divulgación del dinero, el FAQ, la hoja de alta, el admin y las
+   constantes de la demostración. Son siete copias de un número que un
+   día va a cambiar, y nada obliga a que cambien juntas.
 
    Ya pasó con el piso de $5: estaba en 50 centavos en el servidor y
    en $5 en la página, y un padrino cuya promesa daba $2 leía que no
    debía nada y recibía un aviso pidiéndole $2. Un precio desfasado
    es peor: es lo que una escuela va a leer antes de firmar.
 
-   Así que la escalera de index.html manda —es la que se pinta y la
-   que lee un entrenador— y esto comprueba que las otras tres no la
+   Así que PRECIO en index.html manda —es el que se pinta y el que lee
+   un entrenador— y esto comprueba que las otras seis no lo
    contradigan.
 
-   Y comprueba la escalera por dentro, que es donde se cuela un
-   error que nadie ve: peldaños que se solapan, un hueco entre dos,
-   o un precio que baja cuando la plantilla sube.
+   ══ EL 26 DE OCTUBRE DE 2026 ESTA PRUEBA CAMBIÓ DE FORMA ══
+
+   Vigilaba una escalera de seis peldaños por tamaño de plantilla
+   —$29 hasta siete nenes, $599 hasta ochocientos— que cobraba por
+   evento, y comprobaba que fuera monótona y contigua: que el precio
+   no bajara al subir la plantilla, y que no hubiera huecos ni
+   solapes entre peldaños.
+
+   Esa escalera se retiró entera. Ahora hay UN número y se cobra por
+   JUEGO con promesas encima: la plantilla no entra en el cálculo, así
+   que un equipo de ocho y uno de cuarenta pagan lo mismo por el mismo
+   juego. No hay peldaños que ordenar, así que esas comprobaciones no
+   tienen objeto y se fueron con ellos.
+
+   Lo que se vigila ahora es más simple y más duro: que el número sea
+   UNO, que las siete copias lo digan, y que NINGUNA se haya quedado
+   con una cifra de la escalera vieja — que es el fallo de verdad que
+   deja este cambio, una página en la que nadie se fijó diciendo $599
+   mientras el resto del sitio dice $5.
 
        node prueba-precio.js
    ══════════════════════════════════════════════════════════════════ */
@@ -31,177 +47,205 @@ const mal = (m) => { fallos++; console.log('  MAL  ' + m) };
 const si  = (v, m) => (v ? ok(m) : mal(m));
 const leer = (f) => fs.readFileSync(path.join(__dirname, f), 'utf8');
 
-/* La escalera, sacada de index.html tal cual se despliega. */
+/* El número, sacado de index.html tal cual se despliega. */
 const idx = leer('index.html');
-const i = idx.indexOf('const TARIFAS = [');
-if (i < 0) { console.log('  MAL  no encuentro TARIFAS en index.html'); process.exit(1) }
-const j = idx.indexOf('];', i);
-const TARIFAS = new Function('return ' + idx.slice(idx.indexOf('[', i), j + 1))();
+const mp = idx.match(/const PRECIO\s*=\s*(\d+)/);
+const mm = idx.match(/const MINIMO\s*=\s*(\d+)/);
+if (!mp) { console.log('  MAL  no encuentro PRECIO en index.html'); process.exit(1) }
+if (!mm) { console.log('  MAL  no encuentro MINIMO en index.html'); process.exit(1) }
+const PRECIO = +mp[1], MINIMO = +mm[1];
 
-console.log('\n1 · La escalera, por dentro\n');
+/* Las cifras de la escalera retirada. Cualquiera de éstas en una
+   página de dinero es la frase vieja sin cambiar. */
+const RETIRADAS = [29, 49, 149, 349, 599];
+
+console.log('\n1 · El número, por dentro\n');
 {
-  si(TARIFAS.length >= 2, 'tiene ' + TARIFAS.length + ' peldaños');
+  si(PRECIO > 0, 'PRECIO es un número de verdad: $' + PRECIO);
+  si(MINIMO > 0, 'y MINIMO también: ' + MINIMO + ' juegos');
 
-  /* Monótona: si la plantilla sube, el precio no puede bajar. Un
-     peldaño más barato que el anterior es una invitación a apuntar
-     a un nene de más para pagar menos. */
-  let sube = true, precios = [];
-  TARIFAS.forEach(p => { if (p.precio !== null) precios.push(p.precio) });
-  for (let k = 1; k < precios.length; k++) if (precios[k] <= precios[k-1]) sube = false;
-  si(sube, 'el precio sube con la plantilla, peldaño a peldaño (' +
-     precios.map(x => '$' + x).join(' → ') + ')');
+  /* El mínimo es de INSCRIPCIÓN, no un cargo. Un programa se apunta
+     con cinco juegos; si sólo consigue promesas en dos, paga dos. Si
+     algún día esto se convirtiera en un cargo mínimo, la promesa de
+     «sin promesas, sin cargo» se rompería — así que la página tiene
+     que seguir diciendo con qué se inscribe uno y no cobrarlo. */
+  si(!RETIRADAS.includes(PRECIO),
+     'y no es ninguno de los peldaños retirados');
 
-  /* Contigua: sin huecos ni solapes. Un hueco deja una plantilla sin
-     precio y un solape deja dos precios para la misma. */
-  let huecos = [];
-  TARIFAS.forEach((p, k) => {
-    if (k === 0) return;
-    const antes = TARIFAS[k-1].hasta;
-    if (antes === null) huecos.push('hay un peldaño después del último');
-  });
-  si(huecos.length === 0, 'el peldaño abierto es el último y no hay ninguno después');
-
-  si(TARIFAS[TARIFAS.length-1].hasta === null,
-     'y la escalera acaba abierta, para el que no cabe en ninguno');
-  si(TARIFAS[TARIFAS.length-1].precio === null,
-     'ese último no lleva número: se habla');
-
-  /* Todos los de en medio tienen techo y número. */
-  const rotos = TARIFAS.slice(0, -1).filter(p => p.hasta === null || p.precio === null);
-  si(rotos.length === 0, 'y todos los demás llevan techo y precio');
+  /* Que la escalera no haya vuelto por la puerta de atrás. */
+  si(idx.indexOf('const TARIFAS') === -1,
+     'la escalera por plantilla no está de vuelta en index.html');
 }
 
-console.log('\n2 · El equipo cae en un peldaño de verdad\n');
+console.log('\n2 · La portada lo pinta de PRECIO y no a mano\n');
 {
-  const k = idx.indexOf('const FEE = {');
-  const FEE = new Function('return ' + idx.slice(idx.indexOf('{', k), idx.indexOf('}', k) + 1))();
-  si(TARIFAS.some(p => p.precio === FEE.team),
-     'FEE.team ($' + FEE.team + ') es uno de los peldaños — el que sale resaltado');
-  si(TARIFAS.some(p => p.precio === FEE.small),
-     'y FEE.small ($' + FEE.small + ') también');
+  /* El número va en el marcado como $5 para que la página se lea
+     aunque el JS no corra, pero lo pinta el JS desde PRECIO. Lo que
+     no puede pasar es que el marcado diga una cifra y PRECIO otra:
+     entonces el número salta al cargar y nadie sabe cuál es. */
+  const m = idx.match(/id="precioNum"[^>]*>\$(\d+)</);
+  if (!m) mal('no encuentro el número en el marcado de la portada');
+  else si(+m[1] === PRECIO,
+    'el marcado dice $' + m[1] + ' y PRECIO dice $' + PRECIO + ' — el mismo');
+
+  si(/num\.textContent\s*=\s*'\$'\s*\+\s*PRECIO/.test(idx),
+     'y el pintor lo mete desde PRECIO, no desde una cifra escrita');
 }
 
-const precios = TARIFAS.filter(p => p.precio !== null).map(p => p.precio);
-console.log('\n3 · Las otras tres páginas no la contradicen\n');
+console.log('\n3 · Las otras seis no lo contradicen\n');
 {
-  const min = Math.min(...precios), max = Math.max(...precios);
+  /* Las páginas de letra pequeña no repiten el número en cifra:
+     lo dicen con palabras —«cinco dólares por juego»— porque una
+     cifra repetida en siete sitios es una cifra que un día dirá
+     cosas distintas. Lo que sí tienen que decir bien es el MODELO:
+     por juego, con promesas, y que un juego sin promesas no se
+     factura.
 
-  /* Las páginas de letra pequeña no repiten los seis números: dicen
-     el rango y mandan a la escalera. Repetir seis números en cuatro
-     sitios es firmar que un día dirán cosas distintas. Lo que sí
-     tienen que decir bien son los dos extremos. */
-  /* ayuda.html entró en esta lista el 23 de octubre de 2026. No
-     estaba, y por eso se quedó sola: la escalera se puso el martes y
-     el FAQ siguió diciendo "$49 por equipo, $29 si la plantilla tiene
-     menos de ocho", que era el precio de DOS peldaños. A una escuela
-     de 400 nenes —justo el mercado nuevo— le decía $49 cuando le
-     tocan $349.
+     equipo.html entró en esta lista el 23 de octubre de 2026, y era
+     el peor de los que faltaban: su línea lic: es la que un programa
+     MARCA para aceptar la licencia. Si ahí dice un precio que no es,
+     lo que se ha aceptado no es lo que se va a facturar. */
+  const PAGINAS = [
+    ['terms.html',    2],
+    ['custodia.html', 2],
+    ['ayuda.html',    2],
+    ['equipo.html',   4],   // lic: y fineP:, en los dos idiomas
+    ['admin.html',    1]
+  ];
 
-     Ninguna prueba lo vio porque ninguna lo miraba. Una página que
-     habla de dinero y no está en esta lista es una página que va a
-     desfasarse sin que nadie se entere. */
-  /* equipo.html entro el 23 de octubre, y era el peor de los que
-     faltaban: su linea lic: es la que un programa MARCA para
-     aceptar la licencia, y decia "$49 por equipo y por evento, o
-     $29 si la plantilla tiene menos de ocho". Un precio de dos
-     peldaños en una casilla de aceptacion. */
-  for (const f of ['terms.html', 'custodia.html', 'ayuda.html',
-                   'equipo.html', 'admin.html']) {
+  for (const [f, copias] of PAGINAS) {
     const t = leer(f);
-    /* Cuántas veces, no si aparece. terms.html y custodia.html
-       llevan el texto DOS veces, una por idioma, y con un indexOf a
-       secas cambiar el número en inglés y dejar el español pasaba la
-       prueba: el otro idioma seguía teniendo la cifra. Probado
-       cambiando sólo el inglés — así no cuela. */
-    const copias = f === 'admin.html' ? 1 : 2;
-    const veces = (x) => (t.match(new RegExp('\\$' + x + '\\b', 'g')) || []).length;
-    si(veces(min) >= copias,
-       f + ' dice el suelo ($' + min + ') en sus ' + copias + ' copia(s)');
-    si(veces(max) >= copias,
-       f + ' dice el techo ($' + max + ') en sus ' + copias + ' copia(s)');
+    const sinComentarios = t.replace(/<!--[\s\S]*?-->/g, '');
 
-    /* Y ninguna cifra de licencia que no sea una de las dos. Un $499
-       colado en una frase es un precio que la escalera no tiene, y
-       es lo que una escuela leería antes de firmar.
+    /* POR JUEGO, dicho tantas veces como copias tiene la página.
+       Contar y no sólo buscar: terms y custodia llevan el texto dos
+       veces, una por idioma, y con un indexOf a secas cambiar el
+       inglés y dejar el español pasaba la prueba. */
+    /* «per-game» con guión cuenta igual que «per game»: la línea que
+       un programa marca dice «the per-game license», y exigir la
+       forma sin guión la dejaba fuera por un carácter. */
+    const porJuego = (sinComentarios.match(/per[- ]game|por juego/gi) || []).length;
+    si(porJuego >= copias,
+       f + ' dice «por juego» en sus ' + copias + ' copia(s) (' + porJuego + ')');
 
-       Se saltan las cifras de EJEMPLO de custodia.html —$16,45 y
-       $42,75, las promesas desiguales que explican por qué la cuenta
-       a mano no la lleva nadie— porque no son precios de licencia.
-       Se reconocen porque llevan centavos. */
-    const sinCentavos = t.replace(/\$\d+[.,]\d\d/g, '');
-    const cifras = [...new Set((sinCentavos.match(/\$\d{2,4}\b/g) || []))];
-    const ajenas = cifras.filter(c => c !== '$' + min && c !== '$' + max);
-    si(ajenas.length === 0,
-       f + ' no nombra ninguna otra cifra de licencia' +
-       (ajenas.length ? ' — sobran: ' + ajenas.join(', ') : ''));
+    /* Y QUE UN JUEGO SIN PROMESAS NO SE FACTURA. Es la única promesa
+       que estas páginas hacen sobre dinero, y la que hace que el
+       mínimo de inscripción no sea un cargo. */
+    /* Cada página lo dice con sus palabras —«no fee is invoiced for
+       it», «no se le factura ningún cargo»— así que se busca la IDEA
+       y no una frase concreta: promesas ninguna, y cargo ninguno.
+       Pedir una redacción exacta hacía fallar a terms.html, que lo
+       dice perfectamente desde antes de este cambio. */
+    const sinCargo =
+      /no pledges,? no fee/i.test(sinComentarios) ||
+      /sin promesas,? sin cargo/i.test(sinComentarios) ||
+      /records no pledges[\s\S]{0,60}?(not invoiced|no fee)/i.test(sinComentarios) ||
+      /ni una promesa,?[\s\S]{0,40}?no se (le )?factura/i.test(sinComentarios);
+    si(sinCargo, f + ' dice que un juego sin promesas no se factura');
 
-    /* Y que no se haya quedado un precio de la escalera vieja. Los
-       dos peldaños de antes eran $49 y $29; $29 sigue siendo el
-       suelo, pero un «$49» suelto en la letra pequeña es la frase
-       vieja sin cambiar. */
-    const viejo = /\$49\b/.test(t.replace(/<!--[\s\S]*?-->/g, ''));
-    si(!viejo, f + ' no se quedó con el precio de dos peldaños');
+    /* NINGUNA CIFRA DE LA ESCALERA RETIRADA. Éste es el fallo que
+       deja este cambio: una página en la que nadie se fijó diciendo
+       $599 mientras el resto del sitio dice $5.
+
+       Se saltan las cifras de EJEMPLO de custodia.html —$16,20,
+       $6,45 y $42,75, las promesas desiguales que explican por qué la
+       cuenta a mano no la lleva nadie— porque no son precios de
+       licencia. Se reconocen porque llevan centavos. */
+    const sinCentavos = sinComentarios.replace(/\$\d+[.,]\d\d/g, '');
+    const quedan = RETIRADAS.filter(n => new RegExp('\\$' + n + '\\b').test(sinCentavos));
+    si(quedan.length === 0,
+       f + ' no se quedó con ninguna cifra de la escalera vieja' +
+       (quedan.length ? ' — sobran: ' + quedan.map(n => '$' + n).join(', ') : ''));
+
+    /* Ni con el vocabulario del modelo viejo, que es por dónde se
+       cuela media frase sin cambiar: cobrar POR EVENTO y fijar el
+       cargo SEGÚN LA PLANTILLA eran las dos piezas del precio
+       retirado.
+
+       Se busca la AFIRMACIÓN y no la palabra. Las páginas nuevas
+       dicen «no depende del tamaño de la plantilla» y «does not
+       change with the size of the roster» —que es copy correcto y
+       deliberado: niega justo el modelo viejo— y una regex que
+       mirara el sustantivo a secas suspendía las cuatro páginas por
+       decir bien lo que tienen que decir. */
+    const viejo =
+      /licen[cs]\w*\s+per\s+event/i.test(sinComentarios) ||
+      /se licencia por evento|licencia por evento/i.test(sinComentarios) ||
+      /fee set by the size of the roster/i.test(sinComentarios) ||
+      /cargo fijo (que depende del|según el) tamaño/i.test(sinComentarios);
+    si(!viejo, f + ' ya no cobra por evento ni fija el cargo por plantilla');
   }
 }
 
-console.log('\n3b · La demostración cobra lo que dice la escalera\n');
+console.log('\n4 · La demostración cobra lo que dice la portada\n');
 {
-  /* demo.html lleva su propia copia del precio, en constantes y no
+  /* demo.html lleva su propia copia del precio, en una constante y no
      en texto: calcula en vivo lo que habría recaudado un programa y
-     lo que costaría la licencia. Es el QUINTO sitio donde vive el
-     precio, y es el único donde no se lee —se calcula—, así que un
-     desfase aquí sale como un número y nadie lo nota.
+     lo que costaría la licencia. Es el único sitio donde el precio no
+     se LEE —se calcula— así que un desfase aquí sale como un número
+     creíble y falso, y no lo nota nadie.
 
-     Modela una plantilla de 12, que cae en el peldaño del equipo.
-     Lo que se exige es que sus dos cifras sean peldaños de verdad y
-     que el que usa sea el que le toca a 12. */
+     Tenía DOS constantes y un corte de plantilla, porque había dos
+     precios según el tamaño del equipo. Con el precio por juego la
+     plantilla no entra, así que ahora es una sola y tiene que valer
+     exactamente lo que vale PRECIO. */
   const d = leer('demo.html');
-  const m = d.match(/var LICENCIA\s*=\s*(\d+),\s*LICENCIA_CHICA\s*=\s*(\d+),\s*PLANTILLA_CHICA\s*=\s*(\d+)/);
-  if (!m) mal('no encuentro las constantes del precio en demo.html');
-  else {
-    const grande = +m[1], chica = +m[2], corte = +m[3];
-    si(TARIFAS.some(p => p.precio === grande), 'su precio normal ($' + grande + ') es un peldaño');
-    si(TARIFAS.some(p => p.precio === chica), 'y el chico ($' + chica + ') también');
+  const m = d.match(/var LICENCIA\s*=\s*(\d+)/);
+  if (!m) mal('no encuentro LICENCIA en demo.html');
+  else si(+m[1] === PRECIO,
+    'su licencia ($' + m[1] + ') es la de la portada ($' + PRECIO + ')');
 
-    const dm = d.match(/PLANTILLA\s*=\s*(\d+)/);
-    const plantilla = dm ? +dm[1] : null;
-    if (plantilla === null) mal('no encuentro la plantilla que modela la demostración');
-    else {
-      let toca = null, desde = 1;
-      for (const p of TARIFAS) {
-        if (p.hasta === null || plantilla <= p.hasta) { toca = p.precio; break }
-        desde = p.hasta + 1;
-      }
-      si(toca === grande,
-         'y a una plantilla de ' + plantilla + ' le toca $' + toca +
-         ', que es justo lo que cobra');
-      si(corte === TARIFAS[0].hasta + 1,
-         'el corte de plantilla chica (' + corte + ') cuadra con el primer peldaño');
-    }
-  }
+  si(!/LICENCIA_CHICA|PLANTILLA_CHICA/.test(d),
+     'y ya no lleva las dos tarifas por plantilla');
+
+  /* La fila del precio sigue saliendo de la constante y no de una
+     cifra escrita en el rótulo. */
+  si(/fila\(T\('cl1'\),\s*money\(LICENCIA\)\)/.test(d),
+     'y la fila del precio se pinta desde la constante');
 }
 
-console.log('\n4 · Y la escalera se pinta, no se escribe a mano\n');
+console.log('\n5 · Y nadie promete una deducción\n');
 {
-  si(idx.indexOf('id="escalera"') >= 0, 'index.html deja el hueco para pintarla');
-  si(idx.indexOf('function pintarEscalera') >= 0, 'y la pinta desde TARIFAS');
-  /* Si alguien vuelve a escribir un PRECIO DE LICENCIA en el marcado,
-     la tabla y la página pueden separarse sin que nadie se entere.
+  /* No es una comprobación de precio, pero vive aquí porque es la
+     frase que se cuela cuando alguien reescribe una página de
+     dinero: «deducible de impuestos» no lo decimos en ningún sitio
+     y en ningún idioma. */
+  for (const f of ['index.html', 'terms.html', 'custodia.html',
+                   'ayuda.html', 'equipo.html', 'demo.html']) {
+    const t = leer(f).replace(/<!--[\s\S]*?-->/g, '');
+    /* Se permite la frase que lo NIEGA —«no decimos que una promesa
+       sea deducible», «we do not issue tax receipts»— que es justo
+       lo que custodia.html y los términos TIENEN que decir. Lo que
+       no se permite es afirmarlo.
 
-     Se buscan sólo los números de la escalera, no cualquier cifra con
-     dólar: el marcado lleva $30 y $40 en el texto alternativo de la
-     imagen de la promesa —lo que da un juego de 150 puntos a 20¢ y el
-     tope del padrino— y ésos no tienen nada que ver con la licencia.
-     Un buscador de "$ y dos dígitos" los cogía y la prueba gritaba
-     por algo que estaba bien. */
-  const marcado = idx.slice(idx.indexOf('<body'), idx.indexOf('<script'));
-  const sueltos = precios.filter(p => new RegExp('\\$' + p + '\\b').test(marcado));
-  si(sueltos.length === 0,
-     'y ningún precio de la escalera está escrito a mano en el marcado' +
-     (sueltos.length ? ' — encontrados: $' + sueltos.join(', $') : ''));
+       Así que se mira cada mención por separado y se le lee lo que
+       lleva delante: si en los sesenta caracteres anteriores hay una
+       negación, es la frase que nos protege y no la que nos hunde.
+       Con una regex a secas, las dos páginas que mejor lo dicen eran
+       las dos que suspendían. */
+    const menciones = [...t.matchAll(/deducib\w*|tax deduction|deducción de impuestos/gi)];
+    const afirmadas = menciones.filter(m => {
+      const antes = t.slice(Math.max(0, m.index - 80), m.index);
+      /* «ni» cuenta como negación, y hacía falta: los términos dicen
+         «no decimos que su pago sea caritativo NI que es deducible»,
+         donde la única negación cerca de la palabra es ésa. Sin ella
+         la página que mejor lo niega era la que suspendía. */
+      if (/\b(no|not|never|ni|nunca|ningún|ninguna|sin|don't|do not|does not)\b/i.test(antes)) return false;
+      /* Y una PREGUNTA no es una afirmación. El FAQ titula una de sus
+         entradas «¿Esto es deducible de impuestos?» justamente para
+         contestar que no; leer ese título como una promesa de
+         deducción es leerlo al revés. */
+      const hasta = t.slice(m.index, m.index + 80);
+      if (/^[^.!]*\?/.test(hasta) || /¿[^?]*$/.test(antes)) return false;
+      return true;
+    });
+    si(afirmadas.length === 0,
+       f + ' no promete ninguna deducción' +
+       (menciones.length ? ' (' + menciones.length + ' mención(es), todas negadas)' : ''));
+  }
 }
 
 console.log('\n' + (fallos === 0
-  ? '✓ un solo precio, dicho igual en los cuatro sitios'
+  ? '✓ el precio dice lo mismo en los siete sitios'
   : '✗ ' + fallos + ' fallo(s)'));
-process.exit(fallos === 0 ? 0 : 1);
+process.exit(fallos ? 1 : 0);
