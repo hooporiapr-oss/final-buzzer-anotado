@@ -489,9 +489,21 @@ function pintarSolicitudes(rows){
     /* El acuse de la licencia se enseña como lo que es: quién lo
        marcó y cuándo. El texto completo queda en la fila, que es
        donde hace falta si alguna vez se discute. */
+    /* La fecha del acuse llega como la mandó la página, que es un ISO
+       crudo: «2026-10-26T11:50:36.153Z» al lado de «Oct 26, 7:50 AM»
+       parecían dos cosas distintas. Se pinta con el mismo cuando()
+       que el resto del panel.
+
+       Si no se puede leer como fecha se enseña tal cual: es un acuse
+       y lo que el programa mandó vale más que lo que nos gustaría
+       que hubiera mandado. */
+    var licEl = '';
+    if (s.licencia_el){
+      var d = new Date(s.licencia_el);
+      licEl = ' · ' + (isNaN(d.getTime()) ? esc(s.licencia_el) : cuando(s.licencia_el));
+    }
     var lic = s.licencia_ok
-      ? 'Licence accepted by ' + esc(s.licencia_por || s.coach || '—') +
-        (s.licencia_el ? ' · ' + esc(s.licencia_el) : '')
+      ? 'Licence accepted by ' + esc(s.licencia_por || s.coach || '—') + licEl
       : 'No licence acknowledgement';
     return '<div class="item">' +
       '<div>' +
