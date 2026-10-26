@@ -112,8 +112,24 @@ console.log('\n2 · Y dice lo que cuesta\n');
   await pag.goto(url('?p=120'));
   await pag.waitForTimeout(120);
   const t = await pag.locator('main').innerText();
-  si(t.indexOf('$49.00') !== -1, 'la licencia de $49 está en la página');
-  si(t.indexOf('$29.00') !== -1, 'y la de $29 para plantilla corta');
+  /* UN PRECIO, NO DOS. Esto exigía $49.00 y $29.00 —la licencia por
+     evento según si la plantilla llegaba a ocho— y las dos filas se
+     fundieron en una el 26 de octubre de 2026: ahora se cobra cinco
+     dólares por cada juego con promesas y la plantilla no entra en
+     el cálculo.
+
+     El número NO se escribe aquí: se lee de LICENCIA en demo.html,
+     que es de donde la página lo saca. Escribirlo a mano en la
+     prueba sería poner una cuarta copia del precio justo en el
+     fichero que existe para que no haya copias desfasadas. */
+  const lic = (require('fs').readFileSync(
+    require('path').join(__dirname, 'demo.html'), 'utf8')
+    .match(/var LICENCIA\s*=\s*(\d+)/) || [])[1];
+  si(!!lic, 'demo.html tiene su constante del precio');
+  si(lic && t.indexOf('$' + lic + '.00') !== -1,
+     'y la página dice ese precio: $' + lic + '.00');
+  si(t.indexOf('$29.00') === -1 && t.indexOf('$49.00') === -1,
+     'y no se quedó con ninguna de las dos tarifas por plantilla');
   si(/directly|directo/i.test(t), 'y que los padrinos le pagan al programa directo');
   await pag.close();
 }
@@ -656,6 +672,151 @@ console.log('\n10 · Del final no se sale sin querer\n');
   si(/fortress-casco\.html/.test(rejilla) && /casco/.test(rejilla),
      'y la rejilla manda los enlaces ?casco=1 a fortress-casco.html');
 }
+
+// ── 11 · Pedir promesas, al final de una amistosa ─────────────────
+console.log('\n11 · El botón de pedir promesas\n');
+{
+  /* EL MOMENTO EN QUE LA FRASE SE ESCRIBE SOLA. Un nene con un
+     número delante tiene algo que enseñar; en jugador.html tiene un
+     enlace y nada más. El botón vive al final de una amistosa, que es
+     la que se practica ANTES de pedir. */
+  const SEMBRADA = {
+    tipo: 'amistoso', ms: 60000, q: 5, lang: 'en', demo: false,
+    reto: 'RETO1', jugador: 'JUG1',
+    cuartos: [{ q: 1, puntos: 21 }, { q: 2, puntos: 15 },
+              { q: 3, puntos: 10 }, { q: 4, puntos: 17 }]
+  };
+
+  const pag = await navegador.newPage({ viewport: { width: 390, height: 844 } });
+  pag.on('pageerror', (e) => mal('la página reventó: ' + e.message));
+  await pag.addInitScript((c) => {
+    try { sessionStorage.setItem('cp-corrida', JSON.stringify(c)) } catch (e) {}
+  }, SEMBRADA);
+  await pag.goto('file://' + path.join(AQUI, 'fortress-vr.html') + '?fin=1');
+  await pag.waitForTimeout(700);
+
+  const v = await pag.evaluate(() => {
+    const b = document.getElementById('compartir');
+    return { hay: !!b, oculto: b.hidden, texto: (b.textContent || '').trim(),
+             total: document.getElementById('finN').textContent };
+  });
+  si(v.hay, 'el botón existe');
+  si(!v.oculto, 'y sale al final de una amistosa que sabe quién jugó');
+  si(/pledge/i.test(v.texto), 'y dice para qué es: ' + v.texto);
+  eq(v.total, '63', 'con el total delante, que es lo que se enseña');
+
+  /* SE TOCA EL BOTÓN DE VERDAD y se mira lo que le entrega al
+     teléfono. El script de esta página vive dentro de una IIFE, así
+     que desde fuera no se le puede llamar a nada — y eso está bien:
+     lo que importa no es qué función arma el enlace, es qué acaba
+     saliendo por la hoja de compartir.
+
+     La hoja se sustituye por una que apunta lo que recibe. */
+  await pag.evaluate(() => {
+    window.__compartido = null;
+    navigator.share = function(d){ window.__compartido = d; return Promise.resolve() };
+  });
+  await pag.waitForTimeout(1700);            // el sello de la pantalla final
+  await pag.locator('#compartir').click();
+  await pag.waitForTimeout(300);
+  const salio = await pag.evaluate(() => window.__compartido);
+
+  si(!!salio, 'tocarlo abre la hoja de compartir');
+  si(salio && /prometer\.html\?c=RETO1&p=JUG1$/.test(salio.url || ''),
+     'con el enlace de promesa del nene: ' + String(salio && salio.url).split('/').pop());
+  si(salio && String(salio.text).indexOf('63') !== -1, 'y el mensaje lleva su número');
+
+  /* LO QUE NO LLEVA: lo que vale, lo que alguien debe, ni a dónde va
+     el dinero. Eso lo dicen prometer.html y custodia.html, que están
+     a un toque del propio enlace y están escritas para decirlo. Esto
+     sale en nombre de un nene. */
+  const dicho = String(salio && salio.text);
+  si(!/\$|\bowes?\b|deduct|tax/i.test(dicho),
+     'y no dice lo que vale, lo que nadie debe, ni nada de impuestos');
+
+  /* Y RESPETA EL SELLO. Se comprueba al revés que arriba: una página
+     recién pintada, un toque inmediato, y la hoja no se abre. */
+  const otra = await navegador.newPage({ viewport: { width: 390, height: 844 } });
+  await otra.addInitScript((c) => {
+    try { sessionStorage.setItem('cp-corrida', JSON.stringify(c)) } catch (e) {}
+    window.__compartido = null;
+    Object.defineProperty(navigator, 'share', {
+      value: function(d){ window.__compartido = d; return Promise.resolve() },
+      configurable: true
+    });
+  }, SEMBRADA);
+  await otra.goto('file://' + path.join(AQUI, 'fortress-vr.html') + '?fin=1');
+  await otra.waitForTimeout(250);
+  await otra.evaluate(() => {
+    const b = document.getElementById('compartir');
+    if (b) b.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  });
+  await otra.waitForTimeout(200);
+  si(!(await otra.evaluate(() => window.__compartido)),
+     'y el toque de rebote no abre nada: la pantalla nace sellada');
+  await otra.close();
+  await pag.close();
+
+}
+
+{
+  /* Y NO SALE DONDE NO DEBE. Tres sitios, tres razones distintas. */
+  const casos = [
+    [{ tipo: 'oficial', reto: 'RETO1', jugador: 'JUG1', llave: 'K' },
+     'en una corrida oficial no sale: esa corrida ya se contó'],
+    [{ tipo: 'amistoso' },
+     'en una amistosa sin jugador tampoco: no hay enlace que mandar'],
+    [{ tipo: 'amistoso', reto: 'RETO1', jugador: 'JUG1', demo: true },
+     'y en demostración tampoco: ahí el botón lleva al dinero']
+  ];
+  for (const [extra, texto] of casos){
+    const c = Object.assign({ ms: 60000, q: 5, lang: 'en', demo: false,
+      cuartos: [{ q: 1, puntos: 21 }, { q: 2, puntos: 15 },
+                { q: 3, puntos: 10 }, { q: 4, puntos: 17 }] }, extra);
+    const pag = await navegador.newPage({ viewport: { width: 390, height: 844 } });
+    pag.on('pageerror', (e) => mal('la página reventó: ' + e.message));
+    await pag.route('**/rest/v1/**', (r) => r.abort());
+    await pag.addInitScript((x) => {
+      try { sessionStorage.setItem('cp-corrida', JSON.stringify(x)) } catch (e) {}
+    }, c);
+    const cola = (c.tipo === 'oficial')
+      ? '?fin=1&c=RETO1&p=JUG1&k=K&official=1' : '?fin=1';
+    await pag.goto('file://' + path.join(AQUI, 'fortress-vr.html') + cola);
+    await pag.waitForTimeout(700);
+    const oculto = await pag.evaluate(() => document.getElementById('compartir').hidden);
+    si(oculto, texto);
+    await pag.close();
+  }
+}
+
+{
+  /* LA IDENTIDAD SOBREVIVE LOS CUATRO SETS. Es el arreglo entero: los
+     sets vuelven a ?entre=1 sin la cola que traía la portada, así que
+     reto y jugador tienen que viajar DENTRO de la corrida o el botón
+     no tiene a quién nombrar al llegar al final. */
+  const pag = await navegador.newPage({ viewport: { width: 390, height: 844 } });
+  pag.on('pageerror', (e) => mal('la página reventó: ' + e.message));
+  await pag.route('**/rest/v1/**', (r) => r.abort());
+  await pag.goto('file://' + path.join(AQUI, 'fortress-vr.html') + '?c=RETO1&p=JUG1');
+  await pag.waitForTimeout(500);
+  await pag.locator('#goAmistoso').click();
+  await pag.waitForTimeout(800);
+
+  const guardada = await pag.evaluate(() => {
+    let c = null; try { c = JSON.parse(sessionStorage.getItem('cp-corrida')) } catch (e) {}
+    return c;
+  });
+  si(guardada && guardada.tipo === 'amistoso', 'una amistosa desde la portada');
+  eq([guardada && guardada.reto, guardada && guardada.jugador], ['RETO1', 'JUG1'],
+     'se lleva al jugador dentro, no en la barra de direcciones');
+  /* LA LLAVE NO VIAJA. Es lo que cierra una corrida oficial contra la
+     base; dársela a una de práctica le daría la forma de la que
+     cuenta. */
+  si(!(guardada && guardada.llave),
+     'y NO se lleva la llave: una amistosa no cierra nada');
+  await pag.close();
+}
+
 
 await navegador.close();
 console.log('\n' + (fallos === 0
