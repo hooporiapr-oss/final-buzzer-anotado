@@ -41,7 +41,15 @@ create table if not exists public.licencias_juego (
 
   -- En centavos, como Stripe y como licencias. Un float para dinero
   -- es cómo se pierde un centavo por redondeo y nadie sabe dónde.
-  amount_cents integer not null default 500 check (amount_cents >= 0),
+  --
+  -- SIN VALOR POR DEFECTO, y eso cambió el 26 de octubre de 2026.
+  -- Tenía 500 puesto, de cuando el precio era cinco dólares planos
+  -- por juego. Ahora el peldaño lo fija cuántas promesas recogió el
+  -- juego, así que un valor por defecto sería el precio del peldaño
+  -- de abajo cobrado a un juego de cualquier tamaño — y lo haría en
+  -- silencio, que es la peor manera de equivocarse con una factura.
+  -- Quien crea la fila dice cuánto, o no hay fila.
+  amount_cents integer not null check (amount_cents >= 0),
 
   -- Con qué se decidió, guardado tal como estaba el día de la
   -- factura. El precio puede cambiar; lo que se cobró, no.
