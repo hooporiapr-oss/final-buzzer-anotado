@@ -622,7 +622,7 @@ function pintarJuegos(id, js){
   js = js || [];
   if (!js.length){ c.innerHTML = '<p class="pista">No games registered.</p>'; return }
 
-  var cobrables = 0, total = 0;
+  var cobrables = 0, total = 0, sinFacturar = 0;
 
   c.innerHTML = '<table><tr>' +
       '<th>Game</th><th>When</th><th>Teams</th><th>Score</th>' +
@@ -659,7 +659,24 @@ function pintarJuegos(id, js){
                    '— check the date and how the opponent is spelled.">not linked</b>';
       } else {
         promesas = j.promesas;
-        cobro = j.facturable ? '<b>$5</b>' : '<span class="pista">—</span>';
+        if (!j.facturable){
+          cobro = '<span class="pista">—</span>';
+        /* Los mismos colores que el resto del panel: verde lo
+           cerrado, ámbar lo que espera por otro, gris lo apuntado y
+           todavía quieto. */
+        } else if (j.licencia === 'pagada'){
+          cobro = '<span class="pill on">paid</span>';
+        } else if (j.licencia === 'enviada'){
+          cobro = '<span class="pill esp">sent</span>';
+        } else if (j.licencia === 'open'){
+          cobro = '<span class="pill">invoiced</span>';
+        } else {
+          /* Facturable y sin facturar. Es el único estado que pide
+             que alguien haga algo, así que es el único que sale con
+             el número delante. */
+          cobro = '<b>$5</b>';
+          sinFacturar++;
+        }
         if (j.facturable){ cobrables++; total += Number(j.recaudado || 0) }
       }
 
@@ -688,6 +705,11 @@ function pintarJuegos(id, js){
     '<div><b>' + cobrables + '</b> billable game' + (cobrables === 1 ? '' : 's') +
       ' <span class="pista">× $5 = ' + money(cobrables * 5) + '</span></div>' +
     '<div><b>' + money(total) + '</b> <span class="pista">pledged on them</span></div>' +
+    /* Lo que falta por cobrar va aparte del total y sólo sale cuando
+       hay algo: una línea que dice «0 sin facturar» en un torneo que
+       no ha empezado es ruido en la pantalla que se abre a diario. */
+    (sinFacturar ? '<div><b>' + money(sinFacturar * 5) + '</b> ' +
+      '<span class="pista">not invoiced yet (' + sinFacturar + ')</span></div>' : '') +
   '</div>';
 }
 
