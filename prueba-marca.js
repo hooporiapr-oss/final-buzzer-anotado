@@ -151,23 +151,22 @@ function buscar(cadena){
    Las tres páginas del juego no llevan ese elemento —son lienzo— y
    salen dichas por su nombre, que un hueco en silencio es como
    empezó todo esto. */
-/* DOS NOMBRES, Y CADA UNO EN SU SITIO.
+/* UN SOLO NOMBRE, Y EN TODAS.
 
-   Cognitivo Gym es la marca —la casa— y Cada Punto Cuenta es el
-   recaudador que corre dentro de ella. La portada ya lleva el nombre
-   de la casa; las demás páginas son páginas de recaudar y siguen
-   llevando el del recaudador.
+   Esto tuvo durante un día una lista de excepciones: la portada
+   decía COGNITIVO GYM y las demás CADA PUNTO CUENTA, con una lista
+   —PAGINAS_DE_LA_CASA— que iba a ir creciendo página por página
+   según avanzara el cambio de marca. El cambio volvió atrás el 26 de
+   octubre de 2026 y la lista se fue con él.
 
-   Esto se irá moviendo página por página según avance el cambio de
-   marca. Mientras tanto, la lista dice exactamente cuáles ya pasaron
-   — que es mejor que una regla floja que deje pasar cualquiera de los
-   dos en cualquier sitio y no cante nada. */
-const MARCA_CASA = 'COGNITIVO GYM.';
-const MARCA_RECAUDA = 'CADA PUNTO CUENTA.';
-const PAGINAS_DE_LA_CASA = ['index.html'];
-function marcaEsperada(f){
-  return PAGINAS_DE_LA_CASA.indexOf(f) !== -1 ? MARCA_CASA : MARCA_RECAUDA;
-}
+   Se quita entera en vez de dejarla vacía. Una lista de excepciones
+   sin excepciones dentro no vigila nada y sí invita a meter la
+   siguiente sin pensarla: lo que vigila de verdad es que la regla
+   sea una sola y no admita un segundo nombre en ningún sitio. Si
+   algún día hay otra vez dos marcas, se escribe otra vez — con su
+   porqué al lado, como estaba. */
+const MARCA = 'CADA PUNTO CUENTA.';
+function marcaEsperada(f){ return MARCA }
 function marca(s){
   const m = /<a[^>]*class="(?:mark|brand)"[^>]*>([\s\S]*?)<\/a>/i.exec(s);
   if (!m) return null;
