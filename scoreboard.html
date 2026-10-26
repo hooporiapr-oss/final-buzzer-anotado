@@ -392,9 +392,8 @@ var S = {
     capLabel:'Most you want to pay (optional)',
     estTitle:'If they score {N}, which is about their average',
     esPoints:'{N} points to the program',
-    esFee:'Platform fee (20%)',
     esPay:'You would pay',
-    esNote:'The fee is added on top — the program receives every dollar you pledged. Nothing is charged until the game is played, and you are billed on the points they actually score.',
+    esNote:'The program receives every dollar you pledge — nothing is added and nothing is taken out. Nothing is owed until the game is played, and it is worked out on the points they actually score.',
     minNote:'Minimum $5 per pledge.',
     send:'Pledge',
     back:'← Back to the schedule',
@@ -411,7 +410,7 @@ var S = {
     errGen:'Could not record the pledge. Try again.',
     whoAsked:'Who asked you? (optional)', nobody:'Nobody in particular',
     notDonation:'Your pledge is a donation to the program. Nothing is won or paid out.',
-    feeNote:'Payment processing and the 20% platform fee are added on top — the program receives your full pledge.'
+    feeNote:'Nothing is added to your pledge and nothing is charged by us — you settle it with the program directly.'
   },
   es:{
     pointsCap:'Puntos esta temporada',
@@ -444,9 +443,8 @@ var S = {
     capLabel:'Lo máximo que quieres pagar (opcional)',
     estTitle:'Si anotan {N}, que es más o menos su promedio',
     esPoints:'{N} puntos para el programa',
-    esFee:'Cargo de plataforma (20%)',
     esPay:'Tú pagarías',
-    esNote:'El cargo se suma encima — el programa recibe completo lo que prometiste. No se cobra nada hasta que se juegue, y se te cobra por los puntos que de verdad anoten.',
+    esNote:'El programa recibe completo lo que prometas — no se le suma nada ni se le saca nada. No se debe nada hasta que se juegue, y se saca por los puntos que de verdad anoten.',
     minNote:'Mínimo $5 por promesa.',
     send:'Prometer',
     back:'← Volver al calendario',
@@ -463,7 +461,7 @@ var S = {
     errGen:'No se pudo registrar la promesa. Intenta otra vez.',
     whoAsked:'¿Quién te invitó? (opcional)', nobody:'Nadie en particular',
     notDonation:'Tu promesa es un donativo al programa. No se gana ni se paga nada a cambio.',
-    feeNote:'El procesamiento del pago y el 20% de plataforma se añaden encima — el programa recibe tu promesa completa.'
+    feeNote:'A tu promesa no se le suma nada y nosotros no te cobramos nada — eso lo arreglas con el programa directo.'
   }
 };
 
@@ -874,14 +872,24 @@ function typicalPoints(){
 function estimate(rate){
   var pts  = typicalPoints();
   var team = rate * pts;
-  var fee  = team * 0.20;
 
+  /* LO QUE PROMETE ES LO QUE PAGA, y por eso esta cuenta tiene dos
+     líneas y no tres. Tenía una de en medio —«Cargo de plataforma
+     (20%)»— que le sumaba un veinte por ciento al padrino.
+
+     Ese modelo se retiró con el cambio de generación: Cada Punto se
+     licencia AL PROGRAMA y al padrino no se le cobra nada. Lo dice
+     prometer.html, que es la otra página de promesa, y lo dicen los
+     términos, la divulgación, el FAQ y la hoja de alta.
+
+     Esta página llegó de la generación anterior y se trajo el cargo
+     puesto. No era sólo texto: la línea se calculaba, y los botones
+     de tarifa enseñaban el total multiplicado por 1.20. Un padrino
+     veía que su promesa de $25.00 le iba a costar $30.00. */
   return '<span class="es-l"><span>' + T('esPoints', { N: pts }) + '</span>' +
            '<b>' + money(team) + '</b></span>' +
-         '<span class="es-l"><span>' + T('esFee') + '</span>' +
-           '<span>+' + money(fee) + '</span></span>' +
          '<span class="es-l es-tot"><b>' + T('esPay') + '</b>' +
-           '<b>' + money(team + fee) + '</b></span>' +
+           '<b>' + money(team) + '</b></span>' +
          '<span class="es-note">' + T('esNote') + '</span>';
 }
 
@@ -909,7 +917,7 @@ function drawPledge(){
       [[0.10,'10¢'],[0.25,'25¢'],[0.50,'50¢'],[1.00,'$1']].map(function(r){
         return '<button class="rate' + (r[0] === RATE ? ' on' : '') + '" data-r="' + r[0] + '" ' +
                'onclick="setRate(' + r[0] + ')">' + r[1] +
-               '<small>' + money(r[0] * typicalPoints() * 1.20) + '</small></button>';
+               '<small>' + money(r[0] * typicalPoints()) + '</small></button>';
       }).join('') +
     '</div>' +
 
