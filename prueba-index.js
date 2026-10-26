@@ -311,7 +311,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      ficheros existen de verdad vive en prueba-marca.js, que mira
      todas las páginas y no sólo ésta. */
   has(src,/<link[^>]+rel="icon"[^>]+href="logo\.png"/,'el icono de la pestaña');
-  has(src,/og:image"[^>]+content="https:\/\/cognitivo\.digital\/compartir\.jpg"/,
+  has(src,/og:image"[^>]+content="https:\/\/cadapunto\.com\/compartir\.jpg"/,
       'la imagen de compartir, en absoluto');
   errs.length?errs.forEach(e=>mal(e)):ok('sin errores de página');
 
