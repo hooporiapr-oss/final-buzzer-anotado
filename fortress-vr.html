@@ -2266,7 +2266,22 @@ function arrancar(que){
    padrinos pagando se llevaría al nene fuera del sitio. */
 $('go').onclick=function(){
   if(JUEGO){ arrancar('practica'); return }
-  location.href='https://hooporia.mobi';
+  /* AL GIMNASIO, que es donde se entrena.
+
+     Esto apuntó un día a cognitivo.digital, cuando ese iba a ser el
+     sitio principal del gimnasio. Dejó de serlo el 26 de octubre de
+     2026: el sitio principal volvió a ser cadapunto.com y volvió a
+     ser el recaudador, así que mandar ahí a alguien que toca
+     PRACTICAR lo devolvería a una página de promesas — de donde
+     acaba de salir.
+
+     El gimnasio vive en hooporia.mobi y es lo que este botón quiere
+     decir. Va con ?e=demo, igual que el botón de la portada, porque
+     el equipo de un jugador se fija al emitirle el código y quien
+     llegue sin cola juega solo para siempre.
+
+     Cuando se registre cognitivogym.com, esto cambia ahí. */
+  location.href='https://hooporia.mobi/fortress-mobile-hub.html?e=demo';
 };
 $('otra').onclick=function(){
   if(selladoAhora()) return;
@@ -2320,6 +2335,16 @@ function nivelDePuntos(p){
 function entreSets(){
   var c = leerCorrida();
   if(!c){ volverAPortada(); return }
+
+  /* LA DEMOSTRACIÓN SE RECUERDA, NO SE RELEE.
+     DEMO sale de ?demo=1 al cargar la página, y los sets vuelven aquí
+     a ?entre=1 — sin ese parámetro. Releyéndolo, una demostración
+     dejaba de serlo en cuanto empezaba a jugarse, y el total terminaba
+     ofreciendo «otro scrimmage» en vez de llevar al entrenador a lo
+     que vino a ver, que es el dinero. La corrida lo lleva escrito
+     desde la portada; se cree a la corrida. */
+  if (c.demo) DEMO = true;
+  if (c.lang && c.lang !== LANG){ LANG = c.lang; try{ pintarTextos() }catch(e){} }
 
   AMISTOSO = (c.tipo === 'amistoso');
   cuartos  = (c.cuartos || []).map(function(x){
@@ -2396,6 +2421,7 @@ if (pr('entre') === '1'){ entreSets(); }
 if (pr('fin') === '1'){
   var cFin = leerCorrida();
   if (cFin){
+    if (cFin.demo) DEMO = true;
     AMISTOSO = (cFin.tipo === 'amistoso');
     cuartos  = (cFin.cuartos || []).map(function(x){
       return { q:x.q, points:parseInt(x.puntos,10)||0, level:0 };
