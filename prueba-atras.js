@@ -65,11 +65,17 @@ const url = (f, q) => 'file://' + path.resolve(__dirname, f) + (q || '');
   async function abrir(f, q, lang, vista) {
     const p = await b.newPage({ viewport: vista || { width: 430, height: 844 } });
     p.fuera = [];
+    /* La dirección ENTERA además del dominio. El dominio sólo no
+       alcanza para el botón de practicar: lo que importa de ése no es
+       que salga a hooporia.mobi, es que salga al hub CON su equipo en
+       la cola — sin ella el jugador se queda sin equipo para siempre,
+       y eso no se ve en el nombre del host. */
+    p.fueraUrl = [];
     await p.route('**/*', r => {
       const u = r.request().url();
       if (u.startsWith('file:')) return r.continue();
       if (TRES && /three\.min\.js/.test(u)) return r.fulfill({ path: TRES });
-      try { p.fuera.push(new URL(u).hostname) } catch (e) {}
+      try { p.fuera.push(new URL(u).hostname); p.fueraUrl.push(u) } catch (e) {}
       return r.abort();
     });
     await p.addInitScript(l => {
@@ -157,18 +163,23 @@ const url = (f, q) => 'file://' + path.resolve(__dirname, f) + (q || '');
     const p = await abrir('fortress-vr.html');
     p.on('pageerror', e => err.push(String(e).split('\n')[0]));
 
-    /* Se juega de verdad tocando el scrimmage, que desde que
-       practicar se mudó al Cognitivo Gym es el ÚNICO juego que
-       empieza en esta página: el otro botón de la portada ya no
-       arranca nada, sale del sitio. Para apagarlo se mueven las
-       capas a mano, que no hay forma de "dejar de jugar" tocando. */
+    /* YA NO SE JUEGA EN ESTA PÁGINA. Desde que el scrimmage son
+       cuatro juegos en cuatro páginas, tocar «Scrimmage» sale de
+       aquí: escribe la corrida y navega al primer set. Así que el
+       estado «jugando» se monta a mano, moviendo las mismas capas
+       que movía el juego.
+
+       Lo que se mide sigue valiendo: el botón de abajo aparece y
+       desaparece solo, mirando las capas, y eso es lo que evita que
+       se quede encima del tablero. Lo que ya no se puede es llegar
+       ahí tocando, y por eso no se toca. */
     const jugar = async (si) => {
-      if (si) { await p.click('#goAmistoso'); await p.waitForTimeout(700); return }
       await p.evaluate(s => {
         document.getElementById('tapa').hidden = s;
         document.getElementById('hud').hidden = !s;
         document.getElementById('pista').hidden = !s;
       }, si);
+      await p.waitForTimeout(120);
     };
     const volverVisible = () => p.evaluate(() => {
       const el = document.getElementById('volver');
@@ -239,28 +250,46 @@ const url = (f, q) => 'file://' + path.resolve(__dirname, f) + (q || '');
        'el primer botón nombra el gimnasio («' + rotulo + '»)');
     await p.click('#go');
     await p.waitForTimeout(400);
-    eq(p.fuera.includes('hooporia.mobi'), true, 'y al tocarlo sale hacia hooporia.mobi' +
+    /* AL GIMNASIO. Esto esperaba cognitivo.digital mientras aquél iba
+       a ser el sitio principal del gimnasio; desde que el sitio
+       principal volvió a ser el recaudador, mandar ahí a quien toca
+       PRACTICAR lo devolvería a una página de promesas.
+
+       Se comprueba la dirección entera y no el dominio suelto: lo que
+       tiene que salir es el hub CON su equipo, porque sin la cola el
+       jugador acaba sin equipo y no sale en el tablero de nadie. */
+    const alGimnasio = p.fueraUrl.some(function(u){
+      return u.indexOf('hooporia.mobi/fortress-mobile-hub.html?e=demo') !== -1;
+    });
+    eq(alGimnasio, true, 'y al tocarlo sale hacia el hub del gimnasio, con su equipo' +
        (p.fuera.length ? ' — pidió: ' + p.fuera.join(', ') : ' — no pidió nada fuera'));
     await p.close();
   }
 
-  // ── 1b-bis · Y el otro de los dos juegos, el scrimmage ─────────
+  // ── 1b-bis · El scrimmage sale de esta página ──────────────────
   {
-    console.log('\n1b-bis · y en el scrimmage de cuatro sets, igual\n');
+    console.log('\n1b-bis · el scrimmage ya no se juega aquí: sale al primer set\n');
     const p = await abrir('fortress-vr.html');
     const err = []; p.on('pageerror', e => err.push(String(e).split('\n')[0]));
 
     eq(await p.$eval('#goAmistoso', e => e.textContent.trim()), 'Scrimmage · 4 sets',
        'el segundo botón de la portada es el scrimmage');
     await p.click('#goAmistoso');
-    await p.waitForTimeout(700);
-    eq(await p.evaluate(() => !document.getElementById('volver').hidden), true,
-       'jugándolo, el botón de abajo está');
+    await p.waitForTimeout(900);
 
-    await p.click('#volver');
-    await p.waitForTimeout(150);
-    eq(await p.evaluate(() => !document.getElementById('tapa').hidden), true,
-       'y devuelve a la portada del tablero igual que el otro');
+    /* ANTES ESTE BOTÓN EMPEZABA A JUGAR AQUÍ MISMO y lo que se medía
+       era el botón de abajo, el de volver al tablero. Ahora los
+       cuatro sets son cuatro juegos en cuatro páginas, así que lo que
+       hace es escribir la corrida y navegar. Se mide eso, que es lo
+       que de verdad pasa. */
+    const donde = await p.evaluate(() => location.pathname.split('/').pop());
+    eq(donde, '002-recall.html', 'tocarlo lleva al primer set');
+
+    const corrida = await p.evaluate(() => {
+      try { return JSON.parse(sessionStorage.getItem('cp-corrida')) } catch (e) { return null }
+    });
+    eq(!!corrida && corrida.q === 1 && corrida.tipo === 'amistoso', true,
+       'y la corrida va escrita antes de salir — sin ella el set 1 no tendría dueño');
     eq(err.length, 0, 'sin errores' + (err.length ? ': ' + err[0] : ''));
     await p.close();
   }
