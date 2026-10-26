@@ -175,6 +175,33 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22;
 .dark.centrada .intro{margin-left:auto;margin-right:auto}
 .gym-cta{margin-top:30px}
 .gym-cta p{color:#c8d2dd;font-weight:600;margin:14px 0 0;font-size:1.05rem}
+
+/* ══ LAS CUATRO ESTACIONES ════════════════════════════════════════
+   Las tarjetas de .step son blancas y esta sección es oscura, así
+   que aquí van en su propia piel: el mismo radio, el mismo borde,
+   y el fondo un punto más claro que el de la sección para que se
+   lean como piezas y no como agujeros.
+
+   Dos columnas y no cuatro: cuatro en una fila deja cada tarjeta
+   tan estrecha que el título parte en dos renglones. */
+.estaciones{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:34px 0 0;text-align:left}
+.estacion{background:#17243a;border:1px solid #27374f;border-radius:16px;padding:22px 24px}
+.estacion .est-n{color:var(--orange);font-weight:900;font-size:.72rem;
+  letter-spacing:.16em;text-transform:uppercase}
+.estacion h3{font-size:1.18rem;margin:8px 0 10px;color:#fff;letter-spacing:-.02em}
+.estacion p{color:#c8d2dd;margin:0;font-size:.97rem;line-height:1.55}
+/* Lo que le pide a un jugador, separado de lo que es el juego. Van
+   dos ideas distintas en cada tarjeta y pegadas se leían como una
+   frase larga que nadie termina. */
+.estacion .est-b{display:block;margin-top:12px;padding-top:12px;
+  border-top:1px solid #27374f;color:#9fb0c4;font-size:.9rem}
+.estacion .est-b b{color:var(--orange);font-weight:800;
+  text-transform:uppercase;letter-spacing:.1em;font-size:.68rem;display:block;margin-bottom:4px}
+/* Que es gratis se dice una vez y en grande, debajo de las cuatro.
+   Repetirlo en cada tarjeta lo convierte en ruido. */
+.gym-libre{margin:26px 0 0;color:#fff;font-weight:800;font-size:1.05rem}
+.gym-libre2{margin:6px 0 0;color:#c8d2dd;font-weight:600;font-size:.95rem}
+@media(max-width:720px){ .estaciones{grid-template-columns:1fr} }
 .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:34px}
 .feature{padding:24px;border:1px solid #ffffff25;border-radius:14px;background:#ffffff08}
 .feature strong{display:block;font-size:1.12rem;margin-bottom:6px}
@@ -408,9 +435,25 @@ button.lang{padding:0 10px;font-size:.8rem}
      que estaba a punto de irse. -->
 <section class="section dark centrada">
 <div class="wrap">
-<div class="eyebrow" data-i="softwareLabel">Built for programs, not paperwork</div>
-<h2 data-i="softwareTitle">The Game Is the Event.</h2>
-<p class="intro" data-i="softwareDesc">Nothing to organize and nothing to host. Your games are already on the calendar &mdash; pledges ride on the ones you choose.</p>
+<!-- EL TÍTULO ES LA MARCA Y NADA MÁS.
+
+     Esta sección llevaba el rótulo y el titular del producto de
+     recaudar —«Hecho para programas, no para papeleo», «El juego es
+     el evento», y la línea del calendario— de cuando lo único que
+     tenía debajo era un botón al gimnasio.
+
+     Con las cuatro estaciones dentro, la sección pasó a ser el
+     gimnasio, y encabezarla con el argumento de la recaudación era
+     anunciar una cosa y enseñar otra.
+
+     Lo que se dijo aquí no se pierde: el calendario que ya existe lo
+     dice la sección de abajo, que es la que cuenta los tres pasos de
+     la promesa y se titula «Promesas en los juegos que ya juegas».
+
+     No lleva llave de traducción porque es un nombre propio: se
+     escribe igual en los dos idiomas, como el título de la sala de
+     trofeos dentro de los juegos. -->
+<h2>COGNITIVO GYM</h2>
 <!-- LA ÚNICA SALIDA AL GIMNASIO DE TODA LA PÁGINA. Estuvo arriba, en
      la cabecera, y bajó aquí: quien lee hasta este punto ya sabe qué
      es esto, y es mejor momento para ofrecerle que lo juegue que el
@@ -430,9 +473,67 @@ button.lang{padding:0 10px;font-size:.8rem}
      no el de un programa. El día que un entrenador reparta el suyo,
      reparte su propio enlace con su propia cola; éste es la puerta de
      la calle. -->
+<!-- LAS CUATRO ESTACIONES, dichas una por una.
+
+     Aquí había un botón y una línea. El gimnasio es la pieza que
+     trae de vuelta a un equipo la semana que no juega, y una línea
+     no dice qué hay dentro: cuatro juegos de un minuto, cada uno
+     entrenando algo distinto.
+
+     Lo que se dice de cada uno son DOS cosas separadas: qué es el
+     juego, y a qué se parece eso en una cancha. La segunda va
+     escrita como parecido y no como promesa —«a lo que se parece»—
+     porque son juegos de memoria y atención, y decir que hacen
+     mejor a un jugador sería vender algo que no se ha medido. -->
+<div class="estaciones">
+
+<div class="estacion">
+<div class="est-n" data-i="e1n">Station 1</div>
+<h3 data-i="e1t">The Recall</h3>
+<p data-i="e1d">A pattern flashes all at once, and you repeat it back in order.</p>
+<span class="est-b"><b data-i="eOn">On the floor</b><span data-i="e1b">Taking in all five defenders in one look instead of reading them one at a time.</span></span>
+</div>
+
+<div class="estacion">
+<div class="est-n" data-i="e2n">Station 2</div>
+<h3 data-i="e2t">The Recognition</h3>
+<p data-i="e2d">You watch the original, then spot what changed in the echo that follows.</p>
+<span class="est-b"><b data-i="eOn">On the floor</b><span data-i="e2b">Catching the one thing that moved &mdash; a defender who rotated, a cutter going backdoor.</span></span>
+</div>
+
+<div class="estacion">
+<div class="est-n" data-i="e3n">Station 3</div>
+<h3 data-i="e3t">The Replay</h3>
+<p data-i="e3d">The chain keeps everything you have learned and adds one more every round, each with its own note.</p>
+<span class="est-b"><b data-i="eOn">On the floor</b><span data-i="e3b">Holding a set that keeps going after the first option is taken away.</span></span>
+</div>
+
+<div class="estacion">
+<div class="est-n" data-i="e4n">Station 4</div>
+<h3 data-i="e4t">The Fortress</h3>
+<p data-i="e4d">A sequence of targets lights up and you repeat it exactly. Every round adds one more.</p>
+<span class="est-b"><b data-i="eOn">On the floor</b><span data-i="e4b">Keeping the call and the counter in your head while the play is already moving.</span></span>
+</div>
+
+</div>
+
+<!-- DOS ELEMENTOS HERMANOS, no uno dentro de otro.
+
+     Estuvo anidado —el span de la segunda frase dentro del <p> de la
+     primera— y la segunda frase desaparecía al pintar en español.
+     paint() recorre todos los [data-i] en orden del documento y le
+     mete innerHTML a cada uno: al pintar el padre, el hijo se va del
+     documento, y cuando el recorrido llega al hijo ya está
+     desconectado. La frase existía en las dos tablas y no se leía en
+     ninguna de las dos.
+
+     Ninguna llave puede vivir dentro de otra llave. -->
+<p class="gym-libre" data-i="gymLibre">Four minutes, four stations, and nothing to pay.</p>
+<p class="gym-libre2" data-i="gymLibre2">No account, no sign-up, no card. Open to anyone with a phone, whether their program fundraises with us or not.</p>
+
 <div class="gym-cta">
 <a class="button" href="https://hooporia.mobi/fortress-mobile-hub.html?e=demo" data-i="entrar">Enter the Cognitivo Gym</a>
-<p data-i="heroSub">Free cognitive training between games. No sign-up, no charge, open to anyone.</p>
+<p data-i="heroSub">Free cognitive training between games.</p>
 </div>
 </div>
 </section>
@@ -661,7 +762,7 @@ navFaq:'Preguntas',
 navCta:'Inscribir mi equipo',
 eyebrow:'Cada Punto Cuenta &middot; Manejo de promesas automatizado',
 headline:'Juega. Anota. <em>Recauda.</em>',
-heroSub:'Entrenamiento cognitivo gratis entre juegos. Sin inscripción, sin cargo, abierto a cualquiera.',
+heroSub:'Entrenamiento cognitivo gratis entre juegos.',
 register:'Inscribir mi equipo',
 entrar:'Entra al Cognitivo Gym',
 
@@ -677,9 +778,30 @@ sClose:'CUANDO ENTRA EL MARCADOR',
 s3t:'Los padrinos reciben el marcador. Al programa se le paga.',
 s3d:'Cada padrino recibe un correo con el marcador final y lo que dio su promesa, y un enlace para pagarle directo al programa. El dinero no pasa por nosotros.',
 
-softwareLabel:'Hecho para programas, no para papeleo',
-softwareTitle:'El juego es el evento.',
-softwareDesc:'Nada que organizar y nada que montar. Tus juegos ya están en el calendario &mdash; las promesas van en los que escojas.',
+/* Las cuatro estaciones. «On the floor» es la misma llave en las
+   cuatro tarjetas a propósito: es un rótulo y no una frase, y una
+   llave por tarjeta serían cuatro sitios donde cambiar lo mismo. */
+eOn:'En la cancha',
+e1n:'Estación 1', e1t:'The Recall',
+e1d:'Un patrón se enciende entero de golpe, y lo repites en orden.',
+e1b:'Ver a los cinco defensores de una mirada en vez de leerlos uno por uno.',
+e2n:'Estación 2', e2t:'The Recognition',
+e2d:'Miras el original, y después encuentras qué cambió en el eco que viene detrás.',
+e2b:'Cazar lo único que se movió — un defensor que rotó, uno que se fue por detrás.',
+e3n:'Estación 3', e3t:'The Replay',
+e3d:'La cadena guarda todo lo aprendido y suma uno más cada ronda, cada uno con su nota.',
+e3b:'Sostener una jugada que sigue después de que te quiten la primera opción.',
+e4n:'Estación 4', e4t:'The Fortress',
+e4d:'Una secuencia de blancos se enciende y la repites exacta. Cada ronda suma uno más.',
+e4b:'Aguantar la jugada y su salida en la cabeza mientras ya se está moviendo.',
+gymLibre:'Cuatro minutos, cuatro estaciones, y nada que pagar.',
+gymLibre2:'Sin cuenta, sin inscripción, sin tarjeta. Abierto a cualquiera con un teléfono, recaude o no recaude su programa con nosotros.',
+
+/* Las tres llaves de esta sección —softwareLabel, softwareTitle y
+   softwareDesc— se fueron con el titular el 26 de octubre de 2026.
+   Una llave sin dueño en la tabla hace saltar la comprobación de
+   que las dos listas son la misma, así que se quitan de verdad en
+   vez de dejarlas de recuerdo. */
 
 promiseLabel:'Nuestra posición',
 promise:'Nosotros manejamos las promesas.<br><span class="orange">Ustedes manejan los fondos.</span>',
