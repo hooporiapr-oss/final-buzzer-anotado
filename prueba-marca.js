@@ -288,7 +288,7 @@ for (const img of IMAGENES){
 for (const f of archivos){
   const s = fs.readFileSync(path.join(__dirname, f), 'utf8');
   const icono = /<link[^>]+rel="icon"[^>]+href="logo\.png"/.test(s);
-  const abs   = /og:image"[^>]+content="https:\/\/cognitivo\.digital\/compartir\.jpg"/.test(s);
+  const abs   = /og:image"[^>]+content="https:\/\/cadapunto\.com\/compartir\.jpg"/.test(s);
   const rel   = /og:image"[^>]+content="(?!https?:)/.test(s);
   /* La imagen de compartir se exige donde compartir el enlace tiene
      sentido. Una página marcada noindex —el admin— no se manda por
