@@ -224,11 +224,40 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,
 
    PLANTILLA = 12 es un equipo, no una proyección optimista. */
 var PADRINOS = 4, TARIFA = 0.25, PLANTILLA = 12, PISO = 5;
-/* UN SOLO PRECIO, POR JUEGO CON PROMESAS. Eran dos —$49 para una
-   plantilla de ocho o más, $29 por debajo— y un corte de plantilla
-   que decidía cuál tocaba. Con el precio por juego la plantilla no
-   entra en el cálculo, así que las tres se quedan en una. */
-var LICENCIA = 5;
+/* LA ESCALERA, POR PROMESAS DEL JUEGO.
+
+   Esto fue dos precios por tamaño de plantilla, después un número
+   suelto de cinco dólares, y ahora un peldaño que lo fija cuántas
+   promesas recogió el juego.
+
+   LOS PELDAÑOS SON LOS DE LA PORTADA y tienen que seguir siéndolo:
+   prueba-precio.js comprueba que esta copia no contradiga a aquélla.
+   Aquí el precio no se LEE, se calcula y sale como número, así que
+   un desfase no lo nota nadie — sale una cifra creíble y falsa.
+
+   Las promesas de este ejemplo son las de la cuenta de arriba: cada
+   uno de los doce jugadores trae cuatro padrinos, o sea 48. */
+var TARIFAS_LIC = [
+  { hasta:  10, precio:  5 },
+  { hasta:  25, precio: 12 },
+  { hasta:  50, precio: 25 },
+  { hasta: 100, precio: 45 },
+  { hasta: 200, precio: 79 },
+  { hasta: null, precio: null }
+];
+var PROMESAS = PADRINOS * PLANTILLA;
+
+/* El peldaño que toca. El último no lleva número —se habla— así que
+   devuelve null y la fila lo dice con palabras en vez de un precio
+   inventado. */
+function peldano(n){
+  for (var i = 0; i < TARIFAS_LIC.length; i++){
+    var p = TARIFAS_LIC[i];
+    if (p.hasta === null || n <= p.hasta) return p.precio;
+  }
+  return null;
+}
+var LICENCIA = peldano(PROMESAS);
 
 var S = {
 es:{
@@ -276,7 +305,8 @@ es:{
 
   pasoCoste:'Lo que te cuesta',
   costeP:'Cinco dólares por juego con promesas, sin techo. Nada por adelantado, y nada por un juego en el que nadie promete.',
-  cl1:'Por cada juego en el que pongas promesas',
+  cl1:'Por este juego, con sus {N} promesas',
+  clHablar:'Hablemos',
   cl3:'Un juego sin promesas',
   nada:'nada',
   costeNota:'Se factura por los juegos que llevaron promesas y se paga en siete días. Los padrinos le pagan al programa directo — nosotros no tocamos ese dinero nunca.',
@@ -331,7 +361,8 @@ en:{
 
   pasoCoste:'What it costs you',
   costeP:'Five dollars per game with pledges on it, with no ceiling. Nothing up front, and nothing at all for a game nobody pledges on.',
-  cl1:'For each game you put pledges on',
+  cl1:'For this game, with its {N} pledges',
+  clHablar:'Let us talk',
   cl3:'A game with no pledges',
   nada:'nothing',
   costeNota:'Invoiced for the games that carried pledges, due in seven days. Padrinos pay the program directly — we never touch that money.',
@@ -478,7 +509,8 @@ function cuenta(P){
 
     '<div class="paso"><h2>' + esc(T('pasoCoste')) + '</h2>' +
       '<p>' + esc(T('costeP')) + '</p>' +
-      fila(T('cl1'), money(LICENCIA)) +
+      fila(T('cl1').split('{N}').join(PROMESAS),
+           LICENCIA === null ? esc(T('clHablar')) : money(LICENCIA)) +
       fila(T('cl3'), esc(T('nada'))) +
       '<p class="nota" style="margin-top:12px">' + esc(T('costeNota')) + '</p>' +
     '</div>' +
