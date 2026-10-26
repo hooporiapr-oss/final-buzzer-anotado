@@ -65,7 +65,26 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      Se exige que diga GRATIS, porque es la palabra que hace el
      trabajo, y que siga llevando al gimnasio. */
   has(t,/gratis entre juegos/i,'el gimnasio, como entrenador gratis');
-  has(t,/Sin inscripción, sin cargo/,'y sin puerta que cruzar');
+  /* QUE NO SE PAGA, dicho donde ahora se dice. Estaba pegado a la
+     línea del botón —«Sin inscripción, sin cargo»— y el 26 de
+     octubre de 2026 bajó a su propia frase, debajo de las cuatro
+     estaciones, porque es lo que decide si alguien entra. */
+  has(t,/nada que pagar/,'y que no hay nada que pagar');
+  has(t,/Sin cuenta, sin inscripción, sin tarjeta/,'ni puerta que cruzar');
+
+  /* LAS CUATRO ESTACIONES, una por una. Aquí había un botón y una
+     línea: lo que hay dentro del gimnasio no se decía en ningún
+     sitio de la portada, y es la pieza que trae de vuelta a un
+     equipo la semana que no juega. */
+  ['The Recall','The Recognition','The Replay','The Fortress']
+    .forEach(function(n){ has(t,new RegExp(n),'está '+n) });
+  has(t,/En la cancha/i,'y cada una dice a qué se parece en una cancha');
+  /* Y que ese parecido siga siendo un PARECIDO. Son juegos de
+     memoria y atención: decir que hacen mejor a un jugador sería
+     vender algo que nadie ha medido, y es la clase de frase que se
+     cuela cuando se reescribe una sección para que luzca. */
+  not(t,/te hace mejor|mejora tu juego|mejores jugadores|rendimiento garantizado/i,
+      'sin prometer que mejora a nadie');
 
   /* AQUÍ SE EXIGÍA LA TARJETA DEL SCRIMMAGE y ya no existe: se quitó
      de la portada a propósito. Las dos puertas al juego son ahora la
@@ -132,10 +151,26 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
 
      Lo que sobrevive es el titular, que ahora es literal: el juego es
      el evento. */
-  has(t,/El juego es el evento/,'el juego ES el evento');
-  has(t,/ya están en el calendario/,'y el calendario ya existe: no hay que montarlo');
+  /* EL TITULAR DE ESTA SECCIÓN SE FUE EL 26 DE OCTUBRE DE 2026, y
+     conviene saber a dónde.
+
+     La sección llevaba «El juego es el evento» y la línea del
+     calendario de cuando sólo tenía debajo un botón al gimnasio. Con
+     las cuatro estaciones dentro pasó a ser el gimnasio, y ahora se
+     titula COGNITIVO GYM.
+
+     Lo que decía NO se perdió, y por eso esto no se borra sino que
+     mira donde vive ahora: el rótulo de los tres pasos y la frase
+     del precio. Un entrenador tiene que seguir leyendo en la portada
+     que no hay nada que montar — es la objeción que trae antes que
+     ninguna otra. Si algún día desaparece de ahí también, que lo
+     diga una prueba y no un cliente. */
+  has(t,/juegos que ya juegas/i,'el calendario ya existe: no hay que montarlo');
+  has(t,/juegos de tu calendario/,'y se escoge en cuáles van las promesas');
   not(t,/No hay calendario que cuadrar|No hay marcadores que anotar/,
       'y ya no dice lo contrario de lo que vendemos');
+  /* Y que el gimnasio se anuncie como lo que es. */
+  has(t,/COGNITIVO GYM/,'la sección del gimnasio lleva su nombre');
 
   /* La parrilla de seis recuadros se fue con la condensación: «Trae
      su propio evento», «No sólo la plantilla», «un hermano, una mamá,
@@ -268,8 +303,11 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(en,/Play\. Score\. Raise Money\./,'el titular: los tres verbos');
   not(en,/Cognitivo Gym\. Play/,'y no se quedó con la marca de la casa delante');
   has(en,/Automated pledge management/i,'the category line');
-  has(en,/The Game Is the Event/,'the game IS the event');
-  has(en,/already on the calendar/,'the calendar is already there');
+  /* La pareja en inglés del cambio de arriba: el titular se fue a
+     COGNITIVO GYM y lo que decía vive en los tres pasos y el precio. */
+  has(en,/games you already play/i,'the calendar is already there');
+  has(en,/games on your schedule/,'and you pick which carry pledges');
+  has(en,/COGNITIVO GYM/,'the gym section is named');
   not(en,/No gym to book|No schedule to coordinate/,'and it no longer denies it');
   has(en,/Padrinos pledge on the game/,'who pledges, and on what');
   has(en,/every point the team scores/,'per point the TEAM scores');
@@ -333,6 +371,29 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
          las tarjetas viejas de jugar), sobrevividas a dos
          condensaciones de la portada, y nadie lo iba a notar nunca
          porque una traducción de más no rompe nada. */
+  console.log('\n7a · Ninguna llave dentro de otra llave');
+  {
+    /* paint() recorre todos los [data-i] en orden del documento y le
+       mete innerHTML a cada uno. Si una llave vive DENTRO de otra, al
+       pintar el padre el hijo se va del documento, y cuando el
+       recorrido llega al hijo ya está desconectado: su texto existe
+       en las dos tablas y no se lee en ninguna de las dos.
+
+       Pasó el 26 de octubre de 2026 con la frase que dice que el
+       gimnasio no se paga, metida en un span dentro del <p> de la
+       frase de arriba. Se perdía entera y en los dos idiomas, y no
+       había nada que lo dijera: las dos tablas la tenían, las llaves
+       cuadraban, y la página sencillamente no la enseñaba. */
+    const anidadas = await p.evaluate(() =>
+      [...document.querySelectorAll('[data-i] [data-i]')].map((el) => {
+        const padre = el.parentElement.closest('[data-i]');
+        return (padre ? padre.dataset.i : '?') + ' › ' + el.dataset.i;
+      }));
+    anidadas.length === 0
+      ? ok('ninguna llave se pinta dentro de otra')
+      : anidadas.forEach((x) => mal('llave anidada, se va a perder al pintar: ' + x));
+  }
+
   console.log('\n7b · Las llaves del marcado y las de la tabla, iguales');
   const llaves = await p.evaluate(()=>{
     const marcado=[...new Set([...document.querySelectorAll('[data-i]')]
