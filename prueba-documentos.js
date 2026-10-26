@@ -26,7 +26,7 @@ const mal = (m) => { fallos++; console.log('    MAL  ' + m); };
 const PROHIBIDO = [
   [/nosotros cobramos a/i,            'dice que cobramos a alguien'],
   [/fortress/i,                       'nombra el Fortress'],
-  [/Cada Punto(?! que)|cadapunto\.com/,  'nombra el otro producto'],   // sin /i: "por cada punto" es español, no la marca
+  [/\bHooporia\b|hooporia\.com/i,       'nombra la marca retirada'],
   [/catorce días|fourteen days|día quince|day fifteen/i, 'la forma de 15 días del otro producto'],
   [/el entrenador lo entra|coach enters it/i, 'un entrenador metiendo el marcador'],
 ];
@@ -53,17 +53,27 @@ function impuestos(txt, dónde){
 }
 
 const PAGINAS = {
+  /* LA LÍNEA DEL PRECIO CAMBIÓ EL 26 DE OCTUBRE DE 2026. Exigía la
+     escalera por plantilla —«depende del tamaño de la plantilla» y
+     «set by the size of the roster»— y la divulgación ahora licencia
+     POR JUEGO, cinco dólares por cada juego con promesas.
+
+     La de español, además, estaba pasando por accidente: el texto
+     nuevo dice «NO depende del tamaño de la plantilla» y la regex
+     vieja casaba dentro de esa negación. Pasaba por decir lo
+     contrario de lo que se le pedía, que es la peor manera de pasar.
+     Ahora las dos piden el modelo que la página dice de verdad. */
   'custodia.html': {
     es: [/El dinero no pasa por nosotros/, /No recibimos dinero de nadie/,
          /El marcador lo anota el juego/, /Nadie mete un marcador a mano/,
-         /depende del tamaño de la plantilla/, /No hay columna de pagado/],
+         /se licencia por juego/, /No hay columna de pagado/],
     en: [/The money does not pass through us/, /We do not receive any money/,
          /score is recorded by the game/, /Nobody enters a score by hand/,
-         /set by the size of the roster/, /no paid column/]
+         /licensed per game/, /no paid column/]
   },
   'terms.html': {
     /* Las dos últimas son la promesa de QUIÉN manda los avisos. Están
-       aquí porque los términos decían que los mandaba Hooporia sola al
+       aquí porque los términos decían que los mandaba Cada Punto Cuenta sola al
        cerrar la ventana, y no es verdad: los manda el programa cuando
        pulsa el botón del reporte. Si alguien vuelve a poner que salen
        solos, esto falla — un documento que un programa firma no puede
@@ -71,18 +81,18 @@ const PAGINAS = {
     es: [/El marcador lo anota el juego, no una persona/,
          /la base de datos rechaza la segunda/, /una ventana que pone el programa/,
          /El programa lo revisa y manda los avisos/,
-         /Hooporia\s+no le escribe a un padrino por su cuenta/],
+         /Cada Punto Cuenta\s+no le escribe a un padrino por su cuenta/],
     en: [/recorded by the game, not by a person/,
          /the database refuses a second/, /inside a window the program sets/,
          /The program reviews it and sends the notices/,
-         /Hooporia does not write to a padrino on its\s+own/]
+         /Cada Punto Cuenta does not write to a padrino on its\s+own/]
   },
   'privacy.html': {
     es: [/De una corrida/, /el nivel que alcanzó/, /una clave, que existe nada más/],
     en: [/From a run/, /the level he reached/, /a run key, which exists only/]
   },
   'cobro.html': {
-    es: [/Nosotros anotamos las promesas\. Tu programa cobra/, /Hooporia no procesa pagos ni guarda dinero/,
+    es: [/Nosotros anotamos las promesas\. Tu programa cobra/, /Cada Punto Cuenta no procesa pagos ni guarda dinero/,
          /Al cerrar la ventana del evento/, /no tiene columna de pagado y no la va a tener/],
     en: [/We record the pledges\. Your program collects/, /processes no payments and holds no money/,
          /When the event window closes/, /no paid column and never will/]
