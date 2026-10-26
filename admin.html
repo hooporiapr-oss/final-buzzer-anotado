@@ -56,6 +56,22 @@ input,select{width:100%;padding:10px 12px;border:1px solid #d9d8d4;border-radius
 input[type=checkbox]{width:17px;height:17px;vertical-align:-3px;margin-right:7px}
 .fila{display:flex;gap:10px;flex-wrap:wrap}
 .fila>div{flex:1;min-width:150px}
+/* El calendario de un torneo, desplegado debajo de su fila. Ocupa el
+   ancho entero y no una columna: .fila>div reparte a partes iguales,
+   y una tabla de cuatro columnas metida en medio salía estrujada al
+   lado del nombre del torneo. */
+.fila>div.juegos{flex:1 1 100%;min-width:0}
+/* Y el botón no se estira. .fila es flex y sus hijos heredan
+   align-items:stretch, así que en un teléfono «Show games» salía
+   como un bloque alto del tamaño de tres renglones de texto al lado
+   del nombre del torneo. Va aquí y no en .fila a secas porque esa
+   clase la usan otras filas del panel que sí quieren el estirón. */
+#torneos .fila>.btns{align-self:center;flex:0 0 auto}
+/* Una fila por torneo, separada de la siguiente: sin esto el
+   calendario desplegado de uno se pegaba al nombre del de abajo y
+   parecía suyo. */
+#torneos .fila{padding:12px 0;border-bottom:1px solid var(--line)}
+#torneos .fila:last-child{border-bottom:0}
 button{font-family:inherit;font-size:.86rem;font-weight:800;border:0;border-radius:9px;
   padding:10px 16px;background:var(--orange);color:#111a24;cursor:pointer}
 button.q{background:transparent;color:var(--navy);border:1px solid var(--navy)}
@@ -133,6 +149,30 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
       <button class="q sm" id="solRecargar">Reload</button>
     </div>
     <p class="m" id="mSol"></p>
+  </section>
+
+  <!-- LOS TORNEOS.
+       Va justo debajo de Signups y encima de Campaign a propósito:
+       las dos de arriba son lo que ha llegado hoy y lo que hay que
+       atender; un torneo es lo que está corriendo.
+
+       Hasta hoy un torneo no existía en ninguna parte salvo como un
+       fichero HTML subido al repositorio de marcadorpr. Lo único que
+       ataba un juego a su torneo era el prefijo de su número, y ese
+       prefijo sólo llega a la base cuando alguien le pone un marcador
+       o una promesa: un torneo entero sin jugar era invisible aquí.
+
+       Ahora el constructor lo registra al generar el calendario, con
+       todos sus juegos — los jugados y los que no. El SQL de estas
+       dos tablas es marcador-torneos.sql. -->
+  <section class="caja" id="secTorneos">
+    <h2>Tournaments</h2>
+    <p class="sub">Registered schedules and their games. Newest first.</p>
+    <div id="torneos"></div>
+    <div class="btns">
+      <button class="q sm" id="torRecargar">Reload</button>
+    </div>
+    <p class="m" id="mTor"></p>
   </section>
 
   <section class="caja">
@@ -436,6 +476,9 @@ function arrancar(){
          que llega sin que nadie lo pida, así que tiene que estar ahí
          ya puesto cuando se abre el admin — no detrás de un botón. */
       cargarSolicitudes();
+      /* Y los torneos, por la misma razón: lo que está corriendo hoy
+         se mira al abrir, no se busca. */
+      cargarTorneos();
     })
     .catch(function(e){
       di('mEntrar', 'Could not check the session' + porque(e), 'mal');
@@ -468,6 +511,138 @@ function cargarSolicitudes(){
       di('mSol', 'Could not read the signups' + porque(e) +
          ' If this is the first time you see it, the signups table is not created yet.', 'mal');
     });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LOS TORNEOS
+
+   Un torneo por fila, y debajo su calendario entero. Se cruzan dos
+   sitios que no se conocían:
+
+     · torneos / torneo_juegos — el calendario tal como lo montó el
+       constructor, con los juegos que nadie ha jugado todavía.
+     · bw_board — los marcadores, que van por NÚMERO de juego y no
+       saben de qué torneo son.
+
+   El cruce es el número: CL-7 del calendario contra CL-7 del
+   marcador. Por eso torneo_juegos lleva índice por juego.
+
+   bw_board se pide UNA vez para todos los torneos y no una por
+   torneo: devuelve el tablero entero y partirlo aquí es gratis,
+   mientras que una llamada por torneo son diez llamadas en una
+   pantalla que se abre a diario.
+   ══════════════════════════════════════════════════════════════════ */
+var TOR_ABIERTO = null;     // qué torneo está desplegado
+var TOR_MARCAS  = {};       // los marcadores, por número de juego
+
+function cargarTorneos(){
+  di('mTor', '');
+  Promise.all([
+    rest('torneos?select=*&order=creado.desc'),
+    /* Los marcadores se piden con el torneo. Si esta llamada falla no
+       se cae la sección: un calendario sin marcadores sigue siendo
+       un calendario, y enseñarlo vale más que no enseñar nada. */
+    rpc('bw_board').catch(function(){ return null })
+  ])
+    .then(function(r){
+      TOR_MARCAS = r[1] || {};
+      pintarTorneos(r[0]);
+    })
+    .catch(function(e){
+      /* Si las tablas todavía no existen —el SQL no se ha corrido— se
+         dice con todas las letras en vez de dejar un hueco mudo. */
+      $('torneos').innerHTML = '';
+      di('mTor', 'Could not read the tournaments' + porque(e) +
+         ' If this is the first time you see it, the tournaments tables are not created' +
+         ' yet — run marcador-torneos.sql.', 'mal');
+    });
+}
+
+/* Un hueco del cuadro no es un equipo. «Ganador CL-7» y «1º Grupo A»
+   se escriben al registrar porque el nombre de verdad no se sabe
+   hasta que entre el marcador del otro juego. */
+function esHueco(n){ return /^(Ganador|\d+º)/.test(String(n || '')) }
+
+function pintarTorneos(rows){
+  rows = rows || [];
+  var caja = $('torneos');
+  if (!rows.length){
+    caja.innerHTML = '<p class="pista">No tournaments registered yet. ' +
+      'They appear here when a schedule is registered from the calendar builder.</p>';
+    return;
+  }
+
+  caja.innerHTML = rows.map(function(t){
+    var abierto = TOR_ABIERTO === t.id;
+    return '<div class="fila">' +
+      '<div><b>' + esc(t.nombre) + '</b>' +
+        (t.pueblo ? ' <span class="pista">' + esc(t.pueblo) + '</span>' : '') +
+        '<br><span class="pista">' + t.juegos + ' games · prefix ' + esc(t.prefijo) +
+        ' · registered ' + cuando(t.creado) + '</span></div>' +
+      '<div class="btns">' +
+        '<button class="q sm" data-tor="' + esc(t.id) + '">' +
+          (abierto ? 'Hide games' : 'Show games') + '</button>' +
+      '</div>' +
+      (abierto ? '<div class="juegos" id="tj-' + esc(t.id) + '">Loading…</div>' : '') +
+    '</div>';
+  }).join('');
+
+  /* Los botones se enganchan aquí y no con onclick en el marcado: el
+     id de un torneo lo escribe quien monta el calendario, y meterlo
+     dentro de un atributo onclick es meter texto de alguien en un
+     sitio donde se ejecuta. */
+  [].forEach.call(caja.querySelectorAll('button[data-tor]'), function(b){
+    b.onclick = function(){ alternarTorneo(b.getAttribute('data-tor')) };
+  });
+
+  if (TOR_ABIERTO) cargarJuegos(TOR_ABIERTO);
+}
+
+function alternarTorneo(id){
+  TOR_ABIERTO = (TOR_ABIERTO === id) ? null : id;
+  cargarTorneos();
+}
+
+function cargarJuegos(id){
+  rest('torneo_juegos?torneo=eq.' + encodeURIComponent(id) +
+       '&select=*&order=fecha.asc,hora.asc,juego.asc')
+    .then(function(js){ pintarJuegos(id, js) })
+    .catch(function(e){
+      var c = $('tj-' + id);
+      if (c) c.textContent = 'Could not read its games' + porque(e);
+    });
+}
+
+function pintarJuegos(id, js){
+  var c = $('tj-' + id);
+  if (!c) return;
+  js = js || [];
+  if (!js.length){ c.innerHTML = '<p class="pista">No games registered.</p>'; return }
+
+  c.innerHTML = '<table><tr>' +
+      '<th>Game</th><th>When</th><th>Teams</th><th>Score</th>' +
+    '</tr>' +
+    js.map(function(j){
+      var m = TOR_MARCAS[j.juego] || TOR_MARCAS[String(j.juego).toUpperCase()];
+      /* Un marcador que no está no es un cero: es un juego que no se
+         ha jugado. Se enseña con una raya, que es lo que dice eso. */
+      var marca = m ? (m.a + '–' + m.b) : '—';
+      var a = esc(j.equipo_a), b = esc(j.equipo_b);
+      /* Los huecos del cuadro se enseñan apagados: «Ganador CL-7» es
+         un juego real con sitio y hora, pero todavía sin dueño. */
+      if (esHueco(j.equipo_a)) a = '<span class="pista">' + a + '</span>';
+      if (esHueco(j.equipo_b)) b = '<span class="pista">' + b + '</span>';
+      return '<tr>' +
+        '<td>' + esc(j.juego) + (j.etapa ? ' <span class="pista">' + esc(j.etapa) +
+          '</span>' : '') + '</td>' +
+        '<td>' + (j.fecha ? esc(String(j.fecha).slice(5)) : '<span class="pista">no slot</span>') +
+          (j.hora ? ' ' + esc(j.hora) : '') +
+          (j.cancha ? ' <span class="pista">' + esc(j.cancha) + '</span>' : '') + '</td>' +
+        '<td>' + a + ' <span class="pista">vs</span> ' + b + '</td>' +
+        '<td>' + marca + '</td>' +
+      '</tr>';
+    }).join('') +
+  '</table>';
 }
 
 function pintarSolicitudes(rows){
@@ -595,6 +770,7 @@ $('guardarPago').onclick = function(){
 $('camp').onchange = function(){ escoger(this.value) };
 $('recargar').onclick = cargarCampanas;
 $('solRecargar').onclick = cargarSolicitudes;
+$('torRecargar').onclick = cargarTorneos;
 $('solTodas').onclick = function(){
   SOL_TODAS = !SOL_TODAS;
   $('solTodas').textContent = SOL_TODAS ? 'Show only waiting' : 'Show handled too';
