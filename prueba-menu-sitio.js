@@ -30,7 +30,7 @@ const mal = (m) => { fallos++; console.log('       MAL  ' + m); };
 const PAGINAS = ['index.html', 'equipo.html', 'ayuda.html', 'cobro.html',
   'custodia.html', 'privacy.html', 'terms.html', 'mi-equipo.html',
   'jugador.html', 'prometer.html', 'plantilla.html', 'tablero.html',
-  'reporte.html', 'padrinos.html'];
+  'reporte.html', 'padrinos.html', 'scoreboard.html'];
 
 const AQUI = __dirname;
 const url = (f) => 'file://' + path.join(AQUI, f);
@@ -202,7 +202,7 @@ for (const f of PAGINAS) {
 
 await navegador.close();
 console.log('\n' + (fallos === 0
-  ? '✓ las catorce llevan la misma barra, y funciona'
+  ? '✓ las ' + PAGINAS.length + ' llevan la misma barra, y funciona'
   : '✗ ' + fallos + ' fallo(s)'));
 process.exit(fallos === 0 ? 0 : 1);
 })().catch(e => { console.error('\n✗ la prueba reventó:', e); process.exit(1) });
