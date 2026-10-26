@@ -28,9 +28,16 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   let t=await leer();
   has(t,/Juega\. Anota\. Recauda\./,'el titular: los tres verbos');
   has(t,/Juego|juego/,'y habla del juego');
-  has(t,/Una corrida cada uno/,'una corrida cada uno');
-  has(t,/El juego anota cada punto mientras juega/,'el juego anota los puntos');
-  has(t,/en la cancha o en su casa/i,'se juega desde donde sea');
+  /* LOS TRES PASOS CAMBIARON DE SUJETO el 26 de octubre de 2026. Eran
+     el nene y su corrida de cuatro sets —«Una corrida cada uno», «el
+     juego anota cada punto mientras juega», «en la cancha o en su
+     casa»— y ahora son el equipo y su juego del calendario. La
+     corrida por jugador no desapareció del producto; desapareció de
+     la PORTADA, que es lo que esto vigila. */
+  has(t,/Los padrinos prometen en el juego/,'quién promete y sobre qué');
+  has(t,/por cada punto que anote el equipo/,'por punto del EQUIPO, no de un nene');
+  has(t,/El marcador entra en el tablero/,'el marcador entra por el tablero');
+  has(t,/Al programa se le paga/,'y al programa se le paga');
   has(t,/Nosotros manejamos las promesas/,'la posición de la casa');
   // .eyebrow va en mayúsculas por CSS, así que innerText la devuelve
   // gritada. La caja la decide la hoja de estilo, no el texto.
@@ -51,7 +58,14 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
          recaudación de toda la vida, y hoy la portada no la dice. */
 
   console.log('\n2 · Las puertas al juego');
-  has(t,/Juégalo antes de seguir leyendo/,'la invitación a jugar');
+  /* EL GIMNASIO DEJÓ DE SER UNA DEMOSTRACIÓN. Decía «Juégalo antes
+     de seguir leyendo» —pruébalo para entender lo que vendemos— y
+     ahora es lo que de verdad es: entrenamiento gratis entre juegos,
+     que es lo que trae de vuelta a un equipo la semana que no juega.
+     Se exige que diga GRATIS, porque es la palabra que hace el
+     trabajo, y que siga llevando al gimnasio. */
+  has(t,/gratis entre juegos/i,'el gimnasio, como entrenador gratis');
+  has(t,/Sin inscripción, sin cargo/,'y sin puerta que cruzar');
 
   /* AQUÍ SE EXIGÍA LA TARJETA DEL SCRIMMAGE y ya no existe: se quitó
      de la portada a propósito. Las dos puertas al juego son ahora la
@@ -104,13 +118,24 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
     : ok('y la portada no lo enlaza');
 
   console.log('\n3 · El argumento grande');
-  /* El argumento es el mismo que siempre —el evento no hay que
-     montarlo— pero dicho en tres frases en vez de en una parrilla de
-     seis recuadros. Se exige la versión que la página dice hoy. */
+  /* ESTE ARGUMENTO SE DIO LA VUELTA, y conviene saber por qué.
+
+     Decía «No hay cancha que reservar. No hay calendario que cuadrar.
+     No hay marcadores que anotar.» Era cierto cuando el evento era
+     una corrida de cuatro sets en un teléfono: no hacía falta nada.
+
+     Con promesas por juego, el calendario es justo la pieza que hace
+     que esto funcione —son los juegos que el equipo YA tiene— y el
+     marcador es lo que cierra la promesa. Negar las dos cosas en la
+     portada era tirar por la borda la razón por la que un entrenador
+     dice que sí.
+
+     Lo que sobrevive es el titular, que ahora es literal: el juego es
+     el evento. */
   has(t,/El juego es el evento/,'el juego ES el evento');
-  has(t,/No hay cancha que reservar/,'no hay cancha que reservar');
-  has(t,/No hay calendario que cuadrar/,'ni calendario que cuadrar');
-  has(t,/No hay marcadores que anotar/,'ni marcadores que meter a mano');
+  has(t,/ya están en el calendario/,'y el calendario ya existe: no hay que montarlo');
+  not(t,/No hay calendario que cuadrar|No hay marcadores que anotar/,
+      'y ya no dice lo contrario de lo que vendemos');
 
   /* La parrilla de seis recuadros se fue con la condensación: «Trae
      su propio evento», «No sólo la plantilla», «un hermano, una mamá,
@@ -124,17 +149,20 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      caen en líneas distintas: la regex tiene que cruzar el salto. Con
      /\$49 por equipo por evento/ en una sola línea esto fallaba
      aunque la página lo dijera perfectamente. */
-  /* La escalera, no los dos peldaños de antes. Se exigen los dos
-     extremos y que el del equipo esté — los de en medio los
-     comprueba prueba-precio.js, que además mira que las otras tres
-     páginas digan lo mismo. */
-  has(t,/Plantilla hasta 7[\s\S]{0,40}\$29/i,'el peldaño chico');
-  has(t,/Plantilla de 8 a 40[\s\S]{0,40}\$49/i,'el del equipo');
-  has(t,/Plantilla de 151 a 400[\s\S]{0,40}\$349/i,'y el de una escuela');
-  has(t,/Plantilla de 801 o más[\s\S]{0,40}Hablemos/i,'y arriba del todo, se habla');
-  // Por evento y no por cabeza: lo que queda de «no es un cargo por persona».
-  has(t,/corran los que corran/,'un precio por el evento, corran los que corran');
-  has(t,/no se mueve con lo que recaudes/,'y que no se mueve con lo recaudado');
+  /* LA ESCALERA SE RETIRÓ ENTERA. Eran seis peldaños por tamaño de
+     plantilla —$29 hasta siete nenes, $599 hasta ochocientos, y
+     «Hablemos» arriba del todo— y cobraban por evento.
+
+     Ahora hay UN número y se cobra por juego con promesas. La
+     plantilla no entra: un equipo de ocho y uno de cuarenta pagan lo
+     mismo por el mismo juego. Así que lo que se exige ya no son
+     cuatro peldaños sino que el número salga del sitio donde vive, y
+     que la plantilla NO aparezca en el cálculo. */
+  has(t,/\$5\b/,'el número, a la vista');
+  has(t,/Cada juego en el que pongas promesas/,'y qué se paga con él');
+  has(t,/sea el juego que sea/,'el mismo precio para cualquier juego');
+  not(t,/Plantilla hasta|Plantilla de \d/,'y la escalera por plantilla ya no está');
+  not(t,/\$29\b|\$49\b|\$349\b|\$599\b/,'ni ninguno de sus peldaños');
   not(t,/\{A\}|\{B\}|\{N\}/,'sin plantillas sin rellenar');
 
   /* Y, sobre todo, que se VEA. Esto se mira en innerText a secas,
@@ -147,11 +175,16 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   console.log('\n4b · Y el precio se ve sin abrir nada');
   const aLaVista = () => p.evaluate(()=>document.body.innerText);
   let v = await aLaVista();
-  has(v,/\$49/,'el 49 se lee con la página como la encuentra cualquiera');
-  has(v,/\$29/,'y el 29 también');
-  has(v,/El cargo llega después del resultado/,'con su titular, que es el argumento');
+  has(v,/\$5\b/,'el 5 se lee con la página como la encuentra cualquiera');
+  has(v,/Cinco dólares por juego/,'con su titular, que es el argumento');
   has(v,/Nada por adelantado/,'nada por adelantado');
-  has(v,/Se factura cuando cierra el evento/,'cuándo se factura');
+  has(v,/Se factura por los juegos que llevaron promesas/,'cuándo se factura');
+  /* EL MÍNIMO ES DE INSCRIPCIÓN, NO UN CARGO. Un programa se apunta
+     con cinco juegos; si sólo consigue promesas en dos, paga dos.
+     Decirlo al revés —cobrar cinco hagas lo que hagas— rompería la
+     única promesa que esta página hace sobre dinero. */
+  has(v,/se inscribe con cinco para empezar/,'el mínimo es con lo que te inscribes');
+  not(v,/mínimo de \$|cargo mínimo|se cobran cinco/i,'y en ningún sitio es un cargo mínimo');
   has(v,/caduca/,'y qué pasa si no se paga');
 
   /* Sin promesas, sin cargo. Es una promesa que se hace, así que
@@ -187,7 +220,11 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
        pagina de alta ya inscribe programas y el boton que lleva a
        ella decia otra cosa. Lo que no puede pasar es que salga en
        ingles con la pagina en español, que es el fallo de verdad. */
-    /^Solicitar registro de (equipo|programa)$/.test(btn.texto)
+    /* El texto pasó a «Inscribir mi equipo» el 26 de octubre de 2026,
+       que es lo que dice el botón de marcadorpr del que llega casi
+       todo el mundo. Que las dos puertas digan lo mismo es lo que
+       hace que alguien sepa que ha llegado al sitio correcto. */
+    /^Inscribir mi equipo$/.test(btn.texto)
       ? ok('con su texto en español → '+btn.texto)
       : mal('el botón salió con el texto "'+btn.texto+'"');
   }
@@ -204,7 +241,14 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
       'Cada Punto Cuenta es sólo el software de las promesas');
   has(t,/manejan sus fondos de forma independiente/,'y los fondos los manejan ellos');
   has(t,/El dinero no pasa por nosotros/,'y el pie lo dice sin rodeos');
-  has(t,/al programa se le paga directo/,'el padrino le paga al programa');
+  /* La frase cambió de forma al pasar a promesas por juego: antes era
+     «al programa se le paga directo» y ahora el padrino recibe un
+     enlace «para pagarle directo al programa». Lo que se vigila es lo
+     mismo y es lo único que importa aquí — que el dinero vaya del
+     padrino AL PROGRAMA y que la página diga que no pasa por
+     nosotros. Es la pareja en español de la línea del inglés. */
+  has(t,/pagarle directo al programa/,'el padrino le paga al programa');
+  has(t,/El dinero no pasa por nosotros/,'y que no pasa por nosotros');
   not(t,/deducib|deductib|impuesto/i,'ni una palabra de impuestos');
   not(t,/cobrad|recaudad(?!o)/i,'ni cobrado');
   not(t,/facebook|instagram/i,'ni redes');
@@ -225,25 +269,27 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   not(en,/Cognitivo Gym\. Play/,'y no se quedó con la marca de la casa delante');
   has(en,/Automated pledge management/i,'the category line');
   has(en,/The Game Is the Event/,'the game IS the event');
-  has(en,/No gym to book/,'no gym to book');
-  has(en,/One run each/,'one run each');
-  has(en,/The game records every point as he plays/,'the game records the points');
-  has(en,/Roster up to 7[\s\S]{0,40}\$29/i,'the small step');
-  has(en,/Roster of 8 to 40[\s\S]{0,40}\$49/i,'the team step');
-  has(en,/Roster of 151 to 400[\s\S]{0,40}\$349/i,'and a school');
-  has(en,/Roster of 801 or more[\s\S]{0,40}Let us talk/i,'and above that, a conversation');
-  has(en,/however many players take a run/,'one price per event, not per head');
+  has(en,/already on the calendar/,'the calendar is already there');
+  not(en,/No gym to book|No schedule to coordinate/,'and it no longer denies it');
+  has(en,/Padrinos pledge on the game/,'who pledges, and on what');
+  has(en,/every point the team scores/,'per point the TEAM scores');
+  has(en,/\$5\b/,'the number');
+  has(en,/Each game you put pledges on/,'and what it buys');
+  not(en,/Roster up to|Roster of \d/,'the roster ladder is gone');
+  not(en,/\$29\b|\$49\b|\$349\b|\$599\b/,'and so are its steps');
   has(en,/strictly a pledge management software provider/i,'only the pledge software');
   has(en,/independently manage all proceeds/i,'and they hold the proceeds');
   has(en,/The money does not pass through us/,'and the footer says it plainly');
-  has(en,/the program is paid directly/,'the padrino pays the program');
+  has(en,/pay the program directly/,'the padrino pays the program');
+  has(en,/never passes through us/,'and it never passes through us');
   const ven = await aLaVista();
-  has(ven,/\$49/,'the price reads in English too, nothing to open');
-  has(ven,/The invoice comes after the results do/,'with its heading');
+  has(ven,/\$5\b/,'the price reads in English too, nothing to open');
+  has(ven,/Five dollars a game/,'with its heading');
+  has(ven,/signs up for five to start/,'the five is what you sign up with');
   has(ven,/Nothing up front/,'and nothing up front');
   has(ven,/No pledges, no fee/,'the promise, in English');
   has(await p.$eval('#precio a.button', e=>e.textContent.trim()),
-      /^Request (Team|Program) Registration$/, 'and the button says it in English too');
+      /^Sign up my team$/, 'and the button says it in English too');
   has(ven,/records no pledges is never invoiced/,'and what it means');
   not(ven,/out of what you raise|once you have been paid/i,
       'and nowhere does it say the fee comes out of what was raised');
