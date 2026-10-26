@@ -527,27 +527,17 @@ function cargarSolicitudes(){
    El cruce es el número: CL-7 del calendario contra CL-7 del
    marcador. Por eso torneo_juegos lleva índice por juego.
 
-   bw_board se pide UNA vez para todos los torneos y no una por
-   torneo: devuelve el tablero entero y partirlo aquí es gratis,
-   mientras que una llamada por torneo son diez llamadas en una
-   pantalla que se abre a diario.
+   La lista de arriba es sólo la de torneos. Lo de cada juego
+   —marcador, promesas, recaudado— lo trae torneo_tablero cuando se
+   despliega uno, y no antes: son datos de diez o cien juegos que
+   nadie está mirando mientras la fila esté cerrada.
    ══════════════════════════════════════════════════════════════════ */
 var TOR_ABIERTO = null;     // qué torneo está desplegado
-var TOR_MARCAS  = {};       // los marcadores, por número de juego
 
 function cargarTorneos(){
   di('mTor', '');
-  Promise.all([
-    rest('torneos?select=*&order=creado.desc'),
-    /* Los marcadores se piden con el torneo. Si esta llamada falla no
-       se cae la sección: un calendario sin marcadores sigue siendo
-       un calendario, y enseñarlo vale más que no enseñar nada. */
-    rpc('bw_board').catch(function(){ return null })
-  ])
-    .then(function(r){
-      TOR_MARCAS = r[1] || {};
-      pintarTorneos(r[0]);
-    })
+  rest('torneos?select=*&order=creado.desc')
+    .then(pintarTorneos)
     .catch(function(e){
       /* Si las tablas todavía no existen —el SQL no se ha corrido— se
          dice con todas las letras en vez de dejar un hueco mudo. */
@@ -603,14 +593,27 @@ function alternarTorneo(id){
   cargarTorneos();
 }
 
+/* El calendario con lo que lleva encima cada juego. Lo arma entero
+   torneo_tablero y no esta página: el puente entre el número de
+   marcador y el juego de la campaña es el mismo que usa
+   bw_set_score, y armarlo aquí a mano sería una segunda versión de
+   esa regla que un día daría otro número que el que se factura. */
 function cargarJuegos(id){
-  rest('torneo_juegos?torneo=eq.' + encodeURIComponent(id) +
-       '&select=*&order=fecha.asc,hora.asc,juego.asc')
+  rpc('torneo_tablero', { p_torneo: id })
     .then(function(js){ pintarJuegos(id, js) })
     .catch(function(e){
       var c = $('tj-' + id);
       if (c) c.textContent = 'Could not read its games' + porque(e);
     });
+}
+
+/* El dinero, en dólares y con dos decimales. Llega como numeric, que
+   el driver entrega como texto para no perder un centavo por el
+   camino — pasarlo por Number sólo para pintarlo es seguro, pero
+   sumarlo en el navegador no lo sería. */
+function money(x){
+  var n = Number(x || 0);
+  return '$' + (isFinite(n) ? n.toFixed(2) : '0.00');
 }
 
 function pintarJuegos(id, js){
@@ -619,19 +622,47 @@ function pintarJuegos(id, js){
   js = js || [];
   if (!js.length){ c.innerHTML = '<p class="pista">No games registered.</p>'; return }
 
+  var cobrables = 0, total = 0;
+
   c.innerHTML = '<table><tr>' +
       '<th>Game</th><th>When</th><th>Teams</th><th>Score</th>' +
+      '<th class="n">Pledges</th><th class="n">Raised</th><th>Bill</th>' +
     '</tr>' +
     js.map(function(j){
-      var m = TOR_MARCAS[j.juego] || TOR_MARCAS[String(j.juego).toUpperCase()];
       /* Un marcador que no está no es un cero: es un juego que no se
          ha jugado. Se enseña con una raya, que es lo que dice eso. */
-      var marca = m ? (m.a + '–' + m.b) : '—';
+      var marca = (j.a_pts == null) ? '—' : (j.a_pts + '–' + j.b_pts);
       var a = esc(j.equipo_a), b = esc(j.equipo_b);
       /* Los huecos del cuadro se enseñan apagados: «Ganador CL-7» es
          un juego real con sitio y hora, pero todavía sin dueño. */
       if (esHueco(j.equipo_a)) a = '<span class="pista">' + a + '</span>';
       if (esHueco(j.equipo_b)) b = '<span class="pista">' + b + '</span>';
+
+      /* NINGÚN EQUIPO CON CAMPAÑA es distinto de CERO PROMESAS, y
+         confundirlos es cómo se deja de facturar algo sin enterarse.
+
+           · sin campaña → ninguno de los dos equipos recauda. No es
+             un juego facturable y nunca lo será. Raya.
+           · con campaña y sin promesas → recauda, pero nadie prometió
+             en este juego. Cero de verdad, y no se factura.
+           · sin juego en la campaña → el equipo recauda y este juego
+             del calendario no aparece en su campaña. Eso es un aviso:
+             puede ser una fecha movida o un nombre escrito distinto,
+             y mientras siga así sus promesas no salen por aquí. */
+      var promesas, cobro;
+      if (!j.hay_campana){
+        promesas = '<span class="pista">—</span>';
+        cobro    = '<span class="pista">no campaign</span>';
+      } else if (!j.hay_juego){
+        promesas = '<span class="pista">?</span>';
+        cobro    = '<b class="pista" title="This team has a campaign but this game is not in it ' +
+                   '— check the date and how the opponent is spelled.">not linked</b>';
+      } else {
+        promesas = j.promesas;
+        cobro = j.facturable ? '<b>$5</b>' : '<span class="pista">—</span>';
+        if (j.facturable){ cobrables++; total += Number(j.recaudado || 0) }
+      }
+
       return '<tr>' +
         '<td>' + esc(j.juego) + (j.etapa ? ' <span class="pista">' + esc(j.etapa) +
           '</span>' : '') + '</td>' +
@@ -640,9 +671,24 @@ function pintarJuegos(id, js){
           (j.cancha ? ' <span class="pista">' + esc(j.cancha) + '</span>' : '') + '</td>' +
         '<td>' + a + ' <span class="pista">vs</span> ' + b + '</td>' +
         '<td>' + marca + '</td>' +
+        '<td class="n">' + promesas + '</td>' +
+        '<td class="n">' + (j.hay_juego && j.promesas ? money(j.recaudado) :
+          '<span class="pista">—</span>') + '</td>' +
+        '<td>' + cobro + '</td>' +
       '</tr>';
     }).join('') +
-  '</table>';
+  '</table>' +
+
+  /* El total, que es por lo que se abre esta pantalla. «Billable»
+     dice qué se PUEDE facturar, no qué se facturó: no hay dónde
+     apuntar una licencia por juego todavía, y decir «invoiced»
+     mientras eso no exista sería decir que algo está cobrado cuando
+     nadie lo ha cobrado. */
+  '<div class="tot">' +
+    '<div><b>' + cobrables + '</b> billable game' + (cobrables === 1 ? '' : 's') +
+      ' <span class="pista">× $5 = ' + money(cobrables * 5) + '</span></div>' +
+    '<div><b>' + money(total) + '</b> <span class="pista">pledged on them</span></div>' +
+  '</div>';
 }
 
 function pintarSolicitudes(rows){
