@@ -93,13 +93,10 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22;
 .hero h1{font-size:clamp(2.8rem,6vw,5.4rem);line-height:1.06;letter-spacing:-.055em;margin:18px 0 20px}
 .hero h1 em{font-style:normal;color:var(--orange)}
 .hero p{font-size:1.16rem;color:#d3dce6;max-width:610px}
-/* Centrados: debajo va la foto a todo el ancho, así que los botones
-   hacen de puente entre el texto y ella. */
-/* Una línea, no un párrafo: va pegada al titular y en el mismo tono
-   que él, no en el gris de un texto de apoyo. */
-.herosub{font-size:clamp(1.05rem,4.2vw,1.35rem);color:#cfdae6;font-weight:600;
-  margin:16px 0 0;max-width:30ch}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px;justify-content:center}
+/* .herosub y .hero-actions se fueron con la frase y el botón que
+   bajaron a la sección de EL JUEGO ES EL EVENTO. No quedó marcado
+   que las use, y treinta líneas de estilo sin dueño son treinta
+   líneas que el próximo que lea esto tiene que entender para nada. */
 /* Aquí había una pelota dibujada en CSS, en una columna cuadrada al
    lado del texto. La foto es apaisada —1200×630— y en esa columna
    habría salido del tamaño de un sello, así que la portada pasa a una
@@ -167,6 +164,17 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22;
 .step p{color:var(--muted);margin:0}
 .dark{background:var(--navy);color:white}
 .dark .intro{color:#c8d2dd}
+/* ESTA SECCIÓN VA CENTRADA, y es la única de la página que lo está.
+   Es la que ofrece jugar, así que se separa del resto a propósito:
+   lo que viene antes y después se lee, y esto se toca.
+
+   .intro lleva max-width:700px y se centra sola con el margen auto;
+   sin él se quedaría pegada a la izquierda dentro de una sección
+   centrada, que es peor que no centrar nada. */
+.dark.centrada{text-align:center}
+.dark.centrada .intro{margin-left:auto;margin-right:auto}
+.gym-cta{margin-top:30px}
+.gym-cta p{color:#c8d2dd;font-weight:600;margin:14px 0 0;font-size:1.05rem}
 .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:34px}
 .feature{padding:24px;border:1px solid #ffffff25;border-radius:14px;background:#ffffff08}
 .feature strong{display:block;font-size:1.12rem;margin-bottom:6px}
@@ -316,7 +324,6 @@ footer .wrap{gap:14px}
 /* En una pantalla de 320 la marca, el idioma y las rayas tienen que
    caber en una línea sin empujarse. */
 button.lang{padding:0 10px;font-size:.8rem}
-.hero-actions .button{width:100%;text-align:center}
 }
 </style>
 </head>
@@ -371,34 +378,17 @@ button.lang{padding:0 10px;font-size:.8rem}
 <div>
 <div class="eyebrow" data-i="eyebrow">Cada Punto Cuenta &middot; Automated Pledge Management</div>
 <h1 data-i="headline">Play. Score. <em>Raise Money.</em></h1>
-<p class="herosub" data-i="heroSub">Play it before you read another word.</p>
-<!-- UNA SOLA ACCIÓN, Y ES ENTRAR AL GIMNASIO.
-     La cabecera dice qué es esto y ofrece una cosa: entrar. El
-     registro no desaparece —está en el menú y al final de la
-     página— pero no compite aquí, donde a un desconocido todavía
-     no hay nada que venderle.
+<!-- LA CABECERA SE QUEDA EN EL TITULAR, y nada más. Tuvo debajo una
+     frase —«Play it before you read another word»— y el botón de
+     entrar al gimnasio; los dos bajaron a la sección de EL JUEGO ES
+     EL EVENTO el 26 de octubre de 2026.
 
-     ESTE ENLACE SALE DEL SITIO. El hub de los juegos vive en
-     hooporia.mobi, que es el gimnasio móvil, así que va en absoluto
-     y no en relativo. La demo de promesas no se pierde: sigue más
-     abajo, en el paso del medio, que es donde tiene sentido verla.
-
-     Y LLEVA ?e=demo PEGADO. El equipo de un jugador se fija cuando se
-     le emite el código, y no cambia después: quien entra al gimnasio
-     sin equipo se queda sin equipo para siempre y no sale nunca en el
-     tablero de nadie. Sin esta cola, todo el que entrara por aquí
-     jugaría solo sin enterarse de por qué.
-
-     Es el equipo abierto —el de la demo, donde juega todo el mundo—
-     y no el de un programa. El día que un entrenador reparta el suyo,
-     reparte su propio enlace con su propia cola; éste es la puerta de
-     la calle.
-
-     Y lleva llave propia —«entrar»— y no la del botón de abajo: los
-     dos botones ya no dicen lo mismo ni van al mismo sitio. -->
-<div class="hero-actions">
-<a class="button" href="https://hooporia.mobi/fortress-mobile-hub.html?e=demo" data-i="entrar">Enter the Cognitivo Gym</a>
-</div>
+     No se duplicaron: se MOVIERON. Las llaves «heroSub» y «entrar»
+     siguen vivas y las usa un solo elemento cada una, ahí abajo. Esa
+     es la razón de haberlos quitado de aquí en vez de dejar los dos
+     juegos: con dos elementos por llave, el inglés se recoge del
+     marcado y gana el último, y editar uno cambiaba el otro sin que
+     se notara. Con uno cada una, esa trampa no existe. -->
 <!-- width y height van puestos para que el navegador reserve el hueco
      antes de descargarla. Sin ellos el titular salta hacia arriba
      cuando la imagen llega, justo mientras alguien lo está leyendo. -->
@@ -416,11 +406,34 @@ button.lang{padding:0 10px;font-size:.8rem}
      recaudación no necesita partido, cancha ni temporada. Dicho a
      media página, lo lee quien ya se quedó; dicho aquí, lo lee el
      que estaba a punto de irse. -->
-<section class="section dark">
+<section class="section dark centrada">
 <div class="wrap">
 <div class="eyebrow" data-i="softwareLabel">Built for programs, not paperwork</div>
 <h2 data-i="softwareTitle">The Game Is the Event.</h2>
 <p class="intro" data-i="softwareDesc">No gym to book. No schedule to coordinate. No scores to enter.</p>
+<!-- LA ÚNICA SALIDA AL GIMNASIO DE TODA LA PÁGINA. Estuvo arriba, en
+     la cabecera, y bajó aquí: quien lee hasta este punto ya sabe qué
+     es esto, y es mejor momento para ofrecerle que lo juegue que el
+     primer segundo, cuando todavía no sabe qué le están ofreciendo.
+
+     ESTE ENLACE SALE DEL SITIO. El hub de los juegos vive en
+     hooporia.mobi, que es el gimnasio móvil, así que va en absoluto
+     y no en relativo.
+
+     Y LLEVA ?e=demo PEGADO. El equipo de un jugador se fija cuando se
+     le emite el código y no cambia después: quien entra sin equipo se
+     queda sin equipo para siempre y no sale en el tablero de nadie.
+     Sin esta cola, todo el que entrara por aquí jugaría solo sin
+     enterarse de por qué.
+
+     Es el equipo abierto —el de la demo, donde juega todo el mundo— y
+     no el de un programa. El día que un entrenador reparta el suyo,
+     reparte su propio enlace con su propia cola; éste es la puerta de
+     la calle. -->
+<div class="gym-cta">
+<a class="button" href="https://hooporia.mobi/fortress-mobile-hub.html?e=demo" data-i="entrar">Enter the Cognitivo Gym</a>
+<p data-i="heroSub">Play it before you read another word.</p>
+</div>
 </div>
 </section>
 
