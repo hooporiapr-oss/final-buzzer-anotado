@@ -49,50 +49,77 @@ const leer = (f) => fs.readFileSync(path.join(__dirname, f), 'utf8');
 
 /* El número, sacado de index.html tal cual se despliega. */
 const idx = leer('index.html');
-const mp = idx.match(/const PRECIO\s*=\s*(\d+)/);
+const mt = idx.indexOf('const TARIFAS = [');
 const mm = idx.match(/const MINIMO\s*=\s*(\d+)/);
-if (!mp) { console.log('  MAL  no encuentro PRECIO en index.html'); process.exit(1) }
-if (!mm) { console.log('  MAL  no encuentro MINIMO en index.html'); process.exit(1) }
-const PRECIO = +mp[1], MINIMO = +mm[1];
+if (mt < 0) { console.log('  MAL  no encuentro TARIFAS en index.html'); process.exit(1) }
+if (!mm)    { console.log('  MAL  no encuentro MINIMO en index.html');  process.exit(1) }
+const TARIFAS = new Function('return ' +
+  idx.slice(idx.indexOf('[', mt), idx.indexOf('];', mt) + 1))();
+const mf = idx.indexOf('const FEE = {');
+const FEE = new Function('return ' +
+  idx.slice(idx.indexOf('{', mf), idx.indexOf('}', mf) + 1))();
+const MINIMO = +mm[1];
+const SUELO = FEE.suelo;
 
-/* Las cifras de la escalera retirada. Cualquiera de éstas en una
-   página de dinero es la frase vieja sin cambiar. */
+/* Las cifras de la escalera POR PLANTILLA, que se retiró. Cualquiera
+   de éstas en una página de dinero es la frase vieja sin cambiar. */
 const RETIRADAS = [29, 49, 149, 349, 599];
 
-console.log('\n1 · El número, por dentro\n');
+console.log('\n1 · La escalera, por dentro\n');
 {
-  si(PRECIO > 0, 'PRECIO es un número de verdad: $' + PRECIO);
-  si(MINIMO > 0, 'y MINIMO también: ' + MINIMO + ' juegos');
+  si(TARIFAS.length >= 2, 'tiene ' + TARIFAS.length + ' peldaños');
 
-  /* El mínimo es de INSCRIPCIÓN, no un cargo. Un programa se apunta
-     con cinco juegos; si sólo consigue promesas en dos, paga dos. Si
-     algún día esto se convirtiera en un cargo mínimo, la promesa de
-     «sin promesas, sin cargo» se rompería — así que la página tiene
-     que seguir diciendo con qué se inscribe uno y no cobrarlo. */
-  si(!RETIRADAS.includes(PRECIO),
-     'y no es ninguno de los peldaños retirados');
+  /* MONÓTONA: si el juego recoge más promesas, el precio no puede
+     bajar. Un peldaño más barato que el anterior es una invitación a
+     recoger una promesa de menos para pagar menos. */
+  let sube = true, precios = [];
+  TARIFAS.forEach(p => { if (p.precio !== null) precios.push(p.precio) });
+  for (let k = 1; k < precios.length; k++) if (precios[k] <= precios[k-1]) sube = false;
+  si(sube, 'el precio sube con las promesas, peldaño a peldaño (' +
+     precios.map(x => '$' + x).join(' → ') + ')');
 
-  /* Que la escalera no haya vuelto por la puerta de atrás. */
-  si(idx.indexOf('const TARIFAS') === -1,
-     'la escalera por plantilla no está de vuelta en index.html');
+  /* CONTIGUA: el peldaño abierto es el último y no hay ninguno
+     después. Un hueco deja un juego sin precio. */
+  si(TARIFAS[TARIFAS.length-1].hasta === null,
+     'y la escalera acaba abierta, para el que no cabe en ninguno');
+  si(TARIFAS[TARIFAS.length-1].precio === null,
+     'ese último no lleva número: se habla');
+  const rotos = TARIFAS.slice(0, -1).filter(p => p.hasta === null || p.precio === null);
+  si(rotos.length === 0, 'y todos los demás llevan techo y precio');
+
+  /* EL SUELO NO SUBIÓ. Antes de esta escalera el precio era cinco
+     dólares planos por juego con promesas. Un juego chico no puede
+     salir pagando más que con el precio que sustituye: eso sería
+     subirle el precio al que menos recoge. */
+  si(precios[0] === SUELO,
+     'el primer peldaño es el suelo ($' + SUELO + '), el precio que sustituye');
+  si(!RETIRADAS.includes(precios[0]),
+     'y no es ninguno de los peldaños de la escalera por plantilla');
+
+  si(TARIFAS.some(p => p.precio === FEE.tope),
+     'FEE.tope ($' + FEE.tope + ') es uno de los peldaños');
 }
 
-console.log('\n2 · La portada lo pinta de PRECIO y no a mano\n');
+console.log('\n2 · La portada la pinta de TARIFAS y no a mano\n');
 {
-  /* El número va en el marcado como $5 para que la página se lea
-     aunque el JS no corra, pero lo pinta el JS desde PRECIO. Lo que
-     no puede pasar es que el marcado diga una cifra y PRECIO otra:
-     entonces el número salta al cargar y nadie sabe cuál es. */
-  const m = idx.match(/id="precioNum"[^>]*>\$(\d+)</);
-  if (!m) mal('no encuentro el número en el marcado de la portada');
-  else si(+m[1] === PRECIO,
-    'el marcado dice $' + m[1] + ' y PRECIO dice $' + PRECIO + ' — el mismo');
+  /* Seis peldaños escritos en el marcado es garantizar que un día
+     uno diga una cosa y la tabla otra. El marcado sólo lleva el
+     hueco; las filas las pone el pintor. */
+  si(/id="escalera"><\/div>/.test(idx.replace(/\s+/g, '')) ||
+     /id="escalera"/.test(idx),
+     'el marcado deja el hueco de la escalera');
+  si(/TARIFAS\.forEach/.test(idx),
+     'y el pintor la recorre entera, peldaño a peldaño');
 
-  si(/num\.textContent\s*=\s*'\$'\s*\+\s*PRECIO/.test(idx),
-     'y el pintor lo mete desde PRECIO, no desde una cifra escrita');
+  /* Y QUE NO SE PISEN LOS HUECOS. {D} y {H} son los de los rótulos
+     de cada fila; si conPrecio los sustituyera, las seis filas
+     saldrían con el mismo número y nada fallaría. */
+  const cp = idx.slice(idx.indexOf('function conPrecio'), idx.indexOf('function conPrecio') + 400);
+  si(!/\{D\}|\{H\}/.test(cp),
+     'y conPrecio no toca {D} ni {H}, que son los huecos de las filas');
 }
 
-console.log('\n3 · Las otras seis no lo contradicen\n');
+console.log('\n3 · Las otras seis no la contradicen\n');
 {
   /* Las páginas de letra pequeña no repiten el número en cifra:
      lo dicen con palabras —«cinco dólares por juego»— porque una
@@ -179,29 +206,43 @@ console.log('\n3 · Las otras seis no lo contradicen\n');
 
 console.log('\n4 · La demostración cobra lo que dice la portada\n');
 {
-  /* demo.html lleva su propia copia del precio, en una constante y no
-     en texto: calcula en vivo lo que habría recaudado un programa y
-     lo que costaría la licencia. Es el único sitio donde el precio no
-     se LEE —se calcula— así que un desfase aquí sale como un número
+  /* demo.html lleva su propia copia de la escalera, en constantes y
+     no en texto: calcula en vivo lo que habría recaudado un programa
+     y lo que costaría la licencia. Es el único sitio donde el precio
+     no se LEE —se calcula— así que un desfase sale como un número
      creíble y falso, y no lo nota nadie.
 
-     Tenía DOS constantes y un corte de plantilla, porque había dos
-     precios según el tamaño del equipo. Con el precio por juego la
-     plantilla no entra, así que ahora es una sola y tiene que valer
-     exactamente lo que vale PRECIO. */
+     Tuvo dos precios por plantilla, después uno solo, y ahora la
+     escalera. Lo que se exige es que sus peldaños sean EXACTAMENTE
+     los de la portada, y que el que use sea el que le toca a las
+     promesas que modela. */
   const d = leer('demo.html');
-  const m = d.match(/var LICENCIA\s*=\s*(\d+)/);
-  if (!m) mal('no encuentro LICENCIA en demo.html');
-  else si(+m[1] === PRECIO,
-    'su licencia ($' + m[1] + ') es la de la portada ($' + PRECIO + ')');
+  const i = d.indexOf('var TARIFAS_LIC = [');
+  if (i < 0) mal('no encuentro la escalera en demo.html');
+  else {
+    const suya = new Function('return ' + d.slice(d.indexOf('[', i), d.indexOf('];', i) + 1))();
+    si(JSON.stringify(suya) === JSON.stringify(TARIFAS),
+       'su escalera es la misma que la de la portada, peldaño a peldaño');
+
+    /* Y el peldaño que enseña es el que le toca. La demostración
+       modela doce jugadores con cuatro padrinos cada uno: 48
+       promesas, que caen en el tercer peldaño. Si alguien cambia los
+       padrinos o la plantilla y no mira el precio, esto lo dice. */
+    const mp = d.match(/PADRINOS\s*=\s*(\d+)/);
+    const mq = d.match(/PLANTILLA\s*=\s*(\d+)/);
+    if (!mp || !mq) mal('no encuentro padrinos y plantilla en demo.html');
+    else {
+      const n = +mp[1] * +mq[1];
+      let toca = null;
+      for (const p of TARIFAS) { if (p.hasta === null || n <= p.hasta) { toca = p.precio; break } }
+      si(/var LICENCIA = peldano\(PROMESAS\)/.test(d),
+         'y el precio lo saca de la escalera y no de una cifra escrita');
+      ok('modela ' + n + ' promesas, que es el peldaño de $' + toca);
+    }
+  }
 
   si(!/LICENCIA_CHICA|PLANTILLA_CHICA/.test(d),
      'y ya no lleva las dos tarifas por plantilla');
-
-  /* La fila del precio sigue saliendo de la constante y no de una
-     cifra escrita en el rótulo. */
-  si(/fila\(T\('cl1'\),\s*money\(LICENCIA\)\)/.test(d),
-     'y la fila del precio se pinta desde la constante');
 }
 
 console.log('\n4b · Y al padrino no se le suma nada\n');
