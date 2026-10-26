@@ -202,6 +202,32 @@ header{background:var(--navy);color:white;border-bottom:1px solid #ffffff22;
 .gym-libre{margin:26px 0 0;color:#fff;font-weight:800;font-size:1.05rem}
 .gym-libre2{margin:6px 0 0;color:#c8d2dd;font-weight:600;font-size:.95rem}
 @media(max-width:720px){ .estaciones{grid-template-columns:1fr} }
+
+/* ══ LO QUE DA UN JUEGO ═══════════════════════════════════════════
+   Una cuenta, no una tabla: dos columnas, el concepto a la
+   izquierda y el número a la derecha, y los números alineados por
+   la derecha con cifras de ancho fijo para que $15.00 y $720.00
+   caigan uno debajo del otro. */
+.vale{max-width:620px;margin:34px 0 0;background:#fff;border:1px solid #e7e6e2;
+  border-radius:16px;padding:8px 24px 24px;box-shadow:0 8px 25px #17243808}
+.vale-h{font-size:.68rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);margin:22px 0 4px}
+.vfila{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  padding:9px 0;border-top:1px solid #f0efec}
+.vfila span{color:var(--muted)}
+.vfila b{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--navy)}
+/* La línea que cierra cada bloque va en el color de la marca: es la
+   que contesta la pregunta, y las de arriba sólo la montan. */
+.vfila-tot b{color:var(--orange);font-size:1.15rem}
+.vale-tot{display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+  margin-top:20px;padding-top:18px;border-top:2px solid var(--navy)}
+.vale-tot b{font-size:2.4rem;font-weight:900;letter-spacing:-.04em;line-height:1;
+  color:var(--navy);font-variant-numeric:tabular-nums}
+.vale-tot span{color:var(--muted);font-weight:600}
+/* La letra pequeña, que es la que dice que esto no es una promesa.
+   Va del ancho de la cuenta y no de la página: separada de ella
+   parecía una nota de otra cosa. */
+.vale-nota{max-width:620px;color:var(--muted);margin:18px 0 0;font-size:.95rem}
 .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:34px}
 .feature{padding:24px;border:1px solid #ffffff25;border-radius:14px;background:#ffffff08}
 .feature strong{display:block;font-size:1.12rem;margin-bottom:6px}
@@ -598,6 +624,54 @@ button.lang{padding:0 10px;font-size:.8rem}
 </div>
 </section>
 
+<!-- ══════════════════════════════════════════════════════════════════
+     LO QUE DA UN JUEGO
+
+     Va entre los tres pasos y el precio, y ése es su sitio: primero
+     cómo funciona, después qué da, y sólo entonces qué cuesta. Un
+     entrenador que lee «cinco dólares por juego» sin haber visto
+     antes lo que recoge un juego está leyendo un gasto.
+
+     LOS NÚMEROS SON LOS DE scoreboard.html, que es la pantalla donde
+     un padrino promete de verdad: sesenta puntos de ejemplo cuando
+     el equipo todavía no ha jugado, tarifas de 10¢, 25¢, 50¢ y $1, y
+     el piso de $5 por promesa. Si esta sección inventara los suyos,
+     la portada y la pantalla de prometer dirían dos cosas distintas
+     sobre el mismo juego — que es exactamente el fallo que se
+     arregló hoy en esa misma pantalla.
+
+     Y ESTO ERA DEL GIMNASIO. La pestaña «WHAT IT RAISES» del tablero
+     enseñaba esta cuenta contada como una corrida de un jugador. El
+     gimnasio es gratis y se licencia aparte; poner ahí dentro lo que
+     recauda un programa mezclaba el producto gratis con el de pago.
+     Se trae aquí, contado como lo que es: un juego de baloncesto.
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="vale">
+<div class="wrap">
+<div class="eyebrow" data-i="vLabel">What one game brings in</div>
+<h2 data-i="vTitle">Sixty points, and what they were worth.</h2>
+<p class="intro" data-i="vIntro">A worked example on a team that scores sixty &mdash; a normal night, not a big one. Nothing here is a pledge and no money has moved; this is what those points would come to if the game carried pledges.</p>
+
+<div class="vale">
+<div class="vale-h" data-i="vH1">One padrino</div>
+<div class="vfila"><span data-i="v1">The team scores</span><b data-i="v1v">60 points</b></div>
+<div class="vfila"><span data-i="v2">They pledged, per point</span><b data-i="v2v">25&cent;</b></div>
+<div class="vfila vfila-tot"><span data-i="v3">So they owe the program</span><b data-i="v3v">$15.00</b></div>
+
+<div class="vale-h" data-i="vH2">Now the whole roster</div>
+<div class="vfila"><span data-i="v4">Players, each finding their own</span><b data-i="v4v">12</b></div>
+<div class="vfila"><span data-i="v5">Padrinos each one brings</span><b data-i="v5v">4</b></div>
+<div class="vfila"><span data-i="v6">Which is padrinos in total</span><b data-i="v6v">48</b></div>
+
+<div class="vale-tot"><b>$720.00</b><span data-i="vTot">for the program, from one game</span></div>
+</div>
+
+<p class="vale-nota" data-i="vNota">Pledges start at 10&cent; and go to $1 a point, so a padrino who wants to give more does it by the point rather than by being asked twice. A pledge under $5 closes out owing nothing &mdash; at 25&cent; that is any game past twenty points. And the program is paid directly: the money never passes through us.</p>
+
+<p class="priceCta"><a class="button" href="cobro.html" data-i="vLink">See how you collect it &rarr;</a></p>
+</div>
+</section>
+
 <!-- Aquí vivía la tarjeta del scrimmage — «Scrimmage · 4 cuartos ·
      Los cuatro cuartos completos» — con el único enlace de la
      portada a fortress-vr.html.
@@ -627,25 +701,23 @@ button.lang{padding:0 10px;font-size:.8rem}
 <section class="section" id="precio">
 <div class="wrap">
 <div class="eyebrow" data-i="priceLabel">What it costs</div>
-<h2 data-i="priceTitle">Five dollars a game. Only the games you put pledges on.</h2>
-<p class="intro" data-i="priceDesc">You pick which games on your schedule carry pledges &mdash; a program signs up for five to start, and there is no ceiling. Each game that records pledges is five dollars; each game that records none is nothing. The report is yours to print the moment a game closes, and the invoice comes after that.</p>
+<h2 data-i="priceTitle">From five dollars a game, and only the games with pledges on them.</h2>
+<p class="intro" data-i="priceDesc">You pick which games on your schedule carry pledges &mdash; a program signs up for five to start, and there is no ceiling. What a game costs is set by how many pledges it gathered, nothing else: a quiet game stays at five dollars and a big one climbs. A game with no pledges costs nothing at all. The report is yours to print the moment a game closes, and the invoice comes after that.</p>
 
 <!-- UN PRECIO, NO UNA TABLA. Esto se pintaba desde TARIFAS porque
      había seis peldaños que cruzar; con un solo número, el marcado
      lo dice y se acabó. El número sigue viviendo en PRECIO y se
      mete aquí al pintar, para que no haya una cifra escrita a mano
      que un día se quede vieja. -->
-<div class="prices">
-<div class="peldano suyo">
-<span class="cuantos" data-i="escJuego">Each game you put pledges on</span>
-<span class="cuesta" id="precioNum">$5</span>
-</div>
-</div>
-<p class="priceNota" data-i="priceEscala">The same five dollars whatever the game is — a round-robin game, a bracket game, a league game. It does not move with your roster, with how much you raise, or with how many padrinos a game brings in.</p>
+<!-- La escalera se PINTA desde TARIFAS. Escribir seis peldaños a
+     mano en el marcado es garantizar que un día uno diga una cosa y
+     la tabla otra. -->
+<div class="prices" id="escalera"></div>
+<p class="priceNota" data-i="priceEscala">The step is set by how many pledges a game gathered — not by what it raised. Two games with twenty pledges cost the same whether one brought in a hundred dollars and the other ten thousand. It does not move with your roster either.</p>
 
 <ul class="pricefacts">
   <li data-i="pf1">Nothing up front. Signing up is free and running it is free.</li>
-  <li data-i="pf0"><b>No pledges, no fee.</b> A game that records no pledges is never invoiced &mdash; not at five dollars, not at anything.</li>
+  <li data-i="pf0"><b>No pledges, no fee.</b> A game that records no pledges has no step and is never invoiced.</li>
   <li data-i="pf2">Invoiced for the games that carried pledges, due within seven days.</li>
   <li data-i="pf3">Not a percentage of anything. It does not come out of any pledge, and your padrinos are charged nothing.</li>
   <li data-i="pf4">If it is not paid, that licence lapses and its pledge data comes off the platform. We do not chase it any further.</li>
@@ -751,7 +823,34 @@ button.lang{padding:0 10px;font-size:.8rem}
    MINIMO no es un cargo: es lo que un programa activa al inscribirse.
    Un juego sin promesas no se factura nunca, así que un programa que
    activa cinco y sólo consigue promesas en dos paga dos. */
-const PRECIO = 5;      // dólares, por juego con promesas
+/* LA ESCALERA, POR PROMESAS DEL JUEGO.
+
+   Hubo una escalera por tamaño de plantilla que cobraba por evento;
+   se retiró. La sustituyó un número suelto —cinco dólares por juego
+   con promesas— y ese número tampoco distinguía: un juego con ocho
+   padrinos y uno con ochenta costaban lo mismo.
+
+   Ahora el peldaño lo decide cuántas promesas lleva ESE juego. El
+   suelo sigue en los cinco dólares de antes, así que un juego chico
+   no paga más que ayer, y el que recoge mucho sube.
+
+   SIGUE SIN SER UN POR CIENTO, y eso importa porque los términos lo
+   dicen con todas las letras: el peldaño lo fija CUÁNTAS promesas
+   hay, no cuánto dan. Dos juegos con veinte promesas pagan lo mismo
+   hayan recogido cien dólares o diez mil.
+
+   Y un juego sin promesas no tiene peldaño: no se factura. */
+const TARIFAS = [
+  { hasta:  10, precio:  5 },
+  { hasta:  25, precio: 12 },
+  { hasta:  50, precio: 25 },
+  { hasta: 100, precio: 45 },
+  { hasta: 200, precio: 79 },
+  { hasta: null, precio: null }      // más de 200: se habla
+];
+/* El peldaño del suelo es el que sale en las frases sueltas que
+   hablan de «el precio»: casi todos los juegos caen ahí al empezar. */
+const FEE = { suelo: 5, tope: 79, desdeTope: 200 };
 const MINIMO = 5;      // juegos que un programa activa al inscribirse
 
 const translations={
@@ -777,6 +876,26 @@ s2d:'Juega su juego como ya lo iba a jugar. El marcador entra en el tablero y no
 sClose:'CUANDO ENTRA EL MARCADOR',
 s3t:'Los padrinos reciben el marcador. Al programa se le paga.',
 s3d:'Cada padrino recibe un correo con el marcador final y lo que dio su promesa, y un enlace para pagarle directo al programa. El dinero no pasa por nosotros.',
+
+/* LO QUE DA UN JUEGO. Los números van en su propia llave —v1v, v2v…—
+   y no metidos dentro de la frase: así la cuenta se lee igual en los
+   dos idiomas sin que haya que traducir un 60 ni un 48, y el día que
+   cambien se cambian donde están y no buscándolos dentro de una
+   oración. */
+vLabel:'Lo que da un juego',
+vTitle:'Sesenta puntos, y lo que valieron.',
+vIntro:'La cuenta sobre un equipo que anota sesenta — una noche normal, no una grande. Aquí no hay ninguna promesa y no se ha movido un peso; esto es lo que darían esos puntos si el juego llevara promesas.',
+vH1:'Un padrino',
+v1:'El equipo anota', v1v:'60 puntos',
+v2:'Él prometió, por punto', v2v:'25¢',
+v3:'Así que le debe al programa', v3v:'$15.00',
+vH2:'Ahora la plantilla entera',
+v4:'Jugadores, cada uno buscando los suyos', v4v:'12',
+v5:'Padrinos que trae cada uno', v5v:'4',
+v6:'Que son padrinos en total', v6v:'48',
+vTot:'para el programa, de un solo juego',
+vNota:'Las promesas empiezan en 10¢ y llegan a $1 por punto, así que el padrino que quiera dar más lo hace por punto y no porque se le pida dos veces. Una promesa que no llega a $5 se cierra sin deber nada — a 25¢ eso es cualquier juego que pase de veinte puntos. Y al programa se le paga directo: el dinero no pasa por nosotros.',
+vLink:'Mira cómo lo cobras →',
 
 /* Las cuatro estaciones. «On the floor» es la misma llave en las
    cuatro tarjetas a propósito: es un rótulo y no una frase, y una
@@ -807,13 +926,16 @@ promiseLabel:'Nuestra posición',
 promise:'Nosotros manejamos las promesas.<br><span class="orange">Ustedes manejan los fondos.</span>',
 promiseDesc:'Cada Punto Cuenta es estrictamente un proveedor de software de manejo de promesas. Las organizaciones manejan sus fondos de forma independiente.',
 
-priceEscala:'Los mismos cinco dólares sea el juego que sea &mdash; de round robin, de cuadro, de liga. No se mueve con tu plantilla, ni con lo que recaudes, ni con cuántos padrinos traiga un juego.',
-escJuego:'Cada juego en el que pongas promesas',
+priceEscala:'El peldaño lo fija cuántas promesas recogió el juego, no lo que dieron. Dos juegos con veinte promesas cuestan lo mismo aunque uno recogiera cien dólares y el otro diez mil. Tampoco se mueve con tu plantilla.',
+escHasta:'Hasta {H} promesas en el juego',
+escEntre:'De {D} a {H} promesas',
+escDesde:'{D} promesas o más',
+escHablar:'Hablemos',
 priceLabel:'Cuánto cuesta',
-priceTitle:'Cinco dólares por juego. Sólo los juegos en los que pongas promesas.',
-priceDesc:'Escoges en qué juegos de tu calendario van las promesas &mdash; un programa se inscribe con cinco para empezar, y no hay techo. Cada juego que recoge promesas son cinco dólares; cada juego que no recoge ninguna, nada. El reporte es tuyo para imprimirlo en cuanto cierra un juego, y el cargo llega después de eso.',
+priceTitle:'Desde cinco dólares por juego, y sólo los juegos que lleven promesas.',
+priceDesc:'Escoges en qué juegos de tu calendario van las promesas &mdash; un programa se inscribe con cinco para empezar, y no hay techo. Lo que cuesta un juego lo fija cuántas promesas recogió, y nada más: un juego flojo se queda en cinco dólares y uno grande sube. Un juego sin promesas no cuesta nada. El reporte es tuyo para imprimirlo en cuanto cierra un juego, y el cargo llega después de eso.',
 pf1:'Nada por adelantado. Inscribirse es gratis y correrlo es gratis.',
-pf0:'<b>Sin promesas, sin cargo.</b> Un juego que no recoge ni una promesa no se factura nunca &mdash; ni a cinco dólares ni a nada.',
+pf0:'<b>Sin promesas, sin cargo.</b> Un juego que no recoge ni una promesa no tiene peldaño y no se factura nunca.',
 pf2:'Se factura por los juegos que llevaron promesas, y se paga dentro de siete días.',
 pf3:'No es un por ciento de nada. No sale de ninguna promesa, y a tus padrinos no les cobramos nada.',
 pf4:'Si no se paga, esa licencia caduca y sus datos de promesas se retiran de la plataforma. No lo reclamamos más allá de ahí.',
@@ -840,12 +962,13 @@ lMoney:'El dinero no pasa por nosotros'
 const english={};
 document.querySelectorAll('[data-i]').forEach(el=>english[el.dataset.i]=el.innerHTML);
 
-/* Aquí había cinco rótulos de la escalera —«Plantilla hasta {H}»,
-   «por evento»— que no vivían en ningún elemento porque los pintaba
-   el JS. Se van con la escalera. El único rótulo del precio que
-   queda, escJuego, SÍ está en un elemento, así que su inglés se
-   recoge del marcado como todo lo demás y no hace falta ponerlo
-   aquí a mano. */
+/* Los rótulos de la escalera no viven en ningún elemento: los pinta
+   el JS a partir de TARIFAS. Se ponen aquí, al lado de la recogida
+   del inglés, para que no haya dos sitios donde buscarlo. */
+english.escHasta  = 'Up to {H} pledges on the game';
+english.escEntre  = '{D} to {H} pledges';
+english.escDesde  = '{D} pledges or more';
+english.escHablar = 'Let us talk';
 
 /* El precio, metido en las dos tablas antes de que se pinte una sola
    vez — así ninguna de las dos lleva el número escrito a mano.
@@ -856,12 +979,22 @@ document.querySelectorAll('[data-i]').forEach(el=>english[el.dataset.i]=el.inner
    que se inscribe un programa. Los viejos se siguen sustituyendo por
    si alguna frase de otra página llega aquí con ellos puestos —
    apuntan los tres al mismo número, que es el único que hay. */
+/* OJO CON LAS LETRAS QUE SE USAN AQUÍ. Esto corre sobre las dos
+   tablas enteras antes de pintar nada, así que cualquier {X} que
+   aparezca en cualquier frase se sustituye.
+
+   {D} y {H} NO pueden estar: son los huecos de los rótulos de la
+   escalera —«De {D} a {H} promesas»— y los rellena el pintor con el
+   peldaño de cada fila. Si se sustituyeran aquí, las seis filas
+   saldrían con el mismo número y la escalera diría seis veces lo
+   mismo sin que nada fallara.
+
+   Por eso el techo va en {V} y no en {D}. */
 function conPrecio(s){
-  return String(s).split('{P}').join(PRECIO)
-                  .split('{M}').join(MINIMO)
-                  .split('{A}').join(PRECIO)
-                  .split('{B}').join(PRECIO)
-                  .split('{N}').join(MINIMO);
+  return String(s).split('{P}').join(FEE.suelo)
+                  .split('{T}').join(FEE.tope)
+                  .split('{V}').join(FEE.desdeTope)
+                  .split('{M}').join(MINIMO);
 }
 Object.keys(english).forEach(k=>{ english[k]=conPrecio(english[k]) });
 Object.keys(translations.es).forEach(k=>{ translations.es[k]=conPrecio(translations.es[k]) });
@@ -911,8 +1044,31 @@ function pintarEscalera(){
      no haya una cifra escrita a mano que sobreviva al día que
      cambie. Si el elemento no está, no pasa nada: la página no
      depende de esto para leerse. */
-  var num = document.getElementById('precioNum');
-  if (num && typeof PRECIO !== 'undefined') num.textContent = '$' + PRECIO;
+  /* Una fila por peldaño, leídas de TARIFAS. El del suelo va
+     resaltado: es donde cae un juego normal, y es el número que
+     alguien se lleva en la cabeza. */
+  var caja = document.getElementById('escalera');
+  if (!caja || typeof TARIFAS === 'undefined') return;
+  var t = function(k){
+    return (locale === 'es' ? (translations.es[k] || english[k]) : english[k]) || '';
+  };
+  var desde = 1, filas = '';
+  TARIFAS.forEach(function(p){
+    var etiqueta;
+    if (p.hasta === null)  etiqueta = t('escDesde').split('{D}').join(desde);
+    else if (desde === 1)  etiqueta = t('escHasta').split('{H}').join(p.hasta);
+    else                   etiqueta = t('escEntre').split('{D}').join(desde)
+                                                   .split('{H}').join(p.hasta);
+    var suyo = p.precio === FEE.suelo ? ' suyo' : '';
+    var cuesta = p.precio === null
+      ? '<span class="hablar">' + t('escHablar') + '</span>'
+      : '<span class="cuesta">$' + p.precio + '</span>';
+    filas += '<div class="peldano' + suyo + '">' +
+               '<span class="cuantos">' + etiqueta + '</span>' + cuesta +
+             '</div>';
+    if (p.hasta !== null) desde = p.hasta + 1;
+  });
+  caja.innerHTML = filas;
 }
 
 /* El botón dice a dónde lleva, no dónde estás: en inglés, «Español».
