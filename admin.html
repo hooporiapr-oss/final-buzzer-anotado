@@ -474,8 +474,14 @@ function pintarSolicitudes(rows){
   rows = rows || [];
   var caja = $('solicitudes');
   if (!rows.length){
+    /* «Nothing waiting» y nada más. Decía «every signup has been
+       handled», y con la tabla recién creada eso era mentira: cero
+       filas nuevas no distingue entre «se atendieron todas» y «no ha
+       llegado ninguna nunca», y en una tabla vacía la segunda es la
+       verdadera. Sabría cuál es con otra consulta, y no vale una
+       consulta por una frase. */
     caja.innerHTML = '<p class="pista">' +
-      (SOL_TODAS ? 'No signups yet.' : 'Nothing waiting. Every signup has been handled.') +
+      (SOL_TODAS ? 'No signups yet.' : 'Nothing waiting.') +
       '</p>';
     return;
   }
