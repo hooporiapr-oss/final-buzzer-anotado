@@ -224,7 +224,11 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,
 
    PLANTILLA = 12 es un equipo, no una proyección optimista. */
 var PADRINOS = 4, TARIFA = 0.25, PLANTILLA = 12, PISO = 5;
-var LICENCIA = 49, LICENCIA_CHICA = 29, PLANTILLA_CHICA = 8;
+/* UN SOLO PRECIO, POR JUEGO CON PROMESAS. Eran dos —$49 para una
+   plantilla de ocho o más, $29 por debajo— y un corte de plantilla
+   que decidía cuál tocaba. Con el precio por juego la plantilla no
+   entra en el cálculo, así que las tres se quedan en una. */
+var LICENCIA = 5;
 
 var S = {
 es:{
@@ -271,12 +275,11 @@ es:{
   recaudaSub:'de un solo evento',
 
   pasoCoste:'Lo que te cuesta',
-  costeP:'Una licencia por evento. Nada por adelantado, y nada si nadie promete.',
-  cl1:'Por evento, plantilla de ocho o más',
-  cl2:'Si la plantilla tiene menos de ocho',
-  cl3:'Sin promesas',
+  costeP:'Cinco dólares por juego con promesas, sin techo. Nada por adelantado, y nada por un juego en el que nadie promete.',
+  cl1:'Por cada juego en el que pongas promesas',
+  cl3:'Un juego sin promesas',
   nada:'nada',
-  costeNota:'Se factura cuando el evento cierra y se paga en siete días. Los padrinos le pagan al programa directo — nosotros no tocamos ese dinero nunca.',
+  costeNota:'Se factura por los juegos que llevaron promesas y se paga en siete días. Los padrinos le pagan al programa directo — nosotros no tocamos ese dinero nunca.',
 
   pasoHaces:'Lo que tienes que hacer tú',
   h1:'Mandar un enlace al grupo del equipo.',
@@ -327,12 +330,11 @@ en:{
   recaudaSub:'from a single event',
 
   pasoCoste:'What it costs you',
-  costeP:'One licence per event. Nothing up front, and nothing at all if nobody pledges.',
-  cl1:'Per event, roster of eight or more',
-  cl2:'If the roster is under eight',
-  cl3:'No pledges',
+  costeP:'Five dollars per game with pledges on it, with no ceiling. Nothing up front, and nothing at all for a game nobody pledges on.',
+  cl1:'For each game you put pledges on',
+  cl3:'A game with no pledges',
   nada:'nothing',
-  costeNota:'Invoiced when the event closes, due in seven days. Padrinos pay the program directly — we never touch that money.',
+  costeNota:'Invoiced for the games that carried pledges, due in seven days. Padrinos pay the program directly — we never touch that money.',
 
   pasoHaces:'What you have to do',
   h1:'Send one link to the team group.',
@@ -477,7 +479,6 @@ function cuenta(P){
     '<div class="paso"><h2>' + esc(T('pasoCoste')) + '</h2>' +
       '<p>' + esc(T('costeP')) + '</p>' +
       fila(T('cl1'), money(LICENCIA)) +
-      fila(T('cl2'), money(LICENCIA_CHICA)) +
       fila(T('cl3'), esc(T('nada'))) +
       '<p class="nota" style="margin-top:12px">' + esc(T('costeNota')) + '</p>' +
     '</div>' +
