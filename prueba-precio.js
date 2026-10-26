@@ -204,6 +204,51 @@ console.log('\n4 · La demostración cobra lo que dice la portada\n');
      'y la fila del precio se pinta desde la constante');
 }
 
+console.log('\n4b · Y al padrino no se le suma nada\n');
+{
+  /* ESTA SECCIÓN EXISTE POR UN FALLO QUE SE ESCAPÓ.
+
+     El 26 de octubre de 2026 se portó scoreboard.html desde la
+     generación anterior. Se le miró la marca, la barra, los enlaces
+     y las cuatro pruebas del sitio, y pasó todas — porque ninguna
+     miraba lo que esa página le dice a un padrino sobre dinero.
+
+     Y lo que le decía era que a su promesa se le añadía un 20% de
+     plataforma. No era sólo texto: la línea se calculaba y los
+     botones de tarifa enseñaban el total multiplicado por 1.20. Una
+     promesa de $25.00 le salía por $30.00.
+
+     Ese cargo se retiró del producto cuando Cada Punto pasó a
+     licenciarse al programa. Los términos, la divulgación, el FAQ y
+     la hoja de alta dicen desde entonces que no es un por ciento de
+     nada y que al padrino no se le cobra nada. La página portada
+     decía lo contrario, en la pantalla donde alguien promete.
+
+     Las páginas que mira esto son las que ve un padrino. No se les
+     exige que hablen de la licencia —no es asunto suyo— sino que no
+     le sumen nada a lo que prometió. */
+  const DEL_PADRINO = ['prometer.html', 'scoreboard.html',
+                       'padrinos.html', 'jugador.html'];
+
+  for (const f of DEL_PADRINO) {
+    let t;
+    try { t = leer(f) } catch (e) { mal('no encuentro ' + f); continue }
+    const limpio = t.replace(/<!--[\s\S]*?-->/g, '')
+                    .replace(/\/\*[\s\S]*?\*\//g, '');
+
+    /* Un por ciento de plataforma, dicho de cualquier manera. */
+    const porCiento = /platform fee|cargo de plataforma|% de plataforma|\d+% platform/i
+      .test(limpio);
+    si(!porCiento, f + ' no le nombra ningún cargo de plataforma al padrino');
+
+    /* Y sin calcularlo por lo bajo. Ésta es la que habría cazado el
+       fallo: el texto se puede cambiar y dejar la cuenta puesta, y
+       entonces la página dice una cosa y cobra otra. */
+    const calcula = /\*\s*0\.20\b|\*\s*1\.20\b|\*\s*0,20\b/.test(limpio);
+    si(!calcula, f + ' tampoco se lo calcula por lo bajo');
+  }
+}
+
 console.log('\n5 · Y nadie promete una deducción\n');
 {
   /* No es una comprobación de precio, pero vive aquí porque es la
