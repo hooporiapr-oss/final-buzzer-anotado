@@ -194,8 +194,14 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      cuatro peldaños sino que el número salga del sitio donde vive, y
      que la plantilla NO aparezca en el cálculo. */
   has(t,/\$5\b/,'el número, a la vista');
-  has(t,/Cada juego en el que pongas promesas/,'y qué se paga con él');
-  has(t,/sea el juego que sea/,'el mismo precio para cualquier juego');
+  /* LA ESCALERA VOLVIÓ, pero por PROMESAS del juego y no por tamaño
+     de plantilla. El número suelto de cinco dólares no distinguía un
+     juego con ocho padrinos de uno con ochenta.
+     Se exigen los dos extremos y que el suelo siga en cinco: un juego
+     chico no puede pagar más que con el precio anterior. */
+  has(t,/Hasta 10 promesas/,'el peldaño de abajo, por promesas');
+  has(t,/201 promesas o más/,'y el de arriba, abierto');
+  has(t,/no lo que dieron/,'y que lo fija cuántas, no cuánto');
   not(t,/Plantilla hasta|Plantilla de \d/,'y la escalera por plantilla ya no está');
   not(t,/\$29\b|\$49\b|\$349\b|\$599\b/,'ni ninguno de sus peldaños');
   not(t,/\{A\}|\{B\}|\{N\}/,'sin plantillas sin rellenar');
@@ -211,7 +217,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   const aLaVista = () => p.evaluate(()=>document.body.innerText);
   let v = await aLaVista();
   has(v,/\$5\b/,'el 5 se lee con la página como la encuentra cualquiera');
-  has(v,/Cinco dólares por juego/,'con su titular, que es el argumento');
+  has(v,/Desde cinco dólares por juego/,'con su titular, que es el argumento');
   has(v,/Nada por adelantado/,'nada por adelantado');
   has(v,/Se factura por los juegos que llevaron promesas/,'cuándo se factura');
   /* EL MÍNIMO ES DE INSCRIPCIÓN, NO UN CARGO. Un programa se apunta
@@ -229,7 +235,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      esto se escribiera como "hasta que te paguen", sería mentira y
      además sonaría a que el dinero pasa por aquí. */
   has(v,/Sin promesas, sin cargo/,'la promesa, dicha en la página');
-  has(v,/no recoge ni una promesa no se factura/,'y qué significa exactamente');
+  has(v,/no tiene peldaño y no se factura/,'y qué significa exactamente');
   not(v,/hasta que te paguen|cuando cobres|de lo que recaudes/i,
       'y en ningún sitio dice que se pague con lo recaudado');
   not(v,/\{A\}|\{B\}|\{N\}/,'sin plantillas sin rellenar');
@@ -312,7 +318,8 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(en,/Padrinos pledge on the game/,'who pledges, and on what');
   has(en,/every point the team scores/,'per point the TEAM scores');
   has(en,/\$5\b/,'the number');
-  has(en,/Each game you put pledges on/,'and what it buys');
+  has(en,/Up to 10 pledges/,'the bottom step, by pledges');
+  has(en,/201 pledges or more/,'and the open top');
   not(en,/Roster up to|Roster of \d/,'the roster ladder is gone');
   not(en,/\$29\b|\$49\b|\$349\b|\$599\b/,'and so are its steps');
   has(en,/strictly a pledge management software provider/i,'only the pledge software');
@@ -322,13 +329,13 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(en,/never passes through us/,'and it never passes through us');
   const ven = await aLaVista();
   has(ven,/\$5\b/,'the price reads in English too, nothing to open');
-  has(ven,/Five dollars a game/,'with its heading');
+  has(ven,/From five dollars a game/,'with its heading');
   has(ven,/signs up for five to start/,'the five is what you sign up with');
   has(ven,/Nothing up front/,'and nothing up front');
   has(ven,/No pledges, no fee/,'the promise, in English');
   has(await p.$eval('#precio a.button', e=>e.textContent.trim()),
       /^Sign up my team$/, 'and the button says it in English too');
-  has(ven,/records no pledges is never invoiced/,'and what it means');
+  has(ven,/no step and is never invoiced/,'and what it means');
   not(ven,/out of what you raise|once you have been paid/i,
       'and nowhere does it say the fee comes out of what was raised');
   not(en,/\{A\}|\{B\}|\{N\}/,'sin plantillas');
