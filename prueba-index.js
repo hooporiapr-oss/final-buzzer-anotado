@@ -68,17 +68,30 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
       .map(a=>a.getAttribute('href'))
       .filter(h=>/^(demo|fortress|fortress-vr)\.html/.test(h)));
   const fs2 = require('fs'), pa = require('path');
-  juegos.length > 0
-    ? ok('la portada tiene ' + juegos.length + ' puerta(s) al juego')
-    : mal('la portada no lleva al juego por ningún lado');
+  /* LA PORTADA YA NO LLEVA A NINGÚN JUEGO DE ESTE SITIO, y desde el
+     26 de octubre de 2026 eso es a propósito. El botón de la demo
+     era el último que quedaba y se quitó del paso de LA VENTANA.
+
+     Esto exigía lo contrario —que hubiera al menos una puerta, y que
+     una de ellas fuera la demo— porque el fallo de verdad era una
+     portada que se quedara sin camino al producto sin que nadie lo
+     notara. Ahora no hay ninguna, así que lo que se vigila cambia:
+     ya no «que haya», sino que lo que haya apunte a un fichero que
+     existe, y que la demo siga EN EL REPO aunque nadie la enlace.
+
+     Un fichero que no se enlaza desde ningún sitio es un fichero que
+     alguien borra en una limpieza dentro de seis meses. Esta línea
+     es lo único que queda diciendo que demo.html tiene que seguir
+     ahí. */
+  ok('la portada tiene ' + juegos.length + ' puerta(s) a un juego de este sitio');
   for (const h of [...new Set(juegos)]){
     fs2.existsSync(pa.resolve(__dirname, h.split('?')[0]))
       ? ok('el enlace ' + h + ' existe en el repo')
       : mal('el enlace ' + h + ' NO existe');
   }
-  juegos.some(h=>h.indexOf('demo.html')===0)
-    ? ok('y la demo es una de ellas')
-    : mal('la portada ya no lleva a la demo');
+  fs2.existsSync(pa.join(__dirname, 'demo.html'))
+    ? ok('demo.html sigue en el repo, aunque la portada ya no la enlace')
+    : mal('falta demo.html');
   /* fortress.html sigue existiendo y sigue siendo un juego válido para
      un reto —está en la lista del admin— pero ya no se enlaza desde la
      portada. Así que se comprueba que el fichero esté, no que la
