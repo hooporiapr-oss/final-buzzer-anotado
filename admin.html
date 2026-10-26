@@ -622,7 +622,23 @@ function pintarJuegos(id, js){
   js = js || [];
   if (!js.length){ c.innerHTML = '<p class="pista">No games registered.</p>'; return }
 
-  var cobrables = 0, total = 0, sinFacturar = 0;
+  var cobrables = 0, total = 0, sinFacturar = 0, aCobrar = 0, pendiente = 0, hablar = 0;
+
+  /* LA ESCALERA, LA MISMA QUE LA PORTADA. El peldaño lo fija cuántas
+     promesas recogió ESE juego, no lo que dieron: dos juegos con
+     veinte promesas cuestan igual hayan recogido cien dólares o diez
+     mil. Por eso se cuenta j.promesas y no j.recaudado.
+
+     Si estos números dejaran de ser los de index.html, el admin
+     facturaría una cifra distinta de la que un programa aceptó.
+     prueba-precio.js vigila que no pase. */
+  var ESCALERA = [[10,5],[25,12],[50,25],[100,45],[200,79],[null,null]];
+  var peldano = function(n){
+    for (var i = 0; i < ESCALERA.length; i++){
+      if (ESCALERA[i][0] === null || n <= ESCALERA[i][0]) return ESCALERA[i][1];
+    }
+    return null;
+  };
 
   c.innerHTML = '<table><tr>' +
       '<th>Game</th><th>When</th><th>Teams</th><th>Score</th>' +
@@ -674,10 +690,26 @@ function pintarJuegos(id, js){
           /* Facturable y sin facturar. Es el único estado que pide
              que alguien haga algo, así que es el único que sale con
              el número delante. */
-          cobro = '<b>$5</b>';
+          /* Un juego por encima del último peldaño no lleva número:
+             se habla. Inventarle uno aquí sería facturar algo que
+             nadie ha acordado. */
+          var cuesta = peldano(j.promesas);
+          cobro = (cuesta === null)
+            ? '<b class="pista">talk</b>'
+            : '<b>' + money(cuesta) + '</b>';
           sinFacturar++;
+          pendiente += (cuesta || 0);
         }
-        if (j.facturable){ cobrables++; total += Number(j.recaudado || 0) }
+        if (j.facturable){
+          cobrables++;
+          total += Number(j.recaudado || 0);
+          var c = peldano(j.promesas);
+          /* Un juego por encima del último peldaño no suma al total,
+             porque no tiene precio todavía. Pero se CUENTA: sumar
+             cero en silencio haría que la cuenta de abajo dijera
+             menos de lo que se va a cobrar, y nadie lo notaría. */
+          if (c === null) hablar++; else aCobrar += c;
+        }
       }
 
       return '<tr>' +
@@ -703,13 +735,17 @@ function pintarJuegos(id, js){
      nadie lo ha cobrado. */
   '<div class="tot">' +
     '<div><b>' + cobrables + '</b> billable game' + (cobrables === 1 ? '' : 's') +
-      ' <span class="pista">× $5 = ' + money(cobrables * 5) + '</span></div>' +
+      ' <span class="pista">worth ' + money(aCobrar) + ' in licence</span></div>' +
     '<div><b>' + money(total) + '</b> <span class="pista">pledged on them</span></div>' +
     /* Lo que falta por cobrar va aparte del total y sólo sale cuando
        hay algo: una línea que dice «0 sin facturar» en un torneo que
        no ha empezado es ruido en la pantalla que se abre a diario. */
-    (sinFacturar ? '<div><b>' + money(sinFacturar * 5) + '</b> ' +
+    (sinFacturar ? '<div><b>' + money(pendiente) + '</b> ' +
       '<span class="pista">not invoiced yet (' + sinFacturar + ')</span></div>' : '') +
+    /* Y los que pasan del último peldaño, dichos aparte. No llevan
+       número y por eso no están en las dos cifras de al lado. */
+    (hablar ? '<div><b>' + hablar + '</b> <span class="pista">over the top step &mdash; ' +
+      'price not set</span></div>' : '') +
   '</div>';
 }
 
@@ -1106,7 +1142,7 @@ function abrirReto(id){
     '<p class="m" id="mAvisos"></p><div id="reporte"></div></section>' +
 
     '<section class="caja"><h2>Licence</h2>' +
-    '<p class="sub">Five dollars per game with pledges on it. No ceiling, no pledges no fee. '+
+    '<p class="sub">From $5 a game, by how many pledges it gathered. No pledges, no fee. '+
     'It is invoiced automatically when the notices go out; this is here for the one that did not.</p>' +
     '<div class="btns"><button class="q" id="verLic">See what it would cost</button></div>' +
     '<p class="m" id="mLic"></p><div id="licencia"></div></section>';
