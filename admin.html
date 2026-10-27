@@ -248,6 +248,19 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
     <div id="nuevoCodigo" class="oculto" style="margin-top:12px">
       <label for="cLabel">Who it is for</label>
       <input id="cLabel" placeholder="Coach Diaz">
+
+      <!-- Un código de mesa no es un código de campaña. Quien apunta
+           marcadores en un torneo no tiene por qué llegar al
+           fundraiser de ningún equipo, ni poder rehacer el
+           calendario. Las dos cosas vienen apagadas. -->
+      <label style="font-weight:400;margin-top:12px">
+        <input type="checkbox" id="cSuelto">Tournament code — scorer&rsquo;s table, not tied to this campaign</label>
+      <label style="font-weight:400;margin-top:6px">
+        <input type="checkbox" id="cBuild">Can build and replace schedules</label>
+      <p class="sub" style="margin-top:6px">Leave both off for someone who only types scores.
+        Building replaces a tournament&rsquo;s whole calendar, so only give it to whoever owns the
+        schedule.</p>
+
       <div class="btns"><button id="crearCodigo">Create</button></div>
     </div>
     <p class="m" id="mCodigo"></p>
@@ -979,11 +992,17 @@ $('crearCamp').onclick = function(){
 function cargarCodigos(){
   rpc('bw_codes_list', {})
     .then(function(rows){
-      var mios = (rows || []).filter(function(r){ return r.campaign_id === CAMP.id || r.campaign === CAMP.name });
+      /* Los códigos de torneo no cuelgan de ninguna campaña, así que
+         con el filtro de antes no salían en ninguna pantalla: se
+         creaban y desaparecían de la vista. Salen aquí, marcados. */
+      var mios = (rows || []).filter(function(r){
+        return r.campaign_id === CAMP.id || r.campaign === CAMP.name || !r.campaign_id;
+      });
       $('codigos').innerHTML = mios.length
         ? mios.map(function(r){
             return '<div class="item"><span><b>' + esc(r.label) + '</b>' +
-              '<small>' + (r.build ? 'can build the schedule' : 'scores only') +
+              '<small>' + (r.campaign_id ? '' : 'tournament code · ') +
+              (r.build ? 'can build the schedule' : 'scores only') +
               (r.used ? ' · used ' + new Date(r.used).toLocaleDateString() : ' · never used') +
               '</small></span>' +
               '<span class="pill' + (r.active ? ' on' : '') + '">' +
@@ -996,7 +1015,10 @@ function cargarCodigos(){
 
 $('verCodigo').onclick = function(){ $('nuevoCodigo').classList.toggle('oculto') };
 $('crearCodigo').onclick = function(){
-  if (!CAMP) return di('mCodigo', 'Pick a campaign first.', 'mal');
+  var suelto = $('cSuelto').checked;          // sin campaña: mesa de torneo
+  var build  = $('cBuild').checked;           // puede rehacer un calendario
+
+  if (!suelto && !CAMP) return di('mCodigo', 'Pick a campaign first.', 'mal');
   var label = ($('cLabel').value || '').trim();
   if (!label) return di('mCodigo', 'Who is it for?', 'mal');
 
@@ -1013,12 +1035,24 @@ $('crearCodigo').onclick = function(){
      por su valor, no por su prefijo. */
   var recien = 'CP-' + Math.random().toString(36).slice(2,8).toUpperCase();
   di('mCodigo', '…');
-  rpc('bw_code_add', { p_label: label, p_code: recien, p_campaign: CAMP.id, p_build: true })
+  /* p_build venía escrito a mano como true, así que TODO código que
+     ha salido de aquí puede rehacer un calendario — incluido el de la
+     mesa. Ahora lo dice la casilla, y viene apagada. */
+  rpc('bw_code_add', { p_label: label, p_code: recien,
+                       p_campaign: suelto ? null : CAMP.id, p_build: build })
     .then(function(){
-      $('cLabel').value = ''; $('nuevoCodigo').classList.add('oculto');
-      /* Se escribe en la caja, que es de donde codigo() lo lee. */
-      $('codigoUso').value = CODE = recien;
-      try { localStorage.setItem('hoo-code-' + CAMP.id, recien) } catch(e){}
+      $('cLabel').value = '';
+      $('cSuelto').checked = false; $('cBuild').checked = false;
+      $('nuevoCodigo').classList.add('oculto');
+
+      /* Un código de torneo no es el código de esta campaña: no se
+         mete en la caja ni se guarda como el suyo, que es de donde
+         codigo() lo lee para el roster y el reporte. */
+      if (!suelto){
+        $('codigoUso').value = CODE = recien;
+        try { localStorage.setItem('hoo-code-' + CAMP.id, recien) } catch(e){}
+      }
+
       di('mCodigo', 'Created: ' + recien + ' — copy it now, it is never shown again.', 'ok');
       cargarCodigos();
     })
