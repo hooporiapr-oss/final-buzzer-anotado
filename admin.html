@@ -771,7 +771,10 @@ function pintarJuegos(id, js){
 
   c.innerHTML = '<table><tr>' +
       '<th>Game</th><th>When</th><th>Teams</th><th>Score</th>' +
-      '<th class="n">Pledges</th><th class="n">Raised</th><th>Bill</th>' +
+      /* «Raised» decía recaudado y no lo es: es lo prometido, que
+         está pendiente de que cada padrino pague. Es la misma
+         confusión que se arregló en la portada. */
+      '<th class="n">Pledges</th><th class="n">Pledged</th><th>Bill</th>' +
     '</tr>' +
     js.map(function(j){
       /* Un marcador que no está no es un cero: es un juego que no se
@@ -794,51 +797,63 @@ function pintarJuegos(id, js){
              del calendario no aparece en su campaña. Eso es un aviso:
              puede ser una fecha movida o un nombre escrito distinto,
              y mientras siga así sus promesas no salen por aquí. */
+      /* CADA LADO SE FACTURA APARTE, y esto antes no lo sabía.
+         Un juego donde los dos equipos recaudan son DOS licencias a
+         DOS programas distintos, cada una por el peldaño de SUS
+         promesas. Calcular un peldaño sobre la suma —22 promesas,
+         un escalón, $12— es la cifra equivocada: la verdad es
+         $12 de uno más $5 del otro. */
       var promesas, cobro;
+      var lados = j.lados || [];
+
       if (!j.hay_campana){
         promesas = '<span class="pista">—</span>';
         cobro    = '<span class="pista">no campaign</span>';
-      } else if (!j.hay_juego){
-        promesas = '<span class="pista">?</span>';
-        cobro    = '<b class="pista" title="This team has a campaign but this game is not in it ' +
-                   '— check the date and how the opponent is spelled.">not linked</b>';
       } else {
         promesas = j.promesas;
-        if (!j.facturable){
-          cobro = '<span class="pista">—</span>';
-        /* Los mismos colores que el resto del panel: verde lo
-           cerrado, ámbar lo que espera por otro, gris lo apuntado y
-           todavía quieto. */
-        } else if (j.licencia === 'pagada'){
-          cobro = '<span class="pill on">paid</span>';
-        } else if (j.licencia === 'enviada'){
-          cobro = '<span class="pill esp">sent</span>';
-        } else if (j.licencia === 'open'){
-          cobro = '<span class="pill">invoiced</span>';
-        } else {
-          /* Facturable y sin facturar. Es el único estado que pide
-             que alguien haga algo, así que es el único que sale con
-             el número delante. */
-          /* Un juego por encima del último peldaño no lleva número:
-             se habla. Inventarle uno aquí sería facturar algo que
-             nadie ha acordado. */
-          var cuesta = peldano(j.promesas);
-          cobro = (cuesta === null)
-            ? '<b class="pista">talk</b>'
-            : '<b>' + money(cuesta) + '</b>';
-          sinFacturar++;
-          pendiente += (cuesta || 0);
-        }
-        if (j.facturable){
+        var piezas = [];
+
+        lados.forEach(function(d){
+          var quien = '<span class="pista">' + esc(d.equipo) + '</span> ';
+          var n = Number(d.promesas || 0);
+
+          /* El equipo recauda y este juego del calendario no aparece
+             en su campaña: una fecha movida o un nombre escrito
+             distinto. Mientras siga así sus promesas no salen. */
+          if (!d.game_id){
+            piezas.push(quien + '<b class="pista" title="This team has a campaign but this ' +
+              'game is not in it — check the date and how the opponent is spelled.">' +
+              'not linked</b>');
+            return;
+          }
+          if (!n){ piezas.push(quien + '<span class="pista">0</span>'); return; }
+
           cobrables++;
-          total += Number(j.recaudado || 0);
-          var c = peldano(j.promesas);
-          /* Un juego por encima del último peldaño no suma al total,
-             porque no tiene precio todavía. Pero se CUENTA: sumar
-             cero en silencio haría que la cuenta de abajo dijera
-             menos de lo que se va a cobrar, y nadie lo notaría. */
-          if (c === null) hablar++; else aCobrar += c;
-        }
+          total += Number(d.recaudado || 0);
+
+          var est = d.licencia ? d.licencia.estado : null;
+          /* Los mismos colores que el resto del panel: verde lo
+             cerrado, ámbar lo que espera por otro, gris lo apuntado
+             y todavía quieto. */
+          if (est === 'pagada'){ piezas.push(quien + '<span class="pill on">paid</span>'); return; }
+          if (est === 'enviada'){ piezas.push(quien + '<span class="pill esp">sent</span>'); return; }
+          if (est === 'open'){ piezas.push(quien + '<span class="pill">invoiced</span>'); return; }
+
+          /* Facturable y sin facturar: el único estado que pide que
+             alguien haga algo, y el único que sale con el número.
+             Por encima del último peldaño no lleva número — se
+             habla; inventarle uno sería facturar algo que nadie
+             acordó. Pero se CUENTA, porque sumar cero en silencio
+             haría que el total de abajo dijera de menos. */
+          var c = peldano(n);
+          if (c === null){ piezas.push(quien + '<b class="pista">talk</b>'); hablar++; return; }
+          piezas.push(quien + '<b>' + money(c) + '</b>');
+          aCobrar += c; pendiente += c; sinFacturar++;
+        });
+
+        cobro = piezas.length
+          ? piezas.join('<br>')
+          : '<span class="pista">—</span>';
       }
 
       return '<tr>' +
@@ -863,8 +878,12 @@ function pintarJuegos(id, js){
      mientras eso no exista sería decir que algo está cobrado cuando
      nadie lo ha cobrado. */
   '<div class="tot">' +
-    '<div><b>' + cobrables + '</b> billable game' + (cobrables === 1 ? '' : 's') +
-      ' <span class="pista">worth ' + money(aCobrar) + ' in licence</span></div>' +
+    /* No son juegos: son licencias. Un juego donde los dos equipos
+       recaudan cuenta dos veces, porque son dos facturas a dos
+       programas. Decir «juegos» aquí haría que el número no cuadrara
+       con la lista de arriba. */
+    '<div><b>' + cobrables + '</b> licence' + (cobrables === 1 ? '' : 's') +
+      ' to bill <span class="pista">worth ' + money(aCobrar) + '</span></div>' +
     '<div><b>' + money(total) + '</b> <span class="pista">pledged on them</span></div>' +
     /* Lo que falta por cobrar va aparte del total y sólo sale cuando
        hay algo: una línea que dice «0 sin facturar» en un torneo que
