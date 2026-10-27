@@ -92,6 +92,17 @@ button[disabled]{opacity:.5;cursor:default}
   padding:3px 9px;border-radius:999px;background:#eef1f4;color:var(--muted)}
 .pill.on{background:#e4f5ec;color:var(--ok)}
 .pill.esp{background:#fdf1e3;color:#b2650d}
+
+/* Los códigos se manejan desde la propia fila: las pastillas son
+   interruptores y no adornos. Antes enseñaban «active» / «off» sin
+   que hubiera manera de cambiarlo. */
+.pill.sw{border:none;font:inherit;font-size:.68rem;font-weight:900;letter-spacing:.09em;
+  text-transform:uppercase;cursor:pointer;padding:4px 10px}
+.pill.sw:hover{filter:brightness(.94)}
+.cx{border:none;background:none;color:var(--muted);font-size:1.25rem;line-height:1;
+  cursor:pointer;padding:2px 6px}
+.cx:hover{color:#a8323f}
+.item .mandos{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 .aviso{background:#fdf1e3;border:1px solid #f3d9b8;border-radius:10px;padding:11px 13px;
   font-size:.84rem;margin-top:10px;color:#7a4a08}
 .enl{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.74rem;
@@ -989,28 +1000,105 @@ $('crearCamp').onclick = function(){
 };
 
 // ── Códigos ──────────────────────────────────────────────────────
+/* Lo que hace falta para manejar un código y no sólo verlo: su id.
+   bw_codes_admin lo devuelve, y devuelve la fila entera menos el
+   hash — que no sale de la base por ninguna puerta. */
+var CODIGOS = [];
+
 function cargarCodigos(){
-  rpc('bw_codes_list', {})
-    .then(function(rows){
-      /* Los códigos de torneo no cuelgan de ninguna campaña, así que
-         con el filtro de antes no salían en ninguna pantalla: se
-         creaban y desaparecían de la vista. Salen aquí, marcados. */
-      var mios = (rows || []).filter(function(r){
-        return r.campaign_id === CAMP.id || r.campaign === CAMP.name || !r.campaign_id;
-      });
-      $('codigos').innerHTML = mios.length
-        ? mios.map(function(r){
-            return '<div class="item"><span><b>' + esc(r.label) + '</b>' +
-              '<small>' + (r.campaign_id ? '' : 'tournament code · ') +
-              (r.build ? 'can build the schedule' : 'scores only') +
-              (r.used ? ' · used ' + new Date(r.used).toLocaleDateString() : ' · never used') +
-              '</small></span>' +
-              '<span class="pill' + (r.active ? ' on' : '') + '">' +
-              (r.active ? 'active' : 'off') + '</span></div>';
-          }).join('')
-        : '<p class="vacio">This campaign has no code yet.</p>';
+  rpc('bw_codes_admin', {})
+    .then(function(r){
+      if (!r || !r.ok){
+        $('codigos').innerHTML = '';
+        return di('mCodigo', r && r.reason === 'admin'
+          ? 'Sign in again to manage codes.' : 'Could not read the codes.', 'mal');
+      }
+      CODIGOS = r.codigos || [];
+      pintarCodigos();
     })
     .catch(function(e){ di('mCodigo', 'Could not read the codes' + porque(e), 'mal') });
+}
+
+function pintarCodigos(){
+  /* Los de esta campaña, más los de torneo, que no cuelgan de
+     ninguna y si no saldrían en ninguna pantalla. */
+  var mios = CODIGOS.filter(function(r){
+    return (CAMP && r.campaign_id === CAMP.id) || !r.campaign_id;
+  });
+
+  $('codigos').innerHTML = mios.length
+    ? mios.map(function(r){
+        var monta = !!r.can_add_games, vivo = r.active !== false;
+        return '<div class="item"><span><b>' + esc(r.label || '—') + '</b>' +
+            '<small>' + (r.campaign_id ? esc(r.campaign || 'this campaign') : 'tournament code') +
+            '</small></span>' +
+            '<span class="mandos">' +
+              '<button class="pill sw' + (monta ? ' esp' : '') + '" data-cod="' + esc(r.id) +
+                '" data-que="monta" data-a="' + (monta ? '0' : '1') +
+                '" title="' + (monta ? 'Can rebuild the calendar' : 'Scores only') + '">' +
+                (monta ? 'builds' : 'scores') + '</button>' +
+              '<button class="pill sw' + (vivo ? ' on' : '') + '" data-cod="' + esc(r.id) +
+                '" data-que="vivo" data-a="' + (vivo ? '0' : '1') + '">' +
+                (vivo ? 'active' : 'off') + '</button>' +
+              '<button class="cx" data-cod="' + esc(r.id) + '" data-que="borrar" ' +
+                'aria-label="delete">&times;</button>' +
+            '</span></div>';
+      }).join('')
+    : '<p class="vacio">No codes yet.</p>';
+}
+
+/* Todo este script vive dentro de una IIFE, así que onclick="..." en
+   el HTML no encontraría estas funciones: los atributos se resuelven
+   contra el global y aquí no hay nada global. Un solo oyente en el
+   contenedor, que además sobrevive a cada repintado. */
+$('codigos').addEventListener('click', function(ev){
+  var b = ev.target.closest ? ev.target.closest('button[data-cod]') : null;
+  if (!b) return;
+  var id = b.getAttribute('data-cod');
+  var si = b.getAttribute('data-a') === '1';
+  switch (b.getAttribute('data-que')){
+    case 'vivo':   codVivo(id, si);  break;
+    case 'monta':  codMonta(id, si); break;
+    case 'borrar': codBorrar(id);    break;
+  }
+});
+
+/* Apagar es lo normal: un código apagado deja el rastro de a quién se
+   le dio. Borrar es la excepción, y por eso pregunta. */
+function codVivo(id, a){
+  rpc('bw_code_set', { p_id: id, p_active: a })
+    .then(function(r){
+      if (!r || !r.ok) return di('mCodigo', 'Could not change it.', 'mal');
+      di('mCodigo', a ? 'Switched on.' : 'Switched off — it stops working now.', 'ok');
+      cargarCodigos();
+    })
+    .catch(function(e){ di('mCodigo', 'Could not change it' + porque(e), 'mal') });
+}
+
+function codMonta(id, b){
+  rpc('bw_code_set', { p_id: id, p_build: b })
+    .then(function(r){
+      if (!r || !r.ok) return di('mCodigo', 'Could not change it.', 'mal');
+      di('mCodigo', b ? 'This code can now build and replace schedules.'
+                      : 'This code now posts scores only.', 'ok');
+      cargarCodigos();
+    })
+    .catch(function(e){ di('mCodigo', 'Could not change it' + porque(e), 'mal') });
+}
+
+function codBorrar(id){
+  var r = CODIGOS.filter(function(x){ return x.id === id })[0];
+  var nombre = r ? (r.label || 'this code') : 'this code';
+  if (!confirm('Delete "' + nombre + '"? Whoever holds it loses access at once. ' +
+               'Switching it off keeps the record of who had it.')) return;
+
+  rpc('bw_code_delete', { p_id: id })
+    .then(function(x){
+      if (!x || !x.ok) return di('mCodigo', 'Could not delete it.', 'mal');
+      di('mCodigo', 'Deleted: ' + (x.label || nombre), 'ok');
+      cargarCodigos();
+    })
+    .catch(function(e){ di('mCodigo', 'Could not delete it' + porque(e), 'mal') });
 }
 
 $('verCodigo').onclick = function(){ $('nuevoCodigo').classList.toggle('oculto') };
