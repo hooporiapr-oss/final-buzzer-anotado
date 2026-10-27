@@ -184,6 +184,26 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
       <button class="q sm" id="torRecargar">Reload</button>
     </div>
     <p class="m" id="mTor"></p>
+
+    <!-- El cobro vive aquí y no en cada fila a propósito: el tablero
+         de un torneo todavía enseña UN lado por juego, y un botón por
+         fila ofrecería cobrar sólo a uno de los dos equipos. El
+         barrido mira los dos. -->
+    <div style="border-top:1px solid var(--line);margin-top:16px;padding-top:14px">
+      <h3 style="font-size:.95rem;font-weight:800;margin:0 0 4px">Send notices &amp; invoice</h3>
+      <p class="sub" style="margin:0 0 10px">Every played game in this tournament that still has
+        pledges waiting. Each padrino gets one notice with the final score and what their pledge
+        came to &mdash; no payment link, no reminders. The licence is invoiced to each program by
+        how many pledges its game gathered. No pledges, no invoice.</p>
+      <label for="torCobroId">Tournament</label>
+      <select id="torCobroId"></select>
+      <label for="torCobroCode" style="margin-top:10px">Scoreboard code</label>
+      <input id="torCobroCode" type="password" autocomplete="off"
+             placeholder="Your master code reaches every team">
+      <div class="btns"><button id="torCobrar">Send &amp; invoice</button></div>
+      <p class="m" id="mCobro"></p>
+      <div id="cobroDetalle"></div>
+    </div>
   </section>
 
   <section class="caja">
@@ -610,7 +630,92 @@ function pintarTorneos(rows){
   });
 
   if (TOR_ABIERTO) cargarJuegos(TOR_ABIERTO);
+
+  /* El desplegable del cobro se llena de la misma lista, para no
+     pedirle a nadie que escriba un id de torneo a mano. */
+  var sel = $('torCobroId');
+  if (sel){
+    var antes = sel.value;
+    sel.innerHTML = rows.map(function(t){
+      return '<option value="' + esc(t.id) + '">' + esc(t.nombre) + '</option>';
+    }).join('');
+    if (antes) sel.value = antes;
+  }
 }
+
+/* ── Avisos y licencia de un torneo ───────────────────────────────
+   Un bucle del lado del servidor sobre cada juego jugado que todavía
+   tiene promesas sin avisar. Aquí sólo se pide y se enseña lo que
+   contestó, juego por juego: un resultado junto —«18 avisos»— esconde
+   cuál de los diez juegos fue el que falló. */
+function pintarCobro(d){
+  var filas = (d.juegos || []).map(function(j){
+    var lic = j.licencia || {};
+    var estado =
+      lic.estado === 'enviada'           ? 'invoiced $' + ((lic.amount_cents || 0) / 100).toFixed(2) :
+      lic.estado === 'sin_promesas'      ? 'nothing to invoice' :
+      lic.estado === 'ya_facturada'      ? 'already invoiced' :
+      lic.estado === 'avisos_pendientes' ? 'NOT invoiced — a notice failed' :
+      lic.estado === 'sin_correo'        ? 'NOT invoiced — the program has no email' :
+      lic.estado === 'stripe'            ? 'NOT invoiced — Stripe refused' :
+      (lic.estado || '—');
+
+    var cuenta = [];
+    if (j.sent)    cuenta.push(j.sent + ' sent');
+    if (j.zero)    cuenta.push(j.zero + ' closed at zero');
+    if (j.skipped) cuenta.push(j.skipped + ' already done');
+    if (j.failed)  cuenta.push('<b style="color:#a8323f">' + j.failed + ' failed</b>');
+
+    return '<div class="item"><span><b>' + esc(j.juego_no || '—') + '</b>' +
+      '<small>' + esc(j.programa || '') + ' ' + esc(j.juego || '') + ' · ' +
+      (cuenta.length ? cuenta.join(' · ') : 'nothing pending') + '</small></span>' +
+      '<span class="pill' + (lic.estado === 'enviada' ? ' on' : '') + '">' +
+      esc(estado) + '</span></div>' +
+      ((j.errors && j.errors.length)
+        ? '<p class="sub" style="margin:2px 0 8px;color:#a8323f">' +
+            esc(j.errors.slice(0, 3).join(' · ')) + '</p>'
+        : '');
+  }).join('');
+
+  $('cobroDetalle').innerHTML = filas ||
+    '<p class="pista">Nothing pending. Every played game with pledges has already been sent.</p>';
+}
+
+$('torCobrar').onclick = function(){
+  var torneo = $('torCobroId').value;
+  var code   = ($('torCobroCode').value || '').trim();
+  if (!torneo) return di('mCobro', 'Pick a tournament.', 'mal');
+  if (!code)   return di('mCobro', 'The scoreboard code is required.', 'mal');
+
+  /* Que diga lo que hace antes de hacerlo: esto manda correos a
+     padrinos y levanta facturas, y ninguna de las dos cosas se
+     retira. */
+  if (!confirm('Send every pending notice in this tournament, and invoice each programs licence.\n\n' +
+               'One notice per padrino, with the final score and what their pledge came to. ' +
+               'No payment link and no reminders.\n\n' +
+               'A game with no pledges is not invoiced.\n\nThis cannot be undone.')) return;
+
+  di('mCobro', '…');
+  $('cobroDetalle').innerHTML = '';
+  servidor('/tournament-notices', { code: code, torneo: torneo })
+    .then(function(r){
+      if (r.codigo === 404)
+        return di('mCobro', 'The Cada Punto Cuenta server does not have that route yet (' +
+                            SERVIDOR + ').', 'mal');
+      if (r.codigo !== 200)
+        return di('mCobro', 'It did not run' + porque(r.cuerpo), 'mal');
+
+      var d = r.cuerpo || {};
+      var malo = (d.failed || 0) > 0;
+      di('mCobro', d.sent + ' notice' + (d.sent === 1 ? '' : 's') + ' sent · ' +
+                   d.facturados + ' invoiced' +
+                   (malo ? ' · ' + d.failed + ' failed — fix and run it again' : ''),
+         malo ? 'mal' : 'ok');
+      pintarCobro(d);
+      cargarTorneos();
+    })
+    .catch(function(e){ di('mCobro', 'It did not run' + porque(e), 'mal') });
+};
 
 function alternarTorneo(id){
   TOR_ABIERTO = (TOR_ABIERTO === id) ? null : id;
