@@ -22,10 +22,13 @@
    ofrecido a un producto que no tiene calendario.
 
    Éste hace una sola cosa. Es de Cada Punto Cuenta y de nadie más, y lo que
-   hay aquí es exactamente la cadena: una campaña, su código, su
-   reto con su ventana, la plantilla que se aprueba, los enlaces que
-   se reparten, el reporte, los avisos y la licencia. Si algo no es
-   uno de esos ocho pasos, no está.
+   hay aquí es exactamente la cadena del marcador: una campaña, su
+   código, el equipo que recauda, los torneos registrados con sus
+   juegos, los avisos a los padrinos y la licencia por juego. Si algo
+   no es uno de esos seis pasos, no está.
+
+   Challenges —el modelo por estudiante del Fortress— salió de aquí el
+   27 de octubre de 2026. No se licencia más.
 
    Nada se adivina: cada llamada de aquí sale de ESQUEMA.md, que es
    la base escrita tal como está.
@@ -256,8 +259,9 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
     </div>
   </section>
 
-  <!-- Set once per program, used by every challenge it runs. Hidden
-       until a campaign is picked, because it belongs to one. -->
+  <!-- Set once per program, and it goes out in every pledge notice
+       its games produce. Hidden until a campaign is picked, because
+       it belongs to one. -->
   <section class="caja" id="secPago" hidden>
     <h2>How padrinos pay this program</h2>
     <p class="sub">Printed word for word at the end of every padrino notice, so nobody
@@ -273,7 +277,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 
   <section class="caja" id="secCodigo">
     <h2>The code</h2>
-    <p class="sub">It opens the roster and the report. Stored hashed, so you see it once, when you make it.</p>
+    <p class="sub">It posts scores, and for this campaign it can send its games&rsquo; notices. Stored hashed, so you see it once, when you make it.</p>
     <div id="codigos"></div>
     <div class="btns"><button class="q sm" id="verCodigo">+ New code</button></div>
     <div id="nuevoCodigo" class="oculto" style="margin-top:12px">
@@ -297,36 +301,10 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
     <p class="m" id="mCodigo"></p>
     <label for="codigoUso" style="margin-top:16px">Code in use</label>
     <input id="codigoUso" placeholder="Paste this campaign&rsquo;s code here">
-    <p class="sub" style="margin-top:5px">Needed for the roster, the report and the notices. Kept in this browser.</p>
+    <p class="sub" style="margin-top:5px">Kept in this browser so you do not retype it. It bills this campaign&rsquo;s own games; a tournament across several programs needs the master code.</p>
   </section>
 
-  <section class="caja">
-    <h2>Challenges</h2>
-    <p class="sub">A challenge is one event: its window, its pledges, its licence.</p>
-    <div id="retos"></div>
-    <div class="btns"><button class="q sm" id="verReto">+ New challenge</button></div>
 
-    <div id="nuevoReto" class="oculto" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
-      <label for="rNombre">Challenge name</label>
-      <input id="rNombre" placeholder="November scrimmage">
-      <!-- El juego no se escoge. Cada Punto Cuenta tiene un tablero y es el de
-           cuatro cuartos: es el único que guarda cuarto a cuarto, y
-           es el que la portada enseña. -->
-      <p class="aviso">Game: <b>The Fortress — scrimmage, 4 sets</b>. It is the only board Cada Punto Cuenta has.</p>
-      <div class="fila">
-        <div><label for="rAbre">Opens</label><input id="rAbre" type="datetime-local"></div>
-        <div><label for="rCierra">Closes</label><input id="rCierra" type="datetime-local"></div>
-      </div>
-      <p class="sub" style="margin-top:6px">Pledging closes the moment the window opens. Leave a gap before it opens so padrinos have time.</p>
-      <label style="font-weight:400;margin-top:12px">
-        <input type="checkbox" id="rVivo" checked>Live — players and padrinos can see their links</label>
-      <div class="btns"><button id="crearReto">Create challenge</button>
-                        <button class="q" id="cancelarReto">Cancel</button></div>
-      <p class="m" id="mReto"></p>
-    </div>
-  </section>
-
-  <div id="detalle"></div>
 </div>
 
 </main>
@@ -498,7 +476,7 @@ $('salir').onclick = cerrarSesion;
 // ══════════════════════════════════════════════════════════════════
 //  EL PANEL
 // ══════════════════════════════════════════════════════════════════
-var CAMPS = [], CAMP = null, RETOS = [], RETO = null, CODE = '';
+var CAMPS = [], CAMP = null, CODE = '';
 
 function codigoGuardado(id){
   try { return localStorage.getItem('hoo-code-' + id) || '' } catch(e){ return '' }
@@ -983,7 +961,6 @@ function cargarCampanas(){
 
 function escoger(id){
   CAMP = CAMPS.filter(function(c){ return c.id === id })[0] || null;
-  RETO = null; $('detalle').innerHTML = '';
   CODE = CAMP ? codigoGuardado(CAMP.id) : '';
   $('codigoUso').value = CODE;
   /* The payment line belongs to the campaign, so it follows whichever
@@ -993,8 +970,8 @@ function escoger(id){
   $('pagoAhora').value = (CAMP && CAMP.pay_how) || '';
   $('secPago').hidden = !CAMP;
   di('mPago', '');
-  if (CAMP) { $('camp').value = CAMP.id; cargarCodigos(); cargarRetos(); }
-  else { $('codigos').innerHTML = ''; $('retos').innerHTML = ''; }
+  if (CAMP) { $('camp').value = CAMP.id; cargarCodigos(); }
+  else { $('codigos').innerHTML = ''; }
 }
 
 /* Guardar la línea de pago de la campaña escogida.
@@ -1029,18 +1006,9 @@ $('solTodas').onclick = function(){
   cargarSolicitudes();
 };
 
-var tCodigo = null;
 $('codigoUso').oninput = function(){
   CODE = (this.value || '').trim();
   try { if (CAMP) localStorage.setItem('hoo-code-' + CAMP.id, CODE) } catch(e){}
-
-  /* La plantilla se cargaba sólo al abrir el reto, y el código casi
-     siempre se escribe después: se pegaba el código y la plantilla
-     seguía diciendo que hacía falta el código. Se vuelve a pedir
-     aquí, con un respiro para no mandar una llamada por tecla. */
-  if (tCodigo) clearTimeout(tCodigo);
-  if (!CAMP || !RETO || !codigo()) return;
-  tCodigo = setTimeout(cargarPlantilla, 400);
 };
 
 // ── Campaña nueva ────────────────────────────────────────────────
@@ -1089,7 +1057,7 @@ $('crearCamp').onclick = function(){
              200 con una lista VACÍA. Sin esta comprobación el admin
              decía «Created.», la campaña quedaba sin entrenador, y no
              se notaba hasta el día de facturar —«no hay a quién»— con
-             el reto ya jugado y los avisos ya mandados.
+             el torneo ya jugado y los avisos ya mandados.
 
              Con Prefer: return=representation un insert que sí entra
              devuelve su fila. Lista vacía quiere decir que no entró. */
@@ -1258,8 +1226,7 @@ $('crearCodigo').onclick = function(){
       $('nuevoCodigo').classList.add('oculto');
 
       /* Un código de torneo no es el código de esta campaña: no se
-         mete en la caja ni se guarda como el suyo, que es de donde
-         codigo() lo lee para el roster y el reporte. */
+         mete en la caja ni se guarda como el suyo. */
       if (!suelto){
         $('codigoUso').value = CODE = recien;
         try { localStorage.setItem('hoo-code-' + CAMP.id, recien) } catch(e){}
@@ -1271,13 +1238,12 @@ $('crearCodigo').onclick = function(){
     .catch(function(e){ di('mCodigo', 'Could not create it' + porque(e), 'mal') });
 };
 
-// ── Retos ────────────────────────────────────────────────────────
-function aISO(v){ return v ? new Date(v).toISOString() : null }
-function aLocal(iso){
-  if (!iso) return '';
-  var d = new Date(iso), p = function(n){ return ('0'+n).slice(-2) };
-  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());
-}
+// ── Fechas ───────────────────────────────────────────────────────
+/* El admin es sólo marcador. Challenges —el modelo por estudiante del
+   Fortress— salió de aquí: su sección, su vista de detalle, el roster,
+   el reporte y la licencia por reto. Lo que se queda es lo que usa el
+   marcador: campañas (de ellas cuelga cada equipo que recauda), los
+   códigos, las inscripciones y los torneos con su cobro por juego. */
 function cuando(iso){
   if (!iso) return '—';
   /* El admin es en inglés. La fecha también: 'es-PR' imprimía
@@ -1286,431 +1252,7 @@ function cuando(iso){
   return new Date(iso).toLocaleString('en-US', { day:'numeric', month:'short',
                                                  hour:'numeric', minute:'2-digit' });
 }
-/* Lo que impide una ventana imposible. La base tiene su guardia
-   (closes_at > opens_at) desde que una quedó al revés y cerró todas
-   las promesas en cero; esto lo dice con palabras antes. */
-function ventanaMal(abre, cierra, vivo){
-  if (vivo && !(abre && cierra)) return 'Set the window: live with no window means the links still do nothing.';
-  if ((abre && !cierra) || (cierra && !abre)) return 'Set both ends, opens and closes.';
-  if (abre && cierra && new Date(cierra) <= new Date(abre))
-    return 'Closes has to be after opens. Watch AM/PM: 12:30 AM is the middle of the night.';
-  return null;
-}
 
-function cargarRetos(){
-  rest('challenges?campaign_id=eq.' + CAMP.id + '&select=*&order=created_at.desc')
-    .then(function(rows){
-      RETOS = rows || [];
-      $('retos').innerHTML = RETOS.length
-        ? RETOS.map(function(r){
-            var sinVentana = !r.opens_at || !r.closes_at;
-            return '<div class="item"><span><b>' + esc(r.name) + '</b><small>' +
-              cuando(r.opens_at) + ' → ' + cuando(r.closes_at) +
-              (sinVentana ? ' · no window, nobody can play' : '') +
-              '</small></span><span style="display:flex;gap:7px;align-items:center">' +
-              '<span class="pill' + (r.live ? ' on' : '') + '">' + (r.live ? 'live' : 'off') + '</span>' +
-              '<button class="q sm" data-reto="' + esc(r.id) + '">Open</button></span></div>';
-          }).join('')
-        : '<p class="vacio">No challenges in this campaign yet.</p>';
-      Array.prototype.forEach.call($('retos').querySelectorAll('[data-reto]'), function(b){
-        b.onclick = function(){ abrirReto(b.getAttribute('data-reto')) };
-      });
-    })
-    .catch(function(e){ di('mReto', 'Could not read the challenges' + porque(e), 'mal') });
-}
-
-$('verReto').onclick = function(){ $('nuevoReto').classList.toggle('oculto') };
-$('cancelarReto').onclick = function(){ $('nuevoReto').classList.add('oculto') };
-
-$('crearReto').onclick = function(){
-  if (!CAMP) return di('mReto', 'Pick a campaign first.', 'mal');
-  var nombre = ($('rNombre').value || '').trim();
-  var abre = $('rAbre').value, cierra = $('rCierra').value, vivo = $('rVivo').checked;
-  if (!nombre) return di('mReto', 'Give it a name.', 'mal');
-  var problema = ventanaMal(abre, cierra, vivo);
-  if (problema) return di('mReto', problema, 'mal');
-
-  di('mReto', '…');
-  rest('challenges', { method:'POST', body:{
-      campaign_id: CAMP.id, name: nombre,
-      slug: nombre.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')
-            + '-' + Math.random().toString(36).slice(2,6),
-      game: 'fortress-vr',
-      opens_at: aISO(abre), closes_at: aISO(cierra), live: vivo,
-      team_share_pct: 100 } })
-    .then(function(rows){
-      $('rNombre').value = ''; $('rAbre').value = ''; $('rCierra').value = '';
-      $('nuevoReto').classList.add('oculto');
-      di('mReto', 'Created.', 'ok');
-      cargarRetos();
-      if (rows && rows[0]) abrirReto(rows[0].id);
-    })
-    .catch(function(e){ di('mReto', 'Could not create it' + porque(e), 'mal') });
-};
-
-// ══════════════════════════════════════════════════════════════════
-//  UN RETO POR DENTRO
-// ══════════════════════════════════════════════════════════════════
-function abrirReto(id){
-  RETO = RETOS.filter(function(r){ return r.id === id })[0];
-  if (!RETO) return;
-  $('detalle').innerHTML =
-    '<section class="caja"><h2>' + esc(RETO.name) + '</h2>' +
-    '<p class="sub">The Fortress — scrimmage, 4 sets</p>' +
-
-    '<label>Game window</label><div class="fila">' +
-      '<div><input type="datetime-local" id="dAbre" value="' + aLocal(RETO.opens_at) + '"></div>' +
-      '<div><input type="datetime-local" id="dCierra" value="' + aLocal(RETO.closes_at) + '"></div>' +
-    '</div>' +
-    '<label style="font-weight:400;margin-top:12px"><input type="checkbox" id="dVivo"' +
-      (RETO.live ? ' checked' : '') + '>Live</label>' +
-    '<div class="btns"><button id="dGuardar">Save</button></div>' +
-    '<p class="m" id="mDet"></p>' +
-
-    '<div id="enlaces"></div>' +
-    '</section>' +
-
-    '<section class="caja"><h2>Roster</h2>' +
-    '<p class="sub">Who signed up, and who the program has let in. The coach decides; you watch.</p>' +
-    '<div id="plantilla"><p class="vacio">…</p></div>' +
-    '<p class="m" id="mPl"></p></section>' +
-
-    '<section class="caja"><h2>Report and notices</h2>' +
-    '<p class="sub">What was pledged. Sending the notices also invoices the licence &mdash; that is the moment the results are given.</p>' +
-    '<div class="btns"><button class="q" id="verReporte">See the report</button>' +
-      '<button class="q" id="mandarAvisos">Send the notices &amp; invoice</button></div>' +
-    '<p class="m" id="mRep"></p>' +
-    /* Los avisos tienen su propia línea. Compartían la del reporte,
-       y como mandar avisos termina pidiendo el reporte otra vez, el
-       resultado —cuántos salieron, qué hizo la factura— se borraba
-       una fracción de segundo después de escribirse. El botón
-       parecía no hacer nada. */
-    '<p class="m" id="mAvisos"></p><div id="reporte"></div></section>' +
-
-    '<section class="caja"><h2>Licence</h2>' +
-    '<p class="sub">From $5 a game, by how many pledges it gathered. No pledges, no fee. '+
-    'It is invoiced automatically when the notices go out; this is here for the one that did not.</p>' +
-    '<div class="btns"><button class="q" id="verLic">See what it would cost</button></div>' +
-    '<p class="m" id="mLic"></p><div id="licencia"></div></section>';
-
-  $('dGuardar').onclick = guardarReto;
-  $('verReporte').onclick = verReporte;
-  $('mandarAvisos').onclick = mandarAvisos;
-  $('verLic').onclick = function(){ verLicencia(false) };
-  pintarEnlaces();
-  cargarPlantilla();
-  $('detalle').scrollIntoView({ behavior:'smooth', block:'start' });
-}
-
-function guardarReto(){
-  var abre = $('dAbre').value, cierra = $('dCierra').value, vivo = $('dVivo').checked;
-  var problema = ventanaMal(abre, cierra, vivo);
-  if (problema) return di('mDet', problema, 'mal');
-  di('mDet', '…');
-  rest('challenges?id=eq.' + RETO.id, { method:'PATCH', body:{
-        opens_at: aISO(abre), closes_at: aISO(cierra), live: vivo } })
-    .then(function(rows){
-      /* Una PATCH que RLS no deja pasar no da error: contesta con una
-         lista vacía. Por eso se mira lo que vuelve. */
-      if (!rows || !rows.length) return di('mDet', 'Nothing was saved. Are you still signed in?', 'mal');
-      RETO = rows[0];
-      di('mDet', 'Saved.', 'ok');
-      cargarRetos(); pintarEnlaces();
-    })
-    .catch(function(e){ di('mDet', 'Could not save it' + porque(e), 'mal') });
-}
-
-/* ── Los enlaces ──────────────────────────────────────────────────
-   Tres, y cada uno va a una persona distinta. El de jugar lleva
-   official=1: sin esa bandera el juego abre en práctica y no guarda
-   nada, sin decir por qué. */
-function pintarEnlaces(){
-  var alta = SITIO + '/jugador.html?c=' + CAMP.id;
-  /* La página del entrenador no lleva parámetros: entra con su
-     código y encuentra sus campañas sola. Así el enlace es uno para
-     todos los programas y no hay nada que pegar mal. */
-  var suya = SITIO + '/plantilla.html';
-  var h = '<label style="margin-top:18px">Links</label>' +
-    fila('For players to sign themselves up', alta,
-         'Send it to the group. Anyone the coach approves can take a run.') +
-    fila('For the coach — the roster', suya,
-         'Where the program approves who signed up. They enter with their code.');
-  if (!RETO.live || !RETO.opens_at || !RETO.closes_at) {
-    h += '<p class="aviso">The pledge and play links appear once the challenge is live and its window is set.</p>';
-  }
-  $('enlaces').innerHTML = h;
-  conectarCopias($('enlaces'));
-}
-
-function fila(titulo, url, nota){
-  return '<div class="item"><span style="min-width:0"><b>' + esc(titulo) + '</b>' +
-    (nota ? '<small>' + esc(nota) + '</small>' : '') +
-    '<div class="enl">' + esc(url) + '</div></span>' +
-    '<button class="q sm" data-copiar="' + esc(url) + '">Copy</button></div>';
-}
-function conectarCopias(raiz){
-  Array.prototype.forEach.call(raiz.querySelectorAll('[data-copiar]'), function(b){
-    b.onclick = function(){
-      var u = b.getAttribute('data-copiar');
-      if (navigator.clipboard) navigator.clipboard.writeText(u).then(function(){
-        b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy' }, 1400);
-      }); else prompt('Copy this:', u);
-    };
-  });
-}
-
-/* EL CÓDIGO SE LEE DE LA CAJA, SIEMPRE.
-
-   El navegador devuelve el texto de un input al recargar la página,
-   pero devolverlo no es escribirlo: no salta el evento 'input'. Así
-   que la caja se veía llena, CODE estaba vacío, y la plantilla
-   pedía el código que ya estaba puesto. Guardar el valor en una
-   variable y confiar en ella es la trampa; la caja es lo único que
-   no miente. */
-function codigo(){
-  var v = ($('codigoUso').value || '').trim();
-  if (v !== CODE) {
-    CODE = v;
-    try { if (CAMP) localStorage.setItem('hoo-code-' + CAMP.id, v) } catch(e){}
-  }
-  return v;
-}
-
-// ── La plantilla ─────────────────────────────────────────────────
-var PL = [];
-function cargarPlantilla(){
-  if (!codigo()) {
-    $('plantilla').innerHTML = '<p class="vacio">Put this campaign&rsquo;s code in the box above to see the roster.</p>';
-    return;
-  }
-  rpc('roster_list', { p_code: codigo(), p_campaign: CAMP.id })
-    .then(function(r){
-      if (!r || !r.ok) { PL = []; return di('mPl', 'That code does not work for this campaign' + porque(r), 'mal') }
-      PL = r.players || []; di('mPl', '');
-      pintarPlantilla();
-    })
-    .catch(function(e){ di('mPl', 'Could not read the roster' + porque(e), 'mal') });
-}
-
-/* QUIÉN APRUEBA.
-
-   Aquí no. Aprobar a un jugador es trabajo del programa, no del
-   licenciante: el que conoce a la gente es el entrenador, y el que
-   responde si se cuela alguien es él también. La página del
-   entrenador —plantilla.html— ya lo hace entero: aprueba, rechaza,
-   renombra, pone escuadra y saca a quien sobre.
-
-   Este bloque mira, no toca. Si el admin aprobara también, habría
-   dos sitios donde se decide lo mismo, y un día no coincidirían. */
-function pintarPlantilla(){
-  var esperan = PL.filter(function(p){ return p.state === 'pending' });
-  var dentro  = PL.filter(function(p){ return p.state === 'active' });
-  var h = '';
-  if (esperan.length) {
-    h += '<p class="sub" style="margin:10px 0 0"><b>Waiting on the program</b> &middot; ' +
-      esperan.length + '</p>' +
-      esperan.map(function(p){
-        return '<div class="item"><span><b>' + esc(p.name) + '</b><small>' +
-          esc(p.squad || 'no squad') + '</small></span></div>';
-      }).join('') +
-      '<p class="sub" style="margin:8px 0 0">The coach approves these on the roster page &mdash; ' +
-      'the link is up in <b>Links</b>.</p>';
-  }
-  h += dentro.length
-    ? '<p class="sub" style="margin:14px 0 0"><b>In</b> · ' + dentro.length + '</p>' +
-      dentro.map(function(p){
-        var prometer = (RETO.live && RETO.opens_at)
-          ? SITIO + '/prometer.html?c=' + RETO.id + '&p=' + p.id : null;
-        var jugar = (RETO.live && RETO.opens_at)
-          ? SITIO + '/fortress-vr.html?c=' + RETO.id + '&p=' + p.id + '&official=1' : null;
-        return '<div class="item"><span style="min-width:0"><b>' + esc(p.name) + '</b>' +
-          '<small>' + esc(p.squad || 'no squad') + '</small>' +
-          (prometer ? '<div class="enl">padrinos: ' + esc(prometer) + '</div>' : '') +
-          '</span><span style="display:flex;gap:6px;flex-wrap:wrap">' +
-          (prometer ? '<button class="q sm" data-copiar="' + esc(prometer) + '">Padrinos</button>' : '') +
-          (jugar ? '<button class="q sm" data-jugar="' + esc(p.id) + '">Play</button>' : '') +
-          '</span></div>';
-      }).join('')
-    : (esperan.length ? '' : '<p class="vacio">Nobody has signed up yet.</p>');
-  $('plantilla').innerHTML = h;
-
-  var raiz = $('plantilla');
-  /* El enlace de jugar lleva la llave de la corrida, y esa llave hay
-     que pedirla: con el enlace público no basta para cerrarle la
-     corrida a otro, que es justo lo que la protege. */
-  Array.prototype.forEach.call(raiz.querySelectorAll('[data-jugar]'), function(b){
-    b.onclick = function(){
-      var id = b.getAttribute('data-jugar');
-      b.disabled = true; b.textContent = '…';
-      rpc('get_run_key', { p_player: id })
-        .then(function(k){
-          var llave = (k && (k.run_key || k.key)) || k;
-          if (!llave || typeof llave !== 'string') throw new Error('the key did not come back');
-          var u = SITIO + '/fortress-vr.html?c=' + RETO.id + '&p=' + id + '&k=' + llave + '&official=1';
-          if (navigator.clipboard) navigator.clipboard.writeText(u);
-          b.textContent = 'Copied'; di('mPl', u, 'ok');
-        })
-        .catch(function(e){ b.textContent = 'Play'; b.disabled = false;
-                            di('mPl', 'Could not build the play link' + porque(e), 'mal') });
-    };
-  });
-  conectarCopias(raiz);
-}
-
-// ── El reporte ───────────────────────────────────────────────────
-function verReporte(){
-  if (!codigo()) return di('mRep', 'The campaign code is required.', 'mal');
-  di('mRep', '…');
-  rpc('challenge_report', { p_code: codigo(), p_challenge: RETO.id })
-    .then(function(r){
-      if (!r || !r.ok) return di('mRep', 'Could not do it' + porque(r), 'mal');
-      di('mRep', '');
-      var jug = r.players || [], prom = r.pledges || [];
-      $('reporte').innerHTML =
-        '<div class="tot">' +
-          '<div><b>' + jug.length + '</b><span>on the roster</span></div>' +
-          '<div><b>' + (r.count || 0) + '</b><span>pledges</span></div>' +
-          '<div><b>$' + Number(r.pledged || 0).toFixed(2) + '</b><span>pledged</span></div>' +
-        '</div>' +
-        (prom.length
-          ? '<table><tr><th>Padrino</th><th>Player</th><th class="n">Points</th>' +
-            '<th class="n">Total</th><th>State</th></tr>' +
-            prom.map(function(p){
-              return '<tr><td>' + esc(p.padrino) + '<br><small style="color:var(--muted)">' +
-                esc(p.correo) + '</small></td><td>' + esc(p.jugador) + '</td>' +
-                '<td class="n">' + p.puntos + '</td>' +
-                '<td class="n">$' + Number(p.total).toFixed(2) + '</td>' +
-                '<td><span class="pill' + (p.estado === 'sent' ? ' on' : '') + '">' +
-                esc(p.estado) + '</span></td></tr>';
-            }).join('') + '</table>'
-          : '<p class="vacio">No pledges on this challenge yet.</p>') +
-        '<p class="sub" style="margin-top:12px">Pledged is not collected. The program does the collecting.</p>';
-    })
-    .catch(function(e){ di('mRep', 'Could not do it' + porque(e), 'mal') });
-}
-
-/* Lo que hizo la factura, dicho en la misma línea que los avisos.
-   Mandar avisos ahora cobra, así que esconder el resultado de la
-   factura detrás de otro botón sería dejarle adivinar si se cobró. */
-function dijoLicencia(l){
-  if (!l || !l.estado) return '';
-  var money = function(c){ return '$' + (Number(c || 0) / 100).toFixed(2) };
-  switch (l.estado) {
-    case 'enviada':
-      return ' · licence invoiced: ' + money(l.amount_cents) +
-             (l.program_email ? ' to ' + l.program_email : '');
-    case 'sin_promesas':
-      return ' · no licence: this challenge recorded no pledges, so there is no fee';
-    case 'ya_facturada':
-      return ' · licence was already invoiced';
-    case 'avisos_pendientes':
-      return ' · licence held until every padrino has their notice';
-    case 'sin_correo':
-      return ' · LICENCE NOT INVOICED: the program has no email on file';
-    case 'stripe':
-      return ' · LICENCE NOT INVOICED: Stripe refused it' +
-             (l.why ? ' (' + String(l.why).slice(0, 80) + ')' : '') +
-             ' — use Invoice the licence below';
-    case 'sin_calculo':
-    case 'error':
-      return ' · LICENCE NOT INVOICED' + porque(l.why) +
-             ' — use Invoice the licence below';
-    default:
-      return ' · licence: ' + l.estado;
-  }
-}
-
-function mandarAvisos(){
-  if (!codigo()) return di('mAvisos', 'The campaign code is required.', 'mal');
-  /* Que diga que cobra. Antes avisaba y nada más; ahora el mismo
-     botón factura la licencia, y eso no se puede descubrir después
-     de pulsarlo. */
-  if (!confirm('Send the notice to every padrino on this challenge, and invoice the licence.\n\n' +
-               'One notice each, with the points and their total. No payment link, no reminders.\n\n' +
-               'The licence invoice goes to the program by email, due in 7 days. ' +
-               'If nobody pledged, nothing is invoiced.\n\nThis cannot be undone.'))
-    return;
-  di('mAvisos', '…');
-  servidor('/challenge-notices', { code: codigo(), challenge_id: RETO.id })
-    .then(function(r){
-      if (r.codigo === 404) return di('mAvisos', 'The Cada Punto Cuenta server does not have that route yet (' + SERVIDOR + ').', 'mal');
-      if (r.codigo !== 200) return di('mAvisos', 'They were not sent' + porque(r.cuerpo), 'mal');
-      var d = r.cuerpo || {}, l = d.licencia || {};
-      /* Rojo si falló un aviso o si la licencia no salió debiendo
-         salir. Los dos casos piden una segunda pasada. */
-      var malo = d.failed || ['sin_correo','stripe','error','sin_calculo']
-                              .indexOf(l.estado) !== -1;
-      /* Y POR QUÉ falló. El servidor manda un errors[] con el buzón
-         y lo que contestó Resend —«(422) invalid recipient», «(403)
-         domain not verified»— y esto lo tiraba a la basura para
-         decir «failed 1» y nada más. Es el mismo fallo que costó
-         cuatro viajes a Supabase el otro día, repetido en el sitio
-         donde ya sabíamos que dolía. */
-      var porQue = (d.errors && d.errors.length)
-        ? ' — ' + d.errors.slice(0, 2).map(function(x){
-            return String(x).slice(0, 120) }).join(' · ')
-          + (d.errors.length > 2 ? ' (+' + (d.errors.length - 2) + ')' : '')
-        : '';
-      di('mAvisos', 'Sent: ' + (d.sent || 0) +
-        (d.skipped ? ' · skipped ' + d.skipped : '') +
-        (d.failed ? ' · failed ' + d.failed : '') +
-        dijoLicencia(l) + porQue, malo ? 'mal' : 'ok');
-      verReporte();
-      verLicencia(false);
-    });
-}
-
-// ── La licencia ──────────────────────────────────────────────────
-function verLicencia(confirmar){
-  di('mLic', '…');
-  servidor('/licencia', { challenge_id: RETO.id, confirmar: confirmar })
-    .then(function(r){
-      var d = r.cuerpo || {};
-      if (r.codigo === 404) return di('mLic', 'The Cada Punto Cuenta server does not have that route yet (' + SERVIDOR + ').', 'mal');
-      if (r.codigo === 422 && d.error === 'sin_promesas')
-        return di('mLic', 'This challenge recorded no pledges, so there is nothing to invoice. No pledges, no fee.', 'ok');
-      if (r.codigo === 422 && d.error === 'sin_correo')
-        return di('mLic', 'This campaign has no contact email, so there is nobody to invoice.', 'mal');
-      if (r.codigo === 409)
-        return di('mLic', 'This challenge already has a licence. An event is invoiced once.', 'ok');
-      if (r.codigo !== 200) return di('mLic', 'Could not do it' + porque(d), 'mal');
-
-      if (confirmar) {
-        /* En modo de prueba Stripe NO manda el correo, así que decir
-           que lo mandó es mentira justo en la pantalla donde se está
-           comprobando si funciona. El enlace de abajo abre la factura
-           de todas formas, que es por donde se paga en una prueba. */
-        di('mLic', d.modo === 'live'
-             ? 'Invoiced. Stripe emailed $' + (d.amount_cents/100).toFixed(2) +
-               ' to ' + d.program_email + '.'
-             : 'Invoiced in test mode: $' + (d.amount_cents/100).toFixed(2) +
-               ' for ' + d.program_email + '. Stripe does not send the email in test ' +
-               'mode — open the invoice below to pay it.', 'ok');
-        $('licencia').innerHTML = d.url
-          ? '<div class="item"><span><b>The invoice</b></span>' +
-            '<a href="' + esc(d.url) + '" target="_blank" rel="noopener"><button class="q sm">Open in Stripe</button></a></div>'
-          : '';
-        return;
-      }
-
-      di('mLic', '');
-      $('licencia').innerHTML =
-        '<div class="tot"><div><b>$' + (d.amount_cents/100).toFixed(2) + '</b><span>the licence</span></div>' +
-        '<div><b>' + d.roster + '</b><span>on the roster</span></div>' +
-        '<div><b>' + d.promesas + '</b><span>pledges</span></div></div>' +
-        '<p class="sub" style="margin-top:10px">Invoiced to ' + esc(d.program_email) +
-        ', due in ' + d.dias + ' days.</p>' +
-        (d.modo === 'live'
-          ? '<p class="aviso"><b>Live mode.</b> Confirming sends a real invoice, by email, to a real customer.</p>'
-          : '<p class="aviso">Test mode (' + esc(d.modo) + '). No real money moves.</p>') +
-        '<div class="btns"><button id="facturar">Invoice the licence</button></div>';
-      $('facturar').onclick = function(){
-        if (confirm('Invoice $' + (d.amount_cents/100).toFixed(2) + ' to ' + d.program_email + '.' +
-                    (d.modo === 'live' ? '\n\nLIVE MODE — this is a real invoice.' : '')))
-          verLicencia(true);
-      };
-    });
-}
 
 arrancar();
 })();
