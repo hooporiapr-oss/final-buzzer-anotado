@@ -162,34 +162,65 @@ console.log('\n2 · El menú abre, cierra, y cerrado no estorba\n');
 // ── 3 · El idioma ─────────────────────────────────────────────────
 console.log('\n3 · El botón dice el idioma al que lleva\n');
 {
-  /* Navegador en inglés: la página sale en inglés y el botón tiene
-     que ofrecer español. */
+  /* EL ESPAÑOL ES EL IDIOMA DE ARRANQUE, venga el navegador como
+     venga. Esto esperaba lo contrario —navegador en inglés, página en
+     inglés— hasta el 28 de octubre de 2026, cuando la portada pasó a
+     arrancar siempre en español.
+
+     Por eso el contexto se abre en en-US a propósito: es el caso que
+     antes mandaba al inglés y ahora no puede. En Puerto Rico hay
+     muchísimo teléfono configurado en inglés en manos de gente cuyo
+     idioma de trabajo es el español, y el entrenador al que va
+     dirigida esta página la abre en español. */
   const ctx = await navegador.newContext({ locale: 'en-US',
                                            viewport: { width: 375, height: 780 } });
   const pag = await ctx.newPage();
   await pag.goto(PAGINA);
   await pag.waitForTimeout(150);
 
-  eq(await pag.locator('#lang').textContent(), 'Español',
-     'en inglés, el botón dice «Español»');
-  eq(await pag.getAttribute('html', 'lang'), 'en', 'y el html está en en');
+  eq(await pag.getAttribute('html', 'lang'), 'es',
+     'con el navegador en inglés, la página arranca igual en español');
+  eq(await pag.locator('#lang').textContent(), 'English',
+     'y el botón ofrece el inglés, que es a donde lleva');
   si(await pag.locator('#lang').isVisible(),
      'el idioma se queda a la vista, no dentro del menú');
+  si((await pag.locator('[data-i="navPrice"]').first().textContent()).indexOf('Cu') === 0,
+     'y los enlaces salen en español («Cuánto cuesta»)');
 
+  /* Pero se puede ir al inglés, y el botón tiene que darse la vuelta:
+     dice a dónde lleva, no dónde estás. */
   await pag.locator('#lang').click();
   await pag.waitForTimeout(150);
-  eq(await pag.locator('#lang').textContent(), 'English',
-     'al pulsarlo, ahora dice «English»');
-  eq(await pag.getAttribute('html', 'lang'), 'es', 'y la página se fue a español');
-  si((await pag.locator('[data-i="navPrice"]').first().textContent()).indexOf('Cu') === 0,
-     'los enlaces también («Cuánto cuesta»)');
+  eq(await pag.getAttribute('html', 'lang'), 'en', 'al pulsarlo se va al inglés');
+  eq(await pag.locator('#lang').textContent(), 'Español',
+     'y ahora el botón ofrece el español');
 
-  /* Y que se quede. Se guarda con las mismas llaves que el resto de
-     la casa, así que recargar tiene que respetarlo. */
+  /* PERO AL RECARGAR VUELVE AL ESPAÑOL, y eso es lo que se quiere.
+
+     La portada no lee el idioma guardado. Las tres llaves las
+     comparten las quince páginas, así que un «English» pulsado una
+     vez en equipo.html dejaba la portada abriéndose en inglés para
+     siempre, encima de un marcado que está en español y sin nada que
+     lo delatara. La portada es el escaparate: va en español.
+
+     La elección SÍ se guarda, para las páginas de dentro. Lo que no
+     hace es decidir cómo se abre ésta. */
   await pag.reload();
   await pag.waitForTimeout(150);
-  eq(await pag.locator('#lang').textContent(), 'English',
-     'y al recargar sigue en español');
+  eq(await pag.getAttribute('html', 'lang'), 'es',
+     'y al recargar la portada vuelve al español, aunque quedara inglés guardado');
+  eq(await pag.evaluate(() => localStorage.getItem('cp-lang')), 'en',
+     'pero la elección queda guardada para las páginas de dentro');
+
+  /* Y PARA MANDAR EL ENLACE EN INGLÉS, ?lang=en: explícito, visible
+     en la dirección, y sin depender de lo que tenga guardado nadie. */
+  await pag.goto(PAGINA + '?lang=en');
+  await pag.waitForTimeout(200);
+  eq(await pag.getAttribute('html', 'lang'), 'en',
+     'con ?lang=en la portada sí abre en inglés');
+  await pag.goto(PAGINA + '?lang=es');
+  await pag.waitForTimeout(200);
+  eq(await pag.getAttribute('html', 'lang'), 'es', 'y ?lang=es la devuelve al español');
 
   await ctx.close();
 }
@@ -205,7 +236,11 @@ console.log('\n4 · La cabecera pegada no tapa lo que buscas\n');
     getComputedStyle(document.querySelector('header')).position);
   eq(pegada, 'sticky', 'la cabecera va pegada');
 
-  for (const id of ['play', 'how', 'precio', 'faq']) {
+  /* La portada se condensó: #play y #faq ya no existen —la cabecera
+   ofrece la demostración y las preguntas viven en ayuda.html— y
+   esta prueba fue la que avisó de que el menú todavía apuntaba a
+   las dos. */
+  for (const id of ['how', 'precio']) {
     /* Se pulsa el enlace de verdad, desde el menú, que es como llega
        un usuario — y se espera a que el desplazamiento PARE. Con un
        waitForTimeout fijo y scroll-behavior:smooth la medida se toma
