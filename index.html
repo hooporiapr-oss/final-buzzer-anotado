@@ -214,6 +214,10 @@ h1 em{font-style:normal;color:var(--orange)}
 .spills{grid-column:2;display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem}
 .pill{font-size:.76rem;font-weight:700;border-radius:999px;padding:.32rem .75rem;
   border:1px solid var(--orange);color:var(--orange);background:transparent;white-space:nowrap}
+/* El botón de un juego del cuadro: existe, pero todavía no sabe
+   sobre quién promete. Va punteado para que se lea «aún no», no
+   «nunca». */
+.pill.esp{border-style:dashed;border-color:#c9a07a;color:var(--muted)}
 .srow.hole .smatch{color:var(--muted)}
 .schnota{padding:.7rem 1.1rem;border-top:1px solid var(--linea);background:var(--cream);
   color:var(--muted);font-size:.78rem}
@@ -286,6 +290,15 @@ h1 em{font-style:normal;color:var(--orange)}
 .topepie{max-width:44rem;margin:1.4rem auto 0;color:var(--muted);font-size:.93rem}
 .topepie b{color:var(--ink)}
 .topepie + .topepie{margin-top:.8rem}
+/* Dos ejes y dos tablas: padrinos por juego, y juegos por temporada.
+   El rótulo los separa sin partir la sección en dos, porque es una
+   sola idea — no hay techo por ningún lado. */
+.topesub{max-width:44rem;margin:0 auto .8rem;display:flex;align-items:baseline;gap:.7rem}
+.topesub .nn{font-family:Archivo,sans-serif;font-weight:900;font-size:.95rem;
+  color:var(--orange);line-height:1;font-variant-numeric:tabular-nums}
+.topesub .tt{font-family:Archivo,sans-serif;font-weight:900;font-size:.72rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.topegap{height:clamp(32px,5vw,46px)}
 
 /* ── El marcador ──────────────────────────────────────────────────
    Lo que ningún otro recaudador puede enseñar: un juego de verdad
@@ -440,12 +453,13 @@ button.lang{padding:0 10px;font-size:.8rem}
 <section class="hero oscuro" id="top">
 <div class="wrap hero-grid">
 <div class="hero-copy">
-<div class="eyebrow" data-i="heroEye">Baloncesto &middot; promesas por punto</div>
+<div class="eyebrow" data-i="heroEye">Recaudación juego por juego</div>
 <h1 data-i="heroH1">Ganes o pierdas, <em>tu marcador es la recaudación.</em></h1>
-<p class="hero-sub" data-i="heroSub">No necesitas un torneo. Con un solo juego basta.</p>
+<p class="hero-sub" data-i="heroSub">Convertimos tus juegos en eventos de recaudación.</p>
 <p class="hero-p" data-i="heroP">Ni dulces que vender, ni lavado de carros, ni otro evento
-  que montar. Un padrino &mdash;un papá, un vecino, un tío&mdash; promete unos centavos por
-  cada punto que anota tu equipo, en un juego que ya tienes en calendario.</p>
+  que montar &mdash; ya los tienes en el calendario. Un padrino &mdash;un papá, un vecino,
+  un tío&mdash; promete unos centavos por cada punto que anota tu equipo. Programa un juego
+  o la temporada entera: no hay límite.</p>
 </div>
 
 <div class="suma hero-sum">
@@ -490,29 +504,34 @@ button.lang{padding:0 10px;font-size:.8rem}
 <div class="wrap">
 <div class="cab">
 <div class="eyebrow" data-i="howEye">Así de sencillo</div>
-<h2 data-i="howH2">Promete. Juega. Anota. Cobra.</h2>
-<p class="lede" data-i="howP">Cuatro pasos, y el del medio es un juego de baloncesto que
-  ya ibas a jugar.</p>
+<!-- «PROGRAMA» ABRE LOS CUATRO PASOS desde el 28 de octubre de 2026.
+     Decía «Promete. Juega. Anota. Cobra.» y empezaba por la promesa,
+     que es el segundo movimiento. El primero es poner los juegos en
+     el calendario — que es lo que el entrenador hace de todas formas
+     y es donde empieza la recaudación. -->
+<h2 data-i="howH2">Programa. Promete. Juega. Cobra.</h2>
+<p class="lede" data-i="howP">Cuatro pasos, y los dos del medio son juegos de baloncesto
+  que ya ibas a jugar.</p>
 </div>
 
 <div class="pasos">
 <article class="paso">
 <div class="n num">01</div>
-<h3 data-i="q1w">Promete</h3>
-<p data-i="q1p">Tus jugadores comparten el juego. Cada padrino promete unos centavos por
-  punto &mdash; de 10¢ a $1 &mdash; y la promesa sólo cuenta cuando se juega.</p>
+<h3 data-i="q1w">Programa</h3>
+<p data-i="q1p">Pon tus juegos en marcadorpr: uno, diez o la temporada entera. Cada juego
+  que programas sale con su botón de prometer puesto.</p>
 </article>
 <article class="paso">
 <div class="n num">02</div>
-<h3 data-i="q2w">Juega</h3>
-<p data-i="q2p">El equipo juega. No hay cancha que reservar, ni evento que montar, ni un
-  mínimo que alguien tenga que anotar para que la noche cuente.</p>
+<h3 data-i="q2w">Promete</h3>
+<p data-i="q2p">Tus jugadores mandan el enlace. Cada padrino promete unos centavos por
+  punto &mdash; de 10¢ a $1 &mdash; y la promesa sólo cuenta cuando se juega.</p>
 </article>
 <article class="paso">
 <div class="n num">03</div>
-<h3 data-i="q3w">Anota</h3>
-<p data-i="q3p">El marcador final entra una sola vez, en marcadorpr, y cada promesa de ese
-  juego se calcula de ahí.</p>
+<h3 data-i="q3w">Juega</h3>
+<p data-i="q3p">El equipo juega &mdash; sin cancha que reservar y sin evento que montar
+  &mdash; y el anotador publica el marcador final. Cada promesa sale de ahí.</p>
 </article>
 <article class="paso">
 <div class="n num">04</div>
@@ -544,18 +563,19 @@ button.lang{padding:0 10px;font-size:.8rem}
 <section class="section blanco">
 <div class="wrap split">
 <div>
-<div class="eyebrow" data-i="scEye">Dónde vive el juego</div>
-<h2 style="margin-top:.55rem" data-i="scH2">La recaudación corre sobre marcadorpr, juego
-  a juego.</h2>
-<p class="lede" style="margin-top:1rem" data-i="scP1">marcadorpr es el tablero donde pones
-  tu juego, y es gratis. Ahí va la fecha, ahí sale el botón de prometer sobre cada equipo,
-  y ahí entra el marcador final que salda cada promesa. Nadie escribe un número dos veces:
-  los anotadores ya publican el marcador, y ése es el que cuenta.</p>
-<p class="fine" data-i="scP2">Con un juego basta. Pero el mismo tablero te arma un torneo
-  entero si lo quieres: categorías, canchas, horarios y el cuadro. El cuadro se llena solo
-  &mdash; en cuanto entra un resultado, el ganador aparece en el juego que le toca después.
-  Eso es lo de más; la recaudación siempre va juego por juego. Un equipo que todavía no
-  recauda ve ahí mismo cómo recaudar.</p>
+<div class="eyebrow" data-i="scEye">El calendario que recauda</div>
+<h2 style="margin-top:.55rem" data-i="scH2">marcadorpr no es sólo un tablero. Es tu
+  calendario de recaudación.</h2>
+<p class="lede" style="margin-top:1rem" data-i="scP1">Programas tus juegos ahí &mdash; uno,
+  diez o la temporada entera, y es gratis. <b>Cada juego que programas sale con su botón de
+  prometer puesto</b>, sobre los dos equipos, sin que tengas que activar nada. Ahí entra
+  después el marcador final que salda cada promesa: nadie escribe un número dos veces,
+  porque los anotadores ya publican el marcador y ése es el que cuenta.</p>
+<p class="fine" data-i="scP2">El mismo calendario te arma un torneo entero si lo quieres:
+  categorías, canchas, horarios y el cuadro. El cuadro se llena solo &mdash; en cuanto
+  entra un resultado, el ganador aparece en el juego que le toca después. Y el botón sigue
+  ahí en cada juego del torneo. Un equipo que todavía no recauda ve ahí mismo cómo
+  recaudar.</p>
 <p style="margin-top:1.4rem"><a class="button linea" href="https://marcadorpr.com"
   data-i="scCta">Mira un torneo de verdad corriendo &rarr;</a></p>
 </div>
@@ -570,12 +590,20 @@ button.lang{padding:0 10px;font-size:.8rem}
 <span class="pill" data-i="p2">Arecibo &mdash; prometer</span>
 </span>
 </div>
+<!-- EL CUADRO TAMBIÉN LLEVA BOTÓN. Esta fila salía pelada y decía lo
+     contrario de lo que la página promete ahora: que TODO juego que
+     se programa es un juego de promesas. Un juego del cuadro todavía
+     no sabe quién lo juega, y el botón sale igual — se activa con el
+     equipo en cuanto el cuadro lo llena. -->
 <div class="srow hole">
 <span class="stime">4:00PM</span>
 <span class="smatch" data-i="holeRow">Ganador CL-3 <i>vs</i> Ganador CL-4</span>
+<span class="spills">
+<span class="pill esp" data-i="p3">Prometer &mdash; al llenarse el cuadro</span>
+</span>
 </div>
-<p class="schnota" data-i="schNota">Arriba, un juego con sus dos botones de prometer: eso
-  es la recaudación. Abajo, el cuadro llenándose solo: eso es el torneo, y es opcional.</p>
+<p class="schnota" data-i="schNota">Todo juego que programas sale con su botón. El del
+  cuadro se activa solo en cuanto entra el resultado de antes y se sabe quién juega.</p>
 </div>
 </div>
 </section>
@@ -643,13 +671,16 @@ button.lang{padding:0 10px;font-size:.8rem}
 <div class="wrap">
 <div class="cab">
 <div class="eyebrow" data-i="npEye">Sin tope</div>
-<h2 data-i="npH2">Cuatro padrinos por jugador es un ejemplo, no un techo.</h2>
-<p class="lede" data-i="npP">Nadie pone un límite. El jugador que consigue diez padrinos
-  recauda por diez, y el que consigue veinte recauda por veinte. Tampoco tienen que estar
-  en el pueblo: un tío en Orlando, una prima en Nueva York, el entrenador de hace diez
-  años. Es un enlace, y se manda a quien sea.</p>
+<h2 data-i="npH2">No hay techo. Ni de padrinos, ni de juegos.</h2>
+<p class="lede" data-i="npP">Nadie pone un límite por ningún lado. El jugador que consigue
+  diez padrinos recauda por diez, y el que consigue veinte recauda por veinte. Tampoco
+  tienen que estar en el pueblo: un tío en Orlando, una prima en Nueva York, el entrenador
+  de hace diez años. Y lo mismo con los juegos: programa uno, o programa la temporada
+  entera.</p>
 </div>
 
+<div class="topesub"><span class="nn">01</span><span class="tt" data-i="npSubA">Más
+  padrinos en el mismo juego</span></div>
 <div class="topes">
 <div class="tphead">
 <span class="h1c" data-i="npTh1">Padrinos en el juego</span>
@@ -675,12 +706,58 @@ button.lang{padding:0 10px;font-size:.8rem}
 
 <p class="topepie" data-i="npPie">El mismo juego las tres veces: los mismos 68 puntos y los
   mismos 25¢ por punto. Lo único que cambia es cuánta gente hay detrás del equipo.</p>
+
+<div class="topegap"></div>
+
+<!-- EL SEGUNDO EJE: LOS JUEGOS. Es la dirección nueva de la
+     plataforma — marcador no es un tablero con promesas encima, es
+     un calendario de recaudación. Un entrenador no tiene un juego:
+     tiene una temporada, y cada fecha de esa temporada ya es un
+     evento de recaudación que nadie estaba cobrando.
+
+     Los números son los de arriba multiplicados por juegos. Y la
+     licencia va al lado otra vez, porque veinte juegos son veinte
+     licencias y esconderlo aquí sería justo donde más duele. -->
+<div class="topesub"><span class="nn">02</span><span class="tt" data-i="npSubB">Más juegos
+  en la temporada</span></div>
+<div class="topes">
+<div class="tphead">
+<span class="h1c" data-i="npTh4">Juegos con promesas</span>
+<span class="h2c" data-i="npTh5">Prometido</span>
+<span class="h3c" data-i="npTh6">Licencia</span>
+</div>
+<div class="tp suyo">
+<span class="q" data-i="npG1">1 juego &mdash; <i>un sábado</i></span>
+<span class="pro num">$816.00</span>
+<span class="lic num">$25</span>
+</div>
+<div class="tp">
+<span class="q" data-i="npG2">10 juegos &mdash; <i>media temporada</i></span>
+<span class="pro num">$8,160.00</span>
+<span class="lic num">$250</span>
+</div>
+<div class="tp">
+<span class="q" data-i="npG3">20 juegos &mdash; <i>la temporada entera</i></span>
+<span class="pro num">$16,320.00</span>
+<span class="lic num">$500</span>
+</div>
+</div>
+
+<p class="topepie" data-i="npPie2">Los mismos 48 padrinos, juego tras juego. Un lavado de
+  carros te da un sábado; una temporada te da veinte. <b>Prometido no es cobrado</b>
+  &mdash; lo que entre de verdad depende de tu cobro, como siempre.</p>
 <!-- LA COLUMNA DE LA LICENCIA NO SE ESCONDE. Enseñar lo que sube sin
      enseñar lo que cuesta sería vender media verdad, y esta página
-     se sostiene sobre lo contrario. -->
+     se sostiene sobre lo contrario.
+
+     Y ojo con los $500 de veinte juegos: un entrenador los divide
+     entre los $16,320 y le sale un tres por ciento. NO es un por
+     ciento, y aquí se dice, porque los términos dicen lo mismo y una
+     página que invita a esa división se contradice sola. -->
 <p class="topepie" data-i="npFine"><b>Y la licencia no te persigue.</b> Sube por tramos y
-  se para: de 120 a 200 padrinos cuesta lo mismo, y de ahí para arriba lo hablamos. Lo
-  prometido no tiene tramos &mdash; cada padrino nuevo suma entero.</p>
+  se para: de 120 a 200 padrinos cuesta lo mismo, y de ahí para arriba lo hablamos. No es
+  un por ciento de nada &mdash; son veinte licencias de veinticinco dólares, una por juego,
+  y el juego que no recoge promesas no lleva ninguna.</p>
 </div>
 </section>
 
@@ -691,7 +768,12 @@ button.lang{padding:0 10px;font-size:.8rem}
 <div class="wrap split">
 <div>
 <div class="eyebrow" data-i="bdEye">Y el equipo que perdió</div>
-<h2 style="margin-top:.55rem" data-i="bdH2">Arecibo perdió por siete. Recaudó igual.</h2>
+<!-- «Ganes o pierdas, ganas» va AQUÍ y no en la portada. En la
+     portada sería un eslogan sin nada detrás; aquí cae encima del
+     marcador que lo demuestra, con los dos equipos y sus dos
+     números. Un eslogan se gana el sitio después de la prueba. -->
+<h2 style="margin-top:.55rem" data-i="bdH2">Ganes o pierdas, ganas. Arecibo perdió por
+  siete y recaudó igual.</h2>
 <p class="lede" style="margin-top:1rem" data-i="bdP">Los dos equipos de un juego pueden
   llevar promesas, y cada uno recauda sobre sus propios puntos. Arecibo, que lo perdió,
   salió exactamente igual con sus 61.</p>
@@ -807,8 +889,8 @@ button.lang{padding:0 10px;font-size:.8rem}
   no les cobramos nada.</li>
 <li data-i="pf4">Si no se paga, esa licencia caduca y sus datos de promesas se retiran de
   la plataforma. No lo reclamamos más allá de ahí.</li>
-<li data-i="pf5">Tampoco se mueve con tu plantilla, y un programa se inscribe con cinco
-  juegos para empezar.</li>
+<li data-i="pf5">Tampoco se mueve con tu plantilla. Un programa empieza con cinco juegos
+  activados y añade los que quiera: no hay tope.</li>
 </ul>
 
 <p class="priceCta"><a class="button" href="equipo.html" data-i="register">Inscribir mi equipo</a></p>
@@ -821,9 +903,13 @@ button.lang{padding:0 10px;font-size:.8rem}
 <section class="section oscuro" id="signup">
 <div class="wrap close">
 <div class="eyebrow" data-i="zEye">Tu próximo juego puede contar</div>
-<h2 data-i="zH2">No necesitas otro evento. Necesitas tu próximo juego.</h2>
-<p class="lede" data-i="zP">Inscribirse es gratis. Con un solo juego basta para empezar, y
-  tú escoges en qué juegos van las promesas.</p>
+<h2 data-i="zH2">No necesitas otro evento. Ya los tienes en el calendario.</h2>
+<!-- «tú escoges en qué juegos van las promesas» se cayó el 28 de
+     octubre de 2026: ahora TODO juego que se programa lleva su
+     botón, así que escoger ya no es el trato. El trato es que
+     programes. -->
+<p class="lede" data-i="zP">Inscribirse es gratis. Programa un juego para probar, o la
+  temporada entera &mdash; cada uno sale con su botón de prometer puesto.</p>
 <div class="ctas">
 <a class="button" href="equipo.html" data-i="zCta1">Inscribir mi equipo</a>
 <a class="button linea" href="https://marcadorpr.com" data-i="zCta2">Mira un torneo de verdad corriendo</a>
@@ -897,10 +983,10 @@ navPrice:'What it costs',
 navFaq:'Questions',
 navCta:'Sign up my team',
 
-heroEye:'Basketball &middot; per-point pledges',
+heroEye:'Fundraising game by game',
 heroH1:'Win or lose, <em>your score is the fundraiser.</em>',
-heroSub:'You do not need a tournament. One game is enough.',
-heroP:'No candy to sell, no car wash, no event to put on. A padrino &mdash; a parent, a neighbour, an uncle &mdash; pledges a few cents for every point your team scores, in a game that is already on your calendar.',
+heroSub:'We turn your games into funding events.',
+heroP:'No candy to sell, no car wash, no event to put on &mdash; you already have them on the calendar. A padrino &mdash; a parent, a neighbour, an uncle &mdash; pledges a few cents for every point your team scores. Schedule one game or the whole season: there is no limit.',
 heroCta1:'Sign up my team',
 heroCta2:'How it works',
 heroNota:'Onboarding is supervised while the first programs come in.',
@@ -911,21 +997,21 @@ sumC:'one padrino',
 sumPie:'That is <b>one single padrino</b>. There is no ceiling: each player brings as many as he finds, and the pledge only counts once the team plays.',
 
 howEye:'As simple as that',
-howH2:'Pledge. Play. Post. Paid.',
-howP:'Four steps, and the middle one is a basketball game you were already playing.',
-q1w:'Pledge',
-q1p:'Your players share the game. Each padrino promises a few cents per point &mdash; 10&cent; to $1 &mdash; and the pledge only counts once the game is played.',
-q2w:'Play',
-q2p:'The team plays. No gym to book, no event to host, and no minimum anybody has to score for the night to count.',
-q3w:'Post',
-q3p:'The final score goes in once, on marcadorpr, and every pledge on that game is calculated from it.',
+howH2:'Schedule. Pledge. Play. Paid.',
+howP:'Four steps, and the two in the middle are basketball games you were already playing.',
+q1w:'Schedule',
+q1p:'Put your games on marcadorpr: one, ten or the whole season. Every game you schedule comes with its pledge button already on it.',
+q2w:'Pledge',
+q2p:'Your players send the link. Each padrino promises a few cents per point &mdash; 10&cent; to $1 &mdash; and the pledge only counts once the game is played.',
+q3w:'Play',
+q3p:'The team plays &mdash; no gym to book and no event to host &mdash; and the scorekeeper posts the final score. Every pledge comes off that number.',
 q4w:'Paid',
 q4p:'Each padrino gets one notice with the final score and what their pledge came to. They settle it with your program the way they already would.',
 
-scEye:'Where the game lives',
-scH2:'The fundraiser runs on marcadorpr, one game at a time.',
-scP1:'marcadorpr is the free scoreboard your game goes on. The date lives there, the pledge button sits on each team there, and the final score that settles every pledge goes in there. Nobody types a number twice: scorekeepers already post the score, and that is the one that counts.',
-scP2:'One game is enough. But the same board will build you a whole tournament if you want one: categories, courts, times and the bracket. The bracket fills itself in &mdash; the moment a result lands, the winner shows up in the game they play next. That part is the extra; the fundraising always goes game by game. A team that is not raising yet sees how to raise on its own game.',
+scEye:'The calendar that raises money',
+scH2:'marcadorpr is not just a scoreboard. It is your fundraising calendar.',
+scP1:'You schedule your games there &mdash; one, ten or the whole season, and it is free. <b>Every game you schedule comes with its pledge button already on it</b>, on both teams, with nothing for you to switch on. The final score that settles every pledge goes in there afterwards: nobody types a number twice, because scorekeepers already post the score and that is the one that counts.',
+scP2:'The same calendar will build you a whole tournament if you want one: categories, courts, times and the bracket. The bracket fills itself in &mdash; the moment a result lands, the winner shows up in the game they play next. And the button is still there on every game of it. A team that is not raising yet sees how to raise on its own game.',
 scCta:'See a real tournament on it &rarr;',
 sdDay:'Saturday 21 November',
 sdEg:'Example',
@@ -933,7 +1019,8 @@ vs1:'vs',
 p1:'Canóvanas &mdash; pledge',
 p2:'Arecibo &mdash; pledge',
 holeRow:'Winner of CL-3 <i>vs</i> Winner of CL-4',
-schNota:'Above, one game with its two pledge buttons: that is the fundraiser. Below, the bracket filling itself in: that is the tournament, and it is optional.',
+p3:'Pledge &mdash; once the bracket fills',
+schNota:'Every game you schedule comes with its button. The bracket one switches itself on the moment the earlier result lands and it knows who is playing.',
 
 exEye:'Every point adds up',
 exH2:'Sixty-eight points, and what they were worth.',
@@ -948,8 +1035,17 @@ cPend:'<b>Prometido no es cobrado.</b> We record what was pledged and work out e
 exFine:'Pledges run from 10&cent; to $1 a point, so a padrino who wants to give more does it by the point rather than by being asked twice. A pledge that works out under $5 closes at $0.00 and does not count towards the game&rsquo;s step.',
 
 npEye:'No ceiling',
-npH2:'Four padrinos a player is an example, not a ceiling.',
-npP:'Nobody sets a limit. A player who finds ten padrinos raises on ten, and one who finds twenty raises on twenty. They do not have to be in town either: an uncle in Orlando, a cousin in New York, the coach he had ten years ago. It is a link, and it goes to anyone.',
+npH2:'There is no ceiling. Not on padrinos, not on games.',
+npP:'Nobody sets a limit anywhere. A player who finds ten padrinos raises on ten, and one who finds twenty raises on twenty. They do not have to be in town either: an uncle in Orlando, a cousin in New York, the coach he had ten years ago. Same with the games: schedule one, or schedule the whole season.',
+npSubA:'More padrinos on the same game',
+npSubB:'More games in the season',
+npTh4:'Games carrying pledges',
+npTh5:'Pledged',
+npTh6:'Licence',
+npG1:'1 game &mdash; <i>one Saturday</i>',
+npG2:'10 games &mdash; <i>half a season</i>',
+npG3:'20 games &mdash; <i>the whole season</i>',
+npPie2:'The same 48 padrinos, game after game. A car wash gives you one Saturday; a season gives you twenty. <b>Prometido no es cobrado</b> &mdash; what actually arrives still depends on your collecting, as always.',
 npTh1:'Padrinos on the game',
 npTh2:'Pledged',
 npTh3:'Licence',
@@ -957,10 +1053,10 @@ npR1:'12 padrinos &mdash; <i>one per player</i>',
 npR2:'48 padrinos &mdash; <i>four per player</i>',
 npR3:'120 padrinos &mdash; <i>ten per player</i>',
 npPie:'The same game all three times: the same 68 points and the same 25&cent; a point. The only thing that changes is how many people are behind the team.',
-npFine:'<b>And the licence does not chase you.</b> It climbs in steps and then stops: 120 padrinos and 200 padrinos cost the same, and past that we talk. What was pledged has no steps &mdash; every new padrino counts in full.',
+npFine:'<b>And the licence does not chase you.</b> It climbs in steps and then stops: 120 padrinos and 200 padrinos cost the same, and past that we talk. It is not a percentage of anything &mdash; it is twenty twenty-five-dollar licences, one per game, and a game that gathers no pledges carries none.',
 
 bdEye:'And the team that lost',
-bdH2:'Arecibo lost by seven. They raised anyway.',
+bdH2:'Win or lose, you win. Arecibo lost by seven and raised anyway.',
 bdP:'Both teams on a game can carry pledges, and each one raises on its own points. Arecibo, who lost it, worked out exactly the same way on their 61.',
 bdFine:'This is the part no other fundraiser can offer. A car wash needs a date, a lot, volunteers and somebody&rsquo;s Saturday. A game needs the game &mdash; and it pays both benches.',
 
@@ -998,12 +1094,12 @@ pf1:'Nothing up front. Signing up is free and running it is free.',
 pf2:'Invoiced for the games that carried pledges, due within seven days.',
 pf3:'Not a percentage of anything. It does not come out of any pledge, and your padrinos are charged nothing.',
 pf4:'If it is not paid, that licence lapses and its pledge data comes off the platform. We do not chase it any further.',
-pf5:'It does not move with your roster either, and a program signs up for five games to start.',
+pf5:'It does not move with your roster either. A program starts with five games switched on and adds as many more as it wants: there is no cap.',
 register:'Sign up my team',
 
 zEye:'Make your next game count',
-zH2:'You do not need another event. You need your next game.',
-zP:'Signing up is free. One game is enough to start, and you pick which games carry pledges.',
+zH2:'You do not need another event. You already have them on the calendar.',
+zP:'Signing up is free. Schedule one game to try it, or the whole season &mdash; each one comes with its pledge button already on it.',
 zCta1:'Sign up my team',
 zCta2:'See a real tournament on it',
 zPlayer:'Are you a player? Your program has to run it &mdash; show your coach this page.',
