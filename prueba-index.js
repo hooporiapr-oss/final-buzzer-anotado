@@ -103,7 +103,12 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(t,/no un resultado/,'y dice que no es un resultado');
 
   console.log('\n2 · Los cuatro pasos y el calendario');
-  has(t,/Promete\. Juega\. Anota\. Cobra\./,'los cuatro pasos');
+  /* «PROGRAMA» ABRE LOS CUATRO PASOS. Decía «Promete. Juega. Anota.
+     Cobra.» y empezaba por la promesa, que es el segundo movimiento.
+     El primero es poner los juegos en el calendario, que es lo que
+     el entrenador hace de todas formas — y en esta plataforma es
+     donde empieza la recaudación. */
+  has(t,/Programa\. Promete\. Juega\. Cobra\./,'los cuatro pasos, empezando por programar');
   has(t,/por cada punto que anota tu equipo/,'por punto del EQUIPO, no de un nene');
   /* LA RECAUDACIÓN ES POR JUEGO, Y EL TORNEO ES LO DE MÁS.
      Esto exigía «el tablero que tu torneo ya usa», que daba por hecho
@@ -115,11 +120,17 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      marcador juego a juego, y el torneo es lo que el mismo tablero
      sabe hacer ADEMÁS. Si algún día vuelve a darse la vuelta, la
      portada vuelve a contradecirse sola. */
-  has(t,/corre sobre marcadorpr, juego\s+a juego/,'la recaudación corre sobre marcador, juego a juego');
-  has(t,/la recaudación siempre va juego por juego/,'y se dice que siempre va juego por juego');
-  has(t,/el mismo tablero te arma un torneo/,'el torneo lo arma el mismo tablero');
-  has(t,/Eso es lo de más/,'y queda dicho que el torneo es lo de más, no el precio de entrada');
+  has(t,/calendario de recaudación/,'marcador es un calendario de recaudación, no sólo un tablero');
+  has(t,/Cada juego que programas sale con su botón de prometer/,
+      'y TODO juego programado sale con su botón de prometer');
+  has(t,/uno, diez o la temporada entera/,'uno, diez o la temporada entera');
+  has(t,/el mismo calendario te arma un torneo/i,'el torneo lo arma el mismo calendario');
   not(t,/el tablero que tu torneo ya usa/,'y ya no da por hecho que tengas un torneo');
+  /* Y QUE NO SE VUELVA A DECIR QUE SE ESCOGE. Mientras las promesas
+     se activaban juego a juego, «tú escoges en qué juegos van» era
+     verdad y era el trato. Desde que todo juego programado sale con
+     botón, escoger ya no es el trato: el trato es que programes. */
+  not(t,/escoges en qué juegos/,'y ya no dice que el entrenador escoja en cuáles van');
   /* UN AVISO, NO UN ENLACE DE PAGO.
 
      La portada prometía «un enlace para pagarle directo a tu
@@ -157,9 +168,10 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      copian del marcado, porque una tabla que se queda vieja cuando
      alguien toca el precio es exactamente el fallo que esto existe
      para encontrar: la página seguiría leyéndose perfecta. */
-  has(t,/no es un techo|no un techo/,'cuatro por jugador es un ejemplo, no un techo');
+  has(t,/No hay techo\. Ni de padrinos, ni de juegos/,'no hay techo: ni de padrinos, ni de juegos');
   has(t,/Nadie pone un límite/,'y se dice que nadie pone un límite');
   has(t,/un tío en Orlando|una prima en Nueva York/,'y que el padrino no tiene que ser del pueblo');
+  has(t,/programa la temporada entera/,'y que se puede programar la temporada entera');
   {
     const PUNTOS = 68, CENTAVOS = 0.25;
     /* La escalera se lee del propio index.html, igual que hace
@@ -184,8 +196,41 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
         mal('falta la licencia ' + lic + ' del tramo de ' + n); bien = false;
       }
     }
-    if (bien) ok('las tres filas del tope cuadran con la cuenta y con la escalera');
+    if (bien) ok('las tres filas de padrinos cuadran con la cuenta y con la escalera');
+
+    /* ── Y EL SEGUNDO EJE: LOS JUEGOS ──────────────────────────────
+       La dirección nueva de la plataforma. Un entrenador no tiene un
+       juego, tiene una temporada, y cada fecha de esa temporada ya
+       es un evento de recaudación que nadie estaba cobrando.
+
+       El precio es POR JUEGO, así que veinte juegos son veinte
+       licencias. Eso se calcula aquí igual que lo prometido: si
+       alguna vez deja de multiplicar, la tabla estaría prometiendo
+       una temporada a precio de un sábado. */
+    const BASE = 48 * PUNTOS * CENTAVOS;          // $816 el juego
+    const LIC  = escalon(48);                     // $25 el juego
+    let bienT = true;
+    for (const j of [1, 10, 20]){
+      const pro = '$' + (BASE*j).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      const lic = '$' + (LIC*j);
+      if (!ci(new RegExp(pro.replace(/[$.]/g,'\\$&'))).test(t)){
+        mal('faltan los ' + pro + ' de ' + j + ' juego(s)'); bienT = false;
+      }
+      if (!ci(new RegExp('\\' + lic + '\\b')).test(t)){
+        mal('falta la licencia ' + lic + ' de ' + j + ' juego(s)'); bienT = false;
+      }
+    }
+    if (bienT) ok('y las tres de la temporada: ' + LIC + ' por juego, multiplicado');
   }
+  /* EL NÚMERO GRANDE DE LA TEMPORADA NO PUEDE QUEDARSE SOLO. Son
+     dieciséis mil dólares en naranja; sin esta frase al lado, un
+     entrenador los lee como dinero que va a entrar. */
+  has(t,/Prometido no es cobrado[\s\S]{0,400}depende de tu cobro|dieciséis|Un lavado de\s+carros te da un sábado/,
+      'y la temporada lleva al lado que prometido no es cobrado');
+  /* NO ES UN POR CIENTO, Y AQUÍ HACE MÁS FALTA QUE EN NINGÚN SITIO:
+     $500 entre $16,320 da un tres por ciento, y un entrenador hace
+     esa división solo. La página tiene que adelantarse. */
+  has(t,/son veinte licencias de veinticinco dólares/,'y que los $500 son veinte licencias, no un por ciento');
   has(t,/la licencia no te persigue/,'y se dice que la licencia sube por tramos y se para');
 
   /* ── NADIE «DEBE» NADA ───────────────────────────────────────────
@@ -212,7 +257,8 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(t,/Hablemos/,'que no lleva número: se habla');
   has(t,/y nada más/,'y que lo fija cuántas promesas, nada más');
   has(t,/Sin promesas, sin cargo/,'la promesa que se hace sobre el cargo');
-  has(t,/cinco juegos para empezar/,'y con cuántos juegos se inscribe uno');
+  has(t,/cinco juegos activados/,"con cuántos juegos arranca un programa");
+  has(t,/añade los que quiera: no hay tope/,"y que de ahí añade los que quiera");
   not(t,/\{[A-Z]\}/,'sin plantillas sin rellenar');
 
   const n=await p.evaluate(()=>document.querySelectorAll('.peldano').length);
@@ -249,7 +295,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   not(en,/Both programs raise\b/,'y ya no dice que los dos recaudan');
   has(en,/not the fundraiser/,'perder cuesta puntos, no la recaudación');
   has(en,/Example/i,'el tablero se marca como ejemplo');
-  has(en,/Pledge\. Play\. Post\. Paid\./,'los cuatro pasos');
+  has(en,/Schedule\. Pledge\. Play\. Paid\./,"los cuatro pasos, empezando por programar");
   has(en,/every point your team\s+scores/,'por punto del EQUIPO');
   has(en,/marcadorpr/,'marcadorpr sale nombrado');
   has(en,/Nobody types a number twice/,'y que el marcador no se escribe dos veces');
@@ -333,7 +379,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      en español y sin nada que lo delatara. */
   not(crudo,/locale\s*=\s*localStorage\.getItem/,
       'y el arranque no lo decide un idioma guardado por otra página');
-  has(crudo,/<h2[^>]*data-i="howH2">Promete\. Juega\. Anota\. Cobra\./,'y los titulares de sección igual');
+  has(crudo,/<h2[^>]*data-i="howH2">Programa\. Promete\. Juega\. Cobra\./,"y los titulares de sección igual");
   has(crudo,/const translations=\{\s*\n?en:\{/,'la tabla de traducción es la del inglés');
   not(crudo,/\n\s*es:\{/,'y no hay una tabla de español: el español es el marcado');
 
