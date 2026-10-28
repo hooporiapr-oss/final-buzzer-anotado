@@ -105,7 +105,21 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   console.log('\n2 · Los cuatro pasos y el calendario');
   has(t,/Promete\. Juega\. Anota\. Cobra\./,'los cuatro pasos');
   has(t,/por cada punto que anota tu equipo/,'por punto del EQUIPO, no de un nene');
-  has(t,/el tablero que tu torneo ya usa/,'el marcador entra por el tablero de siempre');
+  /* LA RECAUDACIÓN ES POR JUEGO, Y EL TORNEO ES LO DE MÁS.
+     Esto exigía «el tablero que tu torneo ya usa», que daba por hecho
+     que el entrenador tiene un torneo — mientras la portada, cuatro
+     pantallas más arriba, le decía que no necesita ninguno. Las dos
+     cosas no podían ser verdad a la vez.
+
+     Ahora se vigila el orden correcto: la recaudación corre sobre
+     marcador juego a juego, y el torneo es lo que el mismo tablero
+     sabe hacer ADEMÁS. Si algún día vuelve a darse la vuelta, la
+     portada vuelve a contradecirse sola. */
+  has(t,/corre sobre marcadorpr, juego\s+a juego/,'la recaudación corre sobre marcador, juego a juego');
+  has(t,/la recaudación siempre va juego por juego/,'y se dice que siempre va juego por juego');
+  has(t,/el mismo tablero te arma un torneo/,'el torneo lo arma el mismo tablero');
+  has(t,/Eso es lo de más/,'y queda dicho que el torneo es lo de más, no el precio de entrada');
+  not(t,/el tablero que tu torneo ya usa/,'y ya no da por hecho que tengas un torneo');
   /* UN AVISO, NO UN ENLACE DE PAGO.
 
      La portada prometía «un enlace para pagarle directo a tu
@@ -132,6 +146,62 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(t,/48/,'con los padrinos que la montan');
   has(t,/que lo perdió/,'y el que perdió sale en la misma cuenta');
   has(t,/no se ha movido un peso/,'y se dice que no es una promesa');
+
+  /* ── SIN TOPE DE PADRINOS ────────────────────────────────────────
+     La escalera termina en cuarenta y ocho y cuarenta y ocho acababa
+     leyéndose como la respuesta. La sección del tope enseña el MISMO
+     juego con tres cantidades de padrinos, y sus números no se
+     escriben a mano: salen de 68 puntos × 25¢ × padrinos.
+
+     Se calculan aquí a partir de TARIFAS y de la cuenta, y no se
+     copian del marcado, porque una tabla que se queda vieja cuando
+     alguien toca el precio es exactamente el fallo que esto existe
+     para encontrar: la página seguiría leyéndose perfecta. */
+  has(t,/no es un techo|no un techo/,'cuatro por jugador es un ejemplo, no un techo');
+  has(t,/Nadie pone un límite/,'y se dice que nadie pone un límite');
+  has(t,/un tío en Orlando|una prima en Nueva York/,'y que el padrino no tiene que ser del pueblo');
+  {
+    const PUNTOS = 68, CENTAVOS = 0.25;
+    /* La escalera se lee del propio index.html, igual que hace
+       prueba-precio.js: así estas tres filas no pueden quedarse
+       viejas cuando alguien toque el precio. */
+    const _src = fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+    const _mt  = _src.indexOf('const TARIFAS = [');
+    const TAR  = new Function('return ' +
+      _src.slice(_src.indexOf('[', _mt), _src.indexOf('];', _mt) + 1))();
+    const escalon = n => { for (const p of TAR)
+                             if (p.hasta !== null && n <= p.hasta) return p.precio;
+                           return null; };
+    const dinero = n => '$' + (n * PUNTOS * CENTAVOS)
+                          .toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    let bien = true;
+    for (const n of [12, 48, 120]){
+      const esperado = dinero(n), lic = '$' + escalon(n);
+      if (!ci(new RegExp(esperado.replace(/[$.]/g,'\\$&'))).test(t)){
+        mal('faltan los ' + esperado + ' de ' + n + ' padrinos'); bien = false;
+      }
+      if (!ci(new RegExp('\\' + lic + '\\b')).test(t)){
+        mal('falta la licencia ' + lic + ' del tramo de ' + n); bien = false;
+      }
+    }
+    if (bien) ok('las tres filas del tope cuadran con la cuenta y con la escalera');
+  }
+  has(t,/la licencia no te persigue/,'y se dice que la licencia sube por tramos y se para');
+
+  /* ── NADIE «DEBE» NADA ───────────────────────────────────────────
+     La portada decía tres veces que no se debe nada y una que le
+     mandamos al padrino «un aviso de lo que le debe a tu programa».
+     Todas eran verdad y todas suenan a factura: el padrino no está
+     firmando una deuda, está diciendo que si el equipo juega él pone
+     unos centavos por punto.
+
+     Se vigila la palabra, no la idea: la idea se sigue contando
+     entera —la promesa sólo cuenta cuando se juega, y al padrino le
+     llega su total y a quién se lo entrega—, sólo que por el lado
+     que no asusta. Es la clase de palabra que vuelve sola al
+     reescribir un párrafo. */
+  not(t,/\bse debe\b|\ble debe\b|\bdeben\b|\bdeuda\b|\bdeudor/,
+      'no se le dice a nadie que debe nada');
 
   console.log('\n4 · El precio sale de la escalera');
   /* La escalera, por PROMESAS del juego. Se exigen los dos extremos:
@@ -194,6 +264,11 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   noAfirma(en,/out of what you raise|once you have been paid|percentage of/i,
      'y no dice que el cargo salga de lo recaudado');
   noAfirma(en,/\bdeductible\b/i,'ni promete ninguna deducción');
+  /* Y la misma vigilancia en inglés, donde «owed» es todavía más
+     seco que «se debe». */
+  not(en,/\bowes?\b|\bowed\b|\bowing\b|\bdebt\b/,'y en inglés tampoco se le debe nada a nadie');
+  has(en,/no ceiling|not a ceiling/i,'el tope negado, también en inglés');
+  has(en,/\$2,040\.00/,'y la fila de los 120 padrinos');
   not(en,/\{[A-Z]\}/,'sin plantillas');
 
   const ti=await p.title();
@@ -205,18 +280,62 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   for(const h of ['equipo.html','mi-equipo.html','ayuda.html','cobro.html','terms.html','privacy.html','custodia.html'])
     hrefs.includes(h)?ok('a '+h):mal('falta '+h);
   hrefs.some(h=>/cadapunto|cognitivo\.digital|prometer\.html/.test(h||''))?mal('enlaza fuera del producto'):ok('no enlaza a Cada Punto');
-  /* El botón de la cabecera sale a propósito, y es el único que
-     sale: el hub de los juegos vive en el gimnasio móvil. Va en
-     absoluto porque es otro dominio, así que la comprobación mira
-     la dirección entera y no un trozo. */
-  /* Y CON SU COLA. ?e=demo es lo que mete al que entra por aquí en el
-     equipo abierto. El equipo se fija al emitir el código y no cambia
-     después, así que sin la cola todo el que entrara por la portada
-     jugaría solo para siempre — y el tablero no tiene cómo decírselo.
-     Por eso se comprueba la dirección entera y no sólo el fichero. */
-  hrefs.some(h=>h==='https://hooporia.mobi/fortress-mobile-hub.html?e=demo')
-    ?ok('y la cabecera entra al gimnasio, con equipo')
-    :mal('la cabecera ya no entra al gimnasio con su equipo');
+  /* EL GIMNASIO YA NO SALE DE LA PORTADA, y por eso esto está al
+     revés de como estaba.
+
+     Hasta el 28 de octubre de 2026 la portada llevaba una sección de
+     Cognitivo Gym con su enlace al hub, y aquí se exigía esa
+     dirección entera con su ?e=demo. La sección se retiró: la
+     portada es del recaudador y nada más, y una sección de juegos
+     gratis en medio del argumento del dinero le quitaba el sitio a
+     lo que sí tiene que decir.
+
+     Ahora se vigila lo contrario — que no vuelva a colarse — porque
+     retirar una comprobación sin poner otra deja la puerta abierta a
+     que reaparezca sin que nadie se entere. El gimnasio sigue vivo
+     en su sitio: fortress-vr.html sale hacia él, y eso lo comprueba
+     prueba-atras.js, que es su prueba. */
+  hrefs.some(h=>/hooporia\.mobi|fortress-mobile-hub/.test(h||''))
+    ?mal('la portada volvió a enlazar al gimnasio')
+    :ok('la portada no enlaza al gimnasio: es del recaudador y nada más');
+
+  /* EL ESPAÑOL MANDA EN CRUDO. Lo que lee WhatsApp cuando un
+     entrenador pasa el enlace es el HTML tal cual, sin ejecutar el
+     pintor, así que el título y la descripción del <head> tienen que
+     estar en español aunque el marcado del cuerpo esté en inglés. Con
+     el título en inglés ahí arriba, la vista previa salía en inglés
+     por mucho que la página se abriera en español. */
+  const crudo = fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+  has(crudo,/<html lang="es"/,'el html arranca declarado en español');
+  has(crudo,/<title>[^<]*Cada punto queda anotado/,'y el título en crudo va en español');
+  has(crudo,/name="description" content="Recaudación/,'y la descripción también');
+  not(crudo,/navigator\.language/,'y el arranque no lo decide el idioma del navegador');
+
+  /* ── Y EL CUERPO TAMBIÉN, EN CRUDO ──────────────────────────────
+     Ésta es la comprobación que faltaba el 28 de octubre de 2026.
+
+     El inglés vivía en el marcado y el español en la tabla, así que
+     la página sólo se ponía en español DESPUÉS de correr el pintor.
+     Todo lo que lee el HTML sin ejecutarlo lo veía en inglés: la
+     vista previa del editor, ver-código-fuente, el fichero copiado a
+     mano, los rastreadores. Y nada lo decía, porque en el navegador
+     se veía perfecto.
+
+     Se mira el titular, que es lo primero que lee cualquiera de
+     ésos, y se mira que la tabla de traducción NO tenga un bloque
+     'es:' — si vuelve a aparecer, es que alguien le dio la vuelta
+     otra vez. */
+  has(crudo,/<h1[^>]*>\s*Ganes o pierdas/,'el titular va en español en el marcado, no sólo al pintar');
+  /* Y QUE EL PINTOR NO PUEDA DESHACERLO. La portada no lee el idioma
+     guardado: las tres llaves las comparten las quince páginas, y un
+     «English» pulsado una vez en equipo.html dejaba la portada
+     abriéndose en inglés para siempre, encima de un marcado que está
+     en español y sin nada que lo delatara. */
+  not(crudo,/locale\s*=\s*localStorage\.getItem/,
+      'y el arranque no lo decide un idioma guardado por otra página');
+  has(crudo,/<h2[^>]*data-i="howH2">Promete\. Juega\. Anota\. Cobra\./,'y los titulares de sección igual');
+  has(crudo,/const translations=\{\s*\n?en:\{/,'la tabla de traducción es la del inglés');
+  not(crudo,/\n\s*es:\{/,'y no hay una tabla de español: el español es el marcado');
 
   /* ── Las dos listas de llaves, una contra la otra ────────────────
      El inglés se recoge del MARCADO y el español vive en la tabla,
@@ -263,18 +382,18 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   const _i = fuenteIdx.indexOf('const translations');
   const _j = fuenteIdx.indexOf('\n};', _i);
   const TAB = new Function('return '+fuenteIdx.slice(fuenteIdx.indexOf('{',_i), _j+2))();
-  const sinEs = llaves.marcado.filter(k=>!(k in TAB.es));
+  const sinEs = llaves.marcado.filter(k=>!(k in TAB.en));
   /* Una llave está VIVA si tiene un elemento con data-i... o si el
      JS le pone el inglés a mano. La escalera del precio la pinta el
      JS desde TARIFAS, así que sus cinco frases no cuelgan de ningún
      elemento del marcado y aquí salían como texto muerto cuando no
      lo son. Se cuentan las dos formas. */
-  const aMano = [...fuenteIdx.matchAll(/english\.([A-Za-z0-9_]+)\s*=/g)].map(m=>m[1]);
+  const aMano = [...fuenteIdx.matchAll(/spanish\.([A-Za-z0-9_]+)\s*=/g)].map(m=>m[1]);
   const vivas = new Set([...llaves.marcado, ...aMano]);
-  const muertas = Object.keys(TAB.es).filter(k=>!vivas.has(k));
+  const muertas = Object.keys(TAB.en).filter(k=>!vivas.has(k));
   sinEs.length===0
-    ? ok('las '+llaves.marcado.length+' llaves del marcado tienen español (y '+aMano.length+' más las pone el JS)')
-    : mal('sin español: '+sinEs.join(', '));
+    ? ok('las '+llaves.marcado.length+' llaves del marcado tienen inglés (y '+aMano.length+' más las pone el JS)')
+    : mal('sin inglés: '+sinEs.join(', '));
   muertas.length===0
     ? ok('y la tabla no lleva ninguna de más')
     : mal('texto muerto en la tabla: '+muertas.join(', '));
