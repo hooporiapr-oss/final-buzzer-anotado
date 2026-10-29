@@ -114,6 +114,12 @@ thead th{border-top:none;background:var(--cream);font-size:.68rem;font-weight:80
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 td.nm{font-weight:700}
 td.nm small{display:block;font-weight:500;color:var(--muted);font-size:.82rem}
+/* Los dos avisos de una promesa. Una corrección y un correo que
+   rebotó no son el mismo problema: el primero ya está resuelto y sólo
+   hay que saberlo, el segundo necesita una llamada. Se ven distintos
+   porque se hacen cosas distintas con ellos. */
+small.ojo,.nota.ojo{color:#8a4b00}
+small.malo,.nota.malo{color:#a8323f}
 tbody tr.cero td{color:var(--muted)}
 tfoot td{border-top:2px solid var(--navy);font-weight:900;background:var(--cream)}
 .vacio{padding:22px;text-align:center;color:var(--muted)}
@@ -336,110 +342,137 @@ function porque(x){
 var S={
   es:{
     titulo:'El reporte — Cada Punto Cuenta',
-    h1:'El reporte del reto',
-    lede:'Lo que se llevó cada padrino: su tarifa, su tope y lo que dio su promesa. Para imprimir o bajar.',
+    h1:'El reporte del juego',
+    lede:'Lo que prometió cada padrino de este juego: su tarifa, su tope y lo que dio su promesa con el marcador final. Para imprimir o bajar.',
     codeL:'Tu código de entrenador',
     codeH:'El mismo que usas en Mi equipo.',
-    retoL:'El reto',
+    retoL:'El juego',
     go:'Ver el reporte',
-    goNext:'Buscar mis retos',
+    goNext:'Buscar mis juegos',
     errCode:'Ese código no entra. Fíjate que no se haya pegado un espacio.',
-    errNone:'Tu código no alcanza ningún reto todavía.',
+    errNone:'Tu código no alcanza ningún juego todavía.',
     errGen:'No se pudo. Intenta otra vez.',
 
-    kick:'Reporte del reto',
+    kick:'Reporte del juego',
     nPromesas:'promesas',
     nPrometido:'prometido',
-    nJugaron:'jugaron',
-    deN:'de {N}',
+    nCobrables:'pasan el mínimo',
+    sinJugar:'sin jugar',
+    marcador:'Marcador final',
+    esPrueba:'JUEGO DE PRUEBA — no se factura licencia',
 
     /* Lo que este reporte NO dice, dicho antes de que lo busquen. */
-    nota:'Lo prometido no es lo recaudado. Aquí está lo que cada padrino prometió y lo que salió su promesa con los puntos de su jugador; el dinero lo recibe el programa directo, y Cada Punto Cuenta no sabe quién pagó.',
+    nota:'Lo prometido no es lo recaudado. Aquí está lo que cada padrino prometió y lo que dio su promesa con el marcador final; el dinero lo recibe el programa directo, y Cada Punto Cuenta no sabe quién pagó.',
 
-    hJugadores:'Por jugador',
     hPromesas:'Cada promesa',
-    thJugador:'Jugador', thPuntos:'Puntos', thCuartos:'Sets',
-    thPromesasN:'Promesas', thTotal:'Total',
+    thPuntos:'Puntos', thTotal:'Total',
     thPadrino:'Padrino', thCorreo:'Correo', thTarifa:'Por punto', thTope:'Tope',
+    thEstado:'Cómo va',
     sinTope:'—',
-    sinPromesas:'Este reto no tiene promesas.',
+    sinPromesas:'Este juego no tiene promesas.',
     totalFila:'Total prometido',
+
+    /* Las tres cosas que distinguen a quien no debe nada de quien
+       debe y no se enteró. Son problemas muy distintos y el segundo
+       lo arregla una llamada. */
+    eBajo:'bajo el mínimo de {P} — no se le pide nada',
+    eCorregido:'corregido: se le dijo {V}',
+    eSinAvisar:'sin avisar todavía',
+    eAvisado:'avisado',
+    eMuerto:'no se le pudo avisar',
+    resumenBajo:'{N} promesa(s) quedaron bajo el mínimo de {P}.',
+    resumenCorr:'{N} corrección(es) salieron: a esa gente se le dijo antes otra cifra.',
+    resumenMuerto:'{N} padrino(s) no recibieron su aviso: su correo rebotó. Llámalos.',
 
     imprimir:'Imprimir',
     csv:'Bajar en hoja de cálculo',
-    otro:'Ver otro reto',
+    otro:'Ver otro juego',
     aMiEquipo:'← Mi equipo',
     sello:'Reporte generado el {D} · Cada Punto Cuenta · Gostar Digital LLC, Puerto Rico',
-    noJugo:'no jugó',
 
     hAviso:'El aviso al padrino',
-    avisoQue:'Cuando mandes esto, cada padrino con promesa recibe UN correo: los puntos de su jugador, su tarifa, su tope si mordió, y lo que dio su promesa. Nada más. Sin enlace de pago, sin recordatorios, y diciéndole que te paga a ti directo.',
+    avisoQue:'Cuando mandes esto, cada padrino con promesa recibe UN correo: el marcador final, su tarifa, su tope si mordió, y lo que dio su promesa. Nada más. Sin enlace de pago, sin recordatorios, y diciéndole que te paga a ti directo.',
     avisoCuantos:'{N} padrino(s) por avisar',
     avisoNinguno:'No hay a quién avisar: o ya salieron todos, o ninguna promesa llegó a {P}.',
     avisoRevisa:'Revisa los números de arriba antes de mandar. Un correo no se puede retirar.',
+    avisoSinJugar:'Este juego todavía no tiene marcador. La promesa es por punto, así que no hay nada que avisar hasta que lo tenga.',
     avisoBoton:'Mandar los avisos',
     avisoConfirma:'Mandar {N} correo(s) ahora',
     avisoCancela:'No, todavía no',
     avisoMandando:'Mandando…',
-    avisoHecho:'{N} aviso(s) mandado(s).',
+    avisoHecho:'{N} aviso(s) aceptado(s) por el correo.',
+    avisoCorr:'{N} corrección(es) salieron.',
     avisoNada:'No salió ninguno.',
     avisoFallo:'{N} no salió(eron). Las promesas siguen abiertas: puedes volver a pulsar y sale sólo lo que faltó.',
-    avisoCero:'{N} promesa(s) se cerraron sin aviso: su jugador no anotó, o la promesa no llegó a {P}.',
-    avisoYa:'{N} ya estaba(n) avisada(s).',
+    avisoMuerto:'{N} rebotó(aron) para siempre. Esa gente no se va a enterar por correo.',
+    avisoCero:'{N} promesa(s) se cerraron sin aviso: no llegaron a {P}.',
+    avisoYa:'{N} ya estaba(n) al día.',
     avisoErrServidor:'No se pudo hablar con el servidor de avisos. No se mandó nada; vuelve a intentarlo.',
     avisoErrCodigo:'El servidor no aceptó tu código. No se mandó nada.'
   },
   en:{
     titulo:'The report — Cada Punto Cuenta',
-    h1:'The challenge report',
-    lede:'What each padrino came to: his rate, his cap, and what his pledge worked out to. To print or download.',
+    h1:'The game report',
+    lede:'What each padrino pledged on this game: his rate, his cap, and what his pledge came to against the final score. To print or download.',
     codeL:'Your coach code',
     codeH:'The same one you use at My team.',
-    retoL:'The challenge',
+    retoL:'The game',
     go:'See the report',
-    goNext:'Find my challenges',
+    goNext:'Find my games',
     errCode:'That code does not go in. Check a space did not come along with it.',
-    errNone:'Your code does not reach any challenge yet.',
+    errNone:'Your code does not reach any game yet.',
     errGen:'That did not work. Try again.',
 
-    kick:'Challenge report',
+    kick:'Game report',
     nPromesas:'pledges',
     nPrometido:'pledged',
-    nJugaron:'played',
-    deN:'of {N}',
+    nCobrables:'over the minimum',
+    sinJugar:'not played yet',
+    marcador:'Final score',
+    esPrueba:'TEST GAME — no licence is invoiced',
 
-    nota:'Pledged is not collected. This is what each padrino pledged and what it came to against his player’s points; the money goes to the program directly, and Cada Punto Cuenta does not know who paid.',
+    nota:'Pledged is not collected. This is what each padrino pledged and what it came to against the final score; the money goes to the program directly, and Cada Punto Cuenta does not know who paid.',
 
-    hJugadores:'By player',
     hPromesas:'Every pledge',
-    thJugador:'Player', thPuntos:'Points', thCuartos:'Sets',
-    thPromesasN:'Pledges', thTotal:'Total',
+    thPuntos:'Points', thTotal:'Total',
     thPadrino:'Padrino', thCorreo:'Email', thTarifa:'Per point', thTope:'Cap',
+    thEstado:'Where it stands',
     sinTope:'—',
-    sinPromesas:'This challenge has no pledges.',
+    sinPromesas:'This game has no pledges.',
     totalFila:'Total pledged',
+
+    eBajo:'under the {P} minimum — nothing is asked of him',
+    eCorregido:'corrected: he was told {V}',
+    eSinAvisar:'not notified yet',
+    eAvisado:'notified',
+    eMuerto:'could not be notified',
+    resumenBajo:'{N} pledge(s) came in under the {P} minimum.',
+    resumenCorr:'{N} correction(s) went out: those people were told a different figure before.',
+    resumenMuerto:'{N} padrino(s) never got their notice: their email bounced. Call them.',
 
     imprimir:'Print',
     csv:'Download as a spreadsheet',
-    otro:'See another challenge',
+    otro:'See another game',
     aMiEquipo:'← My team',
     sello:'Report generated {D} · Cada Punto Cuenta · Gostar Digital LLC, Puerto Rico',
-    noJugo:'did not play',
 
     hAviso:'The padrino’s notice',
-    avisoQue:'When you send this, every padrino with a pledge gets ONE email: his player’s points, his rate, his cap if it bit, and what his pledge came to. Nothing else. No payment link, no reminders, and it tells him he pays you directly.',
+    avisoQue:'When you send this, every padrino with a pledge gets ONE email: the final score, his rate, his cap if it bit, and what his pledge came to. Nothing else. No payment link, no reminders, and it tells him he pays you directly.',
     avisoCuantos:'{N} padrino(s) to notify',
     avisoNinguno:'Nobody to notify: either they have all gone out, or no pledge reached {P}.',
     avisoRevisa:'Check the numbers above before sending. An email cannot be taken back.',
+    avisoSinJugar:'This game has no score yet. The pledge is by the point, so there is nothing to tell anyone until it does.',
     avisoBoton:'Send the notices',
     avisoConfirma:'Send {N} email(s) now',
     avisoCancela:'No, not yet',
     avisoMandando:'Sending…',
-    avisoHecho:'{N} notice(s) sent.',
+    avisoHecho:'{N} notice(s) accepted by the mail provider.',
+    avisoCorr:'{N} correction(s) went out.',
     avisoNada:'None went out.',
     avisoFallo:'{N} did not go out. Those pledges are still open: press again and only the ones that failed will be sent.',
-    avisoCero:'{N} pledge(s) closed with no notice: their player did not score, or the pledge did not reach {P}.',
-    avisoYa:'{N} had already been notified.',
+    avisoMuerto:'{N} bounced for good. Those people will not hear about it by email.',
+    avisoCero:'{N} pledge(s) closed with no notice: they did not reach {P}.',
+    avisoYa:'{N} were already up to date.',
     avisoErrServidor:'Could not reach the notice server. Nothing was sent; try again.',
     avisoErrCodigo:'The server did not accept your code. Nothing was sent.'
   }
@@ -466,10 +499,26 @@ function $(id){ return document.getElementById(id) }
 function esc(t){ return String(t==null?'':t)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
 function money(n){ return '$'+Number(n||0).toFixed(2) }
+/* UN DÍA DE CALENDARIO NO ES UN INSTANTE, y tratarlo como tal le
+   restaba un día a todas las fechas.
+
+   `plays_on` es un `date` de PostgreSQL: llega como "2026-11-07", sin
+   hora. new Date("2026-11-07") lo lee como medianoche UTC, y Puerto
+   Rico va cuatro horas por detrás — así que al pintarlo en hora local
+   salía el 6. El juego del viernes aparecía el jueves en el reporte
+   que el entrenador imprime y reparte.
+
+   Una fecha sin hora se parte a mano y se construye en hora local, que
+   es donde vive. Lo que sí trae hora —un timestamptz, como el sello de
+   abajo— se deja pasar por el camino de siempre, porque ahí el
+   instante es real y convertirlo es lo correcto. */
 function fecha(iso){
   if(!iso) return '';
   try{
-    var d=new Date(iso);
+    var d;
+    var solo = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso));
+    if (solo) d = new Date(+solo[1], +solo[2] - 1, +solo[3]);
+    else      d = new Date(iso);
     if(isNaN(d.getTime())) return '';
     return d.toLocaleDateString(LANG==='es'?'es-PR':'en-US',
       {day:'numeric',month:'long',year:'numeric'});
@@ -540,11 +589,11 @@ function seguir(){
   if(!k) return;
   $('tGo').disabled=true;
 
-  rpc('challenge_list',{p_code:k}).then(function(r){
+  rpc('juegos_del_codigo',{p_code:k}).then(function(r){
     $('tGo').disabled=false;
     if(!r||!r.ok) throw new Error('bad');
     CODE=k;
-    RETOS=r.challenges||[];
+    RETOS=r.juegos||[];
     if(!RETOS.length) throw new Error('none');
     llenarRetos();
     $('pick').classList.remove('hide');
@@ -557,13 +606,20 @@ function seguir(){
   });
 }
 
+/* El desplegable lleva el marcador cuando lo hay. Un entrenador con
+   tres juegos el mismo fin de semana los distingue por el resultado
+   antes que por la fecha, y «sin jugar» le dice por qué uno de ellos
+   todavía no tiene reporte que mirar. */
 function llenarRetos(){
   $('reto').innerHTML = RETOS.map(function(x){
-    var f = fecha(x.closes_at||x.opens_at);
+    var f = fecha(x.fecha);
+    var marca = x.jugado
+      ? (x.puntos + (x.rival_puntos!=null ? '–'+x.rival_puntos : ''))
+      : T('sinJugar');
     var n = (x.promesas||0) + ' ' + T('nPromesas');
-    return '<option value="'+esc(x.id)+'">'+
-             esc(x.campana)+' · '+esc(x.reto)+
-             (f?' · '+esc(f):'')+' · '+esc(n)+
+    return '<option value="'+esc(x.game_id)+'">'+
+             esc(x.juego)+(x.rival?' · '+esc(x.rival):'')+
+             (f?' · '+esc(f):'')+' · '+esc(marca)+' · '+esc(n)+
            '</option>';
   }).join('');
 }
@@ -572,7 +628,7 @@ function verReporte(){
   var id=$('reto').value;
   if(!id) return;
   $('tGo').disabled=true;
-  rpc('challenge_report',{p_code:CODE,p_challenge:id}).then(function(r){
+  rpc('juego_reporte_cobro',{p_code:CODE,p_game:id}).then(function(r){
     $('tGo').disabled=false;
     if(!r||!r.ok) throw new Error('rep');
     REP=r; RETO=id;
@@ -587,74 +643,78 @@ function verReporte(){
 }
 
 function pintar(){
-  var r=REP, ch=r.challenge||{}, js=r.players||[], ps=r.pledges||[];
-  var jugaron = js.filter(function(j){ return (j.puntos||0)>0 }).length;
+  var r=REP, ps=r.pledges||[], res=r.resumen||{};
 
-  /* Cuántos recibirían el aviso si se pulsa ahora: los que siguen
-     abiertos y llegan al piso.
-
-     Esta cuenta es para que el entrenador sepa a cuánta gente va a
-     escribir antes de pulsar; la de verdad la hace el servidor, que
-     es el único que escribe en la base. Si alguna vez las dos no
-     coinciden, la que manda es la del servidor y lo que se corrige
-     es esta línea. */
+  /* Cuántos recibirían algo si se pulsa ahora. La cuenta de verdad la
+     hace el servidor, que es el único que escribe en la base; ésta es
+     para que el entrenador sepa a cuánta gente va a escribir ANTES de
+     pulsar. Si alguna vez las dos no coinciden, manda la del servidor
+     y lo que se corrige es esta línea. */
   var porAvisar = ps.filter(function(p){
-    return p.estado==='open' && Math.round(Number(p.total||0)*100)>=PISO_CENTS;
+    return !p.no_entregable && Number(p.total||0) > 0 && !p.avisado;
   }).length;
 
-  /* Por jugador. Los que no jugaron salen en gris y con un "no jugó"
-     debajo del nombre: es el único problema que este reporte puede
-     enseñar y esconderlo no lo arregla. */
-  var fJ = js.length ? js.map(function(j){
-    var cero = !(j.puntos>0);
-    return '<tr'+(cero?' class="cero"':'')+'>'+
-      '<td class="nm">'+esc(j.nombre)+(cero?'<small>'+esc(T('noJugo'))+'</small>':'')+'</td>'+
-      '<td class="num">'+(j.puntos||0)+'</td>'+
-      '<td class="num">'+(j.cuartos||0)+'</td>'+
-      '<td class="num">'+(j.promesas||0)+'</td>'+
-      '<td class="num">'+money(j.total)+'</td>'+
-    '</tr>';
-  }).join('') : '';
+  /* ESTADO POR PROMESA. Es la columna que convierte una lista en algo
+     con lo que se puede cobrar: sin ella, el que no debe nada y el que
+     debe y no se enteró se ven exactamente igual, y son dos problemas
+     muy distintos — el segundo lo arregla una llamada de teléfono. */
+  function estado(p){
+    if (p.no_entregable)
+      return '<small class="malo">'+esc(T('eMuerto'))+
+             (p.fallo?' · '+esc(String(p.fallo).slice(0,60)):'')+'</small>';
+    if (p.bajo_minimo)
+      return '<small>'+esc(T('eBajo'))+'</small>';
+    if (p.corregido)
+      return '<small class="ojo">'+esc(T('eCorregido',{V:money(p.dijimos)}))+'</small>';
+    if (!p.avisado)
+      return '<small class="ojo">'+esc(T('eSinAvisar'))+'</small>';
+    return '<small>'+esc(T('eAvisado'))+'</small>';
+  }
 
   var fP = ps.length ? ps.map(function(p){
     return '<tr'+(!(p.total>0)?' class="cero"':'')+'>'+
-      '<td class="nm">'+esc(p.padrino)+'<small>'+esc(p.jugador)+'</small></td>'+
+      '<td class="nm">'+esc(p.padrino)+estado(p)+'</td>'+
       '<td>'+esc(p.correo||'')+'</td>'+
       '<td class="num">'+money(p.tarifa)+'</td>'+
       '<td class="num">'+(p.tope!=null?money(p.tope):T('sinTope'))+'</td>'+
-      '<td class="num">'+(p.puntos||0)+'</td>'+
       '<td class="num">'+money(p.total)+'</td>'+
     '</tr>';
   }).join('') : '';
 
+  var marca = r.jugado
+    ? (r.puntos + (r.rival_puntos!=null ? '–'+r.rival_puntos : ''))
+    : T('sinJugar');
+
+  /* Lo que hay que mirar antes de cobrar, dicho en una línea cada
+     cosa y sólo cuando la hay. */
+  var avisos = [];
+  if (res.bajo_minimo)
+    avisos.push('<p class="nota">'+esc(T('resumenBajo',{N:res.bajo_minimo}))+'</p>');
+  if (res.corregidos)
+    avisos.push('<p class="nota ojo">'+esc(T('resumenCorr',{N:res.corregidos}))+'</p>');
+  if (res.no_entregables)
+    avisos.push('<p class="nota malo">'+esc(T('resumenMuerto',{N:res.no_entregables}))+'</p>');
+
   $('out').innerHTML =
     '<div class="rtop">'+
       '<p class="kick">'+esc(T('kick'))+'</p>'+
-      '<h2>'+esc(ch.name||'')+'</h2>'+
-      '<p class="sub">'+esc(r.campaign||'')+
-        (ch.closes_at?' · '+esc(fecha(ch.closes_at)):'')+
-        (ch.game?' · '+esc(ch.game):'')+'</p>'+
+      '<h2>'+esc(r.juego||'')+'</h2>'+
+      '<p class="sub">'+esc(r.campana||'')+
+        (r.fecha?' · '+esc(fecha(r.fecha)):'')+'</p>'+
+      (r.es_prueba
+        ? '<p class="nota malo"><b>'+esc(T('esPrueba'))+'</b></p>' : '')+
     '</div>'+
 
     '<div class="tally">'+
-      '<div class="tal plata"><b>'+money(r.pledged)+'</b><span>'+esc(T('nPrometido'))+'</span></div>'+
-      '<div class="tal"><b>'+(r.count||0)+'</b><span>'+esc(T('nPromesas'))+'</span></div>'+
-      '<div class="tal"><b>'+jugaron+'</b><span>'+esc(T('nJugaron'))+' '+
-        esc(T('deN',{N:js.length}))+'</span></div>'+
+      '<div class="tal plata"><b>'+money(res.prometido)+'</b><span>'+
+        esc(T('nPrometido'))+'</span></div>'+
+      '<div class="tal"><b>'+(res.promesas||0)+'</b><span>'+
+        esc(T('nPromesas'))+'</span></div>'+
+      '<div class="tal"><b>'+esc(marca)+'</b><span>'+
+        esc(T('marcador'))+'</span></div>'+
     '</div>'+
     '<p class="nota">'+esc(T('nota'))+'</p>'+
-
-    '<h3>'+esc(T('hJugadores'))+'</h3>'+
-    '<div class="card">'+ (fJ ?
-      '<table><thead><tr>'+
-        '<th>'+esc(T('thJugador'))+'</th>'+
-        '<th class="num">'+esc(T('thPuntos'))+'</th>'+
-        '<th class="num">'+esc(T('thCuartos'))+'</th>'+
-        '<th class="num">'+esc(T('thPromesasN'))+'</th>'+
-        '<th class="num">'+esc(T('thTotal'))+'</th>'+
-      '</tr></thead><tbody>'+fJ+'</tbody></table>'
-      : '<p class="vacio">'+esc(T('sinPromesas'))+'</p>') +
-    '</div>'+
+    avisos.join('')+
 
     '<h3>'+esc(T('hPromesas'))+'</h3>'+
     '<div class="card">'+ (fP ?
@@ -663,27 +723,28 @@ function pintar(){
         '<th>'+esc(T('thCorreo'))+'</th>'+
         '<th class="num">'+esc(T('thTarifa'))+'</th>'+
         '<th class="num">'+esc(T('thTope'))+'</th>'+
-        '<th class="num">'+esc(T('thPuntos'))+'</th>'+
         '<th class="num">'+esc(T('thTotal'))+'</th>'+
       '</tr></thead><tbody>'+fP+'</tbody>'+
-      '<tfoot><tr><td colspan="5">'+esc(T('totalFila'))+'</td>'+
-        '<td class="num">'+money(r.pledged)+'</td></tr></tfoot></table>'
+      '<tfoot><tr><td colspan="4">'+esc(T('totalFila'))+'</td>'+
+        '<td class="num">'+money(res.prometido)+'</td></tr></tfoot></table>'
       : '<p class="vacio">'+esc(T('sinPromesas'))+'</p>') +
     '</div>'+
 
-    /* El aviso va DESPUÉS de las dos tablas a propósito: el
-       entrenador tiene que haber pasado por los números antes de
-       llegar al botón que los manda. */
+    /* El aviso va DESPUÉS de la tabla a propósito: el entrenador tiene
+       que haber pasado por los números antes de llegar al botón que
+       los manda. */
     '<h3>'+esc(T('hAviso'))+'</h3>'+
     '<div class="card aviso">'+
       '<p>'+esc(T('avisoQue'))+'</p>'+
-      (porAvisar
-        ? '<p class="aviso-n"><b>'+esc(T('avisoCuantos',{N:porAvisar}))+'</b></p>'+
-          '<p class="aviso-ojo">'+esc(T('avisoRevisa'))+'</p>'+
-          '<div class="aviso-acc" id="avisoAcc">'+
-            '<button class="btn" onclick="pedirConfirma()">'+esc(T('avisoBoton'))+'</button>'+
-          '</div>'
-        : '<p class="vacio">'+esc(T('avisoNinguno'))+'</p>')+
+      (!r.jugado
+        ? '<p class="vacio">'+esc(T('avisoSinJugar'))+'</p>'
+        : (porAvisar
+            ? '<p class="aviso-n"><b>'+esc(T('avisoCuantos',{N:porAvisar}))+'</b></p>'+
+              '<p class="aviso-ojo">'+esc(T('avisoRevisa'))+'</p>'+
+              '<div class="aviso-acc" id="avisoAcc">'+
+                '<button class="btn" onclick="pedirConfirma()">'+esc(T('avisoBoton'))+'</button>'+
+              '</div>'
+            : '<p class="vacio">'+esc(T('avisoNinguno'))+'</p>'))+
       '<p class="msg'+(AVISO&&AVISO.mal?' bad':'')+'" id="avisoMsg">'+
         esc(AVISO?AVISO.texto:'')+'</p>'+
     '</div>'+
@@ -695,7 +756,7 @@ function pintar(){
       '<a class="btn line" href="mi-equipo.html">'+esc(T('aMiEquipo'))+'</a>'+
     '</div>'+
 
-    '<p class="pie-print">'+esc(T('sello',{D:fecha(r.generated)}))+'</p>';
+    '<p class="pie-print">'+esc(T('sello',{D:fecha(new Date().toISOString())}))+'</p>';
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -714,7 +775,7 @@ function pintar(){
 function pedirConfirma(){
   var n=$('avisoAcc'); if(!n) return;
   var cuantos = (REP&&REP.pledges||[]).filter(function(p){
-    return p.estado==='open' && Math.round(Number(p.total||0)*100)>=PISO_CENTS;
+    return !p.no_entregable && Number(p.total||0) > 0 && !p.avisado;
   }).length;
   n.innerHTML =
     '<button class="btn" onclick="mandarAvisos()">'+esc(T('avisoConfirma',{N:cuantos}))+'</button>'+
@@ -727,10 +788,10 @@ function mandarAvisos(){
   n.innerHTML='<button class="btn" disabled>'+esc(T('avisoMandando'))+'</button>';
   if(m){ m.className='msg'; m.textContent=T('avisoMandando') }
 
-  fetch(SERVER+'/challenge-notices',{
+  fetch(SERVER+'/game-notices',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({code:CODE,challenge_id:RETO})
+    body:JSON.stringify({code:CODE,game_id:RETO})
   }).then(function(res){
     /* 403 es el código rechazado y se dice aparte: «no se pudo hablar
        con el servidor» mandaría al entrenador a mirar su internet
@@ -741,20 +802,26 @@ function mandarAvisos(){
   }).then(function(d){
     if(!d||!d.ok) throw new Error('server');
 
+    /* Una corrección no es un aviso nuevo y se cuenta aparte: para el
+       entrenador no es lo mismo «salieron doce avisos» que «salieron
+       doce correcciones», que quiere decir que a doce personas se les
+       había dicho otra cifra. */
     var partes=[];
-    if(d.sent)    partes.push(T('avisoHecho',{N:d.sent}));
-    else          partes.push(T('avisoNada'));
-    if(d.zero)    partes.push(T('avisoCero',{N:d.zero}));
-    if(d.skipped) partes.push(T('avisoYa',{N:d.skipped}));
-    if(d.failed)  partes.push(T('avisoFallo',{N:d.failed}));
+    if(d.sent)          partes.push(T('avisoHecho',{N:d.sent}));
+    if(d.corrected)     partes.push(T('avisoCorr',{N:d.corrected}));
+    if(!d.sent && !d.corrected) partes.push(T('avisoNada'));
+    if(d.zero)          partes.push(T('avisoCero',{N:d.zero}));
+    if(d.skipped)       partes.push(T('avisoYa',{N:d.skipped}));
+    if(d.undeliverable) partes.push(T('avisoMuerto',{N:d.undeliverable}));
+    if(d.failed)        partes.push(T('avisoFallo',{N:d.failed}));
 
-    AVISO={texto:partes.join(' '), mal:!!d.failed};
+    AVISO={texto:partes.join(' '), mal:!!(d.failed||d.undeliverable)};
 
     /* Volver a pedir el reporte: los estados acaban de cambiar en la
        base y la página tiene que enseñar ésos, no los de hace un
        minuto. Si la recarga fallara, el mensaje se pinta igual —el
        envío ya pasó y eso es lo que hay que contar. */
-    return rpc('challenge_report',{p_code:CODE,p_challenge:RETO})
+    return rpc('juego_reporte_cobro',{p_code:CODE,p_game:RETO})
       .then(function(r){ if(r&&r.ok) REP=r; pintar(); })
       .catch(function(){ pintar() });
   }).catch(function(e){
@@ -777,22 +844,34 @@ function volver(){
 function bajarCSV(){
   var r=REP; if(!r) return;
   function q(v){ return '"'+String(v==null?'':v).split('"').join('""')+'"' }
-  var filas=[[T('thPadrino'),T('thCorreo'),T('thJugador'),T('thTarifa'),
-              T('thTope'),T('thPuntos'),T('thTotal')].map(q).join(',')];
+
+  /* La columna de estado va también en la hoja. Es donde el
+     entrenador va a trabajar de verdad —ordenar, filtrar, tachar— y
+     sin ella tendría que volver a la pantalla para saber a quién no
+     se le pudo avisar. */
+  var filas=[[T('thPadrino'),T('thCorreo'),T('thTarifa'),T('thTope'),
+              T('thPuntos'),T('thTotal'),T('thEstado')].map(q).join(',')];
   (r.pledges||[]).forEach(function(p){
-    filas.push([p.padrino,p.correo,p.jugador,
+    var est = p.no_entregable ? T('eMuerto')
+            : p.bajo_minimo   ? T('eBajo')
+            : p.corregido     ? T('eCorregido',{V:money(p.dijimos)})
+            : !p.avisado      ? T('eSinAvisar')
+            : T('eAvisado');
+    filas.push([p.padrino,p.correo,
                 Number(p.tarifa||0).toFixed(2),
                 p.tope!=null?Number(p.tope).toFixed(2):'',
                 p.puntos||0,
-                Number(p.total||0).toFixed(2)].map(q).join(','));
+                Number(p.total||0).toFixed(2),
+                est].map(q).join(','));
   });
   filas.push('');
-  filas.push([T('totalFila'),'','','','','',Number(r.pledged||0).toFixed(2)].map(q).join(','));
+  filas.push([T('totalFila'),'','','','',
+              Number((r.resumen&&r.resumen.prometido)||0).toFixed(2),''].map(q).join(','));
 
   /* El nombre del fichero sin acentos ni eñes: "Canóvanas" salía
      "canvanas" en algunos sistemas, porque la tilde se cae y se lleva
      la letra. Se descomponen y se tiran las marcas. */
-  var nom=((r.challenge&&r.challenge.name)||r.campaign||'reporte')
+  var nom=(r.juego||r.campana||'reporte')
     .normalize('NFD').replace(/[̀-ͯ]/g,'')
     .replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').toLowerCase();
 
