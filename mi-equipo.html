@@ -35,6 +35,19 @@ body{margin:0;background:var(--cream);color:var(--ink);
   font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
   line-height:1.55;-webkit-text-size-adjust:100%}
 .wrap{width:min(720px,calc(100% - 40px));margin:0 auto}
+/* Dos campos por línea cuando caben. En el teléfono, uno debajo de
+   otro: un entrenador apunta esto de pie al lado de la cancha. */
+.fila2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.fila2 input{width:100%}
+/* La línea del enlace y la del marcador. El enlace se lleva el
+   espacio que sobre: es lo que hay que poder leer entero antes de
+   mandarlo. */
+.lin{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.lin input[readonly]{flex:1 1 200px;min-width:0;font-size:.8rem}
+.lin .pts{width:92px;flex:0 0 auto}
+.btn.mini{padding:8px 14px;font-size:.84rem;margin:0;display:inline-block;width:auto}
+.btn.mini.line{background:transparent;color:var(--ink);border:1px solid var(--linea)}
+@media(max-width:540px){ .fila2{grid-template-columns:1fr} }
 
 /* ── Cabecera ─────────────────────────────────────────────────── */
 header{background:var(--navy);color:#fff;border-bottom:1px solid #ffffff22;
@@ -101,6 +114,10 @@ input[type=text]:focus{outline:none;border-color:var(--orange);
 .team{background:#fff;border:1px solid var(--linea);border-radius:16px;
   padding:22px 24px;margin:0 0 14px;box-shadow:0 8px 25px #17243808}
 .team .st{color:var(--muted);font-size:.84rem;margin:2px 0 10px}
+/* La fecha y las promesas van DEBAJO del rival, no pegadas a él:
+   en línea salía «vs Arecibo2026-11-07». */
+.team small{display:block;color:var(--muted);font-size:.84rem;margin-top:3px}
+.team > div:first-child b{font-size:1.1rem;font-weight:800;letter-spacing:-.02em}
 .team .nm{font-size:1.2rem;font-weight:800;letter-spacing:-.02em;margin:0 0 14px}
 .nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:12px;margin:0 0 18px}
 .nums.uno{grid-template-columns:max-content}
@@ -209,6 +226,11 @@ header{color:#fff}
 @media(max-width:430px){
 :root{--barra:60px}
 .langb,#lang{padding:0 10px;font-size:.8rem}
+/* EN EL TELÉFONO NO CABEN LAS CINCO COSAS de la barra —marca,
+   programa, idioma, menú y salir— y la última se salía fuera de la
+   pantalla, arrastrando la página entera hacia los lados. El nombre
+   del programa se quita: ya está escrito en grande justo debajo. */
+.who{display:none}
 }
 </style>
 </head>
@@ -251,7 +273,30 @@ header{color:#fff}
     </div>
 
     <div id="app" class="hide">
-      <div id="todo"></div>
+      <p class="lede" id="quien"></p>
+
+      <h2 id="tNuevo"></h2>
+      <p class="help" id="tNuevoP"></p>
+      <div class="fila2">
+        <div><label for="jRival" id="tRival"></label>
+             <input id="jRival" autocapitalize="words"></div>
+        <div><label for="jFecha" id="tFecha"></label>
+             <input id="jFecha" type="date"></div>
+      </div>
+      <div class="fila2">
+        <div><label for="jHora" id="tHora"></label>
+             <input id="jHora" placeholder="7:00 PM"></div>
+        <div><label for="jCancha" id="tCancha"></label>
+             <input id="jCancha"></div>
+      </div>
+      <label for="jCasa" id="tDonde"></label>
+      <select id="jCasa">
+        <option value="1" id="tCasa"></option>
+        <option value="0" id="tFuera"></option>
+      </select>
+      <button class="btn go" id="jCrear"></button>
+      <p class="msg" id="jm"></p>
+
       <h2 id="tTeams"></h2>
       <div id="teams"></div>
     </div>
@@ -310,53 +355,79 @@ function esc(s){
 
 var S={
   es:{
-    h1:'Mi programa',
+    h1:'Mis juegos',
     lede:'Entra con tu código. En este teléfono queda guardado — no lo vas a escribir otra vez.',
     codeL:'Tu código', codeH:'El mismo que te dimos para tu programa.',
     go:'Entrar',
     bad:'Ese código no sirve.', net:'No entró. Inténtalo otra vez.',
     none:'Tu código no alcanza ningún programa. Escríbenos.',
-    teams:'Tus programas', out:'Salir',
-    todoL:'Falta que jueguen',
-    todo1:'{N} jugador no ha hecho su corrida.',
-    todoN:'{N} jugadores no han hecho su corrida.',
-    todoP:'Sus padrinos prometieron por sus puntos, y sin corrida sus puntos son cero. Siéntalos a jugar antes de que cierre la ventana.',
-    todoGo:'Ver el tablero',
-    nPlant:'en la plantilla',
-    nJug:'ya jugaron',
-    stNada:'Sin reto abierto',
-    stAbierta:'Ventana abierta',
-    stCerrada:'Ventana cerrada',
-    cierraEl:'Cierra el {D}',
-    aBoard:'Ver el tablero',
-    aRoster:'La plantilla', aReport:'El reporte',
-
+    quien:'Los juegos de {P}.',
+    out:'Salir',
+    nuevo:'Añadir un juego',
+    nuevoP:'Un juego por su cuenta: no hace falta torneo ni calendario. Lo pones, te da su enlace, y ese enlace es el que mandas al grupo.',
+    rival:'Contra quién', fecha:'Qué día',
+    hora:'Hora (opcional)', cancha:'Cancha (opcional)',
+    donde:'Dónde', casa:'En casa', fuera:'De visita',
+    crear:'Añadir el juego',
+    teams:'Tus juegos',
+    sinJuegos:'Todavía no tienes ningún juego. Añade el primero arriba.',
+    nPromesas:'{N} promesas', nPromesa:'1 promesa', sinPromesas:'sin promesas',
+    sinMarcador:'sin marcador',
+    deTorneo:'de un torneo',
+    esPrueba:'JUEGO DE PRUEBA — no se factura',
+    copiar:'Copiar el enlace', copiado:'Copiado',
+    lMios:'nosotros', lSuyos:'ellos',
+    poner:'Poner el marcador', retirar:'Retirar el marcador',
+    verReporte:'Ver el reporte',
+    okCreado:'Juego añadido. Su enlace está abajo — ése es el que mandas.',
+    okMarcador:'Marcador puesto. Las promesas de este juego quedan cerradas.',
+    okRetirado:'Marcador retirado. Manda los avisos para decírselo a tus padrinos.',
+    confRetirar:'¿Retirar el marcador?\n\nEl juego sigue jugado, sólo se queda sin número. A quien ya se le avisó le llegará una corrección diciendo que no debe nada, la próxima vez que mandes avisos.',
+    errRival:'¿Contra quién juegan?',
+    errFecha:'¿Qué día?',
+    errRepetido:'Ya tienes un juego contra ellos ese día.',
+    errPuntos:'Pon los puntos de tu equipo.',
+    errMarcador:'Eso no es un marcador de baloncesto.',
+    errGen:'No se pudo. Inténtalo otra vez.',
     stuck:'¿Algo no sale? <a href="ayuda.html">Ayuda →</a>',
     fAyuda:'Ayuda'
   },
   en:{
-    h1:'My program',
+    h1:'My games',
     lede:'Sign in with your code. It stays on this phone — you will not type it again.',
     codeL:'Your code', codeH:'The same one we gave you for your program.',
     go:'Enter',
     bad:'That code does not work.', net:'That did not go through. Try again.',
     none:'Your code does not reach any program. Write to us.',
-    teams:'Your programs', out:'Sign out',
-    todoL:'Still to play',
-    todo1:'{N} player has not taken his run.',
-    todoN:'{N} players have not taken their run.',
-    todoP:'Their padrinos pledged on their points, and with no run their points are zero. Sit them down to play before the window closes.',
-    todoGo:'See the board',
-    nPlant:'on the roster',
-    nJug:'have played',
-    stNada:'No challenge open',
-    stAbierta:'Window open',
-    stCerrada:'Window closed',
-    cierraEl:'Closes {D}',
-    aBoard:'See the board',
-    aRoster:'The roster', aReport:'The report',
-
-    stuck:'Something will not work? <a href="ayuda.html">Help →</a>',
+    quien:'{P}’s games.',
+    out:'Sign out',
+    nuevo:'Add a game',
+    nuevoP:'A game on its own: no tournament and no calendar needed. Add it, it gives you its link, and that link is what you send to the group.',
+    rival:'Against who', fecha:'What day',
+    hora:'Time (optional)', cancha:'Court (optional)',
+    donde:'Where', casa:'At home', fuera:'Away',
+    crear:'Add the game',
+    teams:'Your games',
+    sinJuegos:'No games yet. Add your first one above.',
+    nPromesas:'{N} pledges', nPromesa:'1 pledge', sinPromesas:'no pledges',
+    sinMarcador:'no score yet',
+    deTorneo:'from a tournament',
+    esPrueba:'TEST GAME — not invoiced',
+    copiar:'Copy the link', copiado:'Copied',
+    lMios:'us', lSuyos:'them',
+    poner:'Post the score', retirar:'Withdraw the score',
+    verReporte:'See the report',
+    okCreado:'Game added. Its link is below — that is the one you send.',
+    okMarcador:'Score posted. Pledging on this game is closed now.',
+    okRetirado:'Score withdrawn. Send the notices to tell your padrinos.',
+    confRetirar:'Withdraw the score?\n\nThe game stays played, it just has no number for now. Anyone already notified will get a correction saying they owe nothing, the next time you send notices.',
+    errRival:'Who are they playing?',
+    errFecha:'What day?',
+    errRepetido:'You already have a game against them that day.',
+    errPuntos:'Put in your team’s points.',
+    errMarcador:'That is not a basketball score.',
+    errGen:'That did not work. Try again.',
+    stuck:'Something not right? <a href="ayuda.html">Help →</a>',
     fAyuda:'Help'
   }
 };
@@ -374,7 +445,7 @@ function toggleLang(){
   try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG);
        localStorage.setItem('fc-lang',LANG); }catch(e){}
   paintStatic();
-  if(CODE&&CAMPS.length) pintar();
+  if(CODE) pintarJuegos();
 }
 function paintStatic(){
   $('tH1').textContent=T('h1');
@@ -383,6 +454,14 @@ function paintStatic(){
   $('tCodeH').textContent=T('codeH');
   $('tGo').textContent=T('go');
   $('tTeams').textContent=T('teams');
+  ['tNuevo','nuevo'],['tNuevoP','nuevoP'],['tRival','rival'],['tFecha','fecha'],
+  ['tHora','hora'],['tCancha','cancha'],['tDonde','donde'],['tCasa','casa'],
+  ['tFuera','fuera'],['jCrear','crear'];
+  [['tNuevo','nuevo'],['tNuevoP','nuevoP'],['tRival','rival'],['tFecha','fecha'],
+   ['tHora','hora'],['tCancha','cancha'],['tDonde','donde'],['tCasa','casa'],
+   ['tFuera','fuera'],['jCrear','crear']].forEach(function(par){
+    var e=$(par[0]); if(e) e.textContent=T(par[1]);
+  });
   $('hout').textContent=T('out');
   $('tStuck').innerHTML=T('stuck');
   $('fAyuda').textContent=T('fAyuda');
@@ -390,7 +469,7 @@ function paintStatic(){
   document.documentElement.lang=LANG;
 }
 
-var CODE=null, BY=null, CAMPS=[], BOARDS={}, RETOS={};
+var CODE=null, PROGRAMA='', JUEGOS=[];
 
 /* Acepta la sesión que ya tenga de cualquiera de las dos páginas
    viejas: el calendario guardaba cp_build y el marcador cp_code. Un
@@ -420,132 +499,150 @@ function entrar(auto){
   var k = auto ? CODE : ($('code').value||'').trim();
   if(!k || k.length<4) return say(T('bad'),'bad');
   say('…');
-  rpc('builder_check',{p_code:k})
+
+  /* UN SOLO VIAJE. Antes se validaba el código con builder_check y
+     después se pedían los retos de cada campaña por separado. Lo que
+     un entrenador necesita ver es sus JUEGOS, y juegos_del_codigo
+     valida y los trae a la vez. */
+  rpc('juegos_del_codigo',{p_code:k})
     .then(function(r){
       if(!r||!r.ok){ if(auto) olvidar(); return say(T('bad'),'bad'); }
-      CODE=k; BY=r.by; CAMPS=r.campaigns||[];
+      CODE=k; JUEGOS=r.juegos||[]; PROGRAMA=r.campana||'';
       recordar(k);
       say('');
       $('gate').className='gate hide';
       $('app').className='';
-      $('hwho').className='who'; $('hwho').textContent=BY;
+      $('hwho').className='who'; $('hwho').textContent=PROGRAMA;
       $('hout').className='out';
-      cargar();
+      pintarJuegos();
     })
     .catch(function(e){ console.error(e); say(T('net') + porque(e), 'bad') });
 }
 
-/* Trae el reto de cada equipo, y si hay uno abierto, su tablero.
-   Todo en paralelo: un entrenador con siete equipos no debe esperar
-   siete veces.
-
-   Dos llamadas y no una porque cp_reto_vivo va por campaña y
-   cp_tablero va por reto: hay que saber cuál es el reto antes de
-   poder pedir su tablero. */
-function cargar(){
-  if(!CAMPS.length){ $('teams').innerHTML='<p class="help">'+T('none')+'</p>'; return }
-  var jobs = CAMPS.map(function(c){
-    return rpc('cp_reto_vivo',{p_campaign:c.id})
-      .then(function(r){
-        RETOS[c.id] = (r && r.ok) ? r : null;
-        if (!RETOS[c.id] || !RETOS[c.id].hay) return null;
-        return rpc('cp_tablero',{p_challenge:RETOS[c.id].challenge_id})
-          .then(function(d){ BOARDS[c.id] = (d && d.ok) ? d : null })
-          .catch(function(){ BOARDS[c.id] = null });
-      })
-      .catch(function(){ RETOS[c.id]=null; BOARDS[c.id]=null });
-  });
-  Promise.all(jobs).then(pintar);
+function recargar(){
+  if(!CODE) return;
+  rpc('juegos_del_codigo',{p_code:CODE})
+    .then(function(r){ if(r&&r.ok){ JUEGOS=r.juegos||[]; PROGRAMA=r.campana||PROGRAMA;
+                                    pintarJuegos(); } })
+    .catch(function(){});
 }
 
-/* ── Lo que de verdad cuesta dinero si se olvida ──────────────────
-   En Cada Punto Cuenta era un juego ya jugado al que le falta el marcador.
-   Aquí no existe: el marcador lo anota el juego solo, y esa es toda
-   la idea.
+function enlace(id){ return 'https://cadapunto.com/prometer.html?g=' + id }
 
-   Lo que sí cuesta dinero aquí es un nene que no hizo su corrida
-   antes de que cierre la ventana. Sus padrinos prometieron por sus
-   puntos, y sin corrida sus puntos son cero: cada promesa suya vale
-   nada. Es lo único de esta página que pide una acción. */
-function sinJugar(cid){
-  var d = BOARDS[cid];
-  if (!d || !d.nenes) return 0;
-  return d.nenes.filter(function(n){ return !(n.jugados > 0) }).length;
-}
-function jugaron(cid){
-  var d = BOARDS[cid];
-  if (!d || !d.nenes) return 0;
-  return d.nenes.filter(function(n){ return n.jugados > 0 }).length;
-}
-function enPlantilla(cid){
-  var d = BOARDS[cid];
-  return (d && d.nenes) ? d.nenes.length : 0;
-}
-/* Abierta de verdad: hay reto y la ventana está corriendo. Un reto
-   que todavía no abre no apura a nadie, y uno cerrado ya no tiene
-   arreglo. */
-function abierta(cid){
-  var r = RETOS[cid];
-  return !!(r && r.hay && r.open);
-}
-function cierra(cid){
-  var r = RETOS[cid];
-  return (r && (r.closes_at || r.opens_at)) || null;
-}
+function pintarJuegos(){
+  $('quien').textContent = T('quien').replace('{P}', PROGRAMA || '');
 
-function pintar(){
-  paintStatic();
+  if(!JUEGOS.length){
+    $('teams').innerHTML = '<p class="help">'+esc(T('sinJuegos'))+'</p>';
+    return;
+  }
 
-  /* Lo primero de la página: los nenes que no han jugado y la ventana
-     está abierta. Cada uno es un juego de promesas que va a valer
-     cero si nadie lo sienta a jugar. */
-  var faltan = 0, uno = null;
-  CAMPS.forEach(function(c){
-    if (!abierta(c.id)) return;
-    var n = sinJugar(c.id);
-    faltan += n;
-    if (n && !uno) uno = c;
-  });
+  $('teams').innerHTML = JUEGOS.map(function(g){
+    var marca = g.jugado
+      ? (g.puntos + (g.rival_puntos!=null ? '–'+g.rival_puntos : ''))
+      : T('sinMarcador');
+    var np = Number(g.promesas||0);
+    var prom = np===0 ? T('sinPromesas')
+             : np===1 ? T('nPromesa') : T('nPromesas').replace('{N}',np);
 
-  $('todo').innerHTML = faltan ?
-    '<div class="todo">'+
-      '<b>'+T('todoL')+'</b>'+
-      '<div class="big">'+(faltan===1?T('todo1',{N:faltan}):T('todoN',{N:faltan}))+'</div>'+
-      '<p>'+T('todoP')+'</p>'+
-      '<a class="btn go" href="tablero.html?camp='+esc(uno.id)+'">'+T('todoGo')+'</a>'+
-    '</div>' : '';
+    return '<div class="team"'+(g.es_prueba?' style="background:rgba(255,122,24,.07)"':'')+'>'+
+      '<div><b>'+esc(g.juego||'')+'</b>'+
+        '<small>'+esc(g.fecha||'')+' · '+esc(prom)+' · '+esc(marca)+'</small></div>'+
 
-  $('teams').innerHTML = CAMPS.map(function(c){
-    var est = !RETOS[c.id] || !RETOS[c.id].hay ? T('stNada')
-            : abierta(c.id)                    ? T('stAbierta')
-            :                                    T('stCerrada');
-    var cuando = cierra(c.id);
-    var pie = abierta(c.id) && cuando ? T('cierraEl',{D:cuandoCorto(cuando)}) : est;
+      (g.es_prueba ? '<p class="help" style="color:var(--orange);font-weight:800;margin:6px 0 0">'+
+                       esc(T('esPrueba'))+'</p>' : '')+
 
-    return '<div class="team">'+
-      '<p class="nm">'+esc(c.name)+'</p>'+
-      '<p class="st">'+esc(pie)+'</p>'+
-      '<div class="nums">'+
-        '<div class="num"><b>'+enPlantilla(c.id)+'</b><span>'+T('nPlant')+'</span></div>'+
-        '<div class="num"><b>'+jugaron(c.id)+'</b><span>'+T('nJug')+'</span></div>'+
+      /* El enlace primero: es lo que el entrenador viene a buscar. */
+      '<div class="lin">'+
+        '<input readonly value="'+esc(enlace(g.game_id))+'" onclick="this.select()">'+
+        '<button class="btn mini" data-cop="'+esc(g.game_id)+'">'+esc(T('copiar'))+'</button>'+
       '</div>'+
-      '<div class="acts">'+
-        '<a class="fill" href="tablero.html?camp='+esc(c.id)+'">'+T('aBoard')+'</a>'+
-        '<a class="wide" href="plantilla.html">'+T('aRoster')+'</a>'+
-        '<a class="wide" href="reporte.html">'+T('aReport')+'</a>'+
+
+      '<div class="lin">'+
+        '<input class="pts" data-a="'+esc(g.game_id)+'" type="number" min="0" max="300" '+
+          'placeholder="'+esc(T('lMios'))+'" value="'+(g.puntos==null?'':g.puntos)+'">'+
+        '<input class="pts" data-b="'+esc(g.game_id)+'" type="number" min="0" max="300" '+
+          'placeholder="'+esc(T('lSuyos'))+'" value="'+(g.rival_puntos==null?'':g.rival_puntos)+'">'+
+        '<button class="btn mini" data-mar="'+esc(g.game_id)+'">'+esc(T('poner'))+'</button>'+
+        (g.jugado
+          ? '<button class="btn mini line" data-ret="'+esc(g.game_id)+'">'+esc(T('retirar'))+'</button>'
+          : '')+
       '</div>'+
+
+      (g.jugado
+        ? '<a class="btn mini line" href="reporte.html">'+esc(T('verReporte'))+'</a>'
+        : '')+
     '</div>';
   }).join('');
+
+  var L = $('teams');
+  [].forEach.call(L.querySelectorAll('button[data-cop]'), function(b){
+    b.onclick = function(){ copiar(b.getAttribute('data-cop'), b) };
+  });
+  [].forEach.call(L.querySelectorAll('button[data-mar]'), function(b){
+    b.onclick = function(){ marcador(b.getAttribute('data-mar'), false) };
+  });
+  [].forEach.call(L.querySelectorAll('button[data-ret]'), function(b){
+    b.onclick = function(){ marcador(b.getAttribute('data-ret'), true) };
+  });
 }
 
-/* La fecha corta, para que quepa en la línea de estado. */
-function cuandoCorto(iso){
-  try{
-    var d = new Date(iso);
-    if (isNaN(d.getTime())) return '';
-    return d.toLocaleDateString(LANG==='es'?'es-PR':'en-US',
-      { weekday:'long', day:'numeric', month:'long' });
-  }catch(e){ return '' }
+function copiar(id, boton){
+  var url = enlace(id);
+  var ok = function(){ var t=boton.textContent; boton.textContent=T('copiado');
+                       setTimeout(function(){ boton.textContent=t },1600) };
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(url).then(ok).catch(function(){});
+  else ok();
+}
+
+function dice(t,c){ var e=$('jm'); if(e){ e.textContent=t||''; e.className='msg '+(c||'') } }
+
+$('jCrear').onclick = function(){
+  var rival=($('jRival').value||'').trim();
+  var fecha=($('jFecha').value||'').trim();
+  var hora=($('jHora').value||'').trim();
+  var cancha=($('jCancha').value||'').trim();
+  var casa=$('jCasa').value==='1';
+
+  if(!rival) return dice(T('errRival'),'bad');
+  if(!fecha) return dice(T('errFecha'),'bad');
+
+  dice('…');
+  rpc('juego_crear',{p_code:CODE,p_rival:rival,p_fecha:fecha,
+                     p_hora:hora||null,p_cancha:cancha||null,p_casa:casa})
+    .then(function(d){
+      if(!d||d.ok!==true){
+        var r=d&&d.reason;
+        return dice(r==='repetido'?T('errRepetido'):
+                    r==='falta-rival'?T('errRival'):
+                    r==='falta-fecha'?T('errFecha'):T('errGen'),'bad');
+      }
+      dice(T('okCreado'),'ok');
+      $('jRival').value=''; $('jHora').value=''; $('jCancha').value='';
+      recargar();
+    })
+    .catch(function(e){ dice(T('errGen')+porque(e),'bad') });
+};
+
+function marcador(id, retirar){
+  var a=document.querySelector('[data-a="'+id+'"]');
+  var b=document.querySelector('[data-b="'+id+'"]');
+  var mios  = retirar?null:(a&&a.value!==''?Number(a.value):null);
+  var suyos = retirar?null:(b&&b.value!==''?Number(b.value):null);
+
+  if(!retirar && mios===null) return dice(T('errPuntos'),'bad');
+  if(retirar && !confirm(T('confRetirar'))) return;
+
+  dice('…');
+  rpc('juego_marcador',{p_code:CODE,p_game:id,p_mios:mios,p_suyos:suyos})
+    .then(function(d){
+      if(!d||d.ok!==true)
+        return dice((d&&d.reason)==='puntos'?T('errMarcador'):T('errGen'),'bad');
+      dice(retirar?T('okRetirado'):T('okMarcador'),'ok');
+      recargar();
+    })
+    .catch(function(e){ dice(T('errGen')+porque(e),'bad') });
 }
 
 $('code').addEventListener('keydown',function(e){
