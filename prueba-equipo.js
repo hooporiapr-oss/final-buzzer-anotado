@@ -61,11 +61,11 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
       'nadie tiene que reportar ni que le crean');
   has(txt, /Antes de la ventana/,              'los pasos van por ventana, no por día');
   has(txt, /una sola corrida oficial/,         'una sola corrida oficial');
-  /* El HECHO —se licencia por evento— y no la frase con la que se
-     decia. Esta linea pedia "por equipo y por evento", que ademas
-     de ser la frase vieja llevaba dentro el precio de dos
-     peldaños. El numero lo vigila prueba-precio.js. */
-  has(txt, /licencia por evento|licencia <b>por evento/i, 'la licencia, por evento');
+  /* El HECHO —se licencia POR JUEGO— y no la frase con la que se
+     decia. Esta linea pedia primero "por equipo y por evento" y
+     despues "por evento"; las dos son la frase vieja. El producto se
+     cobra juego a juego, y el numero lo vigila prueba-precio.js. */
+  has(txt, /licencia por juego|licencia <b>por juego/i, 'la licencia, por juego');
   not(txt, /catorce días|día quince|día 1/i,   'sin los días del otro producto');
   not(txt, /\bHooporia\b/i,                    'sin el nombre retirado');
   not(txt, /deducib|impuesto/i,                'ni una palabra de impuestos');
