@@ -124,11 +124,21 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
   if (nombres.includes('bw_request_team')) ok('la inscripción entra');
   else mal('no llamó a bw_request_team: ' + nombres.join(','));
 
+  /* EL PRODUCTO, Y ESTA PÁGINA ES LA DE CADA PUNTO CUENTA.
+
+     Esto exigía 'anotado' —el id del OTRO producto— así que la prueba
+     no es que no cazara el fallo: lo defendía. Cada programa que se
+     inscribía aquí nacía del lado equivocado, y la única prueba que
+     miraba el producto daba el visto bueno.
+
+     Dos productos comparten la base y `campaigns.product` es lo único
+     que los separa, así que una campaña con el product cambiado no
+     sale por el lado por el que entró. */
   const prod = calls.find(c => c.rpc === 'request_product');
-  if (!prod) mal('no marcó el producto — en el admin sería indistinguible de Cada Punto');
+  if (!prod) mal('no marcó el producto — en el admin sería indistinguible del otro producto');
   else {
     ok('marca el producto');
-    prod.body.p_product === 'anotado' ? ok('y lo marca como anotado')
+    prod.body.p_product === 'cada-punto' ? ok('y lo marca como cada-punto')
       : mal('lo marcó como ' + prod.body.p_product);
     prod.body.p_email === 'prueba@ejemplo.invalid' ? ok('con el correo del entrenador')
       : mal('con otro correo: ' + prod.body.p_email);
