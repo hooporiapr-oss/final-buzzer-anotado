@@ -396,6 +396,7 @@ var S={
     avisoNinguno:'No hay a quién avisar: o ya salieron todos, o ninguna promesa llegó a {P}.',
     avisoRevisa:'Revisa los números de arriba antes de mandar. Un correo no se puede retirar.',
     avisoSinJugar:'Este juego todavía no tiene marcador. La promesa es por punto, así que no hay nada que avisar hasta que lo tenga.',
+    avisoRetirar:'El marcador se retiró y {N} padrino(s) tienen una cifra nuestra que ya no vale. Mándales la corrección: les dirá que no deben nada.',
     avisoBoton:'Mandar los avisos',
     avisoConfirma:'Mandar {N} correo(s) ahora',
     avisoCancela:'No, todavía no',
@@ -462,6 +463,7 @@ var S={
     avisoNinguno:'Nobody to notify: either they have all gone out, or no pledge reached {P}.',
     avisoRevisa:'Check the numbers above before sending. An email cannot be taken back.',
     avisoSinJugar:'This game has no score yet. The pledge is by the point, so there is nothing to tell anyone until it does.',
+    avisoRetirar:'The score was withdrawn and {N} padrino(s) are holding a figure from us that no longer stands. Send them the correction: it tells them they owe nothing.',
     avisoBoton:'Send the notices',
     avisoConfirma:'Send {N} email(s) now',
     avisoCancela:'No, not yet',
@@ -650,9 +652,13 @@ function pintar(){
      para que el entrenador sepa a cuánta gente va a escribir ANTES de
      pulsar. Si alguna vez las dos no coinciden, manda la del servidor
      y lo que se corrige es esta línea. */
-  var porAvisar = ps.filter(function(p){
-    return !p.no_entregable && Number(p.total||0) > 0 && !p.avisado;
-  }).length;
+  /* LO DICE LA BASE, no esta página.
+     Esto contaba «los que deben algo y no han sido avisados», y por
+     eso un marcador RETIRADO salía sin nadie a quien escribir: con el
+     resultado fuera, todos deben cero. Pero a quien ya se le dijo
+     $14.50 hay que decirle que ahora no debe nada, y ésa es
+     exactamente la gente que este cálculo dejaba fuera. */
+  var porAvisar = Number(res.por_avisar || 0);
 
   /* ESTADO POR PROMESA. Es la columna que convierte una lista en algo
      con lo que se puede cobrar: sin ella, el que no debe nada y el que
@@ -736,10 +742,15 @@ function pintar(){
     '<h3>'+esc(T('hAviso'))+'</h3>'+
     '<div class="card aviso">'+
       '<p>'+esc(T('avisoQue'))+'</p>'+
-      (!r.jugado
+      /* Sin marcador Y sin nadie a quien corregir, no hay nada que
+         hacer. Sin marcador PERO con gente que lleva una cifra
+         nuestra encima, hay mucho que hacer. */
+      (!r.jugado && !porAvisar
         ? '<p class="vacio">'+esc(T('avisoSinJugar'))+'</p>'
         : (porAvisar
-            ? '<p class="aviso-n"><b>'+esc(T('avisoCuantos',{N:porAvisar}))+'</b></p>'+
+            ? '<p class="aviso-n"><b>'+
+              esc(!r.jugado ? T('avisoRetirar',{N:porAvisar})
+                            : T('avisoCuantos',{N:porAvisar}))+'</b></p>'+
               '<p class="aviso-ojo">'+esc(T('avisoRevisa'))+'</p>'+
               '<div class="aviso-acc" id="avisoAcc">'+
                 '<button class="btn" onclick="pedirConfirma()">'+esc(T('avisoBoton'))+'</button>'+
@@ -774,9 +785,7 @@ function pintar(){
    ══════════════════════════════════════════════════════════════════ */
 function pedirConfirma(){
   var n=$('avisoAcc'); if(!n) return;
-  var cuantos = (REP&&REP.pledges||[]).filter(function(p){
-    return !p.no_entregable && Number(p.total||0) > 0 && !p.avisado;
-  }).length;
+  var cuantos = Number((REP&&REP.resumen&&REP.resumen.por_avisar) || 0);
   n.innerHTML =
     '<button class="btn" onclick="mandarAvisos()">'+esc(T('avisoConfirma',{N:cuantos}))+'</button>'+
     '<button class="btn line" onclick="pintar()">'+esc(T('avisoCancela'))+'</button>';
