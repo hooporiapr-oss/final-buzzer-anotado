@@ -39,8 +39,13 @@ complain about it.
 | 7 | `marcador-duenos.sql` | `torneos.codigo`; `bw_code_id`, `bw_es_maestro`; `bw_register_tournament` |
 | 8 | `marcador-tablero-2.sql` | `torneo_tablero` |
 | 9 | `marcador-enlace.sql` | `torneo_juegos.game_a`/`game_b`; `tj_enlazar_lado`, `torneo_enlazar`; `bw_register_tournament` |
+| 10 | `marcador-publicar.sql` | `torneos.canchas`/`casa`/`colores`; `torneo_estilo`, `torneo_publico`, `torneos_publicos` |
 
 ### The two functions that live in several files
+
+File 10 redefines nothing, which is the point: the three fields
+it adds live in their own function so that
+`bw_register_tournament` does not acquire a fifth copy.
 
 These are the only two that really matter for ordering, and
 every copy of each reads just as current as the others. Nothing inside
@@ -61,7 +66,7 @@ are raising that showed half the money.
 
 ### Rebuilding the database from scratch
 
-1 through 9, in that order. All of them are re-runnable:
+1 through 10, in that order. All of them are re-runnable:
 they are written with `create or replace`, `add column if not exists`
 and `create index if not exists`, so running one again breaks nothing
 and duplicates nothing.
