@@ -226,6 +226,42 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
     </div>
   </section>
 
+  <!-- UN JUEGO, SIN TORNEO. Es lo que anuncia la portada —«con un
+       juego basta»— y era lo único que no se podía hacer: en toda la
+       base había un solo insert into games, dentro del registro de un
+       torneo. Un equipo que sólo quiere recaudar el viernes tenía que
+       inventarse un torneo de un juego. -->
+  <section class="caja">
+    <h2>One game</h2>
+    <p class="sub">A game on its own, with no tournament. Pick the campaign below first &mdash;
+      the game belongs to it. Everything else works the same: the link is public, pledging
+      closes when you post the score, and the notices and the report are the same ones.</p>
+
+    <div class="fila">
+      <div><label for="jgRival">Opponent</label>
+           <input id="jgRival" placeholder="Arecibo" autocapitalize="words"></div>
+      <div><label for="jgFecha">Date</label>
+           <input id="jgFecha" type="date"></div>
+    </div>
+    <div class="fila">
+      <div><label for="jgHora">Time (optional)</label>
+           <input id="jgHora" placeholder="7:00 PM"></div>
+      <div><label for="jgCancha">Court (optional)</label>
+           <input id="jgCancha" placeholder="Cancha A"></div>
+    </div>
+    <label for="jgCasa">Where</label>
+    <select id="jgCasa">
+      <option value="1">At home</option>
+      <option value="0">Away</option>
+    </select>
+    <div class="btns">
+      <button id="jgCrear">Create the game</button>
+      <button class="q sm" id="jgRecargar">Reload the list</button>
+    </div>
+    <p class="m" id="mJuego"></p>
+    <div id="jgLista"></div>
+  </section>
+
   <section class="caja">
     <h2>Campaign</h2>
     <p class="sub">One program. Everything below belongs to whichever campaign you pick here.</p>
@@ -793,8 +829,17 @@ function pintarCobro(d){
          donde no está. */
       lic.estado === 'prueba'            ? 'test game — never invoiced' :
       lic.estado === 'sin_promesas'      ? 'nothing to invoice' :
-      lic.estado === 'ya_facturada'      ? 'already invoiced' :
-      lic.estado === 'avisos_pendientes' ? 'NOT invoiced — a notice failed' :
+      /* Una factura hecha que el marcador de hoy dejó descuadrada se
+         dice, y no se reescribe sola: reemitir o abonar algo que un
+         programa ya tiene en la mano es una decisión con una persona
+         al otro lado. */
+      lic.estado === 'ya_facturada'      ? (lic.cuadra === false
+                                             ? 'invoiced — NO LONGER MATCHES the score'
+                                             : 'already invoiced') :
+      lic.estado === 'sin_marcador'      ? (lic.cuadra === false
+                                             ? 'score withdrawn — an invoice is outstanding'
+                                             : 'score withdrawn — nothing to invoice') :
+      lic.estado === 'avisos_pendientes' ? 'NOT invoiced — a notice failed, will retry' :
       lic.estado === 'sin_correo'        ? 'NOT invoiced — the program has no email' :
       /* CON EL MOTIVO, que es lo único que sirve.
          Esto decía «Stripe refused» y tiraba lic.why — el mensaje que
@@ -807,10 +852,22 @@ function pintarCobro(d){
       (lic.estado || '—');
 
     var cuenta = [];
-    if (j.sent)    cuenta.push(j.sent + ' sent');
-    if (j.zero)    cuenta.push(j.zero + ' closed at zero');
-    if (j.skipped) cuenta.push(j.skipped + ' already done');
-    if (j.failed)  cuenta.push('<b style="color:#a8323f">' + j.failed + ' failed</b>');
+    /* «sent» decía más de lo que sabemos. Que Resend acepte un correo
+       no es que haya llegado a nadie: un buzón lleno o un filtro lo
+       tiran después, y de eso no nos enteramos. «Accepted by the mail
+       provider» es exactamente lo que el sistema sabe, y ponerle otro
+       nombre sería inventar una confirmación que no tenemos. */
+    if (j.sent)      cuenta.push(j.sent + ' accepted by the mail provider');
+    if (j.corrected) cuenta.push('<b>' + j.corrected + ' corrected</b>');
+    if (j.zero)      cuenta.push(j.zero + ' closed at zero');
+    if (j.skipped)   cuenta.push(j.skipped + ' already done');
+    /* Un rechazo definitivo NO es un fallo pendiente: llegó a su
+       final. Se cuenta aparte para que no se lea como algo que se va
+       a arreglar solo reintentando, porque no va a arreglarse. */
+    if (j.undeliverable)
+      cuenta.push('<b style="color:#a8323f">' + j.undeliverable + ' undeliverable</b>');
+    if (j.failed)
+      cuenta.push('<b style="color:#a8323f">' + j.failed + ' failed — will retry</b>');
 
     return '<div class="item"><span><b>' + esc(j.juego_no || '—') + '</b>' +
       '<small>' + esc(j.programa || '') + ' ' + esc(j.juego || '') + ' · ' +
@@ -1168,6 +1225,9 @@ function cargarCampanas(){
 
 function escoger(id){
   CAMP = CAMPS.filter(function(c){ return c.id === id })[0] || null;
+  /* Los juegos sueltos son de la campaña escogida, así que la lista
+     cambia con ella. */
+  try { cargarJuegosSueltos() } catch(e) {}
   CODE = CAMP ? codigoGuardado(CAMP.id) : '';
   $('codigoUso').value = CODE;
   /* The payment line belongs to the campaign, so it follows whichever
@@ -1206,6 +1266,222 @@ $('guardarPago').onclick = function(){
 $('camp').onchange = function(){ escoger(this.value) };
 $('recargar').onclick = cargarCampanas;
 $('solRecargar').onclick = cargarSolicitudes;
+/* ══════════════════════════════════════════════════════════════════
+   UN JUEGO, SIN TORNEO
+
+   La portada dice «con un juego basta» y hasta hoy hacía falta un
+   torneo para que un juego existiera: el único insert into games de
+   toda la base vive dentro del registro de un torneo. Esto es la
+   puerta que faltaba.
+
+   El enlace que sale de aquí es el que se manda por WhatsApp. No
+   lleva código y no hace falta cuenta para abrirlo: es la misma
+   página pública que usa un juego de torneo.
+   ══════════════════════════════════════════════════════════════════ */
+function jgLink(id){
+  return 'https://cadapunto.com/prometer.html?g=' + id;
+}
+
+function pintarJuegosSueltos(filas){
+  if (!filas.length){
+    $('jgLista').innerHTML =
+      '<p class="pista">No games in this campaign yet. Make one above, or register a ' +
+      'tournament if this team plays in one.</p>';
+    return;
+  }
+
+  $('jgLista').innerHTML = filas.map(function(f){
+    var marca = f.jugado
+      ? (f.puntos + (f.rival_puntos != null ? '–' + f.rival_puntos : ''))
+      : 'no score yet';
+
+    /* El enlace y el marcador, uno debajo del otro, porque son las
+       dos cosas que se hacen con un juego y se hacen en momentos
+       distintos: el enlace antes, el marcador después. */
+    return '<div class="item" style="display:block' +
+             (f.es_prueba ? ';background:rgba(255,122,24,.07)' : '') + '">' +
+      '<div><b>' + (f.casa ? 'vs ' : '@ ') + esc(f.rival || '') + '</b>' +
+        '<small>' + esc(f.fecha || 'no date') +
+          (f.hora ? ' · ' + esc(f.hora) : '') +
+          (f.cancha ? ' · ' + esc(f.cancha) : '') +
+          ' · ' + f.promesas + ' pledge' + (f.promesas === 1 ? '' : 's') +
+          ' · ' + esc(marca) +
+          (f.de_torneo ? ' · from a tournament' : '') +
+        '</small></div>' +
+
+      (f.es_prueba
+        ? '<p class="sub" style="margin:6px 0 0;color:var(--orange);font-weight:800">' +
+          'TEST GAME — NO LICENCE INVOICE</p>' : '') +
+
+      '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+        '<input readonly value="' + esc(jgLink(f.game_id)) + '" ' +
+          'style="flex:1 1 220px;min-width:0;font-size:.8rem" ' +
+          'onclick="this.select()">' +
+        '<button class="q sm" data-copiar="' + esc(f.game_id) + '">Copy link</button>' +
+      '</div>' +
+
+      '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+        '<input class="jgPts" data-mios="' + esc(f.game_id) + '" type="number" min="0" max="300" ' +
+          'placeholder="us" value="' + (f.puntos == null ? '' : f.puntos) + '" ' +
+          'style="width:84px">' +
+        '<input class="jgPts" data-suyos="' + esc(f.game_id) + '" type="number" min="0" max="300" ' +
+          'placeholder="them" value="' + (f.rival_puntos == null ? '' : f.rival_puntos) + '" ' +
+          'style="width:84px">' +
+        '<button class="q sm" data-marcador="' + esc(f.game_id) + '">Post the score</button>' +
+        (f.jugado
+          ? '<button class="q sm" data-retirar="' + esc(f.game_id) + '">Withdraw it</button>'
+          : '') +
+        (!f.jugado
+          ? '<button class="q sm" data-prueba2="' + esc(f.game_id) + '" data-si="' +
+              (f.es_prueba ? '0' : '1') + '">' +
+              (f.es_prueba ? 'Make it real' : 'Mark as test') + '</button>' +
+            (f.promesas === 0
+              ? '<button class="q sm" data-borrar="' + esc(f.game_id) + '">Delete</button>' : '')
+          : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  /* Listeners delegados y no onclick= en el HTML: todo este script
+     vive dentro de una IIFE, así que un atributo onclick no encuentra
+     la función. */
+  var L = $('jgLista');
+  [].forEach.call(L.querySelectorAll('button[data-copiar]'), function(b){
+    b.onclick = function(){ jgCopiar(b.getAttribute('data-copiar'), b) };
+  });
+  [].forEach.call(L.querySelectorAll('button[data-marcador]'), function(b){
+    b.onclick = function(){ jgMarcador(b.getAttribute('data-marcador'), false) };
+  });
+  [].forEach.call(L.querySelectorAll('button[data-retirar]'), function(b){
+    b.onclick = function(){ jgMarcador(b.getAttribute('data-retirar'), true) };
+  });
+  [].forEach.call(L.querySelectorAll('button[data-prueba2]'), function(b){
+    b.onclick = function(){ jgPrueba(b.getAttribute('data-prueba2'),
+                                     b.getAttribute('data-si') === '1') };
+  });
+  [].forEach.call(L.querySelectorAll('button[data-borrar]'), function(b){
+    b.onclick = function(){ jgBorrar(b.getAttribute('data-borrar')) };
+  });
+}
+
+function cargarJuegosSueltos(){
+  if (!CAMP) { $('jgLista').innerHTML = ''; return }
+  rpc('juegos_de_campana', { p_campaign: CAMP.id })
+    .then(function(d){
+      if (!d || d.ok !== true)
+        return di('mJuego', 'Could not load the games' + porque(d), 'mal');
+      pintarJuegosSueltos(d.juegos || []);
+    })
+    .catch(function(e){ di('mJuego', 'Could not load the games' + porque(e), 'mal') });
+}
+
+function jgCopiar(id, boton){
+  var url = jgLink(id);
+  var ok = function(){ var t = boton.textContent; boton.textContent = 'Copied';
+                       setTimeout(function(){ boton.textContent = t }, 1600) };
+  if (navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(url).then(ok).catch(function(){
+      di('mJuego', 'Could not copy — select the link and copy it by hand.', 'mal') });
+  else di('mJuego', 'Select the link and copy it by hand.', '');
+}
+
+$('jgCrear').onclick = function(){
+  if (!CAMP) return di('mJuego', 'Pick a campaign below first.', 'mal');
+  var rival  = ($('jgRival').value  || '').trim();
+  var fecha  = ($('jgFecha').value  || '').trim();
+  var hora   = ($('jgHora').value   || '').trim();
+  var cancha = ($('jgCancha').value || '').trim();
+  var casa   = $('jgCasa').value === '1';
+
+  if (!rival) return di('mJuego', 'Who are they playing?', 'mal');
+  if (!fecha) return di('mJuego', 'What day?', 'mal');
+
+  di('mJuego', '…');
+  rpc('juego_crear', { p_code: CODE || 'x', p_rival: rival, p_fecha: fecha,
+                       p_hora: hora || null, p_cancha: cancha || null,
+                       p_casa: casa, p_campaign: CAMP.id })
+    .then(function(d){
+      if (!d || d.ok !== true){
+        var r = d && d.reason;
+        return di('mJuego',
+          r === 'repetido'     ? 'That campaign already has a game against them that day.' :
+          r === 'falta-rival'  ? 'Who are they playing?' :
+          r === 'falta-fecha'  ? 'What day?' :
+          r === 'code'         ? 'Sign in as an admin, and pick a campaign below.' :
+          'It did not save' + porque(d), 'mal');
+      }
+      di('mJuego', 'Game created. Its link is in the list — that is what you share.', 'ok');
+      $('jgRival').value = ''; $('jgHora').value = ''; $('jgCancha').value = '';
+      cargarJuegosSueltos();
+    })
+    .catch(function(e){ di('mJuego', 'It did not save' + porque(e), 'mal') });
+};
+
+function jgMarcador(id, retirar){
+  var mios  = document.querySelector('[data-mios="'  + id + '"]');
+  var suyos = document.querySelector('[data-suyos="' + id + '"]');
+  var a = retirar ? null : (mios  && mios.value  !== '' ? Number(mios.value)  : null);
+  var b = retirar ? null : (suyos && suyos.value !== '' ? Number(suyos.value) : null);
+
+  if (!retirar && a === null)
+    return di('mJuego', 'Put in your team’s points.', 'mal');
+
+  /* Que diga lo que hace. Retirar un marcador ya avisado hace que a
+     cada padrino se le escriba otra vez para decirle que no debe
+     nada, y eso no se retira. */
+  if (retirar && !confirm('Withdraw this score?\n\nThe game stays played — it just has no ' +
+      'number for now. Anyone already notified will get a correction saying they owe ' +
+      'nothing, the next time you send notices.')) return;
+
+  di('mJuego', '…');
+  rpc('juego_marcador', { p_code: CODE, p_game: id, p_mios: a, p_suyos: b })
+    .then(function(d){
+      if (!d || d.ok !== true)
+        return di('mJuego',
+          (d && d.reason) === 'code' ? 'Your code does not reach that game.' :
+          (d && d.reason) === 'puntos' ? 'That is not a basketball score.' :
+          'It did not save' + porque(d), 'mal');
+      di('mJuego', retirar
+        ? 'Score withdrawn. Send the notices to tell the padrinos.'
+        : 'Score posted. Pledging is closed on this game now.', 'ok');
+      cargarJuegosSueltos();
+    })
+    .catch(function(e){ di('mJuego', 'It did not save' + porque(e), 'mal') });
+}
+
+function jgPrueba(id, si){
+  if (si && !confirm('Mark this game as a test?\n\nNotices will still go to its padrinos. ' +
+      'No licence will ever be invoiced for it.\n\nOnce a score is posted this cannot ' +
+      'be changed.')) return;
+  rpc('juego_prueba', { p_game: id, p_si: si })
+    .then(function(d){
+      if (!d || d.ok !== true)
+        return di('mJuego', (d && d.reason) === 'ya-jugado'
+          ? 'That game has been played, so the mark is locked.'
+          : 'It did not save' + porque(d), 'mal');
+      di('mJuego', si ? 'Marked as a test — it will never be invoiced.'
+                      : 'Back to a real game.', 'ok');
+      cargarJuegosSueltos();
+    })
+    .catch(function(e){ di('mJuego', 'It did not save' + porque(e), 'mal') });
+}
+
+function jgBorrar(id){
+  if (!confirm('Delete this game?\n\nOnly works while it has no pledges and no score.')) return;
+  rpc('juego_borrar', { p_code: CODE, p_game: id })
+    .then(function(d){
+      if (!d || d.ok !== true)
+        return di('mJuego', (d && d.reason) === 'con-promesas'
+          ? 'It already has pledges — somebody is counting on that game.'
+          : 'It did not delete' + porque(d), 'mal');
+      di('mJuego', 'Deleted.', 'ok');
+      cargarJuegosSueltos();
+    })
+    .catch(function(e){ di('mJuego', 'It did not delete' + porque(e), 'mal') });
+}
+
+$('jgRecargar').onclick = cargarJuegosSueltos;
+
 $('torRecargar').onclick = cargarTorneos;
 $('pruebaCargar').onclick = cargarMarcables;
 
