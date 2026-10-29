@@ -379,6 +379,18 @@ var S={
     lMios:'nosotros', lSuyos:'ellos',
     poner:'Poner el marcador', retirar:'Retirar el marcador',
     verReporte:'Ver el reporte',
+    avisar:'Mandar los avisos',
+    confAvisar:'¿Mandar los avisos de este juego?\n\nCada padrino recibe UN correo con el marcador final y lo que dio su promesa. Sin enlace de pago y sin recordatorios. Un correo no se puede retirar.',
+    avisando:'Mandando…',
+    aviHechos:'{N} aviso(s) aceptado(s) por el correo.',
+    aviCorr:'{N} corrección(es) salieron.',
+    aviNada:'No salió ninguno.',
+    aviCero:'{N} promesa(s) se cerraron sin aviso: no llegaron al mínimo.',
+    aviYa:'{N} ya estaba(n) al día.',
+    aviMuerto:'{N} rebotó(aron) para siempre. Esa gente no se entera por correo — llámalos.',
+    aviFallo:'{N} no salió(eron). Puedes volver a pulsar: sale sólo lo que faltó.',
+    aviErrServidor:'No se pudo hablar con el servidor. No se mandó nada.',
+    aviErrCodigo:'El servidor no aceptó tu código. No se mandó nada.',
     okCreado:'Juego añadido. Su enlace está abajo — ése es el que mandas.',
     okMarcador:'Marcador puesto. Las promesas de este juego quedan cerradas.',
     okRetirado:'Marcador retirado. Manda los avisos para decírselo a tus padrinos.',
@@ -417,6 +429,18 @@ var S={
     lMios:'us', lSuyos:'them',
     poner:'Post the score', retirar:'Withdraw the score',
     verReporte:'See the report',
+    avisar:'Send the notices',
+    confAvisar:'Send the notices for this game?\n\nEach padrino gets ONE email with the final score and what their pledge came to. No payment link and no reminders. An email cannot be taken back.',
+    avisando:'Sending…',
+    aviHechos:'{N} notice(s) accepted by the mail provider.',
+    aviCorr:'{N} correction(s) went out.',
+    aviNada:'None went out.',
+    aviCero:'{N} pledge(s) closed with no notice: they did not reach the minimum.',
+    aviYa:'{N} were already up to date.',
+    aviMuerto:'{N} bounced for good. Those people will not hear by email — call them.',
+    aviFallo:'{N} did not go out. Press again and only the ones that failed will be sent.',
+    aviErrServidor:'Could not reach the server. Nothing was sent.',
+    aviErrCodigo:'The server did not accept your code. Nothing was sent.',
     okCreado:'Game added. Its link is below — that is the one you send.',
     okMarcador:'Score posted. Pledging on this game is closed now.',
     okRetirado:'Score withdrawn. Send the notices to tell your padrinos.',
@@ -470,6 +494,7 @@ function paintStatic(){
 }
 
 var CODE=null, PROGRAMA='', JUEGOS=[];
+var SERVER='https://hooporia-server.onrender.com';
 
 /* Acepta la sesión que ya tenga de cualquiera de las dos páginas
    viejas: el calendario guardaba cp_build y el marcador cp_code. Un
@@ -547,7 +572,10 @@ function pintarJuegos(){
 
     return '<div class="team"'+(g.es_prueba?' style="background:rgba(255,122,24,.07)"':'')+'>'+
       '<div><b>'+esc(g.juego||'')+'</b>'+
-        '<small>'+esc(g.fecha||'')+' · '+esc(prom)+' · '+esc(marca)+'</small></div>'+
+        '<small>'+esc(g.fecha||'')+
+          (g.hora   ? ' · '+esc(g.hora)   : '')+
+          (g.cancha ? ' · '+esc(g.cancha) : '')+
+          ' · '+esc(prom)+' · '+esc(marca)+'</small></div>'+
 
       (g.es_prueba ? '<p class="help" style="color:var(--orange);font-weight:800;margin:6px 0 0">'+
                        esc(T('esPrueba'))+'</p>' : '')+
@@ -569,8 +597,18 @@ function pintarJuegos(){
           : '')+
       '</div>'+
 
+      /* MANDAR DESDE AQUÍ, que es donde está el entrenador.
+         Antes el único camino era el reporte: añadía un salto a otra
+         página y volver a escribir el código, y para alguien que
+         maneja un juego cada semana eso es el paso que se olvida. El
+         reporte se queda —es donde se mira promesa por promesa y se
+         baja la hoja— pero no hace falta pasar por él para avisar. */
       (g.jugado
-        ? '<a class="btn mini line" href="reporte.html">'+esc(T('verReporte'))+'</a>'
+        ? '<div class="lin">'+
+            '<button class="btn mini" data-avi="'+esc(g.game_id)+'">'+
+              esc(T('avisar'))+'</button>'+
+            '<a class="btn mini line" href="reporte.html">'+esc(T('verReporte'))+'</a>'+
+          '</div>'
         : '')+
     '</div>';
   }).join('');
@@ -584,6 +622,45 @@ function pintarJuegos(){
   });
   [].forEach.call(L.querySelectorAll('button[data-ret]'), function(b){
     b.onclick = function(){ marcador(b.getAttribute('data-ret'), true) };
+  });
+  [].forEach.call(L.querySelectorAll('button[data-avi]'), function(b){
+    b.onclick = function(){ avisar(b.getAttribute('data-avi'), b) };
+  });
+}
+
+/* Los avisos de un juego. Dos pulsaciones y no una: un correo no se
+   retira, y este botón está al lado de «Copiar el enlace», que no
+   hace daño ninguno. */
+function avisar(id, boton){
+  if (!confirm(T('confAvisar'))) return;
+  boton.disabled = true;
+  dice(T('avisando'), '');
+
+  fetch(SERVER + '/game-notices', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ code: CODE, game_id: id })
+  }).then(function(res){
+    if (res.status === 403) throw new Error('code');
+    if (!res.ok) throw new Error('server');
+    return res.json();
+  }).then(function(d){
+    boton.disabled = false;
+    if (!d || d.ok !== true) throw new Error('server');
+
+    var partes = [];
+    if (d.sent)          partes.push(T('aviHechos').replace('{N}', d.sent));
+    if (d.corrected)     partes.push(T('aviCorr').replace('{N}', d.corrected));
+    if (!d.sent && !d.corrected) partes.push(T('aviNada'));
+    if (d.zero)          partes.push(T('aviCero').replace('{N}', d.zero));
+    if (d.skipped)       partes.push(T('aviYa').replace('{N}', d.skipped));
+    if (d.undeliverable) partes.push(T('aviMuerto').replace('{N}', d.undeliverable));
+    if (d.failed)        partes.push(T('aviFallo').replace('{N}', d.failed));
+
+    dice(partes.join(' '), (d.failed || d.undeliverable) ? 'bad' : 'ok');
+    recargar();
+  }).catch(function(e){
+    boton.disabled = false;
+    dice((e && e.message === 'code') ? T('aviErrCodigo') : T('aviErrServidor'), 'bad');
   });
 }
 
