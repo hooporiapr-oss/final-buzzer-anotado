@@ -1,961 +1,230 @@
-# The database schema as it stands
-
-Pulled from the database on 19 October 2026 with a catalog
-query. It exists for one concrete reason: without it, every question
-about the database — does that function exist, what is that column
-called, what does a delete drag with it — was a query written blind
-that somebody had to run and paste back. A whole morning went that
-way. It does not maintain itself: when something important changes,
-pull it again with the query at the end.
-
-One database, two products: Cada Punto (cadapunto.com) and
-Hooporia (hooporia.com) share all of it. `campaigns.product` is the
-only thing separating them.
-
-**Mind the date.** The catalog below was pulled on 19 October and
-carries none of the scoreboard work: no `torneos`, no `torneo_juegos`,
-no `licencias_juego`, none of the `torneo_*` functions. All of that
-went in between 26 and 28 October. Until the catalog is pulled again,
-the repo's `.sql` files are the only record of that part — which is
-what the next section is for.
-
-## The `.sql` files, and what order they run in
-
-This is **not a migration system**. Each file is a snapshot
-of "run this and the database ends up like this," and several of them
-redefine the same function because each one added something to it.
-Whichever runs last wins, so the order is not decorative: running them
-out of order leaves the database on an old version, with nothing to
-complain about it.
-
-| # | File | What it leaves behind |
-|---|---|---|
-| 1 | `marcador-torneos.sql` | tables `torneos` and `torneo_juegos`; `bw_register_tournament` |
-| 2 | `marcador-torneos-2.sql` | `torneo_tablero` |
-| 3 | `marcador-licencias.sql` | `licencias_juego`; `torneo_por_facturar`; `torneo_tablero` |
-| 4 | `marcador-codigos.sql` | `bw_check`, `bw_can_build`; `bw_register_tournament` |
-| 5 | `marcador-codigos-2.sql` | `bw_codes_admin`, `bw_code_set`, `bw_code_delete` |
-| 6 | `marcador-cobro.sql` | `bw_nombre_norm`, `cp_piso_centavos`, `juego_puede`, `licencia_juego_calculo`, `juego_reporte`; `games.es_prueba` and its lock trigger; `licencias_juego.fallo`/`fallo_el`/`intentos` |
-| 7 | `marcador-duenos.sql` | `torneos.codigo`; `bw_code_id`, `bw_es_maestro`; `bw_register_tournament` |
-| 8 | `marcador-tablero-2.sql` | `torneo_tablero` |
-| 9 | `marcador-enlace.sql` | `torneo_juegos.game_a`/`game_b`; `tj_enlazar_lado`, `torneo_enlazar`; `bw_register_tournament`; `torneo_juegos_cobrables`, `juegos_marcables`, `juego_prueba` |
-| 10 | `marcador-publicar.sql` | `torneos.canchas`/`casa`/`colores`; `torneo_estilo`, `torneo_publico`, `torneos_publicos` |
-| 11 | `marcador-solicitudes.sql` | unique index `bw_teams_nombre_norm`; `bw_solicitudes_admin`, `bw_approve_request`, `bw_decline_request` |
-| 12 | `marcador-correccion.sql` | `game_pledges.avisado_*`/`avisos_n` and `aviso_fallo_*`; `juego_correcciones`, `pledge_avisado`, `pledge_en_cero`, `pledge_no_entregable`, `juego_licencia_cuadra` |
-
-`marcador-comprobar.sql` is not in the order and never will be. It
-changes nothing: it reads what is deployed and reports BIEN or FALTA
-per item. Run it after any of the files above. It exists because
-passing local tests says nothing about what is in Supabase — the first
-time it ran, it found the old four-column billing function live in
-production while 31 local checks sat green.
-
-### Two functions that moved, and why
-
-Both moves were found by building the database from nothing and
-watching it fail, which is the only way this class of problem shows up:
-on an up-to-date database every one of these files applies cleanly, and
-the order only bites a rebuild.
-
-**`bw_nombre_norm` was in 11 and is now in 6.** It strips accents off a
-team name, and by the time it was written three separate places needed
-it. Two of them — `torneo_juegos_cobrables` and `torneo_enlazar` — come
-before 11. A `language sql` function resolves the names in its body
-when it is *created*, not when it is called, so file 6 failed outright
-on a fresh build for want of a function four files away. It lives in
-the first file that uses it, and there is still exactly one copy.
-
-**`torneo_juegos_cobrables` was in 6 and is now in 9.** It used to find
-each game by matching campaign, date and opponent text. It now finds
-them by `game_a` / `game_b`, and those two columns are added by file 9.
-Same `language sql` rule, same failure. A function defined in terms of
-a key belongs in the file that creates the key.
-
-### The two functions that live in several files
-
-File 10 redefines nothing, which is the point: the three fields
-it adds live in their own function so that
-`bw_register_tournament` does not acquire a fifth copy.
-
-These are the only two that really matter for ordering, and
-every copy of each reads just as current as the others. Nothing inside
-any of them says which one is the good one.
-
-**`bw_register_tournament`** is in four: `torneos`, `codigos`,
-`duenos` and `enlace`. **`marcador-enlace.sql` (9) wins.** Each
-version carries the previous one forward, so the `enlace` copy already
-has the registration, the code check through `bw_can_build`, the
-tournament ownership with its prefix collision, and on top of that the
-link from each side of a game to its campaign.
-
-**`torneo_tablero`** is in three: `torneos-2`, `licencias` and
-`tablero-2`. **`marcador-tablero-2.sql` (8) wins** — it is the one
-that returns both sides in a `lados` array. The two before it took a
-single team per game with a `limit 1`, and on a game where both teams
-are raising that showed half the money.
-
-### Rebuilding the database from scratch
-
-1 through 11, in that order. All of them are re-runnable:
-they are written with `create or replace`, `add column if not exists`
-and `create index if not exists`, so running one again breaks nothing
-and duplicates nothing.
-
-What you must **not** do is run one of the older files that redefine
-`bw_register_tournament` on its own against an up-to-date database:
-that silently reverts the function to that file's version. If that
-function needs changing, change it in `marcador-enlace.sql` and run
-that one.
-
-## What deleting a campaign drags with it
-
-- `bm_cards`
-- `bm_offers`
-- `bm_players`
-- `bw_codes`
-- `bw_requests`
-- `bw_teams`
-- `campaign_cards`
-- `campaign_locations`
-- `campaign_payout`
-- `campaign_practice`
-- `campaign_tryouts`
-- `cards`
-- `challenges`
-- `coaches`
-- `game_pledges`
-- `games`
-- `licencias`
-- `payouts`
-- `players`
-- `score_reports`
-- `sponsors`
-
-Six of them have no `id` of their own: they are join or
-rollup tables, which is why `borrar_arbol` checks for an `id` before
-trying to go one level deeper.
-
-`bw_teams`, `campaign_cards`, `campaign_locations`, `campaign_payout`, `campaign_practice`, `campaign_tryouts`
-
-
-## The tables (not counting the leaderboards)
-
-
-### `app_admins`
-
-- email text
-- added_at timestamp with time zone
-
-
-### `bm_campaigns`
-
-- id bigint
-- slug text
-- team_name text
-- campaign_name text
-- card_price_cents integer
-- program_share_cents integer
-- coupon_count integer
-- goal_cents integer
-- published boolean
-- created_at timestamp with time zone
-- coach_access_code text
-
-
-### `bm_cards`
-
-- id bigint
-- campaign_id bigint
-- player_id bigint
-- card_token text
-- supporter_name text
-- purchased_at timestamp with time zone
-- stripe_session_id text
-
-
-### `bm_coupon_states`
-
-- id bigint
-- card_id bigint
-- position integer
-- state smallint
-- revealed_at timestamp with time zone
-- redeemed_at timestamp with time zone
-
-
-### `bm_offers`
-
-- id bigint
-- campaign_id bigint
-- business text
-- offer_description text
-- coupon_count integer
-- sort_order integer
-
-
-### `bm_players`
-
-- id bigint
-- campaign_id bigint
-- player_slug text
-- display_name text
-- created_at timestamp with time zone
-
-
-### `bw_codes`
-
-- id uuid
-- label text
-- code_hash text
-- active boolean
-- made_at timestamp with time zone
-- used_at timestamp with time zone
-- campaign_id uuid
-- can_add_games boolean
-
-
-### `bw_entries`
-
-- id uuid
-- tourney text
-- team text
-- category text
-- coach text
-- email text
-- phone text
-- note text
-- status text
-- made_at timestamp with time zone
-
-
-### `bw_gate`
-
-- id integer
-- code_hash text
-
-
-### `bw_requests`
-
-- id uuid
-- team_name text
-- program text
-- coach_name text
-- coach_email text
-- phone text
-- note text
-- status text
-- campaign_id uuid
-- asked_at timestamp with time zone
-- decided_at timestamp with time zone
-- terms_at timestamp with time zone
-- custody_at timestamp with time zone
-- license_accepted_at timestamp with time zone
-- license_accepted_by text
-- license_terms text
-- product text
-
-
-### `bw_scores`
-
-- game_no text
-- a_pts integer
-- b_pts integer
-- by_whom text
-- at_time timestamp with time zone
-- sets text
-
-
-### `bw_teams`
-
-- name text
-- campaign_id uuid
-- claimed_at timestamp with time zone
-
-
-### `campaign_cards`
-
-- campaign_id uuid
-- design_id uuid
-
-
-### `campaign_locations`
-
-- campaign_id uuid
-- location_id uuid
-
-
-### `campaign_payout`
-
-- campaign_id uuid
-- pay_org text
-- pay_regno text
-- pay_name text
-- pay_phone text
-- pay_who text
-- pay_title text
-- pay_at timestamp with time zone
-- pay_by text
-
-
-### `campaign_practice`
-
-- campaign_id uuid
-- player_id uuid
-- game text
-- runs integer
-- best_level integer
-- updated_at timestamp with time zone
-
-
-### `campaign_tryouts`
-
-- campaign_id uuid
-- player_id uuid
-- game text
-- best_level integer
-- runs integer
-- updated_at timestamp with time zone
-
-
-### `campaigns`
-
-- id uuid
-- name text
-- goal numeric
-- admin_code text
-- description text
-- created_at timestamp without time zone
-- updated_at timestamp without time zone
-- slug text
-- logo_url text
-- tryout_one_run boolean
-- tryout_game text
-- practice_required integer
-- scored_games ARRAY
-- score_key text
-- stripe_account text
-- stripe_status text
-- stripe_ready_at timestamp with time zone
-- product text
-
-
-### `card_designs`
-
-- id uuid
-- merchant_id uuid
-- name text
-- tab_count integer
-- price numeric
-- team_share_pct integer
-- offer_text text
-- terms text
-- expires_on date
-- active boolean
-- created_at timestamp with time zone
-- display_name text
-- display_logo text
-- valid_when text
-- kind text
-- license_product text
-- redeem_url text
-
-
-### `card_tabs`
-
-- id uuid
-- card_id uuid
-- tab_number integer
-- status text
-- peeled_at timestamp with time zone
-- redeemed_at timestamp with time zone
-- redeemed_by text
-- redeemed_location uuid
-
-
-### `cards`
-
-- id uuid
-- design_id uuid
-- campaign_id uuid
-- player_id uuid
-- buyer_name text
-- buyer_email text
-- price_paid numeric
-- team_amount numeric
-- platform_amount numeric
-- payment_status text
-- created_at timestamp with time zone
-- card_token text
-- stripe_session_id text
-- card_index integer
-- sponsor_id uuid
-- issued_to text
-- expires_on date
-
-
-### `challenge_practice`
-
-- challenge_id uuid
-- player_id uuid
-- best_level integer
-- runs integer
-- updated_at timestamp with time zone
-- game text
-
-
-### `challenge_quarters`
-
-- challenge_id uuid
-- player_id uuid
-- quarter smallint
-- level_reached integer
-- points integer
-- recorded_at timestamp with time zone
-
-
-### `challenge_runs`
-
-- id uuid
-- challenge_id uuid
-- player_id uuid
-- level_reached integer
-- points integer
-- time_seconds numeric
-- played_at timestamp with time zone
-- game text
-- attempts integer
-- threes integer
-- fouls integer
-
-
-### `challenge_scorer_keys`
-
-- challenge_id uuid
-- scorer_key text
-- created_at timestamp with time zone
-
-
-### `challenges`
-
-- id uuid
-- campaign_id uuid
-- name text
-- slug text
-- pledge_deadline date
-- run_deadline date
-- team_share_pct integer
-- status text
-- created_at timestamp with time zone
-- game text
-- live boolean
-- opens_at timestamp with time zone
-- closes_at timestamp with time zone
-- billed_at timestamp with time zone
-
-
-### `cj_admin`
-
-- id uuid
-- label text
-- code_hash text
-- active boolean
-- created_at timestamp with time zone
-
-
-### `cj_licencias`
-
-- id uuid
-- site text
-- kind text
-- code_hash text
-- code_hint text
-- valid_until date
-- active boolean
-- created_at timestamp with time zone
-- created_by text
-- last_seen timestamp with time zone
-- seen_count integer
-
-
-### `coach_chat_usage`
-
-- bucket text
-- n integer
-- day date
-
-
-### `coaches`
-
-- id uuid
-- campaign_id uuid
-- name text
-- email text
-- access_code text
-- unlocked_at timestamp without time zone
-- created_at timestamp without time zone
-- grade text
-- label text
-
-
-### `dia_coach`
-
-- id integer
-- code_hash text
-- admin_hash text
-
-
-### `dia_players`
-
-- id uuid
-- name text
-- team text
-- pin_hash text
-- created_at timestamp with time zone
-
-
-### `dia_progress`
-
-- player_id uuid
-- lesson text
-- seen_at timestamp with time zone
-
-
-### `dia_quiz`
-
-- id uuid
-- player_id uuid
-- set_key text
-- correct integer
-- total integer
-- taken_at timestamp with time zone
-
-
-### `flash_reaction_leaderboard`
-
-- id bigint
-- event_code text
-- player_name text
-- score integer
-- avg_bpm integer
-- created_at timestamp with time zone
-
-
-### `game_pledges`
-
-- id uuid
-- game_id uuid
-- campaign_id uuid
-- padrino_name text
-- padrino_email text
-- rate numeric
-- cap numeric
-- points integer
-- amount numeric
-- platform_amount numeric
-- team_amount numeric
-- invoice_status text
-- stripe_session text
-- moved_from uuid
-- created_at timestamp with time zone
-- paid_at timestamp with time zone
-- player_id uuid
-- settled_account text
-- settled_at timestamp with time zone
-- invoiced_at timestamp with time zone
-- reminder_count integer
-- reminded_at timestamp with time zone
-
-
-### `games`
-
-- id uuid
-- campaign_id uuid
-- opponent text
-- plays_on date
-- tip_time text
-- home boolean
-- venue text
-- status text
-- team_points integer
-- opp_points integer
-- note text
-- created_at timestamp with time zone
-- tips_at timestamp with time zone
-- unlocks_from uuid
-- made_by text
-
-
-### `licencias`
-
-- id uuid
-- challenge_id uuid
-- campaign_id uuid
-- amount_cents integer
-- roster integer
-- promesas integer
-- estado text
-- stripe_invoice_id text
-- stripe_hosted_url text
-- program_email text
-- program_name text
-- created_at timestamp with time zone
-- issued_at timestamp with time zone
-- paid_at timestamp with time zone
-- due_at timestamp with time zone
-
-
-### `license_devices`
-
-- id uuid
-- license_code text
-- product text
-- device_id text
-- first_seen timestamp with time zone
-- last_seen timestamp with time zone
-
-
-### `licenses`
-
-- id uuid
-- code text
-- school_name text
-- expires_at date
-- active boolean
-- notes text
-- created_at timestamp with time zone
-- product text
-- max_devices integer
-
-
-### `merchant_locations`
-
-- id uuid
-- merchant_id uuid
-- name text
-- town text
-- address text
-- active boolean
-- created_at timestamp with time zone
-- store_number text
-
-
-### `merchants`
-
-- id uuid
-- name text
-- logo_url text
-- contact_name text
-- contact_email text
-- contact_phone text
-- active boolean
-- created_at timestamp with time zone
-
-
-### `payouts`
-
-- id uuid
-- campaign_id uuid
-- amount numeric
-- method text
-- reference text
-- note text
-- paid_on date
-- created_at timestamp with time zone
-
-
-### `player_run_keys`
-
-- player_id uuid
-- run_key text
-- created_at timestamp with time zone
-
-
-### `players`
-
-- id uuid
-- campaign_id uuid
-- coach_id uuid
-- name text
-- email text
-- phone text
-- status text
-- created_at timestamp without time zone
-- grade text
-- added_by text
-- added_at timestamp with time zone
-- pin_hash text
-
-
-### `pledges`
-
-- id uuid
-- challenge_id uuid
-- player_id uuid
-- sponsor_name text
-- sponsor_email text
-- rate_per_point numeric
-- points_at_invoice integer
-- amount numeric
-- team_amount numeric
-- platform_amount numeric
-- stripe_invoice_id text
-- invoice_status text
-- invoiced_at timestamp with time zone
-- paid_at timestamp with time zone
-- created_at timestamp with time zone
-- pay_link_url text
-- pay_link_id text
-- reminded_at timestamp with time zone
-- reminder_count integer
-- lang text
-- cap numeric
-
-
-### `program_applications`
-
-- id uuid
-- program_name text
-- org_type text
-- contact_name text
-- contact_email text
-- contact_phone text
-- town text
-- players integer
-- raising_for text
-- payee_name text
-- ein text
-- attested boolean
-- notes text
-- status text
-- created_at timestamp with time zone
-
-
-### `score_reports`
-
-- id uuid
-- game_id uuid
-- campaign_id uuid
-- team_points integer
-- opp_points integer
-- by_whom text
-- at_time timestamp with time zone
-
-
-### `sponsors`
-
-- id uuid
-- campaign_id uuid
-- name text
-- logo_url text
-- contact_name text
-- contact_email text
-- note text
-- created_at timestamp with time zone
-
-
-## The game leaderboard tables
-
-Forty-nine `*_standings` tables, one per game, all the same
-shape (`player_name`, `score`, sometimes the four quarters) and none
-of them tied to a campaign. They are part of none of the above: a
-campaign delete does not touch them.
-
-
-- `alley_oop_standings`
-- `clutch_basketball_standings`
-- `dynamic_memory_fortress_standings`
-- `dynamic_memory_quarter_standings`
-- `dynamic_memory_standings`
-- `eight_direction_standings`
-- `flash_basketball_standings`
-- `flash_break_standings`
-- `hooporia_4qtr_standings`
-- `hooporia_basketball_recall_standings`
-- `hooporia_basketball_recognition_standings`
-- `hooporia_basketball_reflex_standings`
-- `hooporia_basketball_replay_standings`
-- `hooporia_flash_standings`
-- `hooporia_handle_standings`
-- `hooporia_swish_standings`
-- `magnetic_north_standings`
-- `memory_basketball_standings`
-- `memory_spheres_standings`
-- `number_flash_standings`
-- `reaction_velocity_standings`
-- `ritnome_mobile_2halves_standings`
-- `ritnome_mobile_dynamic_memory_standings`
-- `ritnome_mobile_fortress_standings`
-- `ritnome_mobile_handle_4qtr_standings`
-- `ritnome_mobile_handle_standings`
-- `ritnome_mobile_recognition_standings`
-- `ritnome_recall_standings`
-- `ritnome_reflex_standings`
-- `ritnome_standings`
-- `shot_decision_standings`
-- `the_handle_standings`
-- `tres_pointer_standings`
-- `tres_tiebreaker_standings`
-- `true_north_standings`
-- `unstoppable_standings`
-- `velo_all_points_standings`
-- `velo_flash_reaction_standings`
-- `velo_moving_target_standings`
-- `vr_buckets_dont_lie_standings`
-- `vr_chain_reaction_standings`
-- `vr_flashpoint_standings`
-- `vr_let_it_fly_standings`
-- `vr_make_it_count_standings`
-- `vr_reactific_standings`
-- `vr_reaction_speed_standings`
-- `vr_shoot_it_own_it_standings`
-- `vr_swish_basketball_standings`
-- `vr_the_handle_standings`
-
-
-## The functions
-
-
-### Standalone
-
-- `add_games(p_code text, p_campaign uuid, p_rows json)`
-- `billing_queue()`
-- `borrar_arbol(p_tabla text, p_ids uuid[], p_hondo integer DEFAULT 0)`
-- `builder_check(p_code text)`
-- `campaign_squads(p_campaign uuid)`
-- `campana_borrar(p_campana uuid)`
-- `campana_cuenta(p_campana uuid)`
-- `can_bill(p_campaign uuid)`
-- `cancel_game(p_game uuid)`
-- `challenge_list(p_code text)`
-- `challenge_report(p_code text, p_challenge uuid)`
-- `check_access(p_code text, p_product text, p_device text)`
-- `check_license(p_code text, p_product text)`
-- `coach_chat_bump(p_buckets text[])`
-- `game_board(p_campaign uuid)`
-- `game_pledge_for_payment(p_id uuid)`
-- `game_report(p_code text, p_game uuid)`
-- `game_roster(p_campaign uuid)`
-- `get_run_key(p_player uuid)`
-- `hijos_de(p_tabla text)`
-- `is_admin()`
-- `is_director_of(p_campaign uuid)`
-- `join_competition(p_campaign uuid, p_name text, p_grade text, p_pin text DEFAULT NULL::text)`
-- `join_roster(p_campaign uuid, p_name text, p_squad text DEFAULT NULL::text)`
-- `licencia_calculo(p_challenge uuid)`
-- `licencia_tarifa(p_roster integer)`
-- `license_record(p_email text, p_by text, p_terms text)`
-- `my_campaign_ids()`
-- `my_links(p_campaign uuid, p_player uuid)`
-- `payout_check(p_code text)`
-- `payout_destinations()`
-- `payout_status(p_code text)`
-- `player_name(p_id uuid)`
-- `player_pledges(p_campaign uuid)`
-- `player_state(p_id uuid)`
-- `pledge_for_payment(p_pledge uuid)`
-- `pledge_game(p_game uuid, p_name text, p_email text, p_rate numeric, p_cap numeric DEFAULT NULL::numeric, p_player uuid DEFAULT NULL::uuid)`
-- `practice_state(p_campaign uuid, p_player uuid, p_game text)`
-- `record_cashrack_score(p_challenge uuid, p_key text, p_player uuid, p_att integer, p_threes integer, p_fouls integer)`
-- `record_official_run(p_challenge uuid, p_player uuid, p_key text, p_level integer, p_points integer, p_time numeric DEFAULT NULL::numeric, p_game text DEFAULT 'fortress'::text)`
-- `record_practice(p_campaign uuid, p_player uuid, p_game text, p_level integer)`
-- `report_score(p_campaign uuid, p_code text, p_game uuid, p_team integer, p_opp integer)`
-- `request_product(p_email text, p_product text)`
-- `score_check(p_campaign uuid, p_code text)`
-- `score_game(p_game uuid, p_team integer, p_opp integer DEFAULT NULL::integer)`
-- `set_payout(p_code text, p_campaign uuid, p_org text, p_regno text, p_name text, p_phone text, p_who text, p_title text, p_is_org boolean DEFAULT false)`
-- `set_player_pin(p_player uuid, p_pin text)`
-- `student_sign_in(p_campaign uuid, p_pin text, p_name text DEFAULT NULL::text)`
-
-### The `cp_` family
-
-- `cp_game_state(p_challenge uuid, p_player uuid, p_key text)`
-- `cp_padrino_view(p_challenge uuid, p_player uuid)`
-- `cp_pledge(p_challenge uuid, p_player uuid, p_name text, p_email text, p_rate numeric, p_cap numeric, p_lang text DEFAULT 'es'::text)`
-- `cp_quarters(p_challenge uuid, p_player uuid)`
-- `cp_record_quarter(p_challenge uuid, p_player uuid, p_key text, p_quarter integer, p_level integer, p_points integer)`
-- `cp_reto_vivo(p_campaign uuid)`
-- `cp_tablero(p_challenge uuid)`
-
-### The `roster_` family
-
-- `roster_active(p_code text, p_campaign uuid, p_player uuid, p_on boolean)`
-- `roster_add(p_code text, p_campaign uuid, p_names text[], p_squad text DEFAULT NULL::text)`
-- `roster_decide(p_code text, p_campaign uuid, p_player uuid, p_yes boolean)`
-- `roster_edit(p_code text, p_campaign uuid, p_player uuid, p_name text, p_squad text DEFAULT NULL::text)`
-- `roster_list(p_code text, p_campaign uuid)`
-- `roster_remove(p_code text, p_campaign uuid, p_player uuid)`
-- `roster_who(p_code text, p_campaign uuid)`
-
-### The `bw_` family
-
-- `bw_approve_request(p_id uuid)`
-- `bw_board()`
-- `bw_check(p_code text)`
-- `bw_claim_team(p_code text, p_name text, p_campaign uuid)`
-- `bw_clear_score(p_code text, p_game text)`
-- `bw_code_add(p_label text, p_code text, p_campaign uuid DEFAULT NULL::uuid, p_build boolean DEFAULT false)`
-- `bw_code_del(p_id uuid)`
-- `bw_code_off(p_id uuid)`
-- `bw_code_ok(p_code text)`
-- `bw_code_on(p_id uuid)`
-- `bw_codes_list()`
-- `bw_ensure_game(p_code text, p_team text, p_foe text, p_on date, p_time text, p_note text DEFAULT NULL::text)`
-- `bw_enter(p_tourney text, p_team text, p_category text, p_coach text, p_email text, p_phone text DEFAULT NULL::text, p_note text DEFAULT NULL::text)`
-- `bw_entry_counts(p_tourney text)`
-- `bw_entry_drop(p_id uuid)`
-- `bw_entry_list(p_tourney text)`
-- `bw_link_team(p_name text, p_campaign uuid)`
-- `bw_links()`
-- `bw_request_states()`
-- `bw_request_team(p_team text, p_program text, p_name text, p_email text, p_phone text DEFAULT NULL::text, p_note text DEFAULT NULL::text, p_terms boolean DEFAULT false, p_custody boolean DEFAULT false)`
-- `bw_requests_pending()`
-- `bw_set_score(p_code text, p_game text, p_a integer, p_b integer, p_team_a text DEFAULT NULL::text, p_team_b text DEFAULT NULL::text, p_on date DEFAULT NULL::date, p_by text DEFAULT NULL::text, p_sets text DEFAULT NULL::text)`
-- `bw_teams_board()`
-- `bw_unlink_team(p_name text)`
-- `bw_who(p_code text)`
-
-### The `dia_` family
-
-- `dia_coach_add(p_code text, p_name text, p_team text, p_pin text)`
-- `dia_coach_pin(p_code text, p_player uuid, p_pin text)`
-- `dia_coach_remove(p_code text, p_player uuid)`
-- `dia_is_admin(p_code text)`
-- `dia_is_coach(p_code text)`
-- `dia_join(p_name text, p_team text, p_pin text)`
-- `dia_score(p_player uuid, p_set text, p_correct integer, p_total integer)`
-- `dia_seen(p_player uuid, p_lesson text)`
-- `dia_set_admin(p_code text, p_new text)`
-- `dia_set_code(p_code text, p_new text)`
-- `dia_sign_in(p_pin text, p_name text DEFAULT NULL::text)`
-- `dia_who(p_code text)`
-
-### The `cj_` family
-
-- `cj_admin_id(p_admin text)`
-- `cj_code_add(p_admin text, p_site text, p_kind text, p_days integer DEFAULT NULL::integer)`
-- `cj_code_check(p_code text)`
-- `cj_code_off(p_admin text, p_id uuid)`
-- `cj_code_renew(p_admin text, p_id uuid, p_days integer DEFAULT 365)`
-- `cj_codes_list(p_admin text)`
-
-
-## How to pull it again
-
-Paste it into Supabase's SQL editor and run it. It returns
-a single row with the whole catalog as JSON.
-
-```sql
-select json_build_object(
-  'tablas', (select json_agg(json_build_object('t', table_name, 'c', cols))
-               from (select c.table_name,
-                            json_agg(c.column_name || ' ' || c.data_type order by c.ordinal_position) as cols
-                       from information_schema.columns c
-                       join information_schema.tables t
-                         on t.table_name = c.table_name and t.table_schema = c.table_schema
-                      where c.table_schema = 'public' and t.table_type = 'BASE TABLE'
-                      group by c.table_name) x),
-  'funciones', (select json_agg(p.proname || '(' || pg_get_function_arguments(p.oid) || ')' order by p.proname)
-                  from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-                 where n.nspname = 'public' and p.prokind = 'f')
-) as esquema;
-```
+-- ════════════════════════════════════════════════════════════════
+--  PROMETER SOBRE UN JUEGO
+--
+--  LO QUE FALTABA, Y NO ESTABA EN NINGUNA LISTA.
+--
+--  `game_pledges` se lee en todas partes —el cobro, los avisos, las
+--  correcciones, el reporte, la escalera de la licencia— y no se
+--  escribe en ninguna. Ni una página, ni una ruta del servidor, ni una
+--  función. La promesa del camino completo de ayer se metió a mano con
+--  un INSERT.
+--
+--  Es decir: un padrino no tiene manera de prometer. Todo lo que hay
+--  detrás funciona y no hay puerta por donde entrar — lo mismo que
+--  pasaba con bw_approve_request, que existía y no la llamaba nadie.
+--
+--  `cp_pledge`, la que sí existe, promete sobre un RETO y un ALUMNO:
+--  el producto retirado. No sirve, y cambiarla de significado
+--  rompería lo que todavía la usa.
+--
+--  Dos funciones, y nada más que eso:
+--
+--    juego_publico   — lo que un padrino ve antes de prometer, sin
+--                      código y sin cuenta
+--    juego_prometer  — la promesa
+-- ════════════════════════════════════════════════════════════════
+
+
+-- ── Lo que ve quien llega con el enlace ─────────────────────────
+--
+--  Sin código: el enlace se comparte por WhatsApp y quien lo abre no
+--  tiene nada nuestro. Así que esto devuelve SÓLO lo que ya es
+--  público —lo mismo que cualquiera ve en el marcador— y ni una cosa
+--  más: ni campaign_id, ni correos, ni quién más prometió.
+--
+--  SE PUEDE PROMETER HASTA QUE HAYA MARCADOR, y ni un minuto después.
+--  La promesa es por punto: con el resultado ya puesto, prometer no
+--  sería prometer, sería escoger una cifra sabiendo la respuesta.
+create or replace function public.juego_publico(p_game uuid)
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path to 'public', 'extensions'
+as $$
+declare
+  v_g  record;
+  v_tj text;
+begin
+  select g.id, g.opponent, g.plays_on, g.home, g.status, g.team_points,
+         g.opp_points, g.tip_time, g.venue,
+         ca.name as equipo, ca.pay_how
+    into v_g
+    from public.games g
+    left join public.campaigns ca on ca.id = g.campaign_id
+   where g.id = p_game;
+
+  if v_g.id is null then
+    return jsonb_build_object('ok', false, 'reason', 'no-existe');
+  end if;
+
+  select tj.juego into v_tj
+    from public.torneo_juegos tj
+   where tj.game_a = p_game or tj.game_b = p_game
+   limit 1;
+
+  return jsonb_build_object(
+    'ok',       true,
+    'game_id',  v_g.id,
+    'equipo',   v_g.equipo,
+    'rival',    v_g.opponent,
+    'casa',     v_g.home,
+    'juego',    coalesce(v_tj, (case when v_g.home then 'vs ' else '@ ' end)
+                               || coalesce(v_g.opponent, '')),
+    'fecha',    v_g.plays_on,
+    'hora',     v_g.tip_time,
+    'cancha',   v_g.venue,
+    'jugado',   (coalesce(v_g.status,'') = 'played' and v_g.team_points is not null),
+    'puntos',   v_g.team_points,
+    'rival_puntos', v_g.opp_points,
+    'abierto',  (coalesce(v_g.status, 'scheduled') = 'scheduled'),
+    'cancelado',(coalesce(v_g.status, '') = 'cancelled'),
+    'piso_centavos', public.cp_piso_centavos(),
+    'pay_how',  v_g.pay_how,
+    -- Cuántos van. Es lo único «social» que sale, y sin nombres.
+    'promesas', (select count(*) from public.game_pledges gp
+                  where gp.game_id = p_game
+                    and coalesce(gp.invoice_status,'open') not in ('void','anulada'))
+  );
+end $$;
+
+revoke all on function public.juego_publico(uuid) from public;
+grant execute on function public.juego_publico(uuid) to anon, authenticated;
+
+
+-- ── La promesa ──────────────────────────────────────────────────
+--
+--  Lo que el padrino decide es una tarifa por punto y, si quiere, un
+--  tope. Nada más: no hay pago, no hay cuenta, no hay tarjeta. Lo que
+--  queda guardado es una intención, y lo que la convierte en una cifra
+--  es el marcador final.
+--
+--  PROMETER DOS VECES NO SON DOS PROMESAS. El mismo correo sobre el
+--  mismo juego actualiza la suya: alguien que se equivoca de cifra y
+--  vuelve a mandar el formulario esperaría eso, y no dos cargos — y
+--  sobre todo, dos filas contarían DOS veces para el peldaño de la
+--  licencia, que se cobra por número de promesas. Un padrino
+--  indeciso no puede subirle el precio a su propio programa.
+--
+--  Y NO SE PUEDE CAMBIAR DESPUÉS DEL AVISO. Si ya se le escribió con
+--  una cifra, cambiarla por detrás dejaría su correo diciendo una cosa
+--  y la base otra, que es justo el desorden que el paso 2 vino a
+--  arreglar.
+create or replace function public.juego_prometer(
+  p_game   uuid,
+  p_nombre text,
+  p_email  text,
+  p_tarifa numeric,
+  p_tope   numeric default null
+) returns jsonb
+language plpgsql
+security definer
+set search_path to 'public', 'extensions'
+as $$
+declare
+  v_g      record;
+  v_email  text := lower(btrim(coalesce(p_email, '')));
+  v_nombre text := btrim(coalesce(p_nombre, ''));
+  v_id     uuid;
+  v_previa record;
+begin
+  select g.id, g.status, g.team_points, g.campaign_id
+    into v_g
+    from public.games g
+   where g.id = p_game;
+
+  if v_g.id is null then
+    return jsonb_build_object('ok', false, 'reason', 'no-existe');
+  end if;
+
+  if coalesce(v_g.status, 'scheduled') = 'cancelled' then
+    return jsonb_build_object('ok', false, 'reason', 'cancelado');
+  end if;
+
+  -- Con marcador puesto ya no se promete: se sabría el resultado.
+  if coalesce(v_g.status, 'scheduled') <> 'scheduled' or v_g.team_points is not null then
+    return jsonb_build_object('ok', false, 'reason', 'ya-jugado');
+  end if;
+
+  if v_nombre = '' then
+    return jsonb_build_object('ok', false, 'reason', 'falta-nombre');
+  end if;
+
+  -- Una comprobación de forma, no de existencia: que haya algo, una
+  -- arroba y un punto después. Si la dirección no existe, eso se
+  -- descubre al mandarle el aviso, y para eso está `undeliverable`.
+  if v_email !~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$' then
+    return jsonb_build_object('ok', false, 'reason', 'correo');
+  end if;
+
+  if p_tarifa is null or p_tarifa <= 0 then
+    return jsonb_build_object('ok', false, 'reason', 'tarifa');
+  end if;
+
+  -- Un techo, para que un cero de más no se convierta en una promesa
+  -- de nueve mil dólares que nadie quiso hacer. No es desconfianza:
+  -- es que el teclado del teléfono está pegado y esto no se puede
+  -- deshacer una vez que el equipo juega.
+  if p_tarifa > 25 then
+    return jsonb_build_object('ok', false, 'reason', 'tarifa-alta');
+  end if;
+
+  if p_tope is not null and p_tope <= 0 then
+    return jsonb_build_object('ok', false, 'reason', 'tope');
+  end if;
+
+  -- ¿Ya prometió? Entonces se le cambia la suya.
+  select gp.id, gp.invoice_status, coalesce(gp.avisos_n, 0) as avisos_n
+    into v_previa
+    from public.game_pledges gp
+   where gp.game_id = p_game
+     and lower(gp.padrino_email) = v_email
+   limit 1;
+
+  if v_previa.id is not null then
+    if v_previa.avisos_n > 0 or v_previa.invoice_status = 'sent' then
+      return jsonb_build_object('ok', false, 'reason', 'ya-avisado');
+    end if;
+
+    update public.game_pledges
+       set padrino_name = v_nombre,
+           rate         = p_tarifa,
+           cap          = p_tope
+     where id = v_previa.id;
+
+    return jsonb_build_object('ok', true, 'cambiada', true,
+                              'pledge_id', v_previa.id,
+                              'tarifa', p_tarifa, 'tope', p_tope);
+  end if;
+
+  insert into public.game_pledges
+    (game_id, padrino_name, padrino_email, rate, cap, invoice_status)
+  values (p_game, v_nombre, v_email, p_tarifa, p_tope, 'open')
+  returning id into v_id;
+
+  return jsonb_build_object('ok', true, 'cambiada', false,
+                            'pledge_id', v_id,
+                            'tarifa', p_tarifa, 'tope', p_tope);
+end $$;
+
+revoke all on function public.juego_prometer(uuid, text, text, numeric, numeric) from public;
+grant execute on function public.juego_prometer(uuid, text, text, numeric, numeric)
+  to anon, authenticated;
+
+
+-- ── Un correo, una promesa, por juego ───────────────────────────
+-- La función ya lo resuelve, pero la función es una sola puerta y el
+-- índice es la cerradura: dos formularios mandados a la vez caben
+-- entre el select y el insert, y dos filas del mismo padrino le
+-- subirían el peldaño de la licencia a su propio programa.
+create unique index if not exists game_pledges_un_correo_por_juego
+  on public.game_pledges (game_id, lower(padrino_email));
+
+
+-- ── Comprobar que quedó bien ────────────────────────────────────
+--
+--   select public.juego_publico('<game uuid>');
+--   select public.juego_prometer('<game uuid>', 'Ana', 'ana@x.com', 0.25, 20);
+--
+-- Sobre un juego ya jugado, la segunda contesta {"ok":false,
+-- "reason":"ya-jugado"} y no escribe nada.
