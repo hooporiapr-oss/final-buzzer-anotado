@@ -231,6 +231,19 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
     </div>
   </section>
 
+  <!-- LO FACTURADO, ARRIBA DEL TODO.
+       Es la pregunta de después de cada prueba —¿se levantó alguna
+       factura?— y la respuesta estaba en un editor de SQL, que desde
+       un teléfono no se abre. -->
+  <section class="caja">
+    <h2>Licences</h2>
+    <p class="sub">Every licence invoice this platform has raised. A test game must never
+      appear here.</p>
+    <div id="licResumen"></div>
+    <div class="btns"><button class="q sm" id="licRecargar">Reload</button></div>
+    <p class="m" id="mLic"></p>
+  </section>
+
   <!-- UN JUEGO, SIN TORNEO. Es lo que anuncia la portada —«con un
        juego basta»— y era lo único que no se podía hacer: en toda la
        base había un solo insert into games, dentro del registro de un
@@ -1248,6 +1261,7 @@ function decidir(fn, id, boton){
 }
 
 function cargarCampanas(){
+  try { cargarLicencias() } catch(e) {}
   /* SÓLO LAS DE CADA PUNTO CUENTA, que son las que se llaman
      'cada-punto'.
      Esto filtraba por 'anotado' —Hooporia, el otro producto que
@@ -1526,6 +1540,42 @@ function jgBorrar(id){
     })
     .catch(function(e){ di('mJuego', 'It did not delete' + porque(e), 'mal') });
 }
+
+/* ── Lo facturado ─────────────────────────────────────────────────
+   Cero es la respuesta correcta después de una prueba, y hay que
+   poder verla sin abrir Supabase. Las fallidas salen con su motivo:
+   son las únicas que piden algo de quien mira. */
+function cargarLicencias(){
+  rpc('licencias_resumen')
+    .then(function(d){
+      if (!d || d.ok !== true)
+        return di('mLic', 'Could not read it' + porque(d), 'mal');
+
+      var cero = Number(d.total || 0) === 0;
+      var html =
+        '<div class="item"><span><b>' +
+          (cero ? 'No licence has ever been invoiced'
+                : d.enviadas + ' invoiced · $' + ((d.centavos||0)/100).toFixed(2)) +
+        '</b><small>' +
+          d.pruebas + ' game' + (d.pruebas === 1 ? '' : 's') + ' marked as a test' +
+          (d.abiertas ? ' · ' + d.abiertas + ' open' : '') +
+          (d.anuladas ? ' · ' + d.anuladas + ' voided' : '') +
+        '</small></span>' +
+        '<span class="pill' + (cero || !d.fallidas ? ' on' : '') + '">' +
+          (d.fallidas ? d.fallidas + ' failed' : 'nothing failed') +
+        '</span></div>';
+
+      (d.fallos || []).forEach(function(f){
+        html += '<p class="sub" style="margin:4px 0 0;color:#a8323f">' +
+                esc(f.juego || '—') + ' — ' + esc(f.porque || '') + '</p>';
+      });
+
+      $('licResumen').innerHTML = html;
+      di('mLic', '', '');
+    })
+    .catch(function(e){ di('mLic', 'Could not read it' + porque(e), 'mal') });
+}
+$('licRecargar').onclick = cargarLicencias;
 
 $('jgRecargar').onclick = cargarJuegosSueltos;
 
