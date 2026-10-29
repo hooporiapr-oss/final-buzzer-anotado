@@ -35,11 +35,41 @@ complain about it.
 | 3 | `marcador-licencias.sql` | `licencias_juego`; `torneo_por_facturar`; `torneo_tablero` |
 | 4 | `marcador-codigos.sql` | `bw_check`, `bw_can_build`; `bw_register_tournament` |
 | 5 | `marcador-codigos-2.sql` | `bw_codes_admin`, `bw_code_set`, `bw_code_delete` |
-| 6 | `marcador-cobro.sql` | `cp_piso_centavos`, `juego_puede`, `licencia_juego_calculo`, `juego_reporte`, `torneo_juegos_cobrables` |
+| 6 | `marcador-cobro.sql` | `bw_nombre_norm`, `cp_piso_centavos`, `juego_puede`, `licencia_juego_calculo`, `juego_reporte`; `games.es_prueba` and its lock trigger; `licencias_juego.fallo`/`fallo_el`/`intentos` |
 | 7 | `marcador-duenos.sql` | `torneos.codigo`; `bw_code_id`, `bw_es_maestro`; `bw_register_tournament` |
 | 8 | `marcador-tablero-2.sql` | `torneo_tablero` |
-| 9 | `marcador-enlace.sql` | `torneo_juegos.game_a`/`game_b`; `tj_enlazar_lado`, `torneo_enlazar`; `bw_register_tournament` |
+| 9 | `marcador-enlace.sql` | `torneo_juegos.game_a`/`game_b`; `tj_enlazar_lado`, `torneo_enlazar`; `bw_register_tournament`; `torneo_juegos_cobrables`, `juegos_marcables`, `juego_prueba` |
 | 10 | `marcador-publicar.sql` | `torneos.canchas`/`casa`/`colores`; `torneo_estilo`, `torneo_publico`, `torneos_publicos` |
+| 11 | `marcador-solicitudes.sql` | unique index `bw_teams_nombre_norm`; `bw_solicitudes_admin`, `bw_approve_request`, `bw_decline_request` |
+| 12 | `marcador-correccion.sql` | `game_pledges.avisado_*`/`avisos_n` and `aviso_fallo_*`; `juego_correcciones`, `pledge_avisado`, `pledge_en_cero`, `pledge_no_entregable`, `juego_licencia_cuadra` |
+
+`marcador-comprobar.sql` is not in the order and never will be. It
+changes nothing: it reads what is deployed and reports BIEN or FALTA
+per item. Run it after any of the files above. It exists because
+passing local tests says nothing about what is in Supabase — the first
+time it ran, it found the old four-column billing function live in
+production while 31 local checks sat green.
+
+### Two functions that moved, and why
+
+Both moves were found by building the database from nothing and
+watching it fail, which is the only way this class of problem shows up:
+on an up-to-date database every one of these files applies cleanly, and
+the order only bites a rebuild.
+
+**`bw_nombre_norm` was in 11 and is now in 6.** It strips accents off a
+team name, and by the time it was written three separate places needed
+it. Two of them — `torneo_juegos_cobrables` and `torneo_enlazar` — come
+before 11. A `language sql` function resolves the names in its body
+when it is *created*, not when it is called, so file 6 failed outright
+on a fresh build for want of a function four files away. It lives in
+the first file that uses it, and there is still exactly one copy.
+
+**`torneo_juegos_cobrables` was in 6 and is now in 9.** It used to find
+each game by matching campaign, date and opponent text. It now finds
+them by `game_a` / `game_b`, and those two columns are added by file 9.
+Same `language sql` rule, same failure. A function defined in terms of
+a key belongs in the file that creates the key.
 
 ### The two functions that live in several files
 
@@ -66,7 +96,7 @@ are raising that showed half the money.
 
 ### Rebuilding the database from scratch
 
-1 through 10, in that order. All of them are re-runnable:
+1 through 11, in that order. All of them are re-runnable:
 they are written with `create or replace`, `add column if not exists`
 and `create index if not exists`, so running one again breaks nothing
 and duplicates nothing.
