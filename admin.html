@@ -207,6 +207,23 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
       <p class="m" id="mCobro"></p>
       <div id="cobroDetalle"></div>
     </div>
+
+    <!-- El juego de prueba. Está aquí, pegado al cobro, porque es lo
+         único que lo apaga: probar el camino completo exige jugar un
+         juego de verdad, y al final de ese camino hay una factura que
+         sale sola. -->
+    <div style="border-top:1px solid var(--line);margin-top:16px;padding-top:14px">
+      <h3 style="font-size:.95rem;font-weight:800;margin:0 0 4px">Test games</h3>
+      <p class="sub" style="margin:0 0 10px">A test game runs the whole path &mdash; pledges,
+        final score, notices &mdash; and is <b>never invoiced</b>. Mark it before the game is
+        played: once a score is posted the mark is locked, so a real game can never become a
+        test after the fact, or the other way round.</p>
+      <label for="pruebaTor">Tournament</label>
+      <select id="pruebaTor"></select>
+      <div class="btns"><button class="q sm" id="pruebaCargar">Show scheduled games</button></div>
+      <p class="m" id="mPrueba"></p>
+      <div id="pruebaLista"></div>
+    </div>
   </section>
 
   <section class="caja">
@@ -641,14 +658,124 @@ function pintarTorneos(rows){
 
   /* El desplegable del cobro se llena de la misma lista, para no
      pedirle a nadie que escriba un id de torneo a mano. */
-  var sel = $('torCobroId');
-  if (sel){
+  var opciones = rows.map(function(t){
+    return '<option value="' + esc(t.id) + '">' + esc(t.nombre) + '</option>';
+  }).join('');
+
+  ['torCobroId', 'pruebaTor'].forEach(function(id){
+    var sel = $(id);
+    if (!sel) return;
     var antes = sel.value;
-    sel.innerHTML = rows.map(function(t){
-      return '<option value="' + esc(t.id) + '">' + esc(t.nombre) + '</option>';
-    }).join('');
+    sel.innerHTML = opciones;
     if (antes) sel.value = antes;
+  });
+}
+
+
+/* ── El juego de prueba ───────────────────────────────────────────
+   Sólo los TODAVÍA PROGRAMADOS, que son los únicos que se pueden
+   marcar: la base cierra la marca en cuanto hay marcador, así que
+   enseñar los jugados sería ofrecer un botón que va a ser rechazado.
+
+   Los botones se enganchan con un listener delegado y no con onclick=
+   en el HTML: todo este script vive dentro de una IIFE, así que un
+   atributo onclick no encuentra la función. */
+function pintarMarcables(filas){
+  if (!filas.length){
+    $('pruebaLista').innerHTML =
+      '<p class="pista">No scheduled games in this tournament. Only a game that has not been ' +
+      'played yet can be marked.</p>';
+    return;
   }
+
+  /* EL AVISO, ARRIBA Y EN GRANDE, y antes de que nadie apunte un
+     marcador. Una marca que sólo se ve en la fila que la lleva se
+     descubre leyendo con atención, y el día que esto importe no habrá
+     atención: habrá un juego empezando. Así que se dice primero,
+     cuántos son y cuáles, y se dice con las mismas palabras que
+     explican la consecuencia — no «test», que no significa nada a
+     solas, sino que no habrá factura. */
+  var marcados = filas.filter(function(f){ return !!f.es_prueba });
+  var aviso = marcados.length
+    ? '<div style="border:2px solid var(--orange);border-radius:10px;' +
+        'background:rgba(255,122,24,.10);padding:12px 14px;margin:0 0 12px">' +
+      '<p style="margin:0 0 4px;font-weight:900;letter-spacing:.04em;' +
+        'color:var(--orange)">TEST GAME &mdash; NO LICENCE INVOICE</p>' +
+      '<p class="sub" style="margin:0">' + marcados.length +
+        (marcados.length === 1 ? ' game in this tournament is' : ' games in this tournament are') +
+        ' marked as a test: ' +
+        marcados.map(function(f){
+          return '<b>' + esc(f.juego || '—') + '</b> (' +
+                 esc(f.programa || f.equipo || '') + ' vs ' + esc(f.rival || '') + ')';
+        }).join(', ') +
+        '. Padrinos will still be notified. No licence will be invoiced. ' +
+        'Change it now if that is wrong &mdash; once a score is posted it is locked.</p></div>'
+    : '';
+
+  $('pruebaLista').innerHTML = aviso + filas.map(function(f){
+    var si = !!f.es_prueba;
+    return '<div class="item"' +
+      (si ? ' style="background:rgba(255,122,24,.07)"' : '') + '>' +
+      '<span><b>' + esc(f.juego || '—') + '</b>' +
+      '<small>' + esc(f.programa || f.equipo || '') + ' vs ' + esc(f.rival || '') +
+      (f.fecha ? ' · ' + esc(f.fecha) : '') + '</small></span>' +
+      /* La píldora del juego de prueba NO lleva la clase `on`: `on` es
+         el verde de «esto está bien», y verde es exactamente la
+         lectura equivocada aquí. Un juego que no se va a facturar no
+         es un éxito, es un aviso, y se pinta del color de los avisos. */
+      '<span><span class="pill" style="margin-right:8px' +
+      (si ? ';background:rgba(255,122,24,.16);color:#9a4300' : '') + '">' +
+      (si ? 'TEST — no licence invoice' : 'real — will be invoiced') + '</span>' +
+      '<button class="q sm" data-prueba="' + esc(f.game_id) + '" data-si="' +
+      (si ? '0' : '1') + '">' + (si ? 'Make it real' : 'Mark as test') + '</button></span></div>';
+  }).join('');
+
+  [].forEach.call($('pruebaLista').querySelectorAll('button[data-prueba]'), function(b){
+    b.onclick = function(){ marcarPrueba(b.getAttribute('data-prueba'),
+                                         b.getAttribute('data-si') === '1', b) };
+  });
+}
+
+function cargarMarcables(){
+  var torneo = $('pruebaTor').value;
+  if (!torneo) return di('mPrueba', 'Pick a tournament.', 'mal');
+  di('mPrueba', '…');
+  $('pruebaLista').innerHTML = '';
+  rpc('juegos_marcables', { p_torneo: torneo })
+    .then(function(d){
+      if (!d || d.ok !== true)
+        return di('mPrueba', d && d.reason === 'no-admin'
+                             ? 'Sign in as an admin first.'
+                             : 'It did not load' + porque(d), 'mal');
+      var filas = d.filas || [];
+      di('mPrueba', filas.length + ' scheduled game' + (filas.length === 1 ? '' : 's'), 'ok');
+      pintarMarcables(filas);
+    })
+    .catch(function(e){ di('mPrueba', 'It did not load' + porque(e), 'mal') });
+}
+
+function marcarPrueba(game_id, si, boton){
+  if (si && !confirm('Mark this game as a test?\n\n' +
+                     'Notices will still be sent to its padrinos. No licence will ever be ' +
+                     'invoiced for it.\n\nOnce a score is posted this cannot be changed.')) return;
+
+  boton.disabled = true;
+  rpc('juego_prueba', { p_game: game_id, p_si: si })
+    .then(function(d){
+      if (!d || d.ok !== true){
+        boton.disabled = false;
+        var why = d && d.reason === 'ya-jugado'
+          ? 'That game has already been played, so the mark is locked.'
+          : d && d.reason === 'no-admin' ? 'Sign in as an admin first.'
+          : 'It did not save' + porque(d);
+        return di('mPrueba', why, 'mal');
+      }
+      di('mPrueba', si ? 'Marked as a test — it will never be invoiced.'
+                       : 'Back to a real game — it will be invoiced.', 'ok');
+      cargarMarcables();
+    })
+    .catch(function(e){ boton.disabled = false;
+                        di('mPrueba', 'It did not save' + porque(e), 'mal') });
 }
 
 /* ── Avisos y licencia de un torneo ───────────────────────────────
@@ -661,6 +788,10 @@ function pintarCobro(d){
     var lic = j.licencia || {};
     var estado =
       lic.estado === 'enviada'           ? 'invoiced $' + ((lic.amount_cents || 0) / 100).toFixed(2) :
+      /* Un juego de prueba se dice por su nombre. Caía en
+         'sin_promesas', que es otra cosa y manda a buscar el fallo
+         donde no está. */
+      lic.estado === 'prueba'            ? 'test game — never invoiced' :
       lic.estado === 'sin_promesas'      ? 'nothing to invoice' :
       lic.estado === 'ya_facturada'      ? 'already invoiced' :
       lic.estado === 'avisos_pendientes' ? 'NOT invoiced — a notice failed' :
@@ -686,6 +817,15 @@ function pintarCobro(d){
       (cuenta.length ? cuenta.join(' · ') : 'nothing pending') + '</small></span>' +
       '<span class="pill' + (lic.estado === 'enviada' ? ' on' : '') + '">' +
       esc(estado) + '</span></div>' +
+      /* UN ENLACE ADIVINADO SE DICE. El juego se encontró sin llave,
+         por el texto del nombre del rival y la fecha — así que es un
+         juego que puede dejar de encontrarse el día que el entrenador
+         mueva una hora. Registrar el torneo otra vez le pone la llave.
+         Callarlo era cómodo hasta que descuadraba una factura. */
+      (j.por_texto
+        ? '<p class="sub" style="margin:2px 0 8px;color:#a8323f">Matched by name and date, ' +
+          'not by key &mdash; register the tournament again to link it properly.</p>'
+        : '') +
       ((j.errors && j.errors.length)
         ? '<p class="sub" style="margin:2px 0 8px;color:#a8323f">' +
             esc(j.errors.slice(0, 3).join(' · ')) + '</p>'
@@ -1067,6 +1207,12 @@ $('camp').onchange = function(){ escoger(this.value) };
 $('recargar').onclick = cargarCampanas;
 $('solRecargar').onclick = cargarSolicitudes;
 $('torRecargar').onclick = cargarTorneos;
+$('pruebaCargar').onclick = cargarMarcables;
+
+/* Y SIN TENER QUE PULSAR NADA. El aviso sólo protege si está
+   delante: escondido detrás de un botón que hay que recordar pulsar,
+   protege el día que uno se acuerda y no el día que hace falta. */
+$('pruebaTor').onchange = cargarMarcables;
 $('solTodas').onclick = function(){
   SOL_TODAS = !SOL_TODAS;
   $('solTodas').textContent = SOL_TODAS ? 'Show only waiting' : 'Show handled too';
