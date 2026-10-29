@@ -3,790 +3,150 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Mi enlace — Cada Punto Cuenta</title>
-<meta name="robots" content="noindex">
-
-<!-- El icono y la imagen de compartir. og:image va en absoluto
-     a propósito: WhatsApp y los demás no resuelven rutas
-     relativas, y con una relativa la vista previa sale en
-     blanco igual que sin imagen. -->
+<title>El enlace del juego — Cada Punto Cuenta</title>
+<meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:title" content="El enlace del juego — Cada Punto Cuenta">
 <meta property="og:image" content="https://cadapunto.com/compartir.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21">
-<meta name="twitter:card" content="summary_large_image">
+
+<!-- ══════════════════════════════════════════════════════════════
+     ESTA PÁGINA ERA «MI ENLACE».
+
+     Del producto por alumno: cada jugador tenía su propio enlace y
+     sus padrinos prometían por SUS puntos. Eso se retiró: ahora se
+     promete por los puntos del EQUIPO en un juego, y el enlace del
+     juego es el mismo para todas las familias.
+
+     No se borra porque dos páginas siguen apuntando aquí —padrinos
+     y el tablero del entrenador— y un enlace roto no le explica
+     nada a nadie. Lo que había debajo eran casi ochocientas líneas
+     de un flujo que ya no existe. Esto dice la verdad en diez
+     segundos y manda a la persona a donde sí hay algo que hacer.
+     ══════════════════════════════════════════════════════════════ -->
 <style>
-:root{--ink:#12202E;--mute:#5A6B7C;--line:#D7E0E8;--tint:#F7FAFC;--accent:#0C6E8C;--good:#0B7A5A;--bad:#A8323F}
-*{box-sizing:border-box}
-html{background:#07141E}
-/* El teclado del teléfono no achica la página, achica lo que se ve de
-   ella. Con el alto clavado en 100dvh y el scroll metido en <main>, el
-   campo enfocado se iba debajo del teclado. Rodando la página entera,
-   el navegador sí puede subirlo. */
-body{margin:0;min-height:100dvh;display:flex;flex-direction:column;
-  font-family:Archivo,"Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--ink);
-  background:#07141E;line-height:1.55;-webkit-text-size-adjust:100%}
-.wrap{width:min(560px,93vw);margin:0 auto}
-
-header{flex:0 0 auto;background:#12202E;border-bottom:1px solid #0B1724;
-  padding-top:env(safe-area-inset-top,0px)}
-header .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
-.mark{font-weight:900;font-size:1.05rem;color:#fff;text-decoration:none}
-.mark em{font-style:normal;color:#4FD3F0}
-.mark i{font-style:normal;color:#9FB3C4}
-.langb{border:1px solid #33465A;background:none;color:#C8D6E2;border-radius:999px;
-  padding:6px 13px;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer}
-
-main{flex:1 1 auto;overflow-x:hidden}
-main .wrap{padding:clamp(20px,5vw,34px) 0 30px}
-
-footer{flex:0 0 auto;background:#12202E;color:#9FB3C4;border-top:1px solid #0B1724;
-  padding:15px 0 calc(15px + env(safe-area-inset-bottom,0px));text-align:center;font-size:.82rem}
-footer p{margin:0 0 7px}
-footer .f-co{color:#fff;font-weight:700}
-footer a{color:#4FD3F0;text-decoration:none}
-
-.crest{display:block;max-height:72px;max-width:160px;margin:0 auto 14px;object-fit:contain}
-h1{font-size:clamp(1.4rem,4.4vw,1.9rem);letter-spacing:-.03em;margin:0 0 6px;font-weight:900;text-align:center}
-.lede{color:var(--mute);margin:0 0 22px;text-align:center}
-
-label{display:block;font-size:.85rem;font-weight:700;margin:14px 0 5px}
-input,select{width:100%;padding:14px;border:2px solid var(--ink);border-radius:4px;
-  background:#07141E;color:var(--ink);font:inherit;font-size:1.05rem}
-input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(12,110,140,.15)}
-.btn{display:block;width:100%;padding:16px;border:2px solid var(--ink);border-radius:4px;
-  background:var(--ink);color:#fff;font:inherit;font-weight:800;font-size:1.02rem;
-  cursor:pointer;text-align:center;text-decoration:none;margin-top:16px}
-.btn.line{background:#07141E;color:var(--ink);margin-top:10px}
-.msg{margin-top:12px;font-weight:700;font-size:.92rem;min-height:1.2em;text-align:center}
-.msg.bad{color:var(--bad)}
-.msg.ok{color:var(--good)}
-
-.done .tick{font-size:2.6rem;text-align:center;line-height:1;margin-bottom:8px}
-.linkbox{border:2px solid var(--ink);border-radius:4px;background:var(--tint);
-  padding:14px;margin:16px 0 0;word-break:break-all;font-size:.86rem;
-  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-.how{border-left:4px solid var(--accent);background:var(--tint);padding:14px 16px;margin:20px 0 0}
-.how b{display:block;margin-bottom:4px}
-.how p{margin:0;font-size:.93rem;color:var(--mute)}
-.f-what{margin:7px 0 0;font-size:.74rem;line-height:1.5;opacity:.72;max-width:52ch;
-  margin-left:auto;margin-right:auto}
-
-
-/* ══════════════════════════════════════════════════════════════
-   EL LOOK NUEVO — crema, navy y naranja
-   18 de octubre de 2026
-
-   Esto reemplaza la capa que estaba aquí antes, "LA CANCHA DE
-   NOCHE", que pintaba la página oscura. Va al final a propósito y
-   funciona igual que la que sustituye: la geometría de arriba se
-   queda intacta y esto manda encima. No se tocó ni una regla de
-   tamaño, posición o espaciado — sólo color.
-
-   Las variables de la base se reapuntan a la paleta nueva, así que
-   todo lo que las usaba cambia solo. Lo que venía escrito a mano
-   en hexadecimal hay que nombrarlo, y está abajo.
-   ══════════════════════════════════════════════════════════════ */
 :root{
-  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
-  --cream:#faf8f4; --linea:#e7e6e2;
-  /* Y las que ya usaba esta página, apuntando a lo nuevo */
-  --ink:#1b2937; --mute:#617083; --line:#e7e6e2; --tint:#ffffff;
-  --accent:#ff7a18; --good:#0b7a5a; --bad:#b4231c;
-  --paper:#1b2937; --panel:#ffffff; --gold:#ff7a18; --leather:#ff7a18;
-  --ball:#ff7a18; --edge:#e7e6e2; --teal:#ff7a18;
-  --noche:#faf8f4; --cancha:#ffffff; --viva:#ff7a18; --brasa:#ff7a18;
-  --hueso:#1b2937; --humo:#617083;
+  --navy:#101c2a; --orange:#ff7a18; --cream:#faf8f4;
+  --ink:#1b2937; --muted:#617083; --linea:#e7e6e2;
 }
-html, body{background:var(--cream);color:var(--ink)}
-
-/* La cabecera y el pie son lo único oscuro, como en el resto del sitio. */
-header, footer, .top{background:var(--navy);border-color:#ffffff22}
-header{border-bottom:1px solid #ffffff22}
-footer{background:#0a1420;border-top:none;color:#aeb9c6}
-footer a{color:#aeb9c6}
-footer a:hover{color:var(--orange)}
-.mark{color:#fff}
-/* El em va en blanco a propósito: arriba vale #4FD3F0, que servía
-   para la marca de tres palabras de Cada Punto y pintaría CADA PUNTO CUENTA
-   de azul. */
-.mark em{color:#fff}
-.mark i{color:var(--orange)}
-.langb{border:1px solid #ffffff55;color:#fff;background:transparent;border-radius:7px}
-.langb:hover{color:var(--orange);border-color:var(--orange)}
-
-/* Cajas y paneles: blancos sobre crema, con su sombra suave. */
-.how, .linkbox, .s, .w, .tal, .num, .team, .pl, .caja, .chat, .card,
-.panel, .box, .waits, .pay, .cuadro, .m.me{
-  background:#fff;border-color:var(--linea);color:var(--ink);
-  box-shadow:0 8px 25px #17243806}
-.how p, .s span, .w span, .num span, .tal span, .help, .hint, .lede,
-.cp, .who, .sub, .nota{color:var(--mute)}
-
-/* Lo que se escribe. */
-input, select, textarea{
-  background:#fff;border:1px solid #d6d9d6;border-radius:10px;color:var(--ink)}
-input::placeholder, textarea::placeholder{color:#9aa6b2}
-input:focus, select:focus, textarea:focus{
-  border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,122,24,.18);outline:none}
-
-/* Los botones. Se dicen los dos colores a mano: cambiar sólo las
-   variables es como la capa vieja dejaba blanco sobre blanco. */
-.btn, button.btn, a.btn{
-  background:var(--navy);border:0;border-radius:9px;color:#fff;font-weight:800}
-.btn:hover{opacity:.92;background:var(--navy);color:#fff}
-.btn.line, .btn.ghost, .btn.sec{
-  background:transparent;border:1px solid var(--navy);color:var(--navy)}
-.btn.line:hover{background:var(--navy);color:#fff}
-.btn.go, .btn.hot, .btn.naranja{background:var(--orange);border:0;color:#111a24}
-.btn.go:hover{opacity:.92}
-[style*="#FF8A2B"], .btn[class*="go"]{color:#111a24}
-.btn:disabled{opacity:.5}
-
-hr, .sep, .div{border-color:var(--linea);background:var(--linea)}
-table, th, td{border-color:var(--linea)}
-
-/* Enlaces dentro del texto. Cada :not() suma fuerza, así que lo que
-   es un botón se excluye por nombre. */
-main a:not(.btn):not(.pedir):not(.cta):not(.wa):not(.go),
-.wrap a:not(.btn):not(.pedir):not(.cta):not(.wa):not(.go){color:var(--navy)}
-a.pedir{color:inherit}
-
-/* Lo que estaba escrito a mano con el navy viejo: ahora sería una
-   mancha oscura en una página clara. */
-[style*="background:#07141E"], [style*="background: #07141E"]{background:#fff !important}
-.ojo, .env-nota, .nota-ojo, .aviso, .warn, .tip{background:#fff !important;color:var(--ink)}
-.ttl, .env-nota b{color:var(--ink)}
-.cta{background:var(--orange) !important;border-color:var(--orange) !important;color:#111a24 !important}
-.cta:hover{opacity:.92}
-h1,h2,h3,h4{color:var(--ink)}
-
-/* ══ LA MARCA ══════════════════════════════════════════════════
-   CADA PUNTO CUENTA en versales sobre el navy, como en el resto del sitio.
-   El punto es lo único naranja. */
-.mark, .mark .wm{
-  color:#fff !important;text-decoration:none !important;
-  font-size:1.05rem !important;font-weight:900 !important;
-  letter-spacing:.07em !important;text-transform:uppercase;line-height:1.1}
-.mark em, .wm em{font-style:normal;color:#fff !important}
-.mark i,  .wm i {font-style:normal;color:var(--orange) !important}
-@media(max-width:380px){
-  .mark, .mark .wm{font-size:.92rem !important}
-}
-
-/* La fuente. La base pedía Archivo, que ya no se carga. */
-body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
-
-
-/* ══ La barra, el menú y el idioma ══════════════════════════════════
-   Puesto al final de la hoja a propósito: lo que haya escrito arriba
-   sobre header, .bar o .langb queda debajo de esto.
-
-   --barra tiene que ser la MISMA altura en los dos sitios donde se
-   usa: el hueco que deja scroll-padding para que un ancla no quede
-   detrás de la cabecera, y el punto donde arranca el panel. */
-:root{--barra:66px}
-html{scroll-padding-top:calc(var(--barra) + 10px)}
-/* overflow-x en el body y no sólo en html: en Safari de iOS, html
-   solo no lo sujeta y basta un elemento ancho para arrastrar la
-   página de lado. */
-body{overflow-x:hidden}
-header{position:sticky;top:0;z-index:100;
-  padding-top:env(safe-area-inset-top,0px)}
-header .bar{min-height:var(--barra);padding:0;gap:10px}
-/* El botón del idioma dice el idioma AL QUE lleva, no el que está
-   puesto. Por eso necesita sitio para una palabra y no para dos
-   letras, y nowrap para que «Español» no se parta en dos líneas. */
-.langb,#lang{white-space:nowrap;min-height:40px;font-size:.85rem;
-  padding:0 12px;border-radius:9px;font-family:inherit}
-.barra-dcha{display:flex;align-items:center;gap:8px;flex-shrink:0}
-
-/* Las rayas se pintan con currentColor, no con blanco: prometer.html
-   tiene la barra en crema con la marca en navy, y unas rayas
-   blancas ahí no se ven. Heredando el color de la barra valen para
-   las dos, y para la próxima página que cambie de fondo. Lo
-   encontró una captura, no la prueba: la prueba miraba que el botón
-   estuviera, no que se viera. */
-/* El color de las rayas sale de la barra, y la barra de estas
-   páginas no declaraba ninguno: heredaban la tinta del cuerpo
-   —navy sobre navy— y el botón se veía con 1.2:1 de contraste,
-   que es no verse. Barra navy, tinta blanca. */
-header{color:#fff}
-.hamb{display:none;width:44px;height:44px;flex:0 0 44px;color:inherit;
-  border:1px solid currentColor;background:transparent;border-radius:9px;
-  cursor:pointer;padding:0;align-items:center;justify-content:center}
-@supports (border-color: color-mix(in srgb, currentColor 45%, transparent)){
-  .hamb{border-color: color-mix(in srgb, currentColor 45%, transparent)}
-}
-.hamb:hover{border-color:var(--orange);color:var(--orange)}
-/* color:inherit en la propia raya y no sólo en el botón: privacy
-   y terms traen un `strong,b{color:var(--ink)}` para el texto, y
-   currentColor dentro de un <b> resuelve al color DEL <b>, no al
-   del padre. Las rayas salían navy sobre navy. */
-.hamb b{display:block;width:20px;height:2px;color:inherit;
-  background:currentColor;border-radius:2px;
-  position:relative;transition:background .18s ease}
-.hamb b::before,.hamb b::after{content:'';position:absolute;left:0;
-  width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform .18s ease}
-.hamb b::before{top:-6px}
-.hamb b::after{top:6px}
-.hamb[aria-expanded="true"] b{background:transparent}
-.hamb[aria-expanded="true"] b::before{transform:translateY(6px) rotate(45deg)}
-.hamb[aria-expanded="true"] b::after{transform:translateY(-6px) rotate(-45deg)}
-
-.menu{position:absolute;left:0;right:0;top:100%;
-  display:flex;flex-direction:column;align-items:stretch;
-  background:var(--navy);border-bottom:1px solid #ffffff22;
-  /* Cerrado con max-height para que tenga transición, y con
-     visibility para que el teclado no se meta dentro: max-height
-     sola deja los enlaces tabulables en un panel invisible. */
-  max-height:0;visibility:hidden;overflow:hidden;
-  transition:max-height .22s ease,visibility .22s}
-.menu.abierto{max-height:80vh;visibility:visible;overflow:auto}
-.menu a{display:flex;align-items:center;min-height:52px;
-  padding:0 max(20px,calc((100vw - 900px)/2 + 20px));
-  color:#fff;text-decoration:none;font-weight:600;font-size:1rem;
-  border-top:1px solid #ffffff14}
-.menu a:first-child{border-top:0}
-.menu a:hover{color:var(--orange)}
-.menu a.cta{margin:14px 20px 18px;justify-content:center;border-top:0;
-  background:var(--orange);color:#111a24;font-weight:800;border-radius:9px}
-.menu a.cta:hover{color:#111a24}
-/* Las rayas se ven siempre: estas páginas no tienen enlaces en la
-   barra en ningún tamaño, así que el menú es la única puerta y
-   esconderlo en escritorio dejaría la página sin salida otra vez. */
-.hamb{display:flex}
-@media(max-width:430px){
-:root{--barra:60px}
-.langb,#lang{padding:0 10px;font-size:.8rem}
-}
+*{box-sizing:border-box}
+html{background:var(--cream)}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  line-height:1.6;-webkit-text-size-adjust:100%}
+.wrap{width:min(620px,calc(100% - 40px));margin:0 auto}
+header{background:var(--navy);color:#fff;padding:16px 0}
+.mark{font-family:Archivo,sans-serif;font-weight:900;letter-spacing:.06em;font-size:.95rem}
+.mark span{color:var(--orange)}
+main{padding:44px 0 70px}
+.kick{color:var(--orange);font-size:.72rem;font-weight:800;letter-spacing:.16em;
+  text-transform:uppercase;margin:0 0 8px}
+h1{font-size:clamp(1.5rem,5vw,2rem);letter-spacing:-.03em;margin:0 0 14px;font-weight:900}
+p{margin:0 0 16px;max-width:52ch}
+.sub{color:var(--muted)}
+.caja{background:#fff;border:1px solid var(--linea);border-radius:16px;
+  padding:22px 24px;margin:26px 0;box-shadow:0 8px 25px #17243808}
+.caja h2{font-size:1rem;font-weight:800;margin:0 0 8px}
+.caja p{font-size:.95rem;margin:0 0 10px}
+.btn{display:inline-block;background:var(--orange);color:#111a24;font-weight:800;
+  border-radius:11px;padding:13px 22px;text-decoration:none;margin:4px 8px 4px 0}
+.btn.line{background:transparent;color:var(--ink);border:1px solid var(--linea)}
+footer{background:var(--navy);color:#9fb0c2;padding:20px 0;font-size:.85rem}
+footer a{color:#cfdae6}
+.lang{float:right;background:transparent;color:#fff;border:1px solid #ffffff44;
+  border-radius:8px;padding:5px 11px;font:inherit;font-size:.8rem;cursor:pointer}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="wrap bar">
-    <a class="mark" href="index.html"><em>CADA PUNTO CUENTA</em><i>.</i></a>
-    <nav class="menu" id="menu">
-      <a href="index.html" data-m="inicio">Home</a>
-      <a href="index.html#how" data-m="como">How it works</a>
-      <a href="index.html#precio" data-m="precio">What it costs</a>
-      <a href="ayuda.html" data-m="ayuda">Questions</a>
-      <a href="mi-equipo.html" data-m="mia">My team</a>
-      <a class="cta" href="equipo.html" data-m="alta">Sign up a team</a>
-    </nav>
-    <div class="barra-dcha">
-      <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
-      <button class="hamb" id="hamb" type="button" aria-controls="menu" aria-expanded="false"><b></b></button>
-    </div>
-  </div>
-</header>
+<header><div class="wrap">
+  <button class="lang" id="lang">English</button>
+  <span class="mark">CADA PUNTO CUENTA<span>.</span></span>
+</div></header>
 
-<main>
-  <div class="wrap" id="app"><p class="lede">…</p></div>
-</main>
+<main><div class="wrap">
+  <p class="kick" id="kick"></p>
+  <h1 id="h1"></h1>
+  <p class="sub" id="p1"></p>
 
-<footer>
-  <div class="wrap">
-    <p class="f-co">© 2026 Gostar Digital LLC · Puerto Rico</p>
-<p class="f-what" id="fWhat"></p>
-<script>
-/* Lo que somos, dicho donde se ve: una herramienta que se cobra, no
-   una obra benéfica. Lee el mismo idioma guardado que el resto del
-   sitio, así que no hace falta cablearlo a cada sistema de traducción. */
-(function(){
-  var l = 'es';
-  try{ l = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
-           localStorage.getItem('fc-lang') ||
-           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
-  var el = document.getElementById('fWhat');
-  if (el) el.textContent = (l === 'es')
-    ? 'Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
-    : 'Cada Punto Cuenta is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
-})();
-</script>
-    <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
+  <div class="caja">
+    <h2 id="h2a"></h2>
+    <p id="p2"></p>
+    <a class="btn" href="index.html" id="bInicio"></a>
   </div>
-</footer>
+
+  <div class="caja">
+    <h2 id="h2b"></h2>
+    <p id="p3"></p>
+    <a class="btn line" href="mi-equipo.html" id="bEquipo"></a>
+    <a class="btn line" href="equipo.html" id="bAlta"></a>
+  </div>
+</div></main>
+
+<footer><div class="wrap">
+  <a href="index.html">Cada Punto Cuenta</a> ·
+  <a href="ayuda.html" id="fAyuda">Ayuda</a> ·
+  <a href="custodia.html" id="fDinero">Dinero</a>
+</div></footer>
 
 <script>
-var SB_URL='https://sdaphocueugzfvjovuxd.supabase.co';
-var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
-
-function rpc(name, args){
-  return fetch(SB_URL + '/rest/v1/rpc/' + name, {
-    method:'POST',
-    headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY, 'Content-Type':'application/json' },
-    body: JSON.stringify(args || {})
-  }).then(function(r){
-    if (r.ok) return r.json();
-    /* El cuerpo de un error de PostgREST trae el porqué —message,
-       hint, details— y tirarlo era lo que convertía cada fallo en
-       una visita al editor de SQL: la página sabía exactamente qué
-       había pasado y enseñaba "no se pudo". Se lee antes de lanzar. */
-    return r.text().then(function(t){
-      var d = {}; try { d = JSON.parse(t) } catch(x){}
-      var e = new Error(d.message || d.hint || t || ('rpc ' + r.status));
-      e.detalle = d.details || d.hint || '';
-      e.codigo  = d.code || r.status;
-      throw e;
-    });
-  });
-
-/* El porqué, cuando lo hay. Un mensaje amable que no dice nada manda
-   a alguien a buscar en la base; el mismo mensaje con la razón
-   detrás se arregla solo. Se recorta: esto es una línea de aviso, no
-   un registro. */
-function porque(x){
-  if (!x) return '';
-  var r = (typeof x === 'string') ? x
-        : (x.why || x.error || x.message || x.hint || x.detalle || '');
-  return r ? ' — ' + String(r).slice(0, 160) : '';
-}
-}
-
 var S = {
-  es:{
-    h1:'Tu enlace de padrinos',
-    lede:'Pon tu nombre y tu categoría. Te damos un enlace para mandarle a tu familia — lo que prometan queda apuntado a tu nombre.',
-    nameL:'Tu nombre', namePh:'Nombre y apellido',
-    squadL:'Tu categoría o equipo', squadPh:'Mini, Juniors, Senior Silver…',
-    squadPick:'Escoge tu escuadra', squadOther:'Otra — la escribo yo',
-    go:'Dame mi enlace',
-    errName:'Escribe tu nombre completo.',
-    errGen:'No se pudo. Intenta otra vez.',
-    doneH:'Listo, {N}',
-    doneP:'Este es tu enlace. Mándaselo a tu familia por WhatsApp.',
-    cierra:'Se promete hasta el {D} — después se juega.',
-    noRetoH:'Tu nombre ya está, {N}',
-    noRetoP:'Todavía no hay día de juego abierto. En cuanto tu entrenador abra uno, aquí mismo sale tu enlace para mandárselo a tu familia — guarda esta página.',
-    cerradoH:'Ya cerraron las promesas, {N}',
-    cerradoP:'Tu juego ya empezó, así que no entran promesas nuevas. Las que te hicieron antes siguen en pie.',
-    backH:'Ya estabas en la lista, {N}',
-    waitH:'Apuntado, {N}',
-    waitP:'Falta que tu entrenador lo apruebe. En cuanto lo haga, este mismo enlace es el tuyo para mandárselo a tu familia — guárdalo.',
-    share:'Mandar por WhatsApp',
-    copy:'Copiar el enlace',
-    copied:'✓ Copiado',
-    seeBoard:'Ver el tablero del equipo',
-    howH:'Cómo funciona',
-    howP:'Quien abra tu enlace promete unos centavos por cada punto que anotes TÚ en tus cuatro sets. Promete antes de que empiece tu juego; cuando termina, sacamos la cuenta según lo que anotaste de verdad y tu padrino le paga al programa directo. Todo va al programa.',
-    /* Lo que hay que decirle a un nene ANTES de que mande el enlace.
-       Si no, se lo manda a treinta amigos, le prometen un montón de
-       centavos que nadie va a pagar, y el que se queda mal al cerrar
-       es él. Un padrino es un adulto que paga, no un nombre más. */
-    quienH:'A quién mandarlo',
-    quienP:'A los adultos que de verdad van a pagar después: mami, papi, abuela, tus tíos, los vecinos, el negocio de la esquina. Esto no es un concurso de a cuánta gente se lo mandas. Al final sólo cuenta lo que el programa cobra de verdad — veinte promesas que nadie paga no suman nada, y dos que sí, sí.',
-    noCampH:'Te falta el enlace de tu equipo',
-    noCampP:'Esta página te da tu propio enlace de padrinos, pero tiene que venir del enlace que manda tu coach al grupo del equipo. Pídeselo.',
-    backHome:'← Volver',
-    msg:'¡Apóyame en Cada Punto Cuenta! Prometes unos centavos por cada punto que yo anote, y le pagas al programa directo después del juego.'
-  },
-  en:{
-    h1:'Your padrino link',
-    lede:'Put your name and your squad. We give you a link to send your family — whatever they pledge is credited to you.',
-    nameL:'Your name', namePh:'First and last name',
-    squadL:'Your squad or category', squadPh:'Mini, Juniors, Senior Silver…',
-    squadPick:'Pick your squad', squadOther:'Other \u2014 let me type it',
-    go:'Give me my link',
-    errName:'Write your full name.',
-    errGen:'That did not work. Try again.',
-    doneH:'Done, {N}',
-    doneP:'This is your link. Send it to your family on WhatsApp.',
-    cierra:'Pledging is open until {D} — then you play.',
-    noRetoH:'You\u2019re on the roster, {N}',
-    noRetoP:'No game day is open yet. The moment your coach opens one, your link shows up right here to send your family \u2014 keep this page.',
-    cerradoH:'Pledging has closed, {N}',
-    cerradoP:'Your game has started, so no new pledges can come in. The ones already made still stand.',
-    backH:'You were already on the roster, {N}',
-    waitH:'Signed up, {N}',
-    waitP:'Your coach has to approve it. As soon as he does, this same link is yours to send your family \u2014 keep it.',
-    share:'Send on WhatsApp',
-    copy:'Copy the link',
-    copied:'✓ Copied',
-    seeBoard:'See the team board',
-    howH:'How it works',
-    howP:'Whoever opens your link pledges a few cents for every point YOU score across your four sets. They pledge before your game starts; when it ends we work out what their pledge comes to on what you actually scored, and they pay the program directly. All of it goes to the program.',
-    quienH:'Who to send it to',
-    quienP:'The adults who will actually pay afterwards: mom, dad, grandma, your aunts and uncles, the neighbours, the shop on the corner. This is not a contest to see how many people you send it to. In the end only what the program actually collects counts — twenty pledges nobody pays add up to nothing, and two that do add up.',
-    noCampH:'You need your team\u2019s link',
-    noCampP:'This page gives you your own padrino link, but it has to come from the link your coach sends to the team group. Ask them for it.',
-    backHome:'← Back',
-    msg:'Back me in Cada Punto Cuenta! You pledge a few cents for every point I score, and you pay the program directly after the game.'
-  }
+ es:{
+  kick:'Esta página cambió',
+  h1:'Ahora se promete por juego, no por jugador',
+  p1:'Antes cada jugador tenía su propio enlace y sus padrinos prometían por sus puntos. Eso se retiró. Hoy se promete por los puntos que anota el EQUIPO en un juego, y el enlace de ese juego es el mismo para todas las familias.',
+  h2a:'¿Vas a prometer?',
+  p2:'Pídele al entrenador el enlace del próximo juego. Es un enlace por juego: lo abres, escoges cuántos centavos por punto, y ya está. No hace falta cuenta ni se cobra nada ahí.',
+  bInicio:'Cómo funciona',
+  h2b:'¿Eres el entrenador?',
+  p3:'Tus juegos y sus enlaces están en tu página. Si tu programa todavía no está dado de alta, se hace en un minuto.',
+  bEquipo:'Mis juegos',
+  bAlta:'Inscribir mi programa',
+  lang:'English', fAyuda:'Ayuda', fDinero:'Dinero'
+ },
+ en:{
+  kick:'This page has changed',
+  h1:'Pledging is by the game now, not by the player',
+  p1:'Each player used to have their own link and their padrinos pledged on that player’s points. That is retired. Today you pledge on the points the TEAM scores in a game, and that game’s link is the same one for every family.',
+  h2a:'Here to pledge?',
+  p2:'Ask the coach for the next game’s link. It is one link per game: open it, pick how many cents a point, and that is it. No account, and nothing is charged there.',
+  bInicio:'How it works',
+  h2b:'Are you the coach?',
+  p3:'Your games and their links are on your own page. If your program is not signed up yet, it takes a minute.',
+  bEquipo:'My games',
+  bAlta:'Sign up my program',
+  lang:'Español', fAyuda:'Help', fDinero:'The money'
+ }
 };
 
 var LANG='es';
-try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') || localStorage.getItem('fc-lang') ||
-  ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
-
-function T(k,v){
-  var s = (S[LANG] && S[LANG][k]) || S.es[k] || '';
-  if (v) Object.keys(v).forEach(function(x){ s = s.split('{'+x+'}').join(v[x]); });
-  return s;
-}
-function toggleLang(){
-  LANG = LANG==='es' ? 'en':'es';
-  try{ localStorage.setItem('cfh_lang', LANG), localStorage.setItem('cp-lang', LANG), localStorage.setItem('fc-lang', LANG); }catch(e){}
-  document.getElementById('langBtn').textContent = LANG==='es' ? 'English':'Español';
-  draw();
-}
-
-var PARAMS = new URLSearchParams(location.search);
-var CAMPAIGN = PARAMS.get('c');
-var WANT_SQUAD = PARAMS.get('d') || null;   // la categoría del juego que tocó
-var BOARD = null, ME = null;
-/* El reto al que se le puede prometer ahora mismo, que lo dice el
-   servidor. Null hasta que contesta. */
-var RETO = null;
-/* Los nombres de escuadra que ya existen en la campaña. Antes esto
-   salía sólo de las notas de los juegos, así que un programa recién
-   montado — sin juegos todavía — no ofrecía ninguna y cada familia
-   escribía la suya. De ahí salen "Mini", "mini" y "MINI" como tres
-   escuadras distintas. */
-var SQUADS = [];
-var app = document.getElementById('app');
-
-function esc(s){
-  return String(s==null?'':s).replace(/[&<>"\']/g, function(m){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
-  });
-}
-
-// Las escuadras que de verdad existen en el calendario, sacadas de
-// la nota de cada juego igual que en el tablero.
-function divs(){
-  var out = [];
-  function add(d){
-    d = String(d || '').trim();
-    if (!d) return;
-    for (var i = 0; i < out.length; i++){
-      if (out[i].toLowerCase() === d.toLowerCase()) return;
-    }
-    out.push(d);
-  }
-  SQUADS.forEach(add);
-  if (BOARD && BOARD.games){
-    BOARD.games.forEach(function(g){
-      if (g.status === 'cancelled') return;
-      add(String(g.note || '').split('·')[0]);
-    });
-  }
-  return out;
-}
-
-// Los dos idiomas en el mismo mensaje: el español primero, porque
-// es donde está el equipo, y el inglés para la familia de afuera.
-function bothLangs(){
-  return S.es.msg + '\n\n' + S.en.msg;
-}
-
-/* La carpeta donde vive esta página, con su barra al final.
-
-   Hace falta porque el enlace del padrino se arma entero —se manda
-   por WhatsApp, así que no puede ser relativo— y antes se armaba con
-   location.origin + '/prometer.html', o sea desde la raíz del
-   dominio.
-
-   Eso funciona mientras el sitio esté en la raíz. Servido en una
-   carpeta (cadapunto.com/anotathon/) el enlace apuntaría a
-   cadapunto.com/prometer.html, que EXISTE: es la copia vieja del
-   otro producto. No daría 404 — cargaría otra página parecida y
-   medio funcionaría, que se nota mucho más tarde y mucho peor.
-
-   Con la carpeta de la página actual sirve en los dos sitios. */
-function base(){
-  return location.origin + location.pathname.replace(/[^/]*$/, '');
-}
-
-/* El enlace del padrino.
-   Antes era scoreboard.html con la CAMPAÑA dentro: el padrino escogía
-   un juego del calendario y prometía por los puntos del equipo. Ya no
-   hay calendario — hay un reto con su ventana, y se promete por los
-   puntos de ESTE nene. Así que lleva el RETO, no la campaña, y el reto
-   hay que preguntárselo al servidor porque una campaña tiene varios a
-   lo largo del año.
-
-   Devuelve null cuando no hay ninguno al que prometer. Eso importa:
-   armado a ciegas, el enlace saldría con "undefined" dentro y el nene
-   lo repartiría igual. */
-function myLink(){
-  if (!RETO || !RETO.hay || !RETO.open) return null;
-  return base() + 'prometer.html?c=' + RETO.challenge_id + '&p=' + ME.id;
-}
-
-/* La fecha en palabras. Sin punto al final a propósito: el español
-   acaba la hora en "p. m." y la frase que la usa lleva un guión
-   después, no otro punto. */
-function cuando(iso){
-  try {
-    var d = new Date(iso);
-    var loc = LANG === 'es' ? 'es-PR' : 'en-US';
-    return d.toLocaleDateString(loc, { weekday:'long', day:'numeric', month:'long' }) +
-           ' · ' + d.toLocaleTimeString(loc, { hour:'numeric', minute:'2-digit' });
-  } catch(e){ return '' }
-}
-
-function draw(){
-  if (!CAMPAIGN){
-    app.innerHTML =
-      '<h1>' + T('noCampH') + '</h1>' +
-      '<p class="lede">' + T('noCampP') + '</p>' +
-        '<div class="how"><b>' + T('howH') + '</b><p>' + T('howP') + '</p></div>' +
-      '<a class="btn line" href="index.html">' + T('backHome') + '</a>';
-    return;
-  }
-
-  var crest = (BOARD && BOARD.logo)
-    ? '<img class="crest" src="' + esc(BOARD.logo) + '" alt="" onerror="this.style.display=\'none\'">'
-    : '';
-  var team = (BOARD && BOARD.campaign) ? '<p class="lede" style="margin-bottom:6px">' + esc(BOARD.campaign) + '</p>' : '';
-
-  if (ME){
-    var link = myLink();
-
-    /* Sin enlace no se enseña un enlace. Son dos casos distintos y el
-       nene necesita saber cuál: todavía no hay día de juego, o ya
-       empezó y las promesas cerraron. Una página que no los distingue
-       lo manda a pedir promesas que nadie puede hacer. */
-    if (!link){
-      var yaAbrio = !!(RETO && RETO.hay);
-      app.innerHTML =
-        crest + team +
-        '<div class="done">' +
-          '<div class="tick">\u2026</div>' +
-          '<h1>' + T(yaAbrio ? 'cerradoH' : 'noRetoH', { N: esc(ME.name) }) + '</h1>' +
-          '<p class="lede">' + T(yaAbrio ? 'cerradoP' : 'noRetoP') + '</p>' +
-        '<div class="how"><b>' + T('howH') + '</b><p>' + T('howP') + '</p></div>' +
-        '</div>';
-      return;
-    }
-
-    app.innerHTML =
-      crest + team +
-      '<div class="done">' +
-        '<div class="tick">' + (ME.waiting ? '\u2026' : '\u2713') + '</div>' +
-        '<h1>' + T(ME.waiting ? 'waitH' : ME.existing ? 'backH' : 'doneH',
-                   { N: esc(ME.name) }) + '</h1>' +
-        '<p class="lede">' + T(ME.waiting ? 'waitP' : 'doneP') + '</p>' +
-        '<div class="linkbox">' + esc(link) + '</div>' +
-        '<a class="btn" href="https://wa.me/?text=' +
-          encodeURIComponent(bothLangs() + '\n\n' + link) + '">' + T('share') + '</a>' +
-        '<button class="btn line" onclick="copyLink()">' + T('copy') + '</button>' +
-        /* La hora de cierre, porque es lo que decide si vale la pena
-           mandarlo hoy o no. */
-        '<p class="lede" style="margin:14px 0 0">' +
-          esc(T('cierra', { D: cuando(RETO.opens_at) })) + '</p>' +
-        '<p class="msg" id="msg"></p>' +
-        '<div class="how"><b>' + T('quienH') + '</b><p>' + T('quienP') + '</p></div>' +
-        '<div class="how"><b>' + T('howH') + '</b><p>' + T('howP') + '</p></div>' +
-      '</div>';
-    return;
-  }
-
-  app.innerHTML =
-    crest + team +
-    '<h1>' + T('h1') + '</h1>' +
-    '<p class="lede">' + T('lede') + '</p>' +
-    '<label for="nm">' + T('nameL') + '</label>' +
-    '<input id="nm" type="text" maxlength="60" placeholder="' + T('namePh') + '" autocomplete="name">' +
-    /* La escuadra sólo se pregunta si el programa tiene escuadras: ahí
-       es un toque en una lista y la familia sabe cuál es. Cuando no
-       las hay, antes salía un cuadro en blanco pidiendo que se la
-       inventaran — una pregunta que un papá no puede contestar y que
-       frena el único paso que hay. Si no hay lista, no se pregunta:
-       el entrenador la pone después si hace falta.
-       join() ya aguanta que el campo no exista. */
-    (divs().length
-      ? '<label for="sq">' + T('squadL') + '</label>' +
-        '<select id="sq" onchange="otra()">' +
-          '<option value="">' + T('squadPick') + '</option>' +
-          divs().map(function(d){
-            var on = WANT_SQUAD && d.toLowerCase() === WANT_SQUAD.trim().toLowerCase();
-            return '<option value="' + esc(d) + '"' + (on ? ' selected' : '') + '>' +
-                   esc(d) + '</option>';
-          }).join('') +
-          '<option value="__otra">' + T('squadOther') + '</option>' +
-        '</select>' +
-        '<input id="sqx" type="text" maxlength="30" style="display:none;margin-top:8px" ' +
-          'placeholder="' + T('squadPh') + '">'
-      : '') +
-    '<button class="btn" onclick="join()">' + T('go') + '</button>' +
-    '<p class="msg" id="msg"></p>';
-}
-
-function say(t,c){
-  var el = document.getElementById('msg');
-  if (el){ el.textContent = t; el.className = 'msg ' + (c||''); }
-}
-
-function join(){
-  var name = (document.getElementById('nm').value || '').trim();
-  var sel = document.getElementById('sq');
-  var squad = ((sel && sel.value) || '').trim();
-  if (squad === '__otra'){
-    var x = document.getElementById('sqx');
-    squad = ((x && x.value) || '').trim();
-  }
-  if (name.length < 2) return say(T('errName'), 'bad');
-
-  say('…');
-  rpc('join_roster', { p_campaign: CAMPAIGN, p_name: name, p_squad: squad })
-    .then(function(r){
-      if (!r || !r.ok) return say(T('errGen') + porque(r), 'bad');
-      ME = r;
-      ME.squad = squad;          // para que su enlace filtre por ella
-      try { localStorage.setItem('cp-me-' + CAMPAIGN, JSON.stringify(ME)); } catch(e){}
-      draw();
-    })
-    .catch(function(e){ console.error(e); say(T('errGen') + porque(e), 'bad'); });
-}
-
-/* "Otra" enseña el cuadrito para escribirla. Hace falta: un programa
-   que monta una escuadra nueva a mitad de temporada no puede quedarse
-   fuera por no estar en la lista. */
-function otra(){
-  var sel = document.getElementById('sq'), x = document.getElementById('sqx');
-  if (!sel || !x) return;
-  var on = sel.value === '__otra';
-  x.style.display = on ? 'block' : 'none';
-  if (on) x.focus();
-}
-
-function copyLink(){
-  var link = myLink();
-  if (!link) return;
-  if (navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(link).then(function(){ say(T('copied'), 'ok'); })
-      .catch(function(){ say(link); });
-    return;
-  }
-  say(link);
-}
-
-// Si ya se añadió en este teléfono, no hace falta otra vez.
-//
-// Pero lo guardado dice cómo estaba el día que se apuntó, no cómo está
-// hoy. Si se guarda "esperando" y nunca se vuelve a mirar, el papá ve
-// "falta que tu entrenador lo apruebe" para siempre — también después
-// de que el entrenador lo aprobó. Así que al abrir se pregunta.
-try {
-  var saved = JSON.parse(localStorage.getItem('cp-me-' + CAMPAIGN) || 'null');
-  if (saved && saved.id) { ME = saved; ME.existing = true; }
-} catch(e){}
-
-function refrescar(){
-  if (!ME || !ME.id) return;
-  rpc('player_state', { p_id: ME.id })
-    .then(function(r){
-      if (!r || !r.ok){
-        // Lo rechazaron, o ya no está. Que vuelva a empezar.
-        ME = null;
-        try { localStorage.removeItem('cp-me-' + CAMPAIGN); } catch(e){}
-        draw();
-        return;
-      }
-      ME.name    = r.name || ME.name;
-      ME.waiting = (r.state === 'pending');
-      try { localStorage.setItem('cp-me-' + CAMPAIGN, JSON.stringify(ME)); } catch(e){}
-      draw();
-    })
-    .catch(function(){ /* sin red se queda con lo guardado */ });
-}
-refrescar();
-
-document.getElementById('langBtn').textContent = LANG==='es' ? 'English':'Español';
-
-if (CAMPAIGN){
-  rpc('campaign_squads', { p_campaign: CAMPAIGN })
-    .then(function(r){ SQUADS = Array.isArray(r) ? r : []; })
-    .catch(function(){ SQUADS = []; })
-    .then(function(){ return rpc('game_board', { p_campaign: CAMPAIGN }); })
-    .then(function(b){ BOARD = b; return rpc('cp_reto_vivo', { p_campaign: CAMPAIGN }); })
-    /* Que falle esto no deja al nene sin página: se queda sin enlace,
-       que es exactamente lo que hay que enseñar cuando no se sabe. */
-    .then(function(r){ RETO = (r && r.ok) ? r : null; draw(); })
-    .catch(function(e){ console.error(e); draw(); });
-} else {
-  draw();
-}
-</script>
-<script>
-/* El <html lang> no se tocaba en esta página: un lector de
-   pantalla leía el español con fonemas ingleses. */
-(function(){ try{
-  var k = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang')
-        || localStorage.getItem('fc-lang');
-  if (k) document.documentElement.lang = k;
-}catch(e){} })();
-</script>
-
-<script>
-/* ══ El menú de la barra ════════════════════════════════════════════
-   Vive aparte del sistema de idioma de cada página a propósito: son
-   doce páginas con cuatro formas distintas de pintar sus textos, y
-   engancharse a cada una sería cuatro maneras de romperse. Esto lee
-   el idioma de donde lo deja todo el mundo —localStorage— y pinta
-   sus seis enlaces y nada más. */
-(function(){
-var ROTULOS = {
-  en: { inicio:'Home', como:'How it works', precio:'What it costs',
-        ayuda:'Questions', mia:'My program', alta:'Sign up a program',
-        menu:'Menu', otro:'Español', aOtro:'Cambiar a español' },
-  es: { inicio:'Inicio', como:'Cómo funciona', precio:'Cuánto cuesta',
-        ayuda:'Preguntas', mia:'Mi programa', alta:'Registra un programa',
-        menu:'Menú', otro:'English', aOtro:'Switch to English' }
-};
-function idioma(){
-  try{
-    return localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
-           localStorage.getItem('fc-lang') ||
-           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en');
-  }catch(e){ return 'es' }
-}
-var b = document.getElementById('hamb'),
-    m = document.getElementById('menu'),
-    l = document.getElementById('langBtn') || document.getElementById('lang');
-if (!b || !m) return;
+try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+            localStorage.getItem('fc-lang') ||
+            ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
 
 function pintar(){
-  var t = ROTULOS[idioma()] || ROTULOS.es;
-  m.querySelectorAll('[data-m]').forEach(function(a){
-    a.textContent = t[a.getAttribute('data-m')] || a.textContent;
+  var T = S[LANG] || S.es;
+  document.documentElement.lang = LANG;
+  ['kick','h1','p1','h2a','p2','bInicio','h2b','p3','bEquipo','bAlta',
+   'fAyuda','fDinero'].forEach(function(k){
+    var e = document.getElementById(k);
+    if (e) e.textContent = T[k];
   });
-  b.setAttribute('aria-label', t.menu);
-  /* El botón del idioma lo pinta la propia página, cada una a su
-     manera. Aquí sólo se corrige si se quedó con las dos letras
-     viejas, para que ninguna página diga «EN» mientras las demás
-     dicen «English». */
-  if (l && /^(EN|ES)$/.test((l.textContent||'').trim())) {
-    l.textContent = t.otro;
-    l.setAttribute('aria-label', t.aOtro);
-  }
+  document.getElementById('lang').textContent = T.lang;
 }
-function pon(abierto){
-  m.classList.toggle('abierto', abierto);
-  b.setAttribute('aria-expanded', abierto ? 'true' : 'false');
-}
-b.addEventListener('click', function(){
-  pon(b.getAttribute('aria-expanded') !== 'true');
-});
-m.addEventListener('click', function(e){ if (e.target.closest('a')) pon(false) });
-document.addEventListener('keydown', function(e){
-  if (e.key === 'Escape' && b.getAttribute('aria-expanded') === 'true') {
-    pon(false); b.focus();
-  }
-});
-/* Al pulsar el idioma, la página repinta lo suyo; el menú repinta
-   lo suyo detrás, con un turno de espera para que el valor nuevo ya
-   esté guardado cuando se lea. */
-if (l) l.addEventListener('click', function(){ setTimeout(pintar, 0) });
+
+document.getElementById('lang').onclick = function(){
+  LANG = LANG === 'es' ? 'en' : 'es';
+  try{ localStorage.setItem('cfh_lang',LANG); localStorage.setItem('cp-lang',LANG);
+       localStorage.setItem('fc-lang',LANG); }catch(e){}
+  pintar();
+};
+
 pintar();
-})();
 </script>
 </body>
 </html>
