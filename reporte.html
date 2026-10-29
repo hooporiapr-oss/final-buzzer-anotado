@@ -376,7 +376,8 @@ var S={
        debe y no se enteró. Son problemas muy distintos y el segundo
        lo arregla una llamada. */
     eBajo:'bajo el mínimo de {P} — no se le pide nada',
-    eCorregido:'corregido: se le dijo {V}',
+    eCorregido:'pendiente de corregir: se le dijo {V}',
+    eCorregidoYa:'corregido · esta cifra es la buena',
     eSinAvisar:'sin avisar todavía',
     eAvisado:'avisado',
     eMuerto:'no se le pudo avisar',
@@ -443,7 +444,8 @@ var S={
     totalFila:'Total pledged',
 
     eBajo:'under the {P} minimum — nothing is asked of him',
-    eCorregido:'corrected: he was told {V}',
+    eCorregido:'correction pending: he was told {V}',
+    eCorregidoYa:'corrected · this figure is the right one',
     eSinAvisar:'not notified yet',
     eAvisado:'notified',
     eMuerto:'could not be notified',
@@ -670,8 +672,12 @@ function pintar(){
              (p.fallo?' · '+esc(String(p.fallo).slice(0,60)):'')+'</small>';
     if (p.bajo_minimo)
       return '<small>'+esc(T('eBajo'))+'</small>';
+    /* Con cifra vieja: hay una diferencia que contar. Sin ella: ya
+       se corrigió y cuadra, que es una noticia distinta. */
     if (p.corregido)
-      return '<small class="ojo">'+esc(T('eCorregido',{V:money(p.dijimos)}))+'</small>';
+      return '<small class="ojo">'+esc(p.dijimos != null
+        ? T('eCorregido',{V:money(p.dijimos)})
+        : T('eCorregidoYa'))+'</small>';
     if (!p.avisado)
       return '<small class="ojo">'+esc(T('eSinAvisar'))+'</small>';
     return '<small>'+esc(T('eAvisado'))+'</small>';
@@ -863,7 +869,9 @@ function bajarCSV(){
   (r.pledges||[]).forEach(function(p){
     var est = p.no_entregable ? T('eMuerto')
             : p.bajo_minimo   ? T('eBajo')
-            : p.corregido     ? T('eCorregido',{V:money(p.dijimos)})
+            : p.corregido     ? (p.dijimos != null
+                                  ? T('eCorregido',{V:money(p.dijimos)})
+                                  : T('eCorregidoYa'))
             : !p.avisado      ? T('eSinAvisar')
             : T('eAvisado');
     filas.push([p.padrino,p.correo,
