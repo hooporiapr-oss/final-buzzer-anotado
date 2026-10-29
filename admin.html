@@ -1208,10 +1208,17 @@ function decidir(fn, id, boton){
 }
 
 function cargarCampanas(){
-  /* Sólo las de Cada Punto Cuenta. Este admin no sabe nada de Cada Punto y es
-     a propósito: las campañas del otro producto no se enseñan aquí
-     ni por error. */
-  rest('campaigns?product=eq.anotado&select=*&order=created_at.desc')
+  /* SÓLO LAS DE CADA PUNTO CUENTA, que son las que se llaman
+     'cada-punto'.
+     Esto filtraba por 'anotado' —Hooporia, el otro producto que
+     comparte esta base— mientras bw_approve_request crea las suyas
+     como 'cada-punto'. Resultado: se aprueba un programa, la campaña
+     se crea de verdad, y el desplegable sigue vacío. Sin un solo
+     error por ningún lado, que es la firma de todo lo que ha salido
+     hoy: el valor cambió con el producto y el filtro se quedó donde
+     estaba. El comentario que había aquí decía las dos cosas a la vez
+     y ninguna coincidía con el código. */
+  rest('campaigns?product=eq.cada-punto&select=*&order=created_at.desc')
     .then(function(rows){
       CAMPS = rows || [];
       var s = $('camp');
@@ -1517,7 +1524,10 @@ $('crearCamp').onclick = function(){
 
   var pago = ($('nPago').value || '').trim();
   rest('campaigns', { method:'POST', body:{
-        name: nombre, product: 'anotado', slug: slug,
+        /* Y la que se crea a mano, del mismo producto que las que
+           crea la aprobación. Con 'anotado' nacía invisible en su
+           propio panel. */
+        name: nombre, product: 'cada-punto', slug: slug,
         /* Empty stays null and the notice falls back to "write to the
            coach", which is what it said before this field existed. */
         pay_how: pago || null,
@@ -1571,7 +1581,7 @@ $('crearCamp').onclick = function(){
       $('nNombre').value = ''; $('nQuien').value = ''; $('nCorreo').value = '';
       $('nueva').classList.add('oculto');
       di('mCamp', 'Created.', 'ok');
-      return rest('campaigns?product=eq.anotado&select=*&order=created_at.desc')
+      return rest('campaigns?product=eq.cada-punto&select=*&order=created_at.desc')
         .then(function(rows){ CAMPS = rows || [];
           $('camp').innerHTML = CAMPS.map(function(x){
             return '<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>' }).join('');
