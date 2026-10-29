@@ -889,8 +889,14 @@ button.lang{padding:0 10px;font-size:.8rem}
   no les cobramos nada.</li>
 <li data-i="pf4">Si no se paga, esa licencia caduca y sus datos de promesas se retiran de
   la plataforma. No lo reclamamos más allá de ahí.</li>
-<li data-i="pf5">Tampoco se mueve con tu plantilla. Un programa empieza con cinco juegos
-  activados y añade los que quiera: no hay tope.</li>
+<!-- EL MÍNIMO DE CINCO JUEGOS SE RETIRÓ el 28 de octubre de 2026. No
+     era sólo una frase: era un número que le pedía al entrenador un
+     compromiso de temporada antes de haber visto funcionar un solo
+     juego — y chocaba de frente con lo que la página dice ahora.
+     Estaba también en ayuda.html, en custodia.html y en la casilla
+     de consentimiento de equipo.html; se retiró de las cuatro. -->
+<li data-i="pf5">Tampoco se mueve con tu plantilla, y no hay mínimo. <b>Con un juego
+  basta</b>, y cada juego de más es otra oportunidad.</li>
 </ul>
 
 <p class="priceCta"><a class="button" href="equipo.html" data-i="register">Inscribir mi equipo</a></p>
@@ -966,7 +972,10 @@ const TARIFAS = [
   { hasta: null, precio: null }      // más de 200: se habla
 ];
 const FEE = { suelo: 5, tope: 79, desdeTope: 200 };
-const MINIMO = 5;      // juegos que un programa activa al inscribirse
+/* MINIMO se retiró el 28 de octubre de 2026 junto con el mínimo de
+   cinco juegos. Con él se va {M}, que era su hueco: ya no hay ningún
+   número de juegos que un programa tenga que activar. Con un juego
+   basta, y cada juego de más es otra oportunidad. */
 
 /* ══════════════════════════════════════════════════════════════════
    LA TRADUCCIÓN AL INGLÉS
@@ -1094,7 +1103,7 @@ pf1:'Nothing up front. Signing up is free and running it is free.',
 pf2:'Invoiced for the games that carried pledges, due within seven days.',
 pf3:'Not a percentage of anything. It does not come out of any pledge, and your padrinos are charged nothing.',
 pf4:'If it is not paid, that licence lapses and its pledge data comes off the platform. We do not chase it any further.',
-pf5:'It does not move with your roster either. A program starts with five games switched on and adds as many more as it wants: there is no cap.',
+pf5:'It does not move with your roster either, and there is no minimum. <b>One game is enough</b>, and every additional game is another opportunity.',
 register:'Sign up my team',
 
 zEye:'Make your next game count',
@@ -1149,8 +1158,7 @@ spanish.escHablar = 'Hablemos';
 function conPrecio(s){
   return String(s).split('{P}').join(FEE.suelo)
                   .split('{T}').join(FEE.tope)
-                  .split('{V}').join(FEE.desdeTope)
-                  .split('{M}').join(MINIMO);
+                  .split('{V}').join(FEE.desdeTope);
 }
 Object.keys(spanish).forEach(k=>{ spanish[k]=conPrecio(spanish[k]) });
 Object.keys(translations.en).forEach(k=>{ translations.en[k]=conPrecio(translations.en[k]) });
