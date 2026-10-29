@@ -20,6 +20,9 @@
 <meta property="og:image:alt" content="Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21">
 <meta name="twitter:card" content="summary_large_image">
 <style>
+/* El aviso del mínimo. Naranja y no rojo: no es un error, es algo que
+   conviene saber antes de escoger. */
+.cuenta .ojo{color:#8a4b00}
 /* ══════════════════════════════════════════════════════════════════
    LA PÁGINA DEL PADRINO
 
@@ -102,7 +105,7 @@ button.enviar{width:100%;background:var(--gold);color:#0B1724;border:0;border-ra
   font:inherit;font-weight:900;font-size:1.05rem;padding:16px;cursor:pointer;
   box-shadow:0 8px 22px rgba(0,0,0,.38)}
 button.enviar:disabled{opacity:.5;cursor:default;box-shadow:none}
-.aviso{margin:16px 0 0;font-size:.82rem;color:var(--mute)}
+.aviso{margin:16px 0 0;font-size:.82rem;color:var(--mute);padding:14px 16px}
 .estado{margin:16px 0 0;font-weight:800;font-size:.95rem;min-height:1.3em}
 .estado.mal{color:#FF5A4A}
 .estado.bien{color:var(--green)}
@@ -326,6 +329,7 @@ header{color:#101c2a}
     <p class="prog" id="programa"></p>
     <p class="trato" id="trato"></p>
     <p class="cuando" id="cuando"></p>
+    <p class="cuando" id="yaVan"></p>
 
     <div class="caja" id="caja" hidden></div>
 
@@ -388,68 +392,84 @@ var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 
 var S={
  es:{
-  kick:'Te invitó a ser su padrino',
-  trato:'Juega cuatro sets de cinco minutos. Cada set vale su mejor tirada, y los cuatro se suman. Tú prometes unos centavos por cada punto de ese total.',
-  cuandoAbre:'El juego es el {F}. Las promesas cierran cuando empieza.',
+  kick:'Promete por punto',
+  trato:'Prometes unos centavos por cada punto que anote el equipo en este juego. Ganen o pierdan, cada punto cuenta.',
+  cuandoAbre:'El juego es el {F}. Las promesas cierran cuando se publica el marcador.',
   cuandoSin:'Todavía no hay fecha. Puedes prometer desde ahora.',
   lTarifa:'¿Cuánto por punto?',
-  ayudaTarifa:'Un juego fuerte anda por los 150 puntos.',
+  ayudaTarifa:'Un equipo juvenil anda por los {P} puntos en un juego.',
   lTope:'Tope (opcional)',
-  ayudaTope:'Tu promesa nunca sale por encima de esto, anote lo que anote. Mínimo $5.',
+  ayudaTope:'Tu promesa nunca sale por encima de esto, anoten lo que anoten. Mínimo $5.',
   lNom:'Tu nombre',
   lMail:'Tu correo',
-  ayudaMail:'Para que el programa sepa cómo buscarte después del juego. Nada más.',
+  ayudaMail:'Para mandarte el marcador final y lo que dio tu promesa. Nada más.',
   enviar:'Prometer',
-  cuenta:'Si anota <b>{P} puntos</b>, tu promesa sería de <span class="tot">{A}</span> para el programa.',
+  cuenta:'Si anotan <b>{P} puntos</b>, tu promesa sería de <span class="tot">{A}</span> para el programa.',
   cuentaTope:'Con tu tope de {C}, nunca más de <span class="tot">{M}</span>.',
-  aviso:'No se cobra nada ahora, ni aquí después. Al cerrar el juego te llega un aviso con el marcador y lo que dio tu promesa — sin enlace de pago — y le pagas directo al programa. Si el total sale por debajo de $5, la promesa se cierra y no se debe nada.',
+  /* El piso, dicho CUANDO pasa y no sólo en la letra pequeña. Con
+     tarifas bajas y un juego flojo se cruza de verdad, y es mejor que
+     el padrino lo sepa mientras escoge que cuando le llegue el correo
+     diciendo que no debe nada. */
+  cuentaPiso:'Ojo: a esa tarifa harían falta {N} puntos para llegar al mínimo de $5. Por debajo, la promesa se cierra y no se debe nada.',
+  aviso:'No se cobra nada ahora, ni aquí después. Al publicarse el marcador te llega un aviso con el resultado y lo que dio tu promesa — sin enlace de pago — y le pagas directo al programa. Si el total sale por debajo de $5, la promesa se cierra y no se debe nada.',
   mandando:'Mandando…',
   malNom:'Escribe tu nombre.',
   malMail:'Revisa el correo.',
   malTope:'El tope mínimo es $5.',
+  malTarifa:'Esa tarifa es demasiado alta. Revisa que no se haya colado un cero.',
   malRed:'No se pudo. Revisa la conexión y vuelve a intentar.',
   cerrada:'Las promesas ya cerraron',
-  cerradaP:'El juego ya empezó, así que esta promesa llega tarde. Pero quedan más días de juego — pídele el próximo enlace.',
-  jugado:'Esto es lo que hizo',
+  cerradaP:'Ya hay marcador, así que esta promesa llega tarde. Pero el equipo vuelve a jugar — pídele el próximo enlace.',
+  cancelada:'Este juego no se jugó',
+  canceladaP:'El juego se canceló, así que no hay nada que prometer. Nadie debe nada.',
+  jugado:'Marcador final',
+  yaVan:'{N} ya prometieron en este juego.',
+  yaVan1:'1 persona ya prometió en este juego.',
   listoH:'Listo. Eres su padrino.',
-  listoP:'Al cerrar el juego te llega un aviso con el marcador y lo que dio tu promesa. Le pagas directo al programa — Cada Punto Cuenta no te va a cobrar nada.',
+  listoP:'Al publicarse el marcador te llega un aviso con el resultado y lo que dio tu promesa. Le pagas directo al programa — Cada Punto Cuenta no te va a cobrar nada.',
   volver:'Cambiar mi promesa',
-  otraVez:'Ya tenías una promesa para {N} — la actualizamos con lo que acabas de poner.',
+  otraVez:'Ya tenías una promesa para este juego — la actualizamos con lo que acabas de poner.',
   noVa:'Este enlace no abre una promesa.',
   total:'Tot',
   pie:'Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC. No procesamos pagos: le pagas al programa, directo.'
  },
  en:{
-  kick:'Invited you to be their padrino',
-  trato:'They play four five-minute sets. Each set counts their best run, and the four add up. You pledge a few cents for every point of that total.',
-  cuandoAbre:'Game day is {F}. Pledges close when it starts.',
-  cuandoSin:'No date yet. You can pledge now.',
-  lTarifa:'How much per point?',
-  ayudaTarifa:'A strong game runs around 150 points.',
+  kick:'Pledge by the point',
+  trato:'You pledge a few cents for every point the team scores in this game. Win or lose, every point counts.',
+  cuandoAbre:'The game is on {F}. Pledging closes when the score is posted.',
+  cuandoSin:'No date yet. You can pledge from now.',
+  lTarifa:'How much a point?',
+  ayudaTarifa:'A youth team runs about {P} points in a game.',
   lTope:'Cap (optional)',
-  ayudaTope:'Your pledge never works out above this, whatever they score. Minimum $5.',
+  ayudaTope:'Your pledge never goes above this, however much they score. $5 minimum.',
   lNom:'Your name',
   lMail:'Your email',
-  ayudaMail:'So the program knows how to reach you after the game. Nothing else.',
+  ayudaMail:'So we can send you the final score and what your pledge came to. Nothing else.',
   enviar:'Pledge',
   cuenta:'If they score <b>{P} points</b>, your pledge comes to <span class="tot">{A}</span> for the program.',
   cuentaTope:'With your {C} cap, never more than <span class="tot">{M}</span>.',
-  aviso:'Nothing is charged now, and nothing is charged here afterwards. When the game closes you get a notice with the score and what your pledge came to — no payment link — and you pay the program directly. If the total comes to less than $5, the pledge is closed out and nothing is owed.',
+  cuentaPiso:'Heads up: at that rate they would need {N} points to reach the $5 minimum. Below it the pledge closes and nothing is owed.',
+  aviso:'Nothing is charged now, and nothing here later. When the score is posted you get one notice with the result and what your pledge came to — no payment link — and you pay the program directly. If the total comes to less than $5, the pledge closes and nothing is owed.',
   mandando:'Sending…',
-  malNom:'Enter your name.',
+  malNom:'Write your name.',
   malMail:'Check the email.',
   malTope:'The minimum cap is $5.',
-  malRed:'That did not go through. Check your connection and try again.',
+  malTarifa:'That rate is too high. Check a zero did not slip in.',
+  malRed:'That did not work. Check your connection and try again.',
   cerrada:'Pledging has closed',
-  cerradaP:'The game has started, so this pledge is late. There will be other game days — ask them for the next link.',
-  jugado:'Here is what they did',
+  cerradaP:'The score is already in, so this pledge is late. But the team plays again — ask them for the next link.',
+  cancelada:'This game was not played',
+  canceladaP:'The game was cancelled, so there is nothing to pledge on. Nobody owes anything.',
+  jugado:'Final score',
+  yaVan:'{N} people have already pledged on this game.',
+  yaVan1:'1 person has already pledged on this game.',
   listoH:'Done. You are their padrino.',
-  listoP:'When the game closes you get a notice with the score and what your pledge came to. You pay the program directly — Cada Punto Cuenta will never charge you anything.',
+  listoP:'When the score is posted you get one notice with the result and what your pledge came to. You pay the program directly — Cada Punto Cuenta will not charge you anything.',
   volver:'Change my pledge',
-  otraVez:'You already had a pledge for {N} — we updated it with what you just entered.',
+  otraVez:'You already had a pledge on this game — we updated it with what you just put in.',
   noVa:'This link does not open a pledge.',
   total:'Tot',
-  pie:'Cada Punto Cuenta is a pledge management system from Gostar Digital LLC. We process no payments: you pay the program directly.'
+  pie:'Cada Punto Cuenta is a pledge management system by Gostar Digital LLC. We do not process payments: you pay the program, directly.'
  }
 };
 var LANG='es';
@@ -461,7 +481,9 @@ function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c] }) }
 
 var par=new URLSearchParams(location.search);
-var RETO=par.get('c'), JUGADOR=par.get('p');
+/* Un solo parámetro: el juego. `?c=` y `?p=` eran el reto y el
+   alumno del producto retirado. */
+var GAME=par.get('g');
 
 /* Ya no hay cargo que sumarle al padrino: Cada Punto Cuenta se licencia al
    programa por evento y al padrino no se le cobra nada. Lo
@@ -469,9 +491,18 @@ var RETO=par.get('c'), JUGADOR=par.get('p');
 /* Para la cuenta de ejemplo. No es una promesa de cuánto va a anotar:
    es el único número honesto que tenemos para que el padrino sepa en
    qué orden de magnitud se está metiendo. */
-var TIPICO=150;
-var TARIFAS=[0.05,0.10,0.20];
-var tarifa=0.05;
+/* UN JUEGO, NO UNA TEMPORADA. 150 puntos era el total acumulado de
+   un reto entero; un equipo juvenil anota unos 55 en un juego. Dejar
+   el 150 haría que un padrino escogiera su tarifa contra un número
+   casi tres veces mayor que el que va a salir.
+
+   Y las tarifas se subieron por la misma razón. A 5¢ por punto, 55
+   puntos son $2.75: por debajo del mínimo de $5, así que la opción
+   que venía marcada por defecto producía una promesa que no recauda
+   nada. Ofrecer eso como primera opción es ofrecer la nada. */
+var TIPICO=55;
+var TARIFAS=[0.10,0.25,0.50];
+var tarifa=0.25;
 
 function dinero(n){ return '$'+(Math.round(n*100)/100).toFixed(2) }
 
@@ -529,30 +560,64 @@ function pintarCuenta(){
   var tope=parseFloat($('tope').value);
   if(tope>=5) txt+='<br>'+T('cuentaTope').replace('{C}',dinero(tope))
                       .replace('{M}',dinero(tope));
+
+  /* EL PISO, DICHO MIENTRAS SE ESCOGE. A 10¢ por punto harían falta
+     50 puntos para llegar a $5, y hay juegos que no llegan. Decírselo
+     aquí es muy distinto a que lo descubra en el correo del lunes: ahí
+     ya no puede hacer nada, y lo que lee es que su promesa no sirvió
+     de nada. */
+  var piso = (ESTADO && ESTADO.piso_centavos ? ESTADO.piso_centavos : 500)/100;
+  var hacenFalta = Math.ceil(piso/tarifa);
+
+  /* El umbral se mide contra un juego FLOJO y no contra uno típico.
+     Comparado con los 55 de siempre, el aviso no saltaba nunca —a 10¢
+     hacen falta 50, que caben— y era código muerto. Pero 50 de 55 es
+     justo lo que no se alcanza la noche que el equipo anota 38, y ésa
+     es exactamente la noche en la que un padrino que prometió 10¢ se
+     entera por correo de que su promesa no sirvió de nada. */
+  if (hacenFalta > TIPICO * 0.75)
+    txt += '<br><span class="ojo">'+T('cuentaPiso').replace('{N}',hacenFalta)+'</span>';
+
   $('cuenta').innerHTML=txt;
 }
 
+/* UN DÍA DE CALENDARIO NO ES UN INSTANTE.
+   `plays_on` llega como "2026-11-07", sin hora. new Date() de eso lo
+   lee como medianoche UTC, y Puerto Rico va cuatro horas por detrás:
+   el juego del sábado salía el viernes. Lo que trae hora de verdad —un
+   timestamptz— sigue por el camino de siempre.
+
+   Y SE QUITÓ LA HORA DE AQUÍ. La sacaba de la misma fecha, así que
+   para un día sin hora inventaba una —las 8 de la noche del día
+   anterior— y la ponía al lado de la hora de verdad del juego, que se
+   pinta aparte. Dos horas distintas en la misma pantalla, una de
+   ellas falsa. */
 function fecha(iso){
   try{
-    var d=new Date(iso);
+    var d;
+    var solo = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso));
+    if (solo) d = new Date(+solo[1], +solo[2] - 1, +solo[3]);
+    else      d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
     return d.toLocaleDateString(LANG==='es'?'es-PR':'en-US',
-      {weekday:'long',day:'numeric',month:'long'})+', '+
-      d.toLocaleTimeString(LANG==='es'?'es-PR':'en-US',{hour:'numeric',minute:'2-digit'})
-      /* "2:52 p. m." ya trae su punto final; la frase le ponía otro. */
-      .replace(/\.$/,'');
+      {weekday:'long',day:'numeric',month:'long'});
   }catch(e){ return '' }
 }
 
-function pintarCaja(cuartos, total){
-  var h='';
-  for(var q=1;q<=4;q++){
-    var c=null;
-    for(var i=0;i<cuartos.length;i++) if(cuartos[i].q===q) c=cuartos[i];
-    h+='<div><b>Q'+q+'</b><span>'+(c?c.points:'—')+'</span></div>';
-  }
-  h+='<div class="tot"><b>'+T('total')+'</b><span>'+total+'</span></div>';
-  $('caja').innerHTML=h; $('caja').hidden=false;
+/* El marcador, cuando ya lo hay. Los cuatro cuartos eran del producto
+   por alumno; aquí lo que cuenta es el resultado del juego y los
+   puntos del equipo, que es sobre lo que se promete. */
+function pintarMarcador(){
+  var mios = ESTADO.puntos;
+  var suyos = ESTADO.rival_puntos;
+  $('caja').innerHTML =
+    '<div><b>'+esc(ESTADO.equipo||'')+'</b><span>'+(mios==null?'—':mios)+'</span></div>'+
+    '<div><b>'+esc(ESTADO.rival||'')+'</b><span>'+(suyos==null?'—':suyos)+'</span></div>';
+  $('caja').hidden=false;
 }
+
+function esc(x){ return String(x==null?'':x)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 var ESTADO=null;
 
@@ -561,14 +626,25 @@ function pintar(){
   $('lang').textContent=LANG==='es'?'English':'Español';
   if(!ESTADO) return;
   $('kick').textContent=T('kick');
-  $('quien').textContent=ESTADO.name;
-  $('programa').textContent=ESTADO.program;
+  /* El EQUIPO es el titular, y el juego la línea de debajo. Un
+     padrino promete por su equipo; cuál de sus juegos es el detalle. */
+  $('quien').textContent=ESTADO.equipo||'';
+  $('programa').textContent=
+    (ESTADO.juego||'') +
+    (ESTADO.cancha ? ' · ' + ESTADO.cancha : '') +
+    (ESTADO.hora   ? ' · ' + ESTADO.hora   : '');
   $('trato').textContent=T('trato');
-  $('cuando').textContent = ESTADO.opens_at
-    ? T('cuandoAbre').replace('{F}', fecha(ESTADO.opens_at))
+  /* Cuántos van ya. Sin nombres y sin cifras: que otros doce hayan
+     prometido es lo único que un padrino puede saber de los demás, y
+     es lo que le dice que esto va en serio. */
+  var n = Number(ESTADO.promesas||0);
+  $('yaVan').textContent = n <= 0 ? ''
+    : (n === 1 ? T('yaVan1') : T('yaVan').replace('{N}', n));
+  $('cuando').textContent = ESTADO.fecha
+    ? T('cuandoAbre').replace('{F}', fecha(ESTADO.fecha))
     : T('cuandoSin');
   $('lTarifa').textContent=T('lTarifa');
-  $('ayudaTarifa').textContent=T('ayudaTarifa');
+  $('ayudaTarifa').textContent=T('ayudaTarifa').replace('{P}',TIPICO);
   $('lTope').textContent=T('lTope');
   $('ayudaTope').textContent=T('ayudaTope');
   $('lNom').textContent=T('lNom');
@@ -577,8 +653,11 @@ function pintar(){
   $('enviar').textContent=T('enviar');
   $('aviso').textContent=T('aviso');
   $('pie').textContent=T('pie');
-  $('cerradoH').textContent=T('cerrada');
-  $('cerradoP').textContent=T('cerradaP');
+  /* Cerrado por marcador y cancelado no son lo mismo, y a un padrino
+     le importan de maneras distintas: del primero puede pedir el
+     enlace del próximo juego; del segundo no hay nada que pedir. */
+  $('cerradoH').textContent = ESTADO.cancelado ? T('cancelada') : T('cerrada');
+  $('cerradoP').textContent = ESTADO.cancelado ? T('canceladaP') : T('cerradaP');
   $('listoH').textContent=T('listoH');
   $('listoP').textContent=T('listoP');
   $('volver').textContent=T('volver');
@@ -587,7 +666,7 @@ function pintar(){
      dejaría prometer sabiendo el resultado, que es justo lo que esta
      página no hace. Pasa de verdad: basta con mover la ventana de un
      reto que ya se jugó. */
-  if(!ESTADO.open && ESTADO.played) pintarCaja(ESTADO.quarters||[], ESTADO.total||0);
+  if(!ESTADO.abierto && ESTADO.jugado) pintarMarcador();
   else $('caja').hidden=true;
   pintarTarifas(); pintarCuenta();
 }
@@ -600,13 +679,13 @@ $('lang').onclick=function(){
 $('tope').oninput=pintarCuenta;
 
 function arrancar(){
-  if(!RETO||!JUGADOR){ $('cargando').textContent=T('noVa'); return }
-  rpc('cp_padrino_view',{p_challenge:RETO,p_player:JUGADOR}, function(d){
+  if(!GAME){ $('cargando').textContent=T('noVa'); return }
+  rpc('juego_publico',{p_game:GAME}, function(d){
     if(!d||!d.ok){ $('cargando').textContent=T('noVa'); return }
     ESTADO=d;
     $('cargando').hidden=true;
     $('todo').hidden=false;
-    if(d.open){ $('form').hidden=false } else { $('cerrado').hidden=false }
+    if(d.abierto){ $('form').hidden=false } else { $('cerrado').hidden=false }
     pintar();
   }, function(e){
     /* Con la razón delante. Esto reintenta cada cuatro segundos, y
@@ -629,20 +708,27 @@ $('form').onsubmit=function(ev){
 
   $('enviar').disabled=true;
   decir(T('mandando'),'');
-  rpc('cp_pledge',{p_challenge:RETO,p_player:JUGADOR,p_name:nom,p_email:mail,
-                   p_rate:tarifa,p_cap:tope,p_lang:LANG},
+  rpc('juego_prometer',{p_game:GAME,p_nombre:nom,p_email:mail,
+                        p_tarifa:tarifa,p_tope:tope},
     function(d){
       $('enviar').disabled=false;
       if(d&&d.ok){
         $('form').hidden=true;
         $('listo').hidden=false;
-        if(d.again) $('listoP').textContent=T('otraVez').replace('{N}',ESTADO.name);
+        if(d.cambiada) $('listoP').textContent=T('otraVez');
         return;
       }
       var r=(d&&d.reason)||'';
-      if(r==='closed'){ $('form').hidden=true; $('cerrado').hidden=false; return }
-      decir(r==='name'?T('malNom'):r==='email'?T('malMail'):
-            r==='cap'?T('malTope'):T('malRed'),'mal');
+      /* Si el marcador se publicó mientras esta página estaba abierta,
+         no se le dice «error»: se le enseña que cerró, que es lo que
+         pasó. */
+      if(r==='ya-jugado'||r==='cancelado'||r==='ya-avisado'){
+        if(ESTADO) ESTADO.cancelado = (r==='cancelado');
+        $('form').hidden=true; $('cerrado').hidden=false; pintar(); return;
+      }
+      decir(r==='falta-nombre'?T('malNom'):r==='correo'?T('malMail'):
+            r==='tope'?T('malTope'):
+            (r==='tarifa'||r==='tarifa-alta')?T('malTarifa'):T('malRed'),'mal');
     },
     function(e){ $('enviar').disabled=false; decir(T('malRed')+porque(e),'mal') });
 };
