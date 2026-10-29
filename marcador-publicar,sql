@@ -1,0 +1,230 @@
+-- ════════════════════════════════════════════════════════════════
+--  PUBLICAR UN TORNEO SIN SUBIR UN FICHERO
+--
+--  Hasta ahora, publicar un calendario era esto: el entrenador lo
+--  monta en el constructor, le da a bajar, le llega un .html, y
+--  alguien —siempre el dueño del repo— lo sube a marcadorpr. Un
+--  entrenador en Loíza a las nueve de la noche del viernes no puede
+--  hacer ese último paso, así que el único programa que podía correr
+--  esto era uno cuyo calendario subiera el dueño a mano.
+--
+--  Eso ya no era sólo un problema de crecimiento. Desde que TODO
+--  juego programado lleva su botón de prometer, el fichero sin subir
+--  es lo que separa a un entrenador dispuesto de un juego cerrado.
+--
+--  LO QUE FALTABA EN LA BASE. El calendario ya se guarda entero al
+--  registrar —`torneos` y `torneo_juegos`—, pero tres cosas que la
+--  página necesita para pintarse no se guardaban en ningún sitio:
+--
+--    · el NOMBRE de cada cancha. En el juego sólo vive «C-1»; que
+--      C-1 es el Gimnasio de Canóvanas vivía únicamente dentro del
+--      fichero que se bajaba.
+--    · el equipo de CASA, que es el que sale marcado.
+--    · el COLOR de cada categoría.
+--
+--  Sin esas tres, un calendario leído de la base sale correcto y
+--  mudo: canchas con nombre de código y todas las categorías del
+--  mismo color.
+--
+--  POR QUÉ UNA FUNCIÓN APARTE Y NO UN bw_register_tournament MÁS.
+--  Esa función ya vive en cuatro ficheros y las cuatro copias se leen
+--  igual de actuales; ESQUEMA.md existe en parte para decir cuál
+--  manda. Una quinta copia significaría arrastrar a mano las ciento y
+--  pico líneas del enlace de juegos, y perder una sola de ellas en
+--  silencio. Así que el estilo se guarda por su cuenta, el
+--  constructor llama a las dos seguidas, y si ésta fallara el
+--  calendario queda registrado igual — sólo sin nombres de cancha ni
+--  colores. Se degrada, no se rompe.
+-- ════════════════════════════════════════════════════════════════
+
+
+-- ── Lo que el calendario necesita para pintarse ─────────────────
+-- jsonb y no tablas aparte a propósito: son tres datos de
+-- presentación que se leen enteros y no se consultan por dentro
+-- nunca. Una tabla de canchas daría una junta más y ninguna
+-- pregunta que hoy alguien quiera hacer.
+alter table public.torneos
+  add column if not exists canchas jsonb,   -- [{"id":"C-1","name":"Gimnasio"}]
+  add column if not exists casa    text,    -- el equipo que se marca, o null
+  add column if not exists colores jsonb;   -- {"Junior":"#1D4FA3"}
+
+
+-- ── Guardar el estilo ───────────────────────────────────────────
+-- Misma puerta y mismo dueño que registrar: el código tiene que
+-- poder montar calendarios, y si el torneo ya existe tiene que ser
+-- suyo. Sin esto, cualquiera con un código de mesa podría repintarle
+-- el calendario a otro.
+create or replace function public.torneo_estilo(
+  p_code    text,
+  p_id      text,
+  p_canchas jsonb default null,
+  p_casa    text  default null,
+  p_colores jsonb default null
+) returns jsonb
+language plpgsql
+security definer
+set search_path to 'public', 'extensions'
+as $$
+declare
+  v_ok      boolean;
+  v_maestro boolean;
+  v_code_id uuid;
+  v_dueno   uuid;
+  v_de_quien text;
+  v_existe  boolean;
+begin
+  if coalesce(p_id, '') = '' then
+    return jsonb_build_object('ok', false, 'reason', 'faltan-datos');
+  end if;
+
+  select public.bw_can_build(p_code) into v_ok;
+  if not coalesce(v_ok, false) then
+    if coalesce(public.bw_check(p_code), false) then
+      return jsonb_build_object('ok', false, 'reason', 'build');
+    end if;
+    return jsonb_build_object('ok', false, 'reason', 'code');
+  end if;
+
+  v_maestro := coalesce(public.bw_es_maestro(p_code), false);
+  v_code_id := public.bw_code_id(p_code);
+
+  select t.codigo into v_dueno from public.torneos t where t.id = p_id;
+  v_existe := FOUND;
+
+  if not v_existe then
+    return jsonb_build_object('ok', false, 'reason', 'no-existe');
+  end if;
+
+  if not v_maestro then
+    if v_dueno is null or v_dueno is distinct from v_code_id then
+      select c.label into v_de_quien from public.bw_codes c where c.id = v_dueno;
+      return jsonb_build_object('ok', false, 'reason', 'ajeno',
+                                'dueno', coalesce(v_de_quien, 'la casa'));
+    end if;
+  end if;
+
+  update public.torneos
+     set canchas = p_canchas,
+         casa    = nullif(btrim(coalesce(p_casa, '')), ''),
+         colores = p_colores,
+         tocado  = now()
+   where id = p_id;
+
+  return jsonb_build_object('ok', true, 'torneo', p_id);
+end $$;
+
+revoke all on function public.torneo_estilo(text, text, jsonb, text, jsonb) from public;
+grant execute on function public.torneo_estilo(text, text, jsonb, text, jsonb)
+  to anon, authenticated;
+
+
+-- ── Leer un torneo, en la forma que la página ya espera ─────────
+--
+--  Devuelve exactamente lo que el fichero bajado traía horneado:
+--  tourney, home, colour, games. Así la página publicada y la que se
+--  baja pintan desde la misma forma y no hay dos verdades.
+--
+--  ABIERTA A anon, Y A PROPÓSITO. Un calendario es lo que el
+--  entrenador va a mandar por WhatsApp; pedir sesión para leerlo
+--  sería pedirle cuenta a cada padre del equipo. Lo que NO sale de
+--  aquí es `codigo`: esa columna dice de qué código es el torneo y no
+--  es asunto de quien lee el calendario. Por eso las columnas se
+--  nombran una a una en vez de un to_jsonb(t) — un select * habría
+--  publicado el dueño el día que alguien añadiera una columna.
+create or replace function public.torneo_publico(p_id text)
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path to 'public', 'extensions'
+as $$
+declare
+  v_t  record;
+  v_g  jsonb;
+begin
+  select t.id, t.nombre, t.pueblo, t.prefijo, t.canchas, t.casa, t.colores
+    into v_t
+    from public.torneos t
+   where t.id = coalesce(btrim(p_id), '');
+
+  if not FOUND then
+    return jsonb_build_object('ok', false, 'reason', 'no-existe');
+  end if;
+
+  -- El orden: por día, y dentro del día por el NÚMERO del juego y no
+  -- por su texto. CPR-10 ordenado como texto cae entre CPR-1 y CPR-2.
+  -- La página reordena por hora ella sola, así que esto sólo tiene
+  -- que ser estable y no sorprendente.
+  select coalesce(jsonb_agg(x order by x_fecha nulls last, x_num nulls last, x_juego), '[]'::jsonb)
+    into v_g
+    from (
+      select jsonb_build_object(
+               'no',    tj.juego,
+               'cat',   coalesce(tj.cat, ''),
+               'stage', coalesce(tj.etapa, ''),
+               'date',  coalesce(to_char(tj.fecha, 'YYYY-MM-DD'), ''),
+               'time',  coalesce(tj.hora, ''),
+               'court', coalesce(tj.cancha, ''),
+               'a',     coalesce(tj.equipo_a, ''),
+               'b',     coalesce(tj.equipo_b, '')
+             ) as x,
+             tj.fecha as x_fecha,
+             nullif(regexp_replace(tj.juego, '\D', '', 'g'), '')::int as x_num,
+             tj.juego as x_juego
+        from public.torneo_juegos tj
+       where tj.torneo = v_t.id
+    ) s;
+
+  return jsonb_build_object(
+    'ok', true,
+    'id', v_t.id,
+    'prefijo', v_t.prefijo,
+    'tourney', jsonb_build_object(
+      'name',   v_t.nombre,
+      'where',  coalesce(v_t.pueblo, ''),
+      'courts', coalesce(v_t.canchas, '[]'::jsonb)
+    ),
+    'home',   to_jsonb(v_t.casa),          -- null de verdad si no hay
+    'colour', coalesce(v_t.colores, '{}'::jsonb),
+    'games',  v_g
+  );
+end $$;
+
+revoke all on function public.torneo_publico(text) from public;
+grant execute on function public.torneo_publico(text) to anon, authenticated;
+
+
+-- ── La lista, para el índice ────────────────────────────────────
+-- Lo mínimo para enseñar «estos torneos están corriendo»: nombre,
+-- pueblo, cuántos juegos y cuándo se tocó. Ni el código ni el
+-- calendario entero.
+create or replace function public.torneos_publicos()
+returns jsonb
+language sql
+stable
+security definer
+set search_path to 'public', 'extensions'
+as $$
+  select coalesce(jsonb_agg(jsonb_build_object(
+           'id',      t.id,
+           'name',    t.nombre,
+           'where',   coalesce(t.pueblo, ''),
+           'games',   t.juegos,
+           'touched', t.tocado
+         ) order by t.tocado desc), '[]'::jsonb)
+    from public.torneos t;
+$$;
+
+revoke all on function public.torneos_publicos() from public;
+grant execute on function public.torneos_publicos() to anon, authenticated;
+
+
+-- ── Comprobar que quedó bien ────────────────────────────────────
+--
+--   select public.torneo_publico('copa-puerto-rico');
+--
+-- Tiene que volver ok:true, el torneo con sus canchas, y un array
+-- games con una entrada por juego. Si `courts` sale [] y `colour`
+-- sale {}, el torneo se registró antes de que existiera torneo_estilo
+-- y lo único que hace falta es volver a registrarlo desde el
+-- constructor: la segunda llamada le pone el estilo.
