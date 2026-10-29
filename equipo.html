@@ -526,16 +526,26 @@ function send(){
     SENT = email;
     draw();
 
-    /* De qué producto es esta solicitud. Los dos productos escriben
-       en bw_requests, y sin esto una inscripción de Cada Punto Cuenta le llega
-       al admin idéntica a una de Cada Punto Cuenta.
+    /* DE QUÉ PRODUCTO ES ESTA SOLICITUD. Dos productos comparten la
+       base y escriben los dos en bw_requests; `campaigns.product` es,
+       como dice ESQUEMA.md, lo único que los separa.
+
+       Esta página es la de Cada Punto Cuenta y mandaba 'anotado' —el
+       id del otro producto— así que cada programa que se inscribía
+       aquí nacía del lado equivocado. Se veía en el comentario que
+       había encima: decía que sin esto una inscripción de «Cada Punto
+       Cuenta» llegaría idéntica a una de «Cada Punto Cuenta», las dos
+       iguales. Estaba escrito cuando el otro producto se llamaba
+       Hooporia, y el renombrado pasó por el comentario y lo dejó sin
+       sentido; el valor de abajo se quedó como estaba y nadie lo
+       volvió a mirar.
 
        Va después de draw() y en best-effort a propósito: el
        entrenador ya vio que entró, y si request_product no existe
        todavía en la base —el SQL es anotado-producto.sql— lo único
        que pasa es que la etiqueta no se pone. La inscripción no se
        cae por esto. */
-    rpc('request_product', { p_email: email, p_product: 'anotado' })
+    rpc('request_product', { p_email: email, p_product: 'cada-punto' })
       .catch(function(e){ console.error('request_product', e) });
 
     /* El acuse de la licencia, guardado. Va aparte y despues de que
