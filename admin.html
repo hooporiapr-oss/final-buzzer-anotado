@@ -197,7 +197,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
       <p class="sub" style="margin:0 0 10px">Every played game in this tournament that still has
         pledges waiting. Each padrino gets one notice with the final score and what their pledge
         came to &mdash; no payment link, no reminders. The licence is invoiced to each program by
-        how many pledges its game gathered. No pledges, no invoice.</p>
+        how many pledges its game gathered. No pledges, no fee.</p>
       <label for="torCobroId">Tournament</label>
       <select id="torCobroId"></select>
       <label for="torCobroCode" style="margin-top:10px">Scoreboard code</label>
@@ -515,12 +515,42 @@ function arrancar(){
    no entra. */
 var SOL_TODAS = false;
 
+/* ══════════════════════════════════════════════════════════════════
+   APROBAR DE VERDAD, QUE ES LO QUE ESTO NO HACÍA
+
+   Esta sección leía la tabla `solicitudes` y su botón sólo le ponía
+   «atendida». Pero quien da de alta a un programa es
+   bw_approve_request, que trabaja sobre OTRA tabla —bw_requests— y a
+   la que no llamaba nadie: un grep por los dos repos no la encuentra
+   en ninguna página ni en el servidor.
+
+   Así que el admin marcaba una inscripción como atendida, se quedaba
+   tranquilo, y no se creaba nada: ni campaña, ni equipo enganchado,
+   ni código de entrenador. Por eso había tres filas «approved» con
+   campaign_id en null, cero campañas de Cada Punto y bw_teams vacía;
+   y por eso torneo_enlazar devolvía siempre ceros. No estaba roto
+   nada de lo de abajo — es que la primera puerta no estaba puesta.
+
+   Ahora la cola sale de bw_requests, que es lo que llenan LAS DOS
+   entradas (equipo.html y el botón «cómo recaudar» del tablero), con
+   el acuse de la licencia traído de `solicitudes`, que es donde se
+   guarda el texto que el programa aceptó. Aprobar crea la campaña y
+   cierra las dos filas. */
 function cargarSolicitudes(){
-  var q = 'solicitudes?select=*&order=creada.desc';
-  if (!SOL_TODAS) q += '&estado=eq.nueva';
   di('mSol', '');
-  rest(q)
-    .then(pintarSolicitudes)
+  rpc('bw_solicitudes_admin', {})
+    .then(function(r){
+      if (!r || !r.ok){
+        $('solicitudes').innerHTML = '';
+        di('mSol', r && r.reason === 'no-admin'
+          ? 'Sign in as an admin to see the signups.'
+          : 'Could not read the signups.', 'mal');
+        return;
+      }
+      var filas = r.filas || [];
+      if (!SOL_TODAS) filas = filas.filter(function(s){ return s.estado === 'pending' });
+      pintarSolicitudes(filas);
+    })
     .catch(function(e){
       /* Si la tabla todavía no existe —el SQL no se ha corrido— se
          dice con todas las letras en vez de dejar un hueco mudo.
@@ -879,12 +909,6 @@ function pintarSolicitudes(rows){
   rows = rows || [];
   var caja = $('solicitudes');
   if (!rows.length){
-    /* «Nothing waiting» y nada más. Decía «every signup has been
-       handled», y con la tabla recién creada eso era mentira: cero
-       filas nuevas no distingue entre «se atendieron todas» y «no ha
-       llegado ninguna nunca», y en una tabla vacía la segunda es la
-       verdadera. Sabría cuál es con otra consulta, y no vale una
-       consulta por una frase. */
     caja.innerHTML = '<p class="pista">' +
       (SOL_TODAS ? 'No signups yet.' : 'Nothing waiting.') +
       '</p>';
@@ -892,16 +916,8 @@ function pintarSolicitudes(rows){
   }
   caja.innerHTML = rows.map(function(s){
     /* El acuse de la licencia se enseña como lo que es: quién lo
-       marcó y cuándo. El texto completo queda en la fila, que es
-       donde hace falta si alguna vez se discute. */
-    /* La fecha del acuse llega como la mandó la página, que es un ISO
-       crudo: «2026-10-26T11:50:36.153Z» al lado de «Oct 26, 7:50 AM»
-       parecían dos cosas distintas. Se pinta con el mismo cuando()
-       que el resto del panel.
-
-       Si no se puede leer como fecha se enseña tal cual: es un acuse
-       y lo que el programa mandó vale más que lo que nos gustaría
-       que hubiera mandado. */
+       marcó y cuándo. Llega de `solicitudes`, cruzado por correo, y
+       hay que verlo ANTES de aprobar — no después. */
     var licEl = '';
     if (s.licencia_el){
       var d = new Date(s.licencia_el);
@@ -910,36 +926,80 @@ function pintarSolicitudes(rows){
     var lic = s.licencia_ok
       ? 'Licence accepted by ' + esc(s.licencia_por || s.coach || '—') + licEl
       : 'No licence acknowledgement';
+
+    var marca = s.estado === 'approved' ? ' <small style="display:inline">· approved</small>'
+              : s.estado === 'declined' ? ' <small style="display:inline">· declined</small>'
+              : '';
+
+    /* EL NOMBRE COGIDO SE DICE ANTES DE PULSAR. Si ya hay un equipo
+       con ese nombre —sin acentos, como lo compara el tablero— la
+       aprobación va a fallar con «taken», y eso se ve mejor aquí que
+       en un mensaje de error. */
+    var botones = s.estado === 'pending'
+      ? (s.ocupado
+          ? '<small style="display:block;color:#A8323F">That team name is already taken</small>'
+          : '') +
+        '<div class="btns">' +
+          '<button class="q sm" data-aprobar="' + esc(s.id) + '">Approve</button>' +
+          '<button class="q sm" data-rechazar="' + esc(s.id) + '">Decline</button>' +
+        '</div>'
+      : '';
+
     return '<div class="item">' +
       '<div>' +
-        '<b>' + esc(s.equipo) + '</b>' +
-        (s.estado === 'atendida' ? ' <small style="display:inline">· handled</small>' : '') +
-        '<small>' + esc(s.programa || '—') + ' · ' + esc(s.coach || '—') + '</small>' +
+        '<b>' + esc(s.equipo) + '</b>' + marca +
+        '<small>' + esc(s.programa || '—') + ' · ' + esc(s.coach || '—') +
+          ' · ' + esc(s.product || 'cada-punto') + '</small>' +
         '<small><a href="mailto:' + esc(s.email) + '">' + esc(s.email) + '</a>' +
           (s.telefono ? ' · ' + esc(s.telefono) : '') + '</small>' +
-        '<small>' + cuando(s.creada) + ' · ' + lic + '</small>' +
+        '<small>' + cuando(s.pedida) + ' · ' + lic + '</small>' +
+        (s.nota ? '<small>' + esc(s.nota) + '</small>' : '') +
       '</div>' +
-      (s.estado === 'nueva'
-        ? '<button class="q sm" data-atender="' + esc(s.id) + '">Mark handled</button>'
-        : '') +
+      botones +
     '</div>';
   }).join('');
 
-  [].slice.call(caja.querySelectorAll('[data-atender]')).forEach(function(b){
-    b.onclick = function(){ atender(b.getAttribute('data-atender'), b) };
+  /* Delegado y no onclick= en el marcado: todo este script vive
+     dentro de una IIFE, así que nada de aquí es global y un
+     onclick="" del HTML no encontraría la función. */
+  [].slice.call(caja.querySelectorAll('[data-aprobar]')).forEach(function(b){
+    b.onclick = function(){ decidir('bw_approve_request', b.getAttribute('data-aprobar'), b) };
+  });
+  [].slice.call(caja.querySelectorAll('[data-rechazar]')).forEach(function(b){
+    b.onclick = function(){ decidir('bw_decline_request', b.getAttribute('data-rechazar'), b) };
   });
 }
 
-function atender(id, boton){
+function decidir(fn, id, boton){
   boton.disabled = true;
-  rest('solicitudes?id=eq.' + encodeURIComponent(id), {
-    method: 'PATCH',
-    body: { estado: 'atendida', atendida_el: new Date().toISOString() }
-  })
-    .then(function(){ cargarSolicitudes() })
+  di('mSol', '…');
+  rpc(fn, { p_id: id })
+    .then(function(r){
+      if (!r || !r.ok){
+        boton.disabled = false;
+        var porQue = r && r.reason === 'taken'
+            ? 'that team name already belongs to another campaign'
+          : r && r.reason === 'gone'
+            ? 'it was already decided — reloading'
+          : r && r.reason === 'no-admin'
+            ? 'you are not signed in as an admin'
+          : 'it did not go through';
+        di('mSol', 'Could not do it: ' + porQue + '.', 'mal');
+        if (r && r.reason === 'gone') cargarSolicitudes();
+        return;
+      }
+      /* Lo que se creó, dicho con todas las letras. «Approved» a
+         secas es lo que decía el botón viejo, que no creaba nada. */
+      di('mSol', fn === 'bw_approve_request'
+        ? 'Approved. ' + (r.program || 'The program') + ' now has a campaign' +
+          (r.product ? ' on ' + r.product : '') + ', and ' + (r.team || 'the team') +
+          ' is linked to it — its games can carry pledges.'
+        : 'Marked declined.', 'bien');
+      cargarSolicitudes();
+    })
     .catch(function(e){
       boton.disabled = false;
-      di('mSol', 'Could not mark it handled' + porque(e), 'mal');
+      di('mSol', 'Could not do it' + porque(e), 'mal');
     });
 }
 
