@@ -257,8 +257,8 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(t,/Hablemos/,'que no lleva número: se habla');
   has(t,/y nada más/,'y que lo fija cuántas promesas, nada más');
   has(t,/Sin promesas, sin cargo/,'la promesa que se hace sobre el cargo');
-  has(t,/cinco juegos activados/,"con cuántos juegos arranca un programa");
-  has(t,/añade los que quiera: no hay tope/,"y que de ahí añade los que quiera");
+  has(t,/Con un juego\s+basta/,"con un juego basta: no hay mínimo");
+  has(t,/cada juego de más es otra oportunidad/,"y cada juego de más es otra oportunidad");
   not(t,/\{[A-Z]\}/,'sin plantillas sin rellenar');
 
   const n=await p.evaluate(()=>document.querySelectorAll('.peldano').length);
