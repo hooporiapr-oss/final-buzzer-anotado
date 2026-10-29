@@ -95,7 +95,12 @@ const PROHIBIDO = [
             FAQ paso a la escalera — una prueba quejandose de que la
             pagina se puso al dia. El precio en si lo vigila
             prueba-precio.js, contra la escalera de index.html. */
-         [/se licencia por evento/,              'la licencia, por evento'],
+         /* POR JUEGO, no «por evento». La licencia dejo de ser por
+            evento cuando el producto paso a cobrarse juego a juego, y
+            esta linea se quedo pidiendo la palabra vieja: llevaba dos
+            dias suspendiendo por quejarse de que la pagina esta al
+            dia. El numero lo vigila prueba-precio.js. */
+         [/se licencia <b>por juego<\/b>|se licencia por juego/, 'la licencia, por juego'],
          [/45 puntos son \$4\.50/,               'el ejemplo del padrino, con su cuenta'],
          [/No decimos que lo sea/,               'impuestos: no decimos que lo sea'],
          [/no los escribió una persona/,         'por qué los puntos son de verdad']]
@@ -103,7 +108,7 @@ const PROHIBIDO = [
          [/one official run/,                    'one official run'],
          [/the database refuses the second/,     'and the database refuses the second'],
          [/You set the window/,                  'the program sets the window'],
-         [/licensed per event/,                  'licensed per event'],
+         [/licensed <b>per game<\/b>|licensed per game/,  'licensed per game'],
          [/45-point run is \$4\.50/,             'the padrino example, with its sum'],
          [/We do not say that it is/,            'tax: we do not say that it is'],
          [/a person did not write them/,         'why the points are real']];
