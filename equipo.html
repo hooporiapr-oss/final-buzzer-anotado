@@ -307,19 +307,21 @@ function porque(x){
 var S = {
   es:{
     kick:'Inscribe tu programa',
-    h1:'Tus jugadores anotan. Tu programa cobra.',
-    lede:'Los padrinos prometen unos centavos por cada punto que anota un jugador en su corrida. El juego anota los puntos solo, así que nadie tiene que reportar un marcador ni que le crean, y cada padrino paga por lo que de verdad se anotó. No hay nada que vender, nada que repartir y nadie a quien juntar.',
-    s1b:'Antes de la ventana · Te abrimos la campaña.',
+    h1:'Tu equipo juega. Tu programa recauda.',
+    lede:'Los padrinos prometen unos centavos por cada punto que anote tu equipo en un juego. El juego ya lo ibas a jugar: el marcador final hace la cuenta. Ganen o pierdan, cada punto cuenta. No hay nada que vender, nada que repartir y nadie a quien juntar.',
+    s1b:'Una vez · Te abrimos la campaña.',
     s1:'Nos escribes, te la montamos, y te damos tu código. Nadie se da de alta solo — las abrimos una por una, a mano, y nada sale al aire hasta que tú lo digas.',
-    s2b:'Antes de la ventana · Tus jugadores se dan de alta solos.',
-    s2:'No nos mandas ninguna lista. Les pasas el enlace de tu campaña, cada uno entra su nombre, y tú apruebas quién queda dentro — tú tienes la última palabra, pero el trabajo de escribir los nombres no es tuyo. Y no tiene que ser sólo la plantilla: cualquiera que apruebes puede correr y traer sus propios padrinos. Tú pones la ventana: una tarde en el gimnasio, o una semana con las familias jugando en su casa. Un evento es una ventana; si quieres correr otro después, es su propia campaña.',
-    s3b:'La ventana · Los padrinos prometen, los jugadores juegan.',
-    s3:'Mandas el enlace al grupo del programa. Cada jugador tiene el suyo, y cada padrino escoge cuánto por punto y pone su tope si quiere. Un jugador puede conseguir padrinos y jugar dentro de la misma ventana, pero las promesas de un jugador cierran en el momento en que empieza su corrida oficial: prometer sabiendo el marcador no es prometer.',
-    s4b:'Al cerrar · Todos reciben el número.',
-    s4:'Cada jugador tiene una sola corrida oficial y la base de datos rechaza la segunda, así que el número es el número. La plataforma calcula el total de cada padrino con su tope aplicado si mordió, y a cada uno le llega su aviso con los puntos y su total — sin enlace de pago. A ti te queda la lista completa, para imprimir o bajar. Cobrar lo haces tú, por donde ya hablas con esa gente.',
+    s2b:'Una vez · Pones tus juegos en el marcador.',
+    s2:'Tu calendario, o el del torneo en el que juegas. Cada juego queda con su enlace propio, y ese enlace es por el que se promete. No hay listas de jugadores que mandar ni nombres que escribir: se promete por los puntos del EQUIPO, así que el mismo enlace sirve para todas las familias.',
+    s3b:'Antes del juego · Los padrinos prometen.',
+    s3:'Mandas el enlace del juego al grupo del programa. Cada padrino escoge cuánto por punto y pone su tope si quiere. No hace falta que se abra cuenta ni que sepa nada nuestro. Las promesas de un juego cierran en el momento en que se publica su marcador: prometer sabiendo el resultado no es prometer.',
+    s4b:'Al publicarse el marcador · Todos reciben el número.',
+    s4:'La plataforma calcula el total de cada padrino con su tope aplicado si mordió, y a cada uno le llega UN aviso con el marcador final y su total — sin enlace de pago y sin recordatorios. Si el marcador se corrige después, a quien se le dijo otra cifra le llega la corrección. A ti te queda la lista completa, para imprimir o bajar. Cobrar lo haces tú, por donde ya hablas con esa gente.',
     formH:'Dinos de tu programa',
-    teamL:'Nombre del programa', teamPh:'Como lo conocen las familias',
-    progL:'Nombre del programa', progPh:'Lo que verán las familias',
+    teamL:'Nombre del EQUIPO', teamPh:'Canóvanas',
+    teamAyuda:'Tal como sale en el marcador, letra por letra. Es lo que engancha tus juegos con tu campaña — si aquí pones otra cosa, tus juegos no aparecen.',
+    progL:'Nombre del programa', progPh:'Canóvanas Basketball Club',
+    progAyuda:'El de la organización, el que verán las familias en los avisos.',
     nameL:'Tu nombre', namePh:'Nombre y apellido',
     emailL:'Tu correo', emailPh:'Ahí te escribimos y por ahí entras',
     phoneL:'Tu teléfono (opcional)', phonePh:'787…',
@@ -330,7 +332,7 @@ var S = {
     lic:'Acepto la licencia por juego: <b>desde cinco dólares por cada juego con promesas, y el peldaño lo fija cuántas promesas recogió ese juego</b>. No hay mínimo: con un juego basta, y cada juego de más es otra oportunidad. La escala entera está en la portada. No se paga nada por adelantado; se factura por los juegos que llevaron promesas y se paga dentro de siete días. Un juego que no recoge ni una promesa no se factura. Si el cargo no se paga, la licencia caduca y los datos de promesas se retiran de la plataforma.',
     errLic:'Tienes que aceptar la licencia y su cargo para seguir.',
     go:'Inscribir mi programa',
-    errTeam:'Escribe el nombre del programa.',
+    errTeam:'Escribe el nombre del equipo, como sale en el marcador.',
     errProg:'Escribe el nombre del programa.',
     errWho:'Tu nombre y tu correo, por favor.',
     errTaken:'Ese programa ya tiene campaña. Escríbenos si crees que es un error.',
@@ -345,19 +347,21 @@ var S = {
   },
   en:{
     kick:'Sign up your program',
-    h1:'Your players score. Your program gets paid.',
-    lede:'Padrinos pledge a few cents on every point a player scores in his run. The game records the points itself, so nobody has to report a score or be taken at his word, and each padrino pays on what was actually scored. Nothing to sell, nothing to deliver, nobody to gather.',
-    s1b:'Before the window · We open your campaign.',
+    h1:'Your team plays. Your program raises.',
+    lede:'Padrinos pledge a few cents on every point your team scores in a game. You were playing the game anyway: the final score does the arithmetic. Win or lose, every point counts. Nothing to sell, nothing to deliver, nobody to gather.',
+    s1b:'Once · We open your campaign.',
     s1:'You write to us, we set it up, and we give you your code. Nobody signs themselves up — we open them one at a time, by hand, and nothing goes live until you say so.',
-    s2b:'Before the window · Your players sign themselves up.',
-    s2:'You send us no list. You give out your campaign link, each player enters his own name, and you approve who is in — the last word is yours, but typing the names is not your job. And it does not have to be only the roster: anybody you approve can take a run and bring their own padrinos. You set the window: one afternoon in the gym, or a week with families playing at home. One event is one window; if you want to run another afterwards, that is its own campaign.',
-    s3b:'The window · Padrinos pledge, players play.',
-    s3:'You send the link to the program group. Each player gets his own link, each padrino picks how much a point and sets a cap if he wants one. A player can pledge-gather and play inside the same window, but pledging on a player closes the moment he starts his official run: pledging while knowing the score is not pledging.',
-    s4b:'When it closes · Everyone gets the number.',
-    s4:'Each player gets one official run and the database refuses a second, so the number is the number. The platform calculates each padrino’s total with his cap applied if it bit, and each one gets a notice with the points and his total — no payment link. You are left with the full list, to print or download. The collecting you do yourself, wherever you already talk to those people.',
+    s2b:'Once · You put your games on the scoreboard.',
+    s2:'Your own schedule, or the tournament you are playing in. Each game gets its own link, and that link is what people pledge on. There are no player lists to send and no names to type: pledges are on the TEAM’s points, so the same link works for every family.',
+    s3b:'Before the game · Padrinos pledge.',
+    s3:'You send the game’s link to the program group. Each padrino picks how much a point and sets a cap if he wants one. He does not need an account or anything of ours. Pledging on a game closes the moment its score is posted: pledging while knowing the result is not pledging.',
+    s4b:'When the score is posted · Everyone gets the number.',
+    s4:'The platform calculates each padrino’s total with his cap applied if it bit, and each one gets ONE notice with the final score and his total — no payment link, no reminders. If the score is corrected afterwards, anyone who was told a different figure gets the correction. You are left with the full list, to print or download. The collecting you do yourself, wherever you already talk to those people.',
     formH:'Tell us about your program',
-    teamL:'Program name', teamPh:'As the families know it',
-    progL:'Program name', progPh:'What families will see',
+    teamL:'TEAM name', teamPh:'Canóvanas',
+    teamAyuda:'Exactly as it appears on the scoreboard, letter for letter. This is what links your games to your campaign — put anything else here and your games will not show up.',
+    progL:'Program name', progPh:'Canóvanas Basketball Club',
+    progAyuda:'The organisation’s name, the one families will see on the notices.',
     nameL:'Your name', namePh:'First and last name',
     emailL:'Your email', emailPh:'We write here, and you sign in with it',
     phoneL:'Your phone (optional)', phonePh:'787…',
@@ -368,7 +372,7 @@ var S = {
     lic:'I accept the per-game license: <b>from five dollars for each game that carries pledges, with the step set by how many pledges that game gathered</b>. There is no minimum: one game is enough, and every additional game is another opportunity. The full scale is on the home page. Nothing is paid up front; it is invoiced for the games that carried pledges and is due within seven days. A game that records no pledges is not invoiced. If the fee is not paid, the license lapses and its pledge data is removed from the platform.',
     errLic:'You have to accept the license and its fee to continue.',
     go:'Sign up my program',
-    errTeam:'Write the program name.',
+    errTeam:'Write the team name, as it appears on the scoreboard.',
     errProg:'Write the program name.',
     errWho:'Your name and email, please.',
     errTaken:'That program already has a campaign. Write to us if that seems wrong.',
@@ -450,12 +454,21 @@ function draw(){
     '</div>' +
 
     '<h2>' + T('formH') + '</h2>' +
+    /* LOS DOS CAMPOS DECÍAN «Nombre del programa».
+       Son dos cosas distintas y una de ellas decide si esto funciona:
+       el nombre del EQUIPO es con el que se buscan sus juegos en el
+       marcador. Si el entrenador escribe ahí el nombre de la
+       organización —que es lo que pedían los dos rótulos— no encaja
+       con ninguno, no se le crea juego, y nadie puede prometer. Sin
+       un solo error por ningún lado. */
     '<label for="tm">' + T('teamL') + '</label>' +
     '<input id="tm" type="text" maxlength="60" placeholder="' + T('teamPh') + '" ' +
       'autocapitalize="words" enterkeyhint="next">' +
+    '<p class="hint">' + T('teamAyuda') + '</p>' +
     '<label for="pg">' + T('progL') + '</label>' +
     '<input id="pg" type="text" maxlength="60" placeholder="' + T('progPh') + '" ' +
       'autocapitalize="words" autocomplete="organization" enterkeyhint="next">' +
+    '<p class="hint">' + T('progAyuda') + '</p>' +
     '<label for="nm">' + T('nameL') + '</label>' +
     '<input id="nm" type="text" maxlength="60" placeholder="' + T('namePh') + '" ' +
       'autocomplete="name" autocapitalize="words" enterkeyhint="next">' +
