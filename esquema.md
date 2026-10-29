@@ -1,22 +1,78 @@
-# El esquema de la base, tal como está
+# The database schema as it stands
 
-Sacado de la base el 19 de octubre de 2026 con una consulta al
-catálogo. Está aquí por una razón concreta: sin él, cada pregunta
-sobre la base —¿existe esa función?, ¿cómo se llama esa columna?,
-¿qué arrastra un borrado?— era una consulta escrita a ciegas que
-alguien tenía que correr y pegar de vuelta. Una mañana entera se fue
-en eso.
+Pulled from the database on 19 October 2026 with a catalog
+query. It exists for one concrete reason: without it, every question
+about the database — does that function exist, what is that column
+called, what does a delete drag with it — was a query written blind
+that somebody had to run and paste back. A whole morning went that
+way. It does not maintain itself: when something important changes,
+pull it again with the query at the end.
 
-No se mantiene solo. Si cambia algo importante, se vuelve a sacar con
-la consulta del final.
+One database, two products: Cada Punto (cadapunto.com) and
+Hooporia (hooporia.com) share all of it. `campaigns.product` is the
+only thing separating them.
 
-Una base, dos productos: Cada Punto (cadapunto.com) y Hooporia
-(hooporia.com) comparten todo esto. `campaigns.product` es lo único
-que las separa.
+**Mind the date.** The catalog below was pulled on 19 October and
+carries none of the scoreboard work: no `torneos`, no `torneo_juegos`,
+no `licencias_juego`, none of the `torneo_*` functions. All of that
+went in between 26 and 28 October. Until the catalog is pulled again,
+the repo's `.sql` files are the only record of that part — which is
+what the next section is for.
 
-## Lo que arrastra borrar una campaña
+## The `.sql` files, and what order they run in
 
-Veintiuna tablas llevan `campaign_id`:
+This is **not a migration system**. Each file is a snapshot
+of "run this and the database ends up like this," and several of them
+redefine the same function because each one added something to it.
+Whichever runs last wins, so the order is not decorative: running them
+out of order leaves the database on an old version, with nothing to
+complain about it.
+
+| # | File | What it leaves behind |
+|---|---|---|
+| 1 | `marcador-torneos.sql` | tables `torneos` and `torneo_juegos`; `bw_register_tournament` |
+| 2 | `marcador-torneos-2.sql` | `torneo_tablero` |
+| 3 | `marcador-licencias.sql` | `licencias_juego`; `torneo_por_facturar`; `torneo_tablero` |
+| 4 | `marcador-codigos.sql` | `bw_check`, `bw_can_build`; `bw_register_tournament` |
+| 5 | `marcador-codigos-2.sql` | `bw_codes_admin`, `bw_code_set`, `bw_code_delete` |
+| 6 | `marcador-cobro.sql` | `cp_piso_centavos`, `juego_puede`, `licencia_juego_calculo`, `juego_reporte`, `torneo_juegos_cobrables` |
+| 7 | `marcador-duenos.sql` | `torneos.codigo`; `bw_code_id`, `bw_es_maestro`; `bw_register_tournament` |
+| 8 | `marcador-tablero-2.sql` | `torneo_tablero` |
+| 9 | `marcador-enlace.sql` | `torneo_juegos.game_a`/`game_b`; `tj_enlazar_lado`, `torneo_enlazar`; `bw_register_tournament` |
+
+### The two functions that live in several files
+
+These are the only two that really matter for ordering, and
+every copy of each reads just as current as the others. Nothing inside
+any of them says which one is the good one.
+
+**`bw_register_tournament`** is in four: `torneos`, `codigos`,
+`duenos` and `enlace`. **`marcador-enlace.sql` (9) wins.** Each
+version carries the previous one forward, so the `enlace` copy already
+has the registration, the code check through `bw_can_build`, the
+tournament ownership with its prefix collision, and on top of that the
+link from each side of a game to its campaign.
+
+**`torneo_tablero`** is in three: `torneos-2`, `licencias` and
+`tablero-2`. **`marcador-tablero-2.sql` (8) wins** — it is the one
+that returns both sides in a `lados` array. The two before it took a
+single team per game with a `limit 1`, and on a game where both teams
+are raising that showed half the money.
+
+### Rebuilding the database from scratch
+
+1 through 9, in that order. All of them are re-runnable:
+they are written with `create or replace`, `add column if not exists`
+and `create index if not exists`, so running one again breaks nothing
+and duplicates nothing.
+
+What you must **not** do is run one of the older files that redefine
+`bw_register_tournament` on its own against an up-to-date database:
+that silently reverts the function to that file's version. If that
+function needs changing, change it in `marcador-enlace.sql` and run
+that one.
+
+## What deleting a campaign drags with it
 
 - `bm_cards`
 - `bm_offers`
@@ -40,14 +96,14 @@ Veintiuna tablas llevan `campaign_id`:
 - `score_reports`
 - `sponsors`
 
-Seis de ellas no tienen `id` propio — son tablas de unión o de
-acumulado, y por eso `borrar_arbol` comprueba si hay `id` antes de
-intentar bajar un nivel más:
+Six of them have no `id` of their own: they are join or
+rollup tables, which is why `borrar_arbol` checks for an `id` before
+trying to go one level deeper.
 
 `bw_teams`, `campaign_cards`, `campaign_locations`, `campaign_payout`, `campaign_practice`, `campaign_tryouts`
 
 
-## Las tablas (sin contar las de marcadores)
+## The tables (not counting the leaderboards)
 
 
 ### `app_admins`
@@ -662,12 +718,12 @@ intentar bajar un nivel más:
 - created_at timestamp with time zone
 
 
-## Las tablas de marcadores de los juegos
+## The game leaderboard tables
 
-Cuarenta y nueve tablas `*_standings`, una por juego, todas con la
-misma forma (`player_name`, `score`, a veces los cuatro cuartos) y
-ninguna atada a una campaña. No entran en nada de lo de arriba: un
-borrado de campaña no las toca.
+Forty-nine `*_standings` tables, one per game, all the same
+shape (`player_name`, `score`, sometimes the four quarters) and none
+of them tied to a campaign. They are part of none of the above: a
+campaign delete does not touch them.
 
 
 - `alley_oop_standings`
@@ -721,10 +777,10 @@ borrado de campaña no las toca.
 - `vr_the_handle_standings`
 
 
-## Las funciones
+## The functions
 
 
-### Sueltas
+### Standalone
 
 - `add_games(p_code text, p_campaign uuid, p_rows json)`
 - `billing_queue()`
@@ -775,7 +831,7 @@ borrado de campaña no las toca.
 - `set_player_pin(p_player uuid, p_pin text)`
 - `student_sign_in(p_campaign uuid, p_pin text, p_name text DEFAULT NULL::text)`
 
-### Las `cp_`
+### The `cp_` family
 
 - `cp_game_state(p_challenge uuid, p_player uuid, p_key text)`
 - `cp_padrino_view(p_challenge uuid, p_player uuid)`
@@ -785,7 +841,7 @@ borrado de campaña no las toca.
 - `cp_reto_vivo(p_campaign uuid)`
 - `cp_tablero(p_challenge uuid)`
 
-### Las `roster_`
+### The `roster_` family
 
 - `roster_active(p_code text, p_campaign uuid, p_player uuid, p_on boolean)`
 - `roster_add(p_code text, p_campaign uuid, p_names text[], p_squad text DEFAULT NULL::text)`
@@ -795,7 +851,7 @@ borrado de campaña no las toca.
 - `roster_remove(p_code text, p_campaign uuid, p_player uuid)`
 - `roster_who(p_code text, p_campaign uuid)`
 
-### Las `bw_`
+### The `bw_` family
 
 - `bw_approve_request(p_id uuid)`
 - `bw_board()`
@@ -823,7 +879,7 @@ borrado de campaña no las toca.
 - `bw_unlink_team(p_name text)`
 - `bw_who(p_code text)`
 
-### Las `dia_`
+### The `dia_` family
 
 - `dia_coach_add(p_code text, p_name text, p_team text, p_pin text)`
 - `dia_coach_pin(p_code text, p_player uuid, p_pin text)`
@@ -838,7 +894,7 @@ borrado de campaña no las toca.
 - `dia_sign_in(p_pin text, p_name text DEFAULT NULL::text)`
 - `dia_who(p_code text)`
 
-### Las `cj_`
+### The `cj_` family
 
 - `cj_admin_id(p_admin text)`
 - `cj_code_add(p_admin text, p_site text, p_kind text, p_days integer DEFAULT NULL::integer)`
@@ -848,7 +904,10 @@ borrado de campaña no las toca.
 - `cj_codes_list(p_admin text)`
 
 
-## Cómo se vuelve a sacar
+## How to pull it again
+
+Paste it into Supabase's SQL editor and run it. It returns
+a single row with the whole catalog as JSON.
 
 ```sql
 select json_build_object(
