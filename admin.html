@@ -665,7 +665,14 @@ function pintarCobro(d){
       lic.estado === 'ya_facturada'      ? 'already invoiced' :
       lic.estado === 'avisos_pendientes' ? 'NOT invoiced — a notice failed' :
       lic.estado === 'sin_correo'        ? 'NOT invoiced — the program has no email' :
-      lic.estado === 'stripe'            ? 'NOT invoiced — Stripe refused' :
+      /* CON EL MOTIVO, que es lo único que sirve.
+         Esto decía «Stripe refused» y tiraba lic.why — el mensaje que
+         devuelve Stripe diciendo exactamente qué pasó. Sin él, para
+         saber por qué no se facturó un juego hay que irse al panel de
+         Stripe a buscar la petición fallida por la hora. El servidor
+         ya manda el motivo; era el panel el que lo tiraba. */
+      lic.estado === 'stripe'            ? 'NOT invoiced — Stripe refused' +
+                                           (lic.why ? ': ' + lic.why : '') :
       (lic.estado || '—');
 
     var cuenta = [];
