@@ -50,16 +50,34 @@ const leer = (f) => fs.readFileSync(path.join(__dirname, f), 'utf8');
 /* El número, sacado de index.html tal cual se despliega. */
 const idx = leer('index.html');
 const mt = idx.indexOf('const TARIFAS = [');
-const mm = idx.match(/const MINIMO\s*=\s*(\d+)/);
 if (mt < 0) { console.log('  MAL  no encuentro TARIFAS en index.html'); process.exit(1) }
-if (!mm)    { console.log('  MAL  no encuentro MINIMO en index.html');  process.exit(1) }
 const TARIFAS = new Function('return ' +
   idx.slice(idx.indexOf('[', mt), idx.indexOf('];', mt) + 1))();
 const mf = idx.indexOf('const FEE = {');
 const FEE = new Function('return ' +
   idx.slice(idx.indexOf('{', mf), idx.indexOf('}', mf) + 1))();
-const MINIMO = +mm[1];
 const SUELO = FEE.suelo;
+
+/* ── EL MÍNIMO DE CINCO JUEGOS, RETIRADO ──────────────────────────
+   Esto leía MINIMO de index.html y abortaba la prueba entera si no
+   lo encontraba. El mínimo se retiró el 28 de octubre de 2026: con
+   un juego basta, y cada juego de más es otra oportunidad.
+
+   La constante nunca llegó a comprobarse contra el texto de ninguna
+   página — se parseaba y se guardaba. Ahora se vigila lo contrario,
+   y en las seis páginas de dinero a la vez, porque la frase vivía en
+   cuatro: la portada, ayuda, custodia y la CASILLA DE
+   CONSENTIMIENTO de equipo.html. Esa última es la que marca una
+   escuela al inscribirse, así que una sola que se quede atrás es un
+   compromiso que alguien acepta sin que nadie se lo pida. */
+const MINIMOS_RETIRADOS = [
+  /se inscribe con cinco juegos/i,
+  /signs? up for five games/i,
+  /activa cinco juegos/i,
+  /activates five games/i,
+  /cinco juegos para empezar/i,
+  /five games to start/i
+];
 
 /* Las cifras de la escalera POR PLANTILLA, que se retiró. Cualquiera
    de éstas en una página de dinero es la frase vieja sin cambiar. */
@@ -287,6 +305,22 @@ console.log('\n4b · Y al padrino no se le suma nada\n');
        entonces la página dice una cosa y cobra otra. */
     const calcula = /\*\s*0\.20\b|\*\s*1\.20\b|\*\s*0,20\b/.test(limpio);
     si(!calcula, f + ' tampoco se lo calcula por lo bajo');
+  }
+}
+
+console.log('\n4b · Ninguna página pide un mínimo de juegos\n');
+{
+  /* La frase vivía en cuatro páginas, y una de ellas es la casilla
+     que marca una escuela al inscribirse. Una sola que se quede
+     atrás es un compromiso de temporada que alguien acepta sin que
+     nadie se lo pida. */
+  for (const f of ['index.html', 'terms.html', 'custodia.html',
+                   'ayuda.html', 'equipo.html', 'demo.html']) {
+    const t = leer(f).replace(/<!--[\s\S]*?-->/g, '')
+                     .replace(/\/\*[\s\S]*?\*\//g, '');
+    const pillada = MINIMOS_RETIRADOS.find((r) => r.test(t));
+    si(!pillada, f + ' no le pide un mínimo de juegos a nadie' +
+       (pillada ? '  (dice ' + pillada + ')' : ''));
   }
 }
 
