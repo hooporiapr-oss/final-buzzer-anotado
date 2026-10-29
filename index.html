@@ -1,0 +1,1304 @@
+<!doctype html>
+<!-- EL ESPAÑOL MANDA, Y MANDA EN EL MARCADO.
+
+     Hasta el 28 de octubre de 2026 esto estaba al revés: el inglés
+     vivía en el marcado y el español en la tabla de traducción, así
+     que la página se veía en español sólo DESPUÉS de que corriera el
+     pintor. Todo lo que lee el HTML sin ejecutarlo lo veía en inglés
+     — la vista previa del editor, ver-código-fuente, el fichero
+     copiado a mano, y buena parte de los rastreadores.
+
+     Ahora el español es el marcado y el inglés es la traducción. La
+     página ya está en español antes de que corra una sola línea de
+     JavaScript, y el pintor sólo hace falta para pasarla al inglés.
+     prueba-index.js vigila las dos cosas: que el <head> vaya en
+     español en crudo y que el titular del cuerpo también. -->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101c2a">
+<title>Cada Punto Cuenta | Cada punto queda anotado.</title>
+<meta name="description" content="Recaudación por promesas sobre un juego que tu equipo ya tiene en calendario. Un padrino promete unos centavos por punto, los dos equipos del tablero recaudan, y al programa le pagan directo.">
+
+<!-- El icono y la imagen de compartir. og:image va en absoluto
+     a propósito: WhatsApp y los demás no resuelven rutas
+     relativas, y con una relativa la vista previa sale en
+     blanco igual que sin imagen. -->
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Un nene en una cancha al atardecer, con el brazo en alto, mientras su marcador sube: 1, 3, 6, 10, 15, 21">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* La misma hoja que el resto de la casa: crema, navy, naranja,
+   Archivo para los titulares y los números, Inter para el texto.
+
+   LA PORTADA ES OSCURA desde el 28 de octubre de 2026. Era crema, y
+   la crema le quitaba fuerza al naranja justo donde más falta hace.
+   De aquí para abajo la página alterna: oscuro, claro, blanco. */
+:root{--navy:#101c2a;--navy2:#192b3d;--orange:#ff7a18;--cream:#faf8f4;--ink:#1b2937;--muted:#617083;
+      --linea:#e6e3dc;--panel:#ffffff;--board:#0b1420;--bien:#0b7a5a;
+      --claro:#aebbc9;--borde:#36475b}
+*{box-sizing:border-box}
+/* --barra es la altura de la cabecera pegada. Se usa en dos sitios y
+   tienen que ser el mismo número: el hueco que deja scroll-padding
+   para que un ancla no se esconda DEBAJO de la cabecera, y el sitio
+   donde empieza el panel del menú. */
+:root{--barra:70px}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--barra) + 10px)}
+/* overflow-x en el body y no sólo en html: en Safari de iOS, html
+   solo no lo sujeta y basta un elemento que se pase de ancho para
+   que toda la página se arrastre de lado. */
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6;overflow-x:hidden}
+a{color:inherit}
+.num{font-variant-numeric:tabular-nums}
+.wrap{width:min(1120px,calc(100% - 40px));margin:auto}
+
+/* ── La cabecera ──────────────────────────────────────────────── */
+header{background:var(--navy);color:white;position:sticky;top:0;z-index:100}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:20px;
+  min-height:var(--barra)}
+.brand{font-family:Archivo,Inter,sans-serif;font-weight:900;letter-spacing:.06em;
+  text-decoration:none;font-size:1.05rem}
+.brand span{color:var(--orange)}
+@media(max-width:430px){ .brand{font-size:.9rem;letter-spacing:.015em} }
+.navlinks{display:flex;gap:24px;align-items:center}
+.navlinks a{text-decoration:none;font-weight:600;font-size:.9rem}
+.navlinks a:hover{color:var(--orange)}
+
+/* ── El menú de mano ──────────────────────────────────────────────
+   En un teléfono los enlaces no caben. Esto los recoge detrás de un
+   botón.
+
+   El botón del idioma NO entra en el menú. Es lo primero que busca
+   alguien que abre la página en el idioma que no es suyo, y
+   esconderlo detrás de tres rayas es pedirle que adivine. */
+.hamb{display:none;width:44px;height:44px;flex:0 0 44px;border:1px solid #ffffff55;
+  background:transparent;border-radius:9px;cursor:pointer;padding:0;
+  align-items:center;justify-content:center}
+.hamb:hover{border-color:var(--orange)}
+.hamb span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;
+  position:relative;transition:transform .18s ease,opacity .18s ease}
+.hamb span::before,.hamb span::after{content:'';position:absolute;left:0;
+  width:20px;height:2px;background:#fff;border-radius:2px;transition:transform .18s ease}
+.hamb span::before{top:-6px}
+.hamb span::after{top:6px}
+.hamb[aria-expanded="true"] span{background:transparent}
+.hamb[aria-expanded="true"] span::before{transform:translateY(6px) rotate(45deg)}
+.hamb[aria-expanded="true"] span::after{transform:translateY(-6px) rotate(-45deg)}
+button.lang{border:1px solid #ffffff55;background:transparent;color:white;
+  border-radius:9px;padding:0 12px;min-height:40px;font:inherit;font-size:.85rem;
+  font-weight:700;cursor:pointer;white-space:nowrap}
+button.lang:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ── Los botones ──────────────────────────────────────────────── */
+.button{display:inline-block;text-decoration:none;border-radius:9px;padding:14px 22px;
+  background:var(--orange);color:#111a24;font-family:Archivo,Inter,sans-serif;
+  font-weight:800;border:0;cursor:pointer}
+.button:hover{filter:brightness(1.07)}
+/* El perfilado tiene dos caras, porque la página alterna fondo: en
+   oscuro va en blanco, en claro va en navy. */
+.button.linea{background:transparent;color:var(--navy);border:2px solid var(--navy);padding:12px 20px}
+.oscuro .button.linea{color:#fff;border-color:#8190a0}
+a:focus-visible,button:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+
+h1,h2{font-family:Archivo,Inter,sans-serif;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,6.4vw,4rem);font-weight:900;letter-spacing:-.04em;line-height:1.05}
+h2{font-size:clamp(1.8rem,4.4vw,2.8rem);font-weight:900;letter-spacing:-.03em;line-height:1.14}
+p{margin:0}
+.section{padding:clamp(56px,8vw,88px) 0}
+.eyebrow{color:var(--orange);font-family:Archivo,Inter,sans-serif;font-weight:800;
+  letter-spacing:.17em;text-transform:uppercase;font-size:.76rem}
+.lede{color:var(--muted);font-size:clamp(1.02rem,2.2vw,1.14rem);max-width:36rem;margin:0}
+
+/* Los fondos. .oscuro es navy, .blanco es blanco, y lo que no lleva
+   nada se queda en crema. */
+.oscuro{background:var(--navy);color:#fff}
+.oscuro .lede{color:var(--claro)}
+.blanco{background:var(--panel)}
+
+/* ── El encabezado centrado ───────────────────────────────────────
+   Ojo, titular y una línea. Es el gesto que ordena la página: cada
+   sección se presenta igual y el lector sabe dónde está sin leer. */
+.cab{text-align:center;max-width:46rem;margin:0 auto clamp(34px,5vw,48px)}
+.cab h2{margin:.55rem 0 0}
+.cab .lede{margin:1rem auto 0;text-align:center}
+
+/* ── LA PORTADA ───────────────────────────────────────────────────
+   UNA SOLA CUENTA en la primera pantalla: un padrino, un juego,
+   diecisiete dólares. Lo que había aquí antes eran dos —ésta y los
+   ochocientos dieciséis del tablero—, y el lector se llevaba el
+   número grande sin saber de dónde salía. Se gana abajo. */
+.hero{background:radial-gradient(circle at 78% 34%,#2b3c50 0%,var(--navy) 60%);
+  color:#fff;padding:clamp(52px,8vw,96px) 0}
+.hero-grid{display:grid;gap:clamp(1.8rem,4vw,2.6rem);align-items:center}
+@media(min-width:62rem){
+  .hero-grid{grid-template-columns:1.08fr .92fr;
+    grid-template-areas:"copy suma" "ctas suma";
+    column-gap:clamp(2.2rem,5vw,3.6rem);row-gap:1.6rem}
+  .hero-copy{grid-area:copy;align-self:end}
+  .hero-sum{grid-area:suma}
+  .hero-ctas{grid-area:ctas;align-self:start}
+}
+.hero-copy{display:flex;flex-direction:column;gap:1.1rem;min-width:0}
+h1 em{font-style:normal;color:var(--orange)}
+/* La línea que más trabaja de la página, y va sola: no necesitas un
+   torneo. Metida dentro de un párrafo se perdía. */
+.hero-sub{font-family:Archivo,Inter,sans-serif;font-weight:800;
+  font-size:clamp(1.15rem,2.8vw,1.42rem);line-height:1.25;letter-spacing:-.015em;
+  margin:0}
+.hero-p{color:#ccd7e2;max-width:36rem;margin:0}
+.ctas{display:flex;flex-wrap:wrap;gap:.7rem}
+.hero-nota{color:#8ea0b3;font-size:.86rem;margin:.9rem 0 0}
+
+/* La cuenta. Letra de marcador y cifras de ancho fijo, porque es lo
+   mismo que un marcador: números que se leen de lejos. */
+.suma{background:var(--navy2);border:1px solid var(--borde);border-radius:18px;
+  padding:clamp(20px,4vw,30px) clamp(16px,4vw,28px);
+  box-shadow:0 26px 60px rgba(5,10,18,.4)}
+.suma-fila{display:flex;align-items:flex-start;justify-content:center;
+  gap:clamp(8px,2.6vw,20px);flex-wrap:nowrap}
+.suma-c{text-align:center;min-width:0}
+.suma-n{font-family:Archivo,Inter,sans-serif;font-weight:900;
+  font-size:clamp(1.75rem,7.4vw,3.1rem);letter-spacing:-.04em;line-height:1;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.suma-n.tot{color:var(--orange)}
+.suma-u{display:block;font-size:clamp(.56rem,1.7vw,.7rem);font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:#8fa3b8;margin-top:7px;
+  white-space:nowrap}
+.suma-op{font-family:Archivo,Inter,sans-serif;font-weight:800;color:#56708a;
+  font-size:clamp(1rem,3.4vw,1.6rem);line-height:1;padding-top:.22em}
+.suma-pie{margin-top:16px;padding-top:14px;border-top:1px solid #ffffff1f;
+  color:#b9cbd9;font-size:.92rem;line-height:1.55}
+.suma-pie b{color:#fff}
+
+/* ── LOS CUATRO PASOS, NUMERADOS ─────────────────────────────── */
+.pasos{display:grid;gap:14px}
+@media(min-width:40rem){.pasos{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:58rem){.pasos{grid-template-columns:repeat(4,1fr)}}
+.paso{background:var(--panel);border:1px solid var(--linea);border-radius:15px;
+  padding:1.4rem 1.3rem;min-width:0}
+.paso .n{font-family:Archivo,sans-serif;font-weight:900;font-size:1.7rem;
+  color:var(--orange);line-height:1;font-variant-numeric:tabular-nums}
+.paso h3{font-family:Archivo,sans-serif;font-weight:900;font-size:1.02rem;
+  letter-spacing:.06em;text-transform:uppercase;margin:.8rem 0 .5rem}
+.paso p{font-size:.93rem;color:var(--muted)}
+
+/* ── El calendario ────────────────────────────────────────────────
+   DOS FILAS, Y EN ESTE ORDEN: primero un juego de verdad con sus dos
+   botones de prometer, y debajo la fila del cuadro. Es el orden del
+   argumento — la recaudación es por juego, y el torneo es lo que el
+   tablero sabe hacer ADEMÁS. */
+.split{display:grid;gap:clamp(1.8rem,4vw,3rem);align-items:center}
+@media(min-width:56rem){.split{grid-template-columns:1fr 1fr}}
+.sched{background:var(--panel);border:1px solid var(--linea);border-radius:15px;
+  overflow:hidden;min-width:0}
+.sday{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+  padding:.75rem 1.1rem;background:var(--cream);border-bottom:1px solid var(--linea);
+  font-family:Archivo,sans-serif;font-size:.67rem;font-weight:900;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.srow{display:grid;grid-template-columns:auto 1fr;gap:.15rem .9rem;
+  padding:.9rem 1.1rem;border-top:1px solid var(--linea);align-items:baseline}
+.stime{font-family:Archivo,sans-serif;font-weight:800;font-size:.86rem;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.smatch{font-weight:600;min-width:0}
+.smatch i{font-style:normal;color:var(--muted);padding:0 .25rem}
+.spills{grid-column:2;display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem}
+.pill{font-size:.76rem;font-weight:700;border-radius:999px;padding:.32rem .75rem;
+  border:1px solid var(--orange);color:var(--orange);background:transparent;white-space:nowrap}
+/* El botón de un juego del cuadro: existe, pero todavía no sabe
+   sobre quién promete. Va punteado para que se lea «aún no», no
+   «nunca». */
+.pill.esp{border-style:dashed;border-color:#c9a07a;color:var(--muted)}
+.srow.hole .smatch{color:var(--muted)}
+.schnota{padding:.7rem 1.1rem;border-top:1px solid var(--linea);background:var(--cream);
+  color:var(--muted);font-size:.78rem}
+
+/* ── LA ESCALERA: los tres pases ──────────────────────────────────
+   Un padrino, un jugador, la plantilla. Cada peldaño es el de arriba
+   multiplicado por algo que el lector acaba de aprender:
+
+       $17  ×  4 padrinos   =  $68
+       $68  × 12 jugadores  = $816
+
+   Un número que no sale del anterior llega frío, y éste es EL número
+   de la página. */
+.esc{display:grid;gap:.7rem;max-width:46rem;margin:0 auto}
+.escp{background:var(--navy2);border:1px solid var(--borde);border-radius:14px;
+  padding:1.1rem 1.3rem;display:grid;grid-template-columns:1fr auto;
+  gap:.2rem 1.2rem;align-items:center}
+.escp .k{grid-column:1;font-family:Archivo,sans-serif;font-size:.6rem;font-weight:900;
+  letter-spacing:.17em;text-transform:uppercase;color:#8fa3b8}
+.escp .m{grid-column:1;font-size:.96rem;color:#d7e1ea;min-width:0}
+.escp .v{grid-column:2;grid-row:1 / span 2;font-family:Archivo,sans-serif;
+  font-weight:900;font-size:clamp(1.5rem,5.4vw,2.05rem);letter-spacing:-.03em;
+  line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap;color:#fff}
+/* El último peldaño es el número que alguien se lleva en la cabeza. */
+.escp.last{border-color:var(--orange);background:rgba(255,122,24,.1)}
+.escp.last .v{color:var(--orange);font-size:clamp(1.95rem,7.6vw,2.9rem)}
+.escpie{max-width:46rem;margin:1.5rem auto 0;color:var(--claro);font-size:.93rem}
+.escpie b{color:#fff}
+.escpie + .escpie{margin-top:.9rem}
+
+/* ── SIN TOPE DE PADRINOS ─────────────────────────────────────────
+   El mismo juego, los mismos 68 puntos, los mismos 25¢. Lo único
+   que cambia de fila a fila es cuántos padrinos hay.
+
+   Esta sección existe porque la página se leía como si un equipo
+   tuviera un padrino. La portada dice «UN PADRINO» debajo de los
+   diecisiete dólares, la escalera sube hasta cuarenta y ocho y ahí
+   se para — y cuarenta y ocho acaba pareciendo la respuesta en vez
+   de un ejemplo. No hay ningún tope, y hacía falta decirlo con
+   números y no con un adjetivo.
+
+   La columna de la licencia va al lado a propósito: enseñar lo que
+   sube sin enseñar lo que cuesta sería vender la mitad de la
+   verdad. Sube por tramos y se para; lo prometido no. */
+.topes{border:1px solid var(--linea);border-radius:15px;overflow:hidden;
+  background:var(--panel);max-width:44rem;margin:0 auto}
+.tphead,.tp{display:grid;grid-template-columns:1fr auto auto;
+  gap:.35rem 1.2rem;align-items:baseline;padding:.95rem 1.25rem}
+.tphead{background:var(--navy);color:#fff;font-family:Archivo,sans-serif;
+  font-size:.63rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+.tp{border-top:1px solid var(--linea)}
+.tp.suyo{background:rgba(255,122,24,.09)}
+.tp .q{color:var(--ink);font-weight:600;font-size:.95rem;min-width:0}
+.tp .q i{font-style:normal;color:var(--muted);font-weight:400}
+.tp .pro{font-family:Archivo,sans-serif;font-weight:900;
+  font-size:clamp(1.05rem,3.4vw,1.4rem);font-variant-numeric:tabular-nums;
+  white-space:nowrap;text-align:right}
+.tp.suyo .pro{color:var(--orange)}
+.tp .lic{color:var(--muted);font-size:.88rem;font-variant-numeric:tabular-nums;
+  white-space:nowrap;text-align:right;min-width:3.1em}
+.tphead .h2c,.tphead .h3c{text-align:right}
+/* En un teléfono tres columnas no caben con $2,040.00 dentro, así
+   que el rótulo se pone encima y los dos números debajo. */
+@media(max-width:36rem){
+  .tphead,.tp{grid-template-columns:1fr auto}
+  .tphead .h1c,.tp .q{grid-column:1 / -1}
+  .tphead .h2c,.tp .pro{grid-column:1;text-align:left}
+  .tphead .h3c,.tp .lic{grid-column:2}
+}
+.topepie{max-width:44rem;margin:1.4rem auto 0;color:var(--muted);font-size:.93rem}
+.topepie b{color:var(--ink)}
+.topepie + .topepie{margin-top:.8rem}
+/* Dos ejes y dos tablas: padrinos por juego, y juegos por temporada.
+   El rótulo los separa sin partir la sección en dos, porque es una
+   sola idea — no hay techo por ningún lado. */
+.topesub{max-width:44rem;margin:0 auto .8rem;display:flex;align-items:baseline;gap:.7rem}
+.topesub .nn{font-family:Archivo,sans-serif;font-weight:900;font-size:.95rem;
+  color:var(--orange);line-height:1;font-variant-numeric:tabular-nums}
+.topesub .tt{font-family:Archivo,sans-serif;font-weight:900;font-size:.72rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.topegap{height:clamp(32px,5vw,46px)}
+
+/* ── El marcador ──────────────────────────────────────────────────
+   Lo que ningún otro recaudador puede enseñar: un juego de verdad
+   con su número, y el que perdió recaudando igual.
+
+   Cae detrás de los ochocientos dieciséis, que es cuando el lector
+   ya sabe leerlo. */
+.board{background:var(--board);border-radius:17px;overflow:hidden;
+  box-shadow:0 20px 48px rgba(7,13,21,.2);min-width:0}
+.board-top{display:flex;align-items:center;justify-content:space-between;
+  gap:.75rem;padding:.75rem 1.15rem;background:rgba(255,255,255,.05);
+  border-bottom:1px solid rgba(255,255,255,.08)}
+.board-id{font-family:Archivo,sans-serif;font-size:.67rem;font-weight:800;
+  letter-spacing:.18em;text-transform:uppercase;color:#7f8ea3}
+.eg{display:inline-flex;align-items:center;gap:.4rem;
+  font-family:Archivo,sans-serif;font-size:.62rem;font-weight:900;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--orange)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--orange)}
+.teams{display:grid;grid-template-columns:1fr auto;gap:.25rem 1rem;
+  padding:1.15rem 1.15rem .95rem;align-items:baseline}
+.tm{font-family:Archivo,sans-serif;font-weight:700;font-size:1.05rem;color:#dfe7f0}
+.tm.win{color:#fff}
+.pts{font-family:Archivo,sans-serif;font-weight:900;font-size:2rem;
+  line-height:1;color:#9fb0c4;text-align:right;font-variant-numeric:tabular-nums}
+.pts.win{color:#fff}
+/* LOS DOS EQUIPOS RECAUDAN. Dos paneles del mismo peso a propósito:
+   el del que perdió es el argumento entero, así que no va de nota al
+   pie debajo del que ganó. */
+.raises{display:grid;gap:.6rem;margin:0 1.15rem}
+@media(min-width:26rem){.raises{grid-template-columns:1fr 1fr}}
+.raise{padding:.8rem .9rem;border-radius:11px;min-width:0;
+  background:rgba(255,122,24,.12);border:1px solid rgba(255,122,24,.3)}
+.raise .lbl{font-family:Archivo,sans-serif;font-size:.57rem;font-weight:900;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--orange)}
+.raise .big{font-family:Archivo,sans-serif;font-size:1.7rem;font-weight:900;
+  line-height:1.15;color:#fff;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.board-note{margin:.95rem 1.15rem 0;color:#c7d3e0;font-size:.86rem}
+.board-foot{margin-top:1rem;padding:.7rem 1.15rem;
+  border-top:1px solid rgba(255,255,255,.08);font-size:.73rem;color:#7f8ea3}
+
+/* ── El dinero ────────────────────────────────────────────────── */
+.claim-q{font-family:Archivo,sans-serif;font-weight:900;
+  font-size:clamp(1.9rem,5.2vw,3rem);letter-spacing:-.035em;line-height:1.1;
+  margin:.6rem 0 1.1rem}
+.claim-q em{font-style:normal;color:var(--orange)}
+.nots{display:grid;gap:.55rem}
+.not{display:flex;gap:.75rem;align-items:flex-start;color:var(--muted);font-size:.98rem}
+.not::before{content:"";flex:0 0 auto;width:1.05rem;height:1.05rem;margin-top:.38rem;
+  border-radius:50%;border:2px solid var(--linea)}
+.not.yes{color:var(--ink)}
+.not.yes::before{border-color:var(--bien);background:var(--bien);
+  box-shadow:inset 0 0 0 3px var(--panel)}
+.fine{color:var(--muted);font-size:.9rem;margin-top:1rem}
+
+/* ── EL PRECIO, COMO TABLA ────────────────────────────────────────
+   Con su cabecera y con la fila del CERO dentro. Estaba de nota al
+   pie —«sin promesas, sin cargo»— y una promesa sobre el cargo vale
+   más dentro de la tabla que debajo de ella. */
+.prices{border:1px solid var(--linea);border-radius:15px;overflow:hidden;
+  max-width:40rem;margin:0 auto;background:var(--panel)}
+.phead{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+  padding:.95rem 1.25rem;background:var(--navy);color:#fff;
+  font-family:Archivo,sans-serif;font-size:.67rem;font-weight:900;
+  letter-spacing:.14em;text-transform:uppercase}
+.peldano,.cero{display:flex;justify-content:space-between;align-items:baseline;
+  gap:1rem;padding:.9rem 1.25rem;border-top:1px solid var(--linea)}
+.cero{border-top:0;background:rgba(11,122,90,.07)}
+.peldano.suyo{background:rgba(255,122,24,.09)}
+.cuantos{color:var(--muted);font-size:.95rem;min-width:0}
+.cero .cuantos{color:var(--ink);font-weight:600}
+.cuesta{font-family:Archivo,sans-serif;font-size:1.25rem;font-weight:900;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.cero .cuesta{color:var(--bien)}
+.peldano.suyo .cuesta{color:var(--orange)}
+.hablar{font-size:.9rem;font-weight:700;color:var(--muted);white-space:nowrap}
+.pricefacts{list-style:none;padding:0;margin:30px auto 0;display:grid;gap:.65rem;
+  max-width:44rem}
+.pricefacts li{position:relative;padding-left:1.3rem;color:var(--muted)}
+.pricefacts li::before{content:"";position:absolute;left:0;top:.65em;width:.45rem;height:.45rem;
+  border-radius:50%;background:var(--orange)}
+.pricefacts li b{color:var(--ink)}
+.priceCta{margin:30px 0 0;text-align:center}
+
+/* ── El cierre ────────────────────────────────────────────────── */
+.close{text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.1rem}
+.close .ctas{justify-content:center}
+.close .lede{text-align:center;color:var(--claro)}
+.close .fine{color:#8ea0b3}
+
+footer{background:#0a1420;color:#aeb9c6;padding:32px 0;font-size:.88rem}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+footer strong{color:white}
+.flinks{display:flex;flex-direction:column;gap:5px}
+.flinks a{text-decoration:none}
+.flinks a:hover{color:var(--orange)}
+
+@media(max-width:860px){
+/* ── El teléfono ──────────────────────────────────────────────────
+   Los enlaces salen de la barra y pasan al panel. El panel se
+   despliega debajo de la cabecera, no por encima: la marca y el
+   idioma siguen a la vista con el menú abierto.
+
+   Cerrado se mide con max-height:0 en vez de display:none para que
+   abra y cierre con una transición; visibility lo saca del paso del
+   teclado y del lector de pantalla cuando está cerrado. */
+.hamb{display:flex}
+.nav{gap:10px}
+.navlinks{position:absolute;left:0;right:0;top:100%;
+  flex-direction:column;align-items:stretch;gap:0;
+  background:var(--navy);border-bottom:1px solid #ffffff22;
+  max-height:0;visibility:hidden;overflow:hidden;
+  transition:max-height .22s ease,visibility .22s}
+.navlinks.abierto{max-height:70vh;visibility:visible;overflow:auto}
+/* 52px de alto: un dedo no acierta en 30. */
+.navlinks a{font-size:1rem;padding:0 max(20px,calc((100vw - 1120px)/2 + 20px));
+  min-height:52px;display:flex;align-items:center;border-top:1px solid #ffffff14}
+.navlinks a:first-child{border-top:0}
+.navlinks a.button{margin:14px 20px 18px;justify-content:center;
+  border-top:0;min-height:52px;border-radius:9px}
+}
+@media(max-width:430px){
+button.lang{padding:0 10px;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="wrap nav">
+<!-- El punto naranja del final es la marca, y lo comprueba
+     prueba-marca.js en las quince páginas. -->
+<a class="brand" href="#top">CADA PUNTO CUENTA<span>.</span></a>
+<nav class="navlinks" id="menu">
+<a href="#how" data-i="navHow">Cómo funciona</a>
+<a href="#precio" data-i="navPrice">Cuánto cuesta</a>
+<a href="ayuda.html" data-i="navFaq">Preguntas</a>
+<a class="button" href="equipo.html" data-i="navCta">Inscribir mi equipo</a>
+</nav>
+<!-- El idioma y las rayas, en ese orden y fuera del panel: lo que
+     se queda a la vista en un teléfono. -->
+<div style="display:flex;align-items:center;gap:8px">
+<button class="lang" id="lang">English</button>
+<button class="hamb" id="hamb" type="button"
+        aria-controls="menu" aria-expanded="false"><span></span></button>
+</div>
+</div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     1 · UN PADRINO, UN JUEGO, DIECISIETE DÓLARES
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="hero oscuro" id="top">
+<div class="wrap hero-grid">
+<div class="hero-copy">
+<div class="eyebrow" data-i="heroEye">Recaudación juego por juego</div>
+<h1 data-i="heroH1">Ganes o pierdas, <em>tu marcador es la recaudación.</em></h1>
+<p class="hero-sub" data-i="heroSub">Convertimos tus juegos en eventos de recaudación.</p>
+<p class="hero-p" data-i="heroP">Ni dulces que vender, ni lavado de carros, ni otro evento
+  que montar &mdash; ya los tienes en el calendario. Un padrino &mdash;un papá, un vecino,
+  un tío&mdash; promete unos centavos por cada punto que anota tu equipo. Programa un juego
+  o la temporada entera: no hay límite.</p>
+</div>
+
+<div class="suma hero-sum">
+<div class="suma-fila">
+<span class="suma-c"><span class="suma-n num">25&cent;</span>
+  <span class="suma-u" data-i="sumA">por punto</span></span>
+<span class="suma-op">&times;</span>
+<span class="suma-c"><span class="suma-n num">68</span>
+  <span class="suma-u" data-i="sumB">puntos</span></span>
+<span class="suma-op">=</span>
+<span class="suma-c"><span class="suma-n num tot">$17</span>
+  <span class="suma-u" data-i="sumC">un padrino</span></span>
+</div>
+<!-- «Eso es UN padrino» y no «un padrino»: la cuenta de arriba es
+     por unidad, y sin esta frase la página entera se lee como si un
+     equipo tuviera un padrino. El tope se niega aquí, en la primera
+     pantalla, y se demuestra con números más abajo. -->
+<!-- NADA DE «DEBER». Esto decía «no se debe nada hasta que se
+     juegue», que es verdad y suena a factura. El padrino no está
+     firmando una deuda: está diciendo que si el equipo juega, él
+     pone unos centavos por punto. La frase cuenta lo mismo por el
+     lado que no asusta. -->
+<p class="suma-pie" data-i="sumPie">Eso es <b>un solo padrino</b>. No hay tope: cada
+  jugador trae los que consiga, y la promesa sólo cuenta cuando el equipo juega.</p>
+</div>
+
+<div class="hero-ctas">
+<div class="ctas">
+<a class="button" href="equipo.html" data-i="heroCta1">Inscribir mi equipo</a>
+<a class="button linea" href="#how" data-i="heroCta2">Cómo funciona</a>
+</div>
+<p class="hero-nota" data-i="heroNota">La incorporación va supervisada mientras entran los
+  primeros programas.</p>
+</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     2 · LOS CUATRO PASOS
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="how">
+<div class="wrap">
+<div class="cab">
+<div class="eyebrow" data-i="howEye">Así de sencillo</div>
+<!-- «PROGRAMA» ABRE LOS CUATRO PASOS desde el 28 de octubre de 2026.
+     Decía «Promete. Juega. Anota. Cobra.» y empezaba por la promesa,
+     que es el segundo movimiento. El primero es poner los juegos en
+     el calendario — que es lo que el entrenador hace de todas formas
+     y es donde empieza la recaudación. -->
+<h2 data-i="howH2">Programa. Promete. Juega. Cobra.</h2>
+<p class="lede" data-i="howP">Cuatro pasos, y los dos del medio son juegos de baloncesto
+  que ya ibas a jugar.</p>
+</div>
+
+<div class="pasos">
+<article class="paso">
+<div class="n num">01</div>
+<h3 data-i="q1w">Programa</h3>
+<p data-i="q1p">Pon tus juegos en marcadorpr: uno, diez o la temporada entera. Cada juego
+  que programas sale con su botón de prometer puesto.</p>
+</article>
+<article class="paso">
+<div class="n num">02</div>
+<h3 data-i="q2w">Promete</h3>
+<p data-i="q2p">Tus jugadores mandan el enlace. Cada padrino promete unos centavos por
+  punto &mdash; de 10¢ a $1 &mdash; y la promesa sólo cuenta cuando se juega.</p>
+</article>
+<article class="paso">
+<div class="n num">03</div>
+<h3 data-i="q3w">Juega</h3>
+<p data-i="q3p">El equipo juega &mdash; sin cancha que reservar y sin evento que montar
+  &mdash; y el anotador publica el marcador final. Cada promesa sale de ahí.</p>
+</article>
+<article class="paso">
+<div class="n num">04</div>
+<h3 data-i="q4w">Cobra</h3>
+<p data-i="q4p">A cada padrino le llega un aviso con el marcador final y lo que dio su
+  promesa. Lo arregla con tu programa como ya lo haría.</p>
+</article>
+</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     3 · LA RECAUDACIÓN CORRE SOBRE MARCADOR, JUEGO A JUEGO
+
+     EL ORDEN DE ESTA SECCIÓN SE DIO LA VUELTA el 28 de octubre de
+     2026, y es la corrección más importante de la página.
+
+     Antes decía «el tablero que tu torneo ya usa» y empezaba por el
+     cuadro que se llena solo. Eso da por hecho que el entrenador
+     tiene un torneo — y la portada, cuatro pantallas más arriba, le
+     acaba de decir que no necesita ninguno. Las dos cosas no podían
+     ser verdad a la vez, y la que manda es la portada.
+
+     Lo cierto es esto: la recaudación es POR JUEGO y corre sobre
+     marcador. Y marcador, ADEMÁS, arma torneos, calendarios,
+     categorías y cuadros para quien los quiera. El torneo es lo que
+     el tablero sabe hacer de más, no el precio de entrada.
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section blanco">
+<div class="wrap split">
+<div>
+<div class="eyebrow" data-i="scEye">El calendario que recauda</div>
+<h2 style="margin-top:.55rem" data-i="scH2">marcadorpr no es sólo un tablero. Es tu
+  calendario de recaudación.</h2>
+<p class="lede" style="margin-top:1rem" data-i="scP1">Programas tus juegos ahí &mdash; uno,
+  diez o la temporada entera, y es gratis. <b>Cada juego que programas sale con su botón de
+  prometer puesto</b>, sobre los dos equipos, sin que tengas que activar nada. Ahí entra
+  después el marcador final que salda cada promesa: nadie escribe un número dos veces,
+  porque los anotadores ya publican el marcador y ése es el que cuenta.</p>
+<p class="fine" data-i="scP2">El mismo calendario te arma un torneo entero si lo quieres:
+  categorías, canchas, horarios y el cuadro. El cuadro se llena solo &mdash; en cuanto
+  entra un resultado, el ganador aparece en el juego que le toca después. Y el botón sigue
+  ahí en cada juego del torneo. Un equipo que todavía no recauda ve ahí mismo cómo
+  recaudar.</p>
+<p style="margin-top:1.4rem"><a class="button linea" href="https://marcadorpr.com"
+  data-i="scCta">Mira un torneo de verdad corriendo &rarr;</a></p>
+</div>
+
+<div class="sched">
+<div class="sday"><span data-i="sdDay">Sábado 21 de noviembre</span><span data-i="sdEg">Ejemplo</span></div>
+<div class="srow">
+<span class="stime">2:00PM</span>
+<span class="smatch"><b>Canóvanas</b> <i data-i="vs1">vs</i> Arecibo</span>
+<span class="spills">
+<span class="pill" data-i="p1">Canóvanas &mdash; prometer</span>
+<span class="pill" data-i="p2">Arecibo &mdash; prometer</span>
+</span>
+</div>
+<!-- EL CUADRO TAMBIÉN LLEVA BOTÓN. Esta fila salía pelada y decía lo
+     contrario de lo que la página promete ahora: que TODO juego que
+     se programa es un juego de promesas. Un juego del cuadro todavía
+     no sabe quién lo juega, y el botón sale igual — se activa con el
+     equipo en cuanto el cuadro lo llena. -->
+<div class="srow hole">
+<span class="stime">4:00PM</span>
+<span class="smatch" data-i="holeRow">Ganador CL-3 <i>vs</i> Ganador CL-4</span>
+<span class="spills">
+<span class="pill esp" data-i="p3">Prometer &mdash; al llenarse el cuadro</span>
+</span>
+</div>
+<p class="schnota" data-i="schNota">Todo juego que programas sale con su botón. El del
+  cuadro se activa solo en cuanto entra el resultado de antes y se sabe quién juega.</p>
+</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     4 · LA ESCALERA: $17 → $68 → $816
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section oscuro" id="example">
+<div class="wrap">
+<div class="cab">
+<div class="eyebrow" data-i="exEye">Cada punto suma</div>
+<h2 data-i="exH2">Sesenta y ocho puntos, y lo que valieron.</h2>
+<p class="lede" data-i="exP">El entrenador comparte un enlace. Cada jugador trae sus
+  propios padrinos, y todos prometen sobre ese mismo juego. Aquí no hay ninguna promesa y
+  no se ha movido un peso.</p>
+</div>
+
+<div class="esc">
+<div class="escp">
+<span class="k" data-i="s1k">Un padrino</span>
+<span class="m" data-i="s1m">25¢ por punto, sobre 68 puntos</span>
+<span class="v num">$17.00</span>
+</div>
+<div class="escp">
+<span class="k" data-i="s2k">Un jugador</span>
+<span class="m" data-i="s2m">&times; los 4 padrinos que busca él mismo</span>
+<span class="v num">$68.00</span>
+</div>
+<div class="escp last">
+<span class="k" data-i="s3k">La plantilla entera</span>
+<span class="m" data-i="s3m">&times; 12 jugadores &mdash; 48 padrinos en total</span>
+<span class="v num">$816.00</span>
+</div>
+</div>
+
+<!-- LO PROMETIDO NO ES LO RECAUDADO, y esto va AQUÍ: pegado al
+     número grande, no en otra página.
+
+     La frase estaba en ayuda.html, equipo.html y reporte.html —
+     todas por detrás de la portada. La portada enseñaba $816.00 en
+     naranja y no decía ni una vez que es una promesa: un entrenador
+     lo multiplica por diez juegos y espera que entren $8,160.
+
+     Lo que entre depende de su cobro, y ésa es exactamente la parte
+     que hunde estas recaudaciones cuando alguien la descubre tarde. -->
+<p class="escpie" data-i="cPend"><b>Prometido no es cobrado.</b> Nosotros anotamos lo
+  prometido y sacamos el total de cada promesa. Lo que entre de verdad, y cuándo,
+  depende de tu cobro &mdash; un padrino que paga vale más que diez promesas apuntadas.</p>
+<p class="escpie" data-i="exFine">Las promesas van de 10¢ a $1 por punto, así que el
+  padrino que quiera dar más lo hace por punto y no porque se le pida dos veces. Una
+  promesa que no llega a $5 se cierra en $0.00 y no cuenta para el peldaño del juego.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     5 · SIN TOPE DE PADRINOS
+
+     La escalera de arriba termina en cuarenta y ocho, y cuarenta y
+     ocho acababa leyéndose como la respuesta. Es un ejemplo. Aquí se
+     enseña el MISMO juego —los mismos 68 puntos, los mismos 25¢— con
+     tres cantidades de padrinos distintas, para que se vea que lo
+     único que mueve el número es cuánta gente hay detrás.
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="tope">
+<div class="wrap">
+<div class="cab">
+<div class="eyebrow" data-i="npEye">Sin tope</div>
+<h2 data-i="npH2">No hay techo. Ni de padrinos, ni de juegos.</h2>
+<p class="lede" data-i="npP">Nadie pone un límite por ningún lado. El jugador que consigue
+  diez padrinos recauda por diez, y el que consigue veinte recauda por veinte. Tampoco
+  tienen que estar en el pueblo: un tío en Orlando, una prima en Nueva York, el entrenador
+  de hace diez años. Y lo mismo con los juegos: programa uno, o programa la temporada
+  entera.</p>
+</div>
+
+<div class="topesub"><span class="nn">01</span><span class="tt" data-i="npSubA">Más
+  padrinos en el mismo juego</span></div>
+<div class="topes">
+<div class="tphead">
+<span class="h1c" data-i="npTh1">Padrinos en el juego</span>
+<span class="h2c" data-i="npTh2">Prometido</span>
+<span class="h3c" data-i="npTh3">Licencia</span>
+</div>
+<div class="tp">
+<span class="q" data-i="npR1">12 padrinos &mdash; <i>uno por jugador</i></span>
+<span class="pro num">$204.00</span>
+<span class="lic num">$12</span>
+</div>
+<div class="tp suyo">
+<span class="q" data-i="npR2">48 padrinos &mdash; <i>cuatro por jugador</i></span>
+<span class="pro num">$816.00</span>
+<span class="lic num">$25</span>
+</div>
+<div class="tp">
+<span class="q" data-i="npR3">120 padrinos &mdash; <i>diez por jugador</i></span>
+<span class="pro num">$2,040.00</span>
+<span class="lic num">$79</span>
+</div>
+</div>
+
+<p class="topepie" data-i="npPie">El mismo juego las tres veces: los mismos 68 puntos y los
+  mismos 25¢ por punto. Lo único que cambia es cuánta gente hay detrás del equipo.</p>
+
+<div class="topegap"></div>
+
+<!-- EL SEGUNDO EJE: LOS JUEGOS. Es la dirección nueva de la
+     plataforma — marcador no es un tablero con promesas encima, es
+     un calendario de recaudación. Un entrenador no tiene un juego:
+     tiene una temporada, y cada fecha de esa temporada ya es un
+     evento de recaudación que nadie estaba cobrando.
+
+     Los números son los de arriba multiplicados por juegos. Y la
+     licencia va al lado otra vez, porque veinte juegos son veinte
+     licencias y esconderlo aquí sería justo donde más duele. -->
+<div class="topesub"><span class="nn">02</span><span class="tt" data-i="npSubB">Más juegos
+  en la temporada</span></div>
+<div class="topes">
+<div class="tphead">
+<span class="h1c" data-i="npTh4">Juegos con promesas</span>
+<span class="h2c" data-i="npTh5">Prometido</span>
+<span class="h3c" data-i="npTh6">Licencia</span>
+</div>
+<div class="tp suyo">
+<span class="q" data-i="npG1">1 juego &mdash; <i>un sábado</i></span>
+<span class="pro num">$816.00</span>
+<span class="lic num">$25</span>
+</div>
+<div class="tp">
+<span class="q" data-i="npG2">10 juegos &mdash; <i>media temporada</i></span>
+<span class="pro num">$8,160.00</span>
+<span class="lic num">$250</span>
+</div>
+<div class="tp">
+<span class="q" data-i="npG3">20 juegos &mdash; <i>la temporada entera</i></span>
+<span class="pro num">$16,320.00</span>
+<span class="lic num">$500</span>
+</div>
+</div>
+
+<p class="topepie" data-i="npPie2">Los mismos 48 padrinos, juego tras juego. Un lavado de
+  carros te da un sábado; una temporada te da veinte. <b>Prometido no es cobrado</b>
+  &mdash; lo que entre de verdad depende de tu cobro, como siempre.</p>
+<!-- LA COLUMNA DE LA LICENCIA NO SE ESCONDE. Enseñar lo que sube sin
+     enseñar lo que cuesta sería vender media verdad, y esta página
+     se sostiene sobre lo contrario.
+
+     Y ojo con los $500 de veinte juegos: un entrenador los divide
+     entre los $16,320 y le sale un tres por ciento. NO es un por
+     ciento, y aquí se dice, porque los términos dicen lo mismo y una
+     página que invita a esa división se contradice sola. -->
+<p class="topepie" data-i="npFine"><b>Y la licencia no te persigue.</b> Sube por tramos y
+  se para: de 120 a 200 padrinos cuesta lo mismo, y de ahí para arriba lo hablamos. No es
+  un por ciento de nada &mdash; son veinte licencias de veinticinco dólares, una por juego,
+  y el juego que no recoge promesas no lleva ninguna.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     6 · Y EL QUE PERDIÓ
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section blanco">
+<div class="wrap split">
+<div>
+<div class="eyebrow" data-i="bdEye">Y el equipo que perdió</div>
+<!-- «Ganes o pierdas, ganas» va AQUÍ y no en la portada. En la
+     portada sería un eslogan sin nada detrás; aquí cae encima del
+     marcador que lo demuestra, con los dos equipos y sus dos
+     números. Un eslogan se gana el sitio después de la prueba. -->
+<h2 style="margin-top:.55rem" data-i="bdH2">Ganes o pierdas, ganas. Arecibo perdió por
+  siete y recaudó igual.</h2>
+<p class="lede" style="margin-top:1rem" data-i="bdP">Los dos equipos de un juego pueden
+  llevar promesas, y cada uno recauda sobre sus propios puntos. Arecibo, que lo perdió,
+  salió exactamente igual con sus 61.</p>
+<p class="fine" data-i="bdFine">Ésta es la parte que ningún otro recaudador puede ofrecer.
+  Un lavado de carros necesita fecha, solar, voluntarios y el sábado de alguien. Un juego
+  necesita el juego &mdash; y le paga a los dos banquillos.</p>
+</div>
+
+<div class="board">
+<div class="board-top">
+<span class="board-id">Semifinal &middot; CL-7</span>
+<span class="eg"><span class="dot"></span><span data-i="egLabel">Ejemplo</span></span>
+</div>
+<div class="teams">
+<span class="tm win">Canóvanas</span><span class="pts win num">68</span>
+<span class="tm">Arecibo</span><span class="pts num">61</span>
+</div>
+<div class="raises">
+<div class="raise">
+<div class="lbl" data-i="r1">Prometido sobre los 68 de Canóvanas</div>
+<div class="big num">$816.00</div>
+</div>
+<div class="raise">
+<div class="lbl" data-i="r2">Prometido sobre los 61 de Arecibo</div>
+<div class="big num">$732.00</div>
+</div>
+</div>
+<p class="board-note" data-i="boardNote">Los dos programas llevan promesas encima. Perder
+  le costó a Arecibo siete puntos &mdash; unos ochenta y cuatro dólares de promesas
+  &mdash;, no la recaudación.</p>
+<div class="board-foot" data-i="boardFoot">Un ejemplo, no un resultado. Aquí nadie prometió
+  nada, y los dos equipos salen con 48 padrinos a 25¢ por punto.</div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     7 · DE QUIÉN ES EL DINERO
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section">
+<div class="wrap split">
+<div>
+<div class="eyebrow" data-i="mEye">A dónde va el dinero</div>
+<p class="claim-q" data-i="mQ">El dinero <em>no pasa por nosotros.</em></p>
+<p class="lede" data-i="mP">Anotamos lo que se promete y hacemos la cuenta. Tus padrinos le
+  pagan a tu programa como ya te pagan &mdash; ATH Móvil, efectivo, como lo arreglen. No
+  estamos en el medio.</p>
+</div>
+<div>
+<div class="nots">
+<div class="not yes" data-i="y1">Anotamos cada promesa, sus centavos por punto y su tope</div>
+<div class="not yes" data-i="y2">Sacamos cada total del marcador final</div>
+<div class="not yes" data-i="y3">Le mandamos a cada padrino el total de su promesa y a quién se lo entrega</div>
+<div class="not" data-i="n1">No procesamos pagos y no guardamos el dinero de nadie</div>
+<div class="not" data-i="n2">No nos llevamos un por ciento de lo que recaudes</div>
+<div class="not" data-i="n3">A tus padrinos no les cobramos absolutamente nada</div>
+<div class="not" data-i="n4">No verificamos ni conciliamos lo que cobró nadie</div>
+</div>
+<!-- NI UN ENLACE DE PAGO NI RECORDATORIOS. La portada prometía «un
+     enlace para pagarle directo a tu programa» mientras
+     custodia.html —la divulgación que lee una escuela antes de
+     firmar— dice desde antes «un aviso, y nada más». Manda custodia. -->
+<p class="fine" data-i="mAviso">Lo que recibe un padrino al cerrar el juego es un aviso: el
+  marcador final y lo que dio su promesa. Sin enlace de pago y sin recordatorios &mdash; el
+  pago es entre él y tu programa.</p>
+
+<!-- LA FRASE LEGAL. Dice qué es y qué no es este servicio, y no es
+     decoración: es la línea que una escuela enseña a quien le
+     pregunte de qué va esto, y la que sostiene todo lo de arriba. -->
+<p class="fine" data-i="mLegal">Cada Punto Cuenta es estrictamente un proveedor de software
+  de manejo de promesas. Las organizaciones manejan sus fondos de forma independiente.</p>
+</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     8 · LO QUE CUESTA
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section blanco" id="precio">
+<div class="wrap">
+<div class="cab">
+<div class="eyebrow" data-i="priceLabel">Precios transparentes</div>
+<h2 data-i="priceTitle">Pagas por el software, no un por ciento de lo prometido.</h2>
+<p class="lede" data-i="priceDesc">El peldaño lo fija cuántas promesas recogió el juego, y
+  nada más. Dos juegos con veinte promesas cuestan lo mismo aunque uno recogiera cien
+  dólares y el otro diez mil.</p>
+</div>
+
+<!-- La escalera se PINTA desde TARIFAS. Escribir seis peldaños a mano
+     en el marcado es garantizar que un día uno diga una cosa y la
+     tabla otra. La fila del CERO sí va a mano y con otra clase: no
+     sale de TARIFAS porque no es un peldaño, es la promesa de que no
+     hay cargo. -->
+<div class="prices">
+<div class="phead">
+<span data-i="thQ">Promesas en el juego</span>
+<span data-i="thP">Licencia del juego</span>
+</div>
+<div class="cero">
+<span class="cuantos" data-i="ceroQ">Ninguna &mdash; el juego no recogió promesas</span>
+<span class="cuesta">$0</span>
+</div>
+<div id="escalera"></div>
+</div>
+
+<ul class="pricefacts">
+<li data-i="pf0"><b>Sin promesas, sin cargo.</b> Un juego que no recoge ninguna no tiene
+  peldaño y no se factura nunca.</li>
+<li data-i="pf1">Nada por adelantado. Inscribirse es gratis y correrlo es gratis.</li>
+<li data-i="pf2">Se factura por los juegos que llevaron promesas, y se paga dentro de siete
+  días.</li>
+<li data-i="pf3">No es un por ciento de nada. No sale de ninguna promesa, y a tus padrinos
+  no les cobramos nada.</li>
+<li data-i="pf4">Si no se paga, esa licencia caduca y sus datos de promesas se retiran de
+  la plataforma. No lo reclamamos más allá de ahí.</li>
+<!-- EL MÍNIMO DE CINCO JUEGOS SE RETIRÓ el 28 de octubre de 2026. No
+     era sólo una frase: era un número que le pedía al entrenador un
+     compromiso de temporada antes de haber visto funcionar un solo
+     juego — y chocaba de frente con lo que la página dice ahora.
+     Estaba también en ayuda.html, en custodia.html y en la casilla
+     de consentimiento de equipo.html; se retiró de las cuatro. -->
+<li data-i="pf5">Tampoco se mueve con tu plantilla, y no hay mínimo. <b>Con un juego
+  basta</b>, y cada juego de más es otra oportunidad.</li>
+</ul>
+
+<p class="priceCta"><a class="button" href="equipo.html" data-i="register">Inscribir mi equipo</a></p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     9 · EL CIERRE
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section oscuro" id="signup">
+<div class="wrap close">
+<div class="eyebrow" data-i="zEye">Tu próximo juego puede contar</div>
+<h2 data-i="zH2">No necesitas otro evento. Ya los tienes en el calendario.</h2>
+<!-- «tú escoges en qué juegos van las promesas» se cayó el 28 de
+     octubre de 2026: ahora TODO juego que se programa lleva su
+     botón, así que escoger ya no es el trato. El trato es que
+     programes. -->
+<p class="lede" data-i="zP">Inscribirse es gratis. Programa un juego para probar, o la
+  temporada entera &mdash; cada uno sale con su botón de prometer puesto.</p>
+<div class="ctas">
+<a class="button" href="equipo.html" data-i="zCta1">Inscribir mi equipo</a>
+<a class="button linea" href="https://marcadorpr.com" data-i="zCta2">Mira un torneo de verdad corriendo</a>
+</div>
+<p class="fine" style="max-width:32rem" data-i="zPlayer">¿Eres jugador? Lo tiene que poner
+  tu programa &mdash; enséñale esta página a tu entrenador.</p>
+<p class="fine"><a href="ayuda.html" data-i="moreLink">Más preguntas, contestadas completas &rarr;</a></p>
+</div>
+</section>
+
+<footer>
+<div class="wrap">
+<div>
+<strong>CADA PUNTO CUENTA</strong><br>
+<span data-i="footer">Nosotros manejamos las promesas. Ustedes manejan los fondos.</span>
+</div>
+<nav class="flinks">
+<a href="equipo.html" data-i="lTeam">Inscribir mi equipo</a>
+<a href="mi-equipo.html" data-i="lMine">Mi programa</a>
+<a href="ayuda.html" data-i="lHelp">Preguntas</a>
+<a href="cobro.html" data-i="lCollect">Cómo cobras</a>
+</nav>
+<nav class="flinks">
+<a href="terms.html" data-i="lTerms">Términos</a>
+<a href="privacy.html" data-i="lPriv">Privacidad</a>
+<a href="custodia.html" data-i="lMoney">El dinero no pasa por nosotros</a>
+<a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a>
+</nav>
+<span>© <span id="year"></span> Gostar Digital LLC · Puerto Rico</span>
+</div>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   EL PRECIO, EN UN SOLO SITIO
+
+   La escalera por PROMESAS del juego. El peldaño lo decide cuántas
+   promesas lleva ESE juego, no cuánto dieron: dos juegos con veinte
+   promesas pagan lo mismo hayan recogido cien dólares o diez mil. Por
+   eso sigue sin ser un por ciento, que es lo que dicen los términos.
+
+   Un juego sin promesas no tiene peldaño: no se factura.
+
+   Las otras páginas que hablan de dinero —terms, custodia, ayuda,
+   equipo, admin y la demostración— tienen que decir lo mismo, y
+   prueba-precio.js comprueba que ninguna lo contradiga.
+   ══════════════════════════════════════════════════════════════════ */
+const TARIFAS = [
+  { hasta:  10, precio:  5 },
+  { hasta:  25, precio: 12 },
+  { hasta:  50, precio: 25 },
+  { hasta: 100, precio: 45 },
+  { hasta: 200, precio: 79 },
+  { hasta: null, precio: null }      // más de 200: se habla
+];
+const FEE = { suelo: 5, tope: 79, desdeTope: 200 };
+/* MINIMO se retiró el 28 de octubre de 2026 junto con el mínimo de
+   cinco juegos. Con él se va {M}, que era su hueco: ya no hay ningún
+   número de juegos que un programa tenga que activar. Con un juego
+   basta, y cada juego de más es otra oportunidad. */
+
+/* ══════════════════════════════════════════════════════════════════
+   LA TRADUCCIÓN AL INGLÉS
+
+   Y sólo el inglés. El español no vive aquí: vive en el marcado, que
+   es lo que hace que la página esté en español sin ejecutar nada.
+   Esta tabla la usa el pintor únicamente cuando alguien pulsa el
+   botón del idioma.
+   ══════════════════════════════════════════════════════════════════ */
+const translations={
+en:{
+navHow:'How it works',
+navPrice:'What it costs',
+navFaq:'Questions',
+navCta:'Sign up my team',
+
+heroEye:'Fundraising game by game',
+heroH1:'Win or lose, <em>your score is the fundraiser.</em>',
+heroSub:'We turn your games into funding events.',
+heroP:'No candy to sell, no car wash, no event to put on &mdash; you already have them on the calendar. A padrino &mdash; a parent, a neighbour, an uncle &mdash; pledges a few cents for every point your team scores. Schedule one game or the whole season: there is no limit.',
+heroCta1:'Sign up my team',
+heroCta2:'How it works',
+heroNota:'Onboarding is supervised while the first programs come in.',
+
+sumA:'a point',
+sumB:'points',
+sumC:'one padrino',
+sumPie:'That is <b>one single padrino</b>. There is no ceiling: each player brings as many as he finds, and the pledge only counts once the team plays.',
+
+howEye:'As simple as that',
+howH2:'Schedule. Pledge. Play. Paid.',
+howP:'Four steps, and the two in the middle are basketball games you were already playing.',
+q1w:'Schedule',
+q1p:'Put your games on marcadorpr: one, ten or the whole season. Every game you schedule comes with its pledge button already on it.',
+q2w:'Pledge',
+q2p:'Your players send the link. Each padrino promises a few cents per point &mdash; 10&cent; to $1 &mdash; and the pledge only counts once the game is played.',
+q3w:'Play',
+q3p:'The team plays &mdash; no gym to book and no event to host &mdash; and the scorekeeper posts the final score. Every pledge comes off that number.',
+q4w:'Paid',
+q4p:'Each padrino gets one notice with the final score and what their pledge came to. They settle it with your program the way they already would.',
+
+scEye:'The calendar that raises money',
+scH2:'marcadorpr is not just a scoreboard. It is your fundraising calendar.',
+scP1:'You schedule your games there &mdash; one, ten or the whole season, and it is free. <b>Every game you schedule comes with its pledge button already on it</b>, on both teams, with nothing for you to switch on. The final score that settles every pledge goes in there afterwards: nobody types a number twice, because scorekeepers already post the score and that is the one that counts.',
+scP2:'The same calendar will build you a whole tournament if you want one: categories, courts, times and the bracket. The bracket fills itself in &mdash; the moment a result lands, the winner shows up in the game they play next. And the button is still there on every game of it. A team that is not raising yet sees how to raise on its own game.',
+scCta:'See a real tournament on it &rarr;',
+sdDay:'Saturday 21 November',
+sdEg:'Example',
+vs1:'vs',
+p1:'Canóvanas &mdash; pledge',
+p2:'Arecibo &mdash; pledge',
+holeRow:'Winner of CL-3 <i>vs</i> Winner of CL-4',
+p3:'Pledge &mdash; once the bracket fills',
+schNota:'Every game you schedule comes with its button. The bracket one switches itself on the moment the earlier result lands and it knows who is playing.',
+
+exEye:'Every point adds up',
+exH2:'Sixty-eight points, and what they were worth.',
+exP:'The coach shares one link. Each player brings his own padrinos, and every one of them is pledging on that same game. Nothing here is a pledge and no money has moved.',
+s1k:'One padrino',
+s1m:'25&cent; a point, on 68 points',
+s2k:'One player',
+s2m:'&times; the 4 padrinos he finds himself',
+s3k:'The whole roster',
+s3m:'&times; 12 players &mdash; 48 padrinos in all',
+cPend:'<b>Prometido no es cobrado.</b> We record what was pledged and work out each padrino&rsquo;s total. What actually arrives, and when, depends on your collecting &mdash; one padrino who pays is worth more than ten pledges on a list.',
+exFine:'Pledges run from 10&cent; to $1 a point, so a padrino who wants to give more does it by the point rather than by being asked twice. A pledge that works out under $5 closes at $0.00 and does not count towards the game&rsquo;s step.',
+
+npEye:'No ceiling',
+npH2:'There is no ceiling. Not on padrinos, not on games.',
+npP:'Nobody sets a limit anywhere. A player who finds ten padrinos raises on ten, and one who finds twenty raises on twenty. They do not have to be in town either: an uncle in Orlando, a cousin in New York, the coach he had ten years ago. Same with the games: schedule one, or schedule the whole season.',
+npSubA:'More padrinos on the same game',
+npSubB:'More games in the season',
+npTh4:'Games carrying pledges',
+npTh5:'Pledged',
+npTh6:'Licence',
+npG1:'1 game &mdash; <i>one Saturday</i>',
+npG2:'10 games &mdash; <i>half a season</i>',
+npG3:'20 games &mdash; <i>the whole season</i>',
+npPie2:'The same 48 padrinos, game after game. A car wash gives you one Saturday; a season gives you twenty. <b>Prometido no es cobrado</b> &mdash; what actually arrives still depends on your collecting, as always.',
+npTh1:'Padrinos on the game',
+npTh2:'Pledged',
+npTh3:'Licence',
+npR1:'12 padrinos &mdash; <i>one per player</i>',
+npR2:'48 padrinos &mdash; <i>four per player</i>',
+npR3:'120 padrinos &mdash; <i>ten per player</i>',
+npPie:'The same game all three times: the same 68 points and the same 25&cent; a point. The only thing that changes is how many people are behind the team.',
+npFine:'<b>And the licence does not chase you.</b> It climbs in steps and then stops: 120 padrinos and 200 padrinos cost the same, and past that we talk. It is not a percentage of anything &mdash; it is twenty twenty-five-dollar licences, one per game, and a game that gathers no pledges carries none.',
+
+bdEye:'And the team that lost',
+bdH2:'Win or lose, you win. Arecibo lost by seven and raised anyway.',
+bdP:'Both teams on a game can carry pledges, and each one raises on its own points. Arecibo, who lost it, worked out exactly the same way on their 61.',
+bdFine:'This is the part no other fundraiser can offer. A car wash needs a date, a lot, volunteers and somebody&rsquo;s Saturday. A game needs the game &mdash; and it pays both benches.',
+
+egLabel:'Example',
+r1:'Pledged on Canóvanas&rsquo;s 68',
+r2:'Pledged on Arecibo&rsquo;s 61',
+boardNote:'Both programs have pledges on them. The loss cost Arecibo seven points &mdash; about eighty-four dollars of pledges &mdash; and not the fundraiser.',
+boardFoot:'An example, not a result. Nobody pledged on this one, and both teams are shown with 48 padrinos at 25&cent; a point.',
+
+mEye:'Where the money goes',
+mQ:'The money <em>never passes through us.</em>',
+mP:'We record what was pledged and do the arithmetic. Your padrinos pay your program the way they already pay you &mdash; ATH Móvil, cash, however you arrange it. We are not in the middle of it.',
+y1:'We record every pledge, its rate and its cap',
+y2:'We calculate each total from the final score',
+y3:'We send each padrino their pledge total and who to hand it to',
+n1:'We do not process payments or hold anyone&rsquo;s money',
+n2:'We do not take a percentage of what you raise',
+n3:'We charge your padrinos nothing at all',
+n4:'We do not check or reconcile what anybody collected',
+mAviso:'What a padrino gets when a game closes is a notice: the final score and what their pledge came to. No payment link and no reminders &mdash; the payment is between them and your program.',
+mLegal:'Cada Punto Cuenta is strictly a pledge management software provider. Organizations independently manage all proceeds.',
+
+priceLabel:'Transparent pricing',
+priceTitle:'You pay for the software, not a percentage of what was pledged.',
+priceDesc:'The step is set by how many pledges a game gathered, and nothing else. Two games with twenty pledges cost the same whether one brought in a hundred dollars and the other ten thousand.',
+thQ:'Pledges on the game',
+thP:'Game licence',
+ceroQ:'None &mdash; the game gathered no pledges',
+escHasta:'Up to {H} pledges on the game',
+escEntre:'{D} to {H} pledges',
+escDesde:'{D} pledges or more',
+escHablar:'Let us talk',
+pf0:'<b>No pledges, no fee.</b> A game that gathers none has no step and is never invoiced.',
+pf1:'Nothing up front. Signing up is free and running it is free.',
+pf2:'Invoiced for the games that carried pledges, due within seven days.',
+pf3:'Not a percentage of anything. It does not come out of any pledge, and your padrinos are charged nothing.',
+pf4:'If it is not paid, that licence lapses and its pledge data comes off the platform. We do not chase it any further.',
+pf5:'It does not move with your roster either, and there is no minimum. <b>One game is enough</b>, and every additional game is another opportunity.',
+register:'Sign up my team',
+
+zEye:'Make your next game count',
+zH2:'You do not need another event. You already have them on the calendar.',
+zP:'Signing up is free. Schedule one game to try it, or the whole season &mdash; each one comes with its pledge button already on it.',
+zCta1:'Sign up my team',
+zCta2:'See a real tournament on it',
+zPlayer:'Are you a player? Your program has to run it &mdash; show your coach this page.',
+moreLink:'More questions, answered in full &rarr;',
+
+footer:'We manage the pledges. You manage the proceeds.',
+lTeam:'Sign up my team',
+lMine:'My program',
+lHelp:'Questions',
+lCollect:'How you collect',
+lTerms:'Terms',
+lPriv:'Privacy',
+lMoney:'The money does not pass through us'
+}
+};
+
+/* EL ESPAÑOL SE RECOGE DEL MARCADO, que es donde vive. Esto corre
+   antes de pintar nada, así que guarda la página tal y como salió
+   del servidor.
+
+   UNA REGLA, APRENDIDA A GOLPES: ninguna llave puede vivir dentro de
+   otra llave. paint() recorre todos los [data-i] en orden del
+   documento y le mete innerHTML a cada uno, así que al pintar el
+   padre el hijo se va del documento y se pinta desconectado: su texto
+   existe en las dos tablas y no se lee en ninguna. */
+const spanish={};
+document.querySelectorAll('[data-i]').forEach(el=>spanish[el.dataset.i]=el.innerHTML);
+
+/* Los rótulos de la escalera del precio no viven en ningún elemento:
+   los pinta el JS a partir de TARIFAS. El español va aquí al lado de
+   la recogida y el inglés arriba en la tabla, para que no haya dos
+   sitios donde buscarlo. */
+spanish.escHasta  = 'Hasta {H} promesas en el juego';
+spanish.escEntre  = 'De {D} a {H} promesas';
+spanish.escDesde  = '{D} promesas o más';
+spanish.escHablar = 'Hablemos';
+
+/* OJO CON LAS LETRAS QUE SE USAN AQUÍ. Esto corre sobre las dos
+   tablas enteras antes de pintar nada, así que cualquier {X} que
+   aparezca en cualquier frase se sustituye.
+
+   {D} y {H} NO pueden estar: son los huecos de los rótulos de la
+   escalera —«De {D} a {H} promesas»— y los rellena el pintor con el
+   peldaño de cada fila. Si se sustituyeran aquí, las seis filas
+   saldrían con el mismo número y la escalera diría seis veces lo
+   mismo sin que nada fallara. Por eso el techo va en {V}. */
+function conPrecio(s){
+  return String(s).split('{P}').join(FEE.suelo)
+                  .split('{T}').join(FEE.tope)
+                  .split('{V}').join(FEE.desdeTope);
+}
+Object.keys(spanish).forEach(k=>{ spanish[k]=conPrecio(spanish[k]) });
+Object.keys(translations.en).forEach(k=>{ translations.en[k]=conPrecio(translations.en[k]) });
+
+/* ══════════════════════════════════════════════════════════════════
+   LA PORTADA ARRANCA SIEMPRE EN ESPAÑOL. SIEMPRE.
+
+   Esto leía el idioma guardado, como hacen las demás páginas de la
+   casa, y ahí estaba el fallo: las tres llaves —cfh_lang, cp-lang,
+   fc-lang— las comparten las quince páginas. Basta que alguien haya
+   pulsado «English» una vez en equipo.html, o en ayuda.html, o en
+   una vista previa de cualquiera de ellas, para que la portada se
+   pinte en inglés encima de un marcado que está en español.
+
+   Y no hay forma de notarlo: el fichero está en español, la prueba
+   con el JavaScript apagado sale en español, y la página se abre en
+   inglés igual. El que lo ve no tiene ni cómo saber de dónde viene.
+
+   La portada es el escaparate y va en español, punto. El botón
+   sigue llevando al inglés dentro de la visita, y sigue guardando la
+   elección para las páginas de dentro — lo que no hace es dejar que
+   una elección vieja decida cómo se abre esta.
+
+   Para mandar el enlace ya en inglés está ?lang=en, que es explícito
+   y se ve en la dirección. ?lang=es fuerza el español y, de paso,
+   limpia una elección guardada que estuviera estorbando.
+   ══════════════════════════════════════════════════════════════════ */
+let locale='es';
+var _q=(location.search.match(/[?&]lang=(es|en)\b/i)||[])[1];
+if (_q) locale = _q.toLowerCase();
+
+/* Y SE GUARDA SIEMPRE, no sólo cuando viene en la dirección.
+   La portada ignora el idioma guardado a propósito —arranca en
+   español pase lo que pase— pero las demás páginas SÍ lo leen. Así
+   que la portada salía en español y «Inscribir mi equipo» abría
+   equipo.html en inglés, porque allí seguía guardado un «English» de
+   hace dos horas en otra página.
+
+   Escribiéndolo al cargar, la portada manda: lo que se ve aquí es lo
+   que se ve en todo lo que se abra desde aquí. Y como esto corre en
+   cada visita, basta con volver a la portada para que el sitio entero
+   vuelva a cuadrar. */
+try{ localStorage.setItem('cfh_lang',locale); localStorage.setItem('cp-lang',locale);
+     localStorage.setItem('fc-lang',locale); }catch(e){}
+
+function paint(){
+document.documentElement.lang=locale;
+/* En español no se repinta desde ninguna tabla: se devuelve el texto
+   que vino en el marcado. Así el español nunca puede desincronizarse
+   de lo que ve quien no ejecuta el JavaScript. */
+document.querySelectorAll('[data-i]').forEach(el=>{
+el.innerHTML=locale==='en'?(translations.en[el.dataset.i]||spanish[el.dataset.i]):spanish[el.dataset.i];
+});
+
+/* ── LA ESCALERA DEL PRECIO, PINTADA ──────────────────────────────
+   Una fila por peldaño, leídas de TARIFAS. Se repinta al cambiar de
+   idioma porque las etiquetas son texto, no sólo números.
+
+   El peldaño del suelo va resaltado: es donde cae un juego normal, y
+   es el número que alguien se lleva en la cabeza. */
+var caja = document.getElementById('escalera');
+if (caja && typeof TARIFAS !== 'undefined'){
+  var t = function(k){
+    return (locale === 'en' ? (translations.en[k] || spanish[k]) : spanish[k]) || '';
+  };
+  var desde = 1, filas = '';
+  TARIFAS.forEach(function(p){
+    var etiqueta;
+    if (p.hasta === null)  etiqueta = t('escDesde').split('{D}').join(desde);
+    else if (desde === 1)  etiqueta = t('escHasta').split('{H}').join(p.hasta);
+    else                   etiqueta = t('escEntre').split('{D}').join(desde)
+                                                   .split('{H}').join(p.hasta);
+    var suyo = p.precio === FEE.suelo ? ' suyo' : '';
+    var cuesta = p.precio === null
+      ? '<span class="hablar">' + t('escHablar') + '</span>'
+      : '<span class="cuesta">$' + p.precio + '</span>';
+    filas += '<div class="peldano' + suyo + '">' +
+               '<span class="cuantos">' + etiqueta + '</span>' + cuesta +
+             '</div>';
+    if (p.hasta !== null) desde = p.hasta + 1;
+  });
+  caja.innerHTML = filas;
+}
+
+/* El botón dice a dónde lleva, no dónde estás: en español, «English».
+   Y el aria-label igual, en el idioma al que lleva, porque quien usa
+   un lector de pantalla está buscando exactamente eso. */
+var _l=document.getElementById('lang');
+_l.textContent = locale==='es' ? 'English' : 'Español';
+_l.setAttribute('aria-label', locale==='es' ? 'Switch to English' : 'Cambiar a español');
+document.getElementById('hamb').setAttribute('aria-label',
+  locale==='es' ? 'Menú' : 'Menu');
+document.title=locale==='es'?'Cada Punto Cuenta | Cada punto queda anotado.'
+                            :'Cada Punto Cuenta | Every point is recorded.';
+}
+document.getElementById('lang').addEventListener('click',()=>{
+locale=locale==='en'?'es':'en';
+try{ localStorage.setItem('cfh_lang',locale); localStorage.setItem('cp-lang',locale);
+     localStorage.setItem('fc-lang',locale); }catch(e){}
+paint();
+});
+
+/* ── El menú ──────────────────────────────────────────────────────
+   Cuatro formas de cerrarlo, porque un menú que se queda abierto
+   tapando la página es la peor parte de un menú de teléfono:
+
+     · pulsando las rayas otra vez
+     · pulsando cualquier enlace — los dos primeros son anclas de ESTA
+       página, así que sin esto el panel se queda abierto encima de la
+       sección a la que acabas de saltar
+     · con Escape
+     · al ensanchar la ventana hasta el tamaño de escritorio, donde el
+       panel no tiene sentido y la clase se queda pegada */
+(function(){
+var b=document.getElementById('hamb'), m=document.getElementById('menu');
+function pon(abierto){
+  m.classList.toggle('abierto', abierto);
+  b.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+}
+b.addEventListener('click', function(){
+  pon(b.getAttribute('aria-expanded') !== 'true');
+});
+m.addEventListener('click', function(e){
+  if (e.target.closest('a')) pon(false);
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && b.getAttribute('aria-expanded') === 'true') {
+    pon(false); b.focus();
+  }
+});
+/* 861 y no 860: el media query del CSS actúa hasta 860 inclusive, y
+   con el mismo número los dos la clase sobreviviría justo en el
+   borde. */
+addEventListener('resize', function(){
+  if (innerWidth > 860) pon(false);
+});
+})();
+
+paint();
+document.getElementById('year').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
