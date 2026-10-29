@@ -163,6 +163,11 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
       <button class="q sm" id="solRecargar">Reload</button>
     </div>
     <p class="m" id="mSol"></p>
+    <!-- El código del entrenador, que sólo se puede leer en el
+         momento de aprobarlo. -->
+    <div id="solCodigo" class="oculto" style="border:2px solid var(--orange);
+         border-radius:10px;background:rgba(255,122,24,.08);padding:12px 14px;
+         margin:10px 0 0"></div>
   </section>
 
   <!-- LOS TORNEOS.
@@ -268,8 +273,14 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
     <select id="camp"></select>
     <div class="btns">
       <button class="q sm" id="verNueva">+ New campaign</button>
+      <button class="q sm" id="codigoNuevo">New coach code</button>
       <button class="q sm" id="recargar">Reload</button>
     </div>
+    <!-- El código se guarda cifrado: esta caja es la única vez que
+         se puede leer. -->
+    <div id="campCodigo" class="oculto" style="border:2px solid var(--orange);
+         border-radius:10px;background:rgba(255,122,24,.08);padding:12px 14px;
+         margin:10px 0 0"></div>
 
     <div id="nueva" class="oculto" style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
       <label for="nNombre">Campaign name</label>
@@ -1199,6 +1210,35 @@ function decidir(fn, id, boton){
           (r.product ? ' on ' + r.product : '') + ', and ' + (r.team || 'the team') +
           ' is linked to it — its games can carry pledges.'
         : 'Marked declined.', 'bien');
+
+      /* EL CÓDIGO, UNA SOLA VEZ Y AQUÍ MISMO.
+         Se guarda cifrado, así que esta es la única vez que se puede
+         leer: si se pierde, hay que hacer uno nuevo. Es lo único de
+         toda la aprobación que el entrenador tiene que recibir, y sin
+         él su página no le abre. */
+      if (fn === 'bw_approve_request' && r.codigo){
+        $('solCodigo').innerHTML =
+          '<p class="sub" style="margin:0 0 6px"><b>Give this to ' +
+            esc(r.program || 'the program') + '</b> — it is shown once and cannot be ' +
+            'read again. Without it their page will not open.</p>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+            '<input readonly value="' + esc(r.codigo) + '" ' +
+              'style="flex:1 1 200px;min-width:0;font-weight:800" onclick="this.select()">' +
+            '<button class="q sm" id="solCopiar">Copy</button>' +
+          '</div>' +
+          (r.correo ? '<p class="pista" style="margin:6px 0 0">Send it to ' +
+                        esc(r.correo) + '</p>' : '');
+        $('solCodigo').classList.remove('oculto');
+        var bc = $('solCopiar');
+        if (bc) bc.onclick = function(){
+          if (navigator.clipboard && navigator.clipboard.writeText)
+            navigator.clipboard.writeText(r.codigo).then(function(){
+              bc.textContent = 'Copied';
+              setTimeout(function(){ bc.textContent = 'Copy' }, 1600);
+            }).catch(function(){});
+        };
+      }
+
       cargarSolicitudes();
     })
     .catch(function(e){
@@ -1488,6 +1528,44 @@ function jgBorrar(id){
 }
 
 $('jgRecargar').onclick = cargarJuegosSueltos;
+
+/* ── El código de un entrenador ───────────────────────────────────
+   Aprobar ya lo crea. Esto es para las campañas aprobadas antes de
+   que lo hiciera, y para el entrenador que pierde el suyo: se guarda
+   cifrado, así que no se puede releer — sólo sustituir. */
+$('codigoNuevo').onclick = function(){
+  if (!CAMP) return di('mCamp', 'Pick a campaign first.', 'mal');
+  if (!confirm('Make a new coach code for ' + CAMP.name + '?\n\n' +
+               'Any code they have now stops working. It is shown once.')) return;
+
+  rpc('campana_codigo_nuevo', { p_campaign: CAMP.id })
+    .then(function(r){
+      if (!r || r.ok !== true)
+        return di('mCamp', 'Could not make it' + porque(r), 'mal');
+
+      $('campCodigo').innerHTML =
+        '<p class="sub" style="margin:0 0 6px"><b>Coach code for ' +
+          esc(r.programa || CAMP.name) + '</b> — shown once, cannot be read again. ' +
+          'Any earlier code is now off.</p>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+          '<input readonly value="' + esc(r.codigo) + '" ' +
+            'style="flex:1 1 200px;min-width:0;font-weight:800" onclick="this.select()">' +
+          '<button class="q sm" id="campCopiar">Copy</button>' +
+        '</div>';
+      $('campCodigo').classList.remove('oculto');
+      di('mCamp', 'New code made.', 'ok');
+
+      var b = $('campCopiar');
+      if (b) b.onclick = function(){
+        if (navigator.clipboard && navigator.clipboard.writeText)
+          navigator.clipboard.writeText(r.codigo).then(function(){
+            b.textContent = 'Copied';
+            setTimeout(function(){ b.textContent = 'Copy' }, 1600);
+          }).catch(function(){});
+      };
+    })
+    .catch(function(e){ di('mCamp', 'Could not make it' + porque(e), 'mal') });
+};
 
 $('torRecargar').onclick = cargarTorneos;
 $('pruebaCargar').onclick = cargarMarcables;
