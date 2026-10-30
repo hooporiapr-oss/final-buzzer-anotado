@@ -291,37 +291,17 @@ header{color:#fff}
       <p class="help" id="tHorarioP"></p>
       <p><a class="btn go" id="jHorario" target="_blank" rel="noopener"></a></p>
 
-      <h2 id="tNuevo"></h2>
-      <p class="help" id="tNuevoP"></p>
-      <div class="fila2">
-        <div><label for="jRival" id="tRival"></label>
-             <input id="jRival" autocapitalize="words"></div>
-        <div><label for="jFecha" id="tFecha"></label>
-             <input id="jFecha" type="date"></div>
-      </div>
-      <div class="fila2">
-        <div><label for="jHora" id="tHora"></label>
-             <input id="jHora" placeholder="7:00 PM"></div>
-        <div><label for="jCancha" id="tCancha"></label>
-             <input id="jCancha"></div>
-      </div>
-      <div class="fila2">
-        <div><label for="jCasa" id="tDonde"></label>
-          <select id="jCasa">
-            <option value="1" id="tCasa"></option>
-            <option value="0" id="tFuera"></option>
-          </select></div>
-        <!-- Si en ESTE juego hay padrinos. No todo juego lo es: un
-             entrenador quiere padrinos en el de la rivalidad y no en
-             el amistoso del martes. Se puede cambiar después. -->
-        <div><label for="jRecauda" id="tPadrinos"></label>
-          <select id="jRecauda">
-            <option value="1" id="tPadSi"></option>
-            <option value="0" id="tPadNo"></option>
-          </select></div>
-      </div>
-      <p class="help" id="tPadP"></p>
-      <button class="btn go" id="jCrear"></button>
+      <!-- AQUÍ IBA «AÑADIR UN JUEGO», el formulario de uno en uno.
+
+           Se retira a propósito. El calendario se monta en el
+           constructor —ahí se escriben los juegos de corrido y se
+           marca en cuáles hay padrinos— y esta página es para lo que
+           viene después: repartir los enlaces, poner marcadores y
+           mandar los avisos. Teniendo las dos puertas abiertas, la
+           primera que se veía era la lenta, y es la que se tomaba.
+
+           El mensaje de abajo se queda: lo escriben el marcador, los
+           avisos y el interruptor de padrinos. -->
       <p class="msg" id="jm"></p>
 
       <h2 id="tTeams"></h2>
@@ -402,7 +382,7 @@ var S={
     horarioP:'Súbela de una vez en el constructor de marcadorpr: escribes la lista de juegos, marcas en cuáles quieres padrinos, y vuelven aquí con sus enlaces. Tu código va puesto.',
     irHorario:'Montar mi calendario',
     teams:'Tus juegos',
-    sinJuegos:'Todavía no tienes ningún juego. Añade el primero arriba.',
+    sinJuegos:'Todavía no tienes ningún juego. Monta tu calendario arriba y salen aquí, cada uno con su enlace.',
     nPromesas:'{N} promesas', nPromesa:'1 promesa', sinPromesas:'sin promesas',
     sinMarcador:'sin marcador',
     deTorneo:'de un torneo',
@@ -464,7 +444,7 @@ var S={
     horarioP:'Put it up in one go in the marcadorpr builder: you type the list of games, tick which ones you want padrinos on, and they come back here with their links. Your code travels with you.',
     irHorario:'Build my schedule',
     teams:'Your games',
-    sinJuegos:'No games yet. Add your first one above.',
+    sinJuegos:'No games yet. Build your schedule above and they show up here, each with its link.',
     nPromesas:'{N} pledges', nPromesa:'1 pledge', sinPromesas:'no pledges',
     sinMarcador:'no score yet',
     deTorneo:'from a tournament',
@@ -529,12 +509,9 @@ function paintStatic(){
   $('tCodeH').textContent=T('codeH');
   $('tGo').textContent=T('go');
   $('tTeams').textContent=T('teams');
-  [['tNuevo','nuevo'],['tNuevoP','nuevoP'],['tRival','rival'],['tFecha','fecha'],
-   ['tHora','hora'],['tCancha','cancha'],['tDonde','donde'],['tCasa','casa'],
-   ['tFuera','fuera'],['jCrear','crear'],
-   ['tPadrinos','padrinos'],['tPadSi','padSi'],['tPadNo','padNo'],
-   ['tPadP','padP'],['tHorario','horario'],['tHorarioP','horarioP'],
-   ['jHorario','irHorario']
+  /* Lo que queda por escribir: el calendario. Las etiquetas del
+     formulario de un juego se fueron con él. */
+  [['tHorario','horario'],['tHorarioP','horarioP'],['jHorario','irHorario']
   ].forEach(function(par){
     var e=$(par[0]); if(e) e.textContent=T(par[1]);
   });
@@ -790,34 +767,6 @@ function copiar(id, boton){
 
 function dice(t,c){ var e=$('jm'); if(e){ e.textContent=t||''; e.className='msg '+(c||'') } }
 
-$('jCrear').onclick = function(){
-  var rival=($('jRival').value||'').trim();
-  var fecha=($('jFecha').value||'').trim();
-  var hora=($('jHora').value||'').trim();
-  var cancha=($('jCancha').value||'').trim();
-  var casa=$('jCasa').value==='1';
-  var rec=$('jRecauda').value==='1';
-
-  if(!rival) return dice(T('errRival'),'bad');
-  if(!fecha) return dice(T('errFecha'),'bad');
-
-  dice('…');
-  rpc('juego_crear',{p_code:CODE,p_rival:rival,p_fecha:fecha,
-                     p_hora:hora||null,p_cancha:cancha||null,p_casa:casa,
-                     p_recauda:rec})
-    .then(function(d){
-      if(!d||d.ok!==true){
-        var r=d&&d.reason;
-        return dice(r==='repetido'?T('errRepetido'):
-                    r==='falta-rival'?T('errRival'):
-                    r==='falta-fecha'?T('errFecha'):T('errGen'),'bad');
-      }
-      dice(T('okCreado'),'ok');
-      $('jRival').value=''; $('jHora').value=''; $('jCancha').value='';
-      recargar();
-    })
-    .catch(function(e){ dice(T('errGen')+porque(e),'bad') });
-};
 
 function marcador(id, retirar){
   var a=document.querySelector('[data-a="'+id+'"]');
