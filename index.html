@@ -221,6 +221,30 @@ h1 em{font-style:normal;color:var(--orange)}
 .srow.hole .smatch{color:var(--muted)}
 .schnota{padding:.7rem 1.1rem;border-top:1px solid var(--linea);background:var(--cream);
   color:var(--muted);font-size:.78rem}
+/* ── La maqueta del reporte del entrenador ──────────────────────
+   Mismo armazón que el calendario de arriba —panel, cabecera crema,
+   filas separadas— porque son la misma familia: lo que se ve antes
+   del juego y lo que llega después. */
+.mail{background:var(--panel);border:1px solid var(--linea);border-radius:15px;
+  overflow:hidden;min-width:0}
+.mailcab{padding:.75rem 1.1rem;background:var(--cream);border-bottom:1px solid var(--linea)}
+.mailde{font-family:Archivo,sans-serif;font-size:.67rem;font-weight:900;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.mailas{font-weight:800;margin-top:.2rem;font-size:.95rem}
+.mailtot{padding:1rem 1.1rem;border-bottom:1px solid var(--linea)}
+.mailtot .num{font-family:Archivo,sans-serif;font-weight:900;font-size:2rem;
+  font-variant-numeric:tabular-nums;color:var(--orange);line-height:1}
+.mailtot span{display:block;color:var(--muted);font-size:.8rem;margin-top:.3rem}
+.mailfila{display:grid;grid-template-columns:1fr auto;gap:.1rem .9rem;
+  padding:.72rem 1.1rem;border-top:1px solid var(--linea);align-items:baseline}
+.mailfila b{font-weight:700}
+.mailfila .co{grid-column:1;color:var(--muted);font-size:.78rem}
+.mailfila .mo{grid-row:1;grid-column:2;font-family:Archivo,sans-serif;font-weight:800;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.mailfila .et{grid-column:1/-1;font-size:.76rem;color:var(--muted);margin-top:.25rem}
+.mailfila .et.mal{color:#A8323F;font-weight:700}
+.mailpie{padding:.7rem 1.1rem;border-top:1px solid var(--linea);background:var(--cream);
+  color:var(--muted);font-size:.78rem}
 
 /* ── LA ESCALERA: los tres pases ──────────────────────────────────
    Un padrino, un jugador, la plantilla. Cada peldaño es el de arriba
@@ -869,6 +893,68 @@ button.lang{padding:0 10px;font-size:.8rem}
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════
+     7b · Y PARA COBRAR, TU LISTA
+
+     Va pegada a «el dinero no pasa por nosotros» a propósito. Esa
+     sección contesta una pregunta y abre otra: si ustedes no tocan el
+     dinero, ¿cómo sé yo a quién le toca cobrarle y cuánto? Dejarla
+     abierta es dejar al entrenador imaginándose una hoja de cálculo
+     que tiene que llevar él.
+
+     El reporte es la respuesta, y se enseña en vez de describirse:
+     llega solo al correo del entrenador cuando salen los avisos.
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section blanco" id="reporte">
+<div class="wrap split">
+<div>
+<div class="eyebrow" data-i="rpEye">Después del juego</div>
+<h2 style="margin-top:.55rem" data-i="rpH2">Tú no llevas la cuenta. Te llega hecha.</h2>
+<p class="lede" style="margin-top:1rem" data-i="rpP">Cuando salen los avisos, a ti te llega
+  el mismo juego por tu lado: cuánto recogió, quién prometió qué, y en qué quedó cada uno.
+  No hay hoja que llevar ni página que abrir &mdash; llega a tu correo y ya está hecha.</p>
+<p class="fine" data-i="rpP2">Trae lo que no se puede esconder. El padrino cuyo correo
+  rebotó sale marcado, porque ése no se entera por correo y hay que llamarlo. La promesa
+  que no llegó al mínimo sale en $0.00 con su nombre, para que sepas qué decirle. Y el que
+  recibió una corrección sale marcado, para que no te sorprenda cuando llame.</p>
+<p class="fine" data-i="rpP3">Sin enlace de pago y sin nada que pedirte. Cobrar sigue
+  siendo tuyo &mdash; esto es sólo la lista de a quién y cuánto.</p>
+</div>
+
+<div class="mail">
+<div class="mailcab">
+  <div class="mailde" data-i="rpDe">Cada Punto Cuenta &rarr; tu correo</div>
+  <div class="mailas" data-i="rpAs">Canóvanas · CP-1: $49.30 en promesas</div>
+</div>
+<div class="mailtot">
+  <div class="num">$49.30</div>
+  <span data-i="rpTot">de 3 padrinos · Canóvanas anotó 58 puntos</span>
+</div>
+
+<div class="mailfila">
+  <b>Tía Mari</b><span class="mo">$14.50</span>
+  <span class="co">mari@ejemplo.com &middot; 25&cent;/punto</span>
+</div>
+<div class="mailfila">
+  <b>Don Luis Rivera</b><span class="mo">$29.00</span>
+  <span class="co">luis@ejemplo.com &middot; 50&cent;/punto</span>
+  <span class="et" data-i="rpCorr">corregido</span>
+</div>
+<div class="mailfila">
+  <b data-i="rpVec">Vecino del frente</b><span class="mo">$5.80</span>
+  <span class="co">malo@ejemplo.com &middot; 10&cent;/punto</span>
+  <span class="et mal" data-i="rpReb">rebotó &mdash; llámalo</span>
+</div>
+<div class="mailfila">
+  <b data-i="rpPri">Primo Ángel</b><span class="mo">$0.00</span>
+  <span class="co">primo@ejemplo.com &middot; 5&cent;/punto</span>
+  <span class="et" data-i="rpBajo">bajo el mínimo &mdash; no se le cobra</span>
+</div>
+<div class="mailpie" data-i="rpPie">Ejemplo. El reporte llega en español y en inglés.</div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
      8 · LO QUE CUESTA
      ══════════════════════════════════════════════════════════════════ -->
 <section class="section blanco" id="precio">
@@ -1041,6 +1127,22 @@ scH2:'Your players score. Every point can bring your team support.',
 scP1:'One game, ten, or the whole season. On marcadorpr you register the games your team already has scheduled, wherever they are played, and <b>every game comes with its link for pledges by the point &mdash; and you decide which games carry it and which do not</b>. No tournament to organise and no separate event to put on. Your padrinos pledge a few cents for every point your team scores, and when the final score goes up, Cada Punto Cuenta works out what each pledge came to and writes to each padrino <b>once</b>. No reminders.',
 scP2:'Running a tournament? That too. Create divisions, assign courts, set times and generate the brackets; the bracket fills itself in &mdash; the moment a result lands, the winner shows up in the game they play next. And every game of the tournament is a chance to raise as well, for both teams if both are registered. <b>marcadorpr organises the games. Cada Punto Cuenta handles the pledges. Your program receives what it raises directly.</b> Registering is free: a game that collects no pledges is never invoiced.',
 scCta:'See what a tournament looks like &rarr;',
+
+// ── El reporte que le llega al entrenador ──────────────────────
+rpEye:'After the game',
+rpH2:'You do not keep the tally. It arrives done.',
+rpP:'When the notices go out, the same game comes to you from your side: what it raised, who pledged what, and where each one ended up. No sheet to keep and no page to open &mdash; it lands in your inbox already done.',
+rpP2:'It carries what cannot be hidden. The padrino whose email bounced is marked, because that one will not hear by email and needs a call. The pledge that did not reach the minimum shows at $0.00 with its name, so you know what to tell them. And anyone who got a correction is marked, so it does not surprise you when they ring.',
+rpP3:'No payment link and nothing asked of you. Collecting stays yours &mdash; this is only the list of who and how much.',
+rpDe:'Cada Punto Cuenta &rarr; your inbox',
+rpAs:'Canóvanas · CP-1: $49.30 in pledges',
+rpTot:'from 3 padrinos · Canóvanas scored 58 points',
+rpCorr:'corrected',
+rpVec:'Neighbour across the street',
+rpReb:'bounced &mdash; call them',
+rpPri:'Cousin Ángel',
+rpBajo:'below the minimum &mdash; not charged',
+rpPie:'Example. The report arrives in Spanish and English.',
 sdDay:'Saturday 21 November',
 sdEg:'Example',
 vs1:'vs',
