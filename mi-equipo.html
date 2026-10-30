@@ -275,6 +275,22 @@ header{color:#fff}
     <div id="app" class="hide">
       <p class="lede" id="quien"></p>
 
+      <!-- ══ LA TEMPORADA ENTERA, Y VA PRIMERA ═════════════════
+           Esto estaba debajo del formulario de un juego, y el
+           formulario es lo primero que ve un entrenador al entrar.
+           Le estábamos enseñando el camino lento: el que llega con
+           veinte juegos encuentra una casilla para uno, la llena
+           veinte veces o se va. El que de verdad tiene un solo juego
+           lo tiene justo debajo y no ha perdido nada.
+
+           El constructor de marcadorpr ya sabía hacer calendarios, y
+           hasta hoy eran dos productos que no se hablaban: había que
+           descubrirlo por cuenta propia y volver a escribir el
+           código. Va en el enlace, con el nombre del equipo. -->
+      <h2 id="tHorario"></h2>
+      <p class="help" id="tHorarioP"></p>
+      <p><a class="btn go" id="jHorario" target="_blank" rel="noopener"></a></p>
+
       <h2 id="tNuevo"></h2>
       <p class="help" id="tNuevoP"></p>
       <div class="fila2">
@@ -307,19 +323,6 @@ header{color:#fff}
       <p class="help" id="tPadP"></p>
       <button class="btn go" id="jCrear"></button>
       <p class="msg" id="jm"></p>
-
-      <!-- ══ LA TEMPORADA ENTERA, DE UNA VEZ ═══════════════════
-           Un juego cada vez está bien para el que tiene tres. El que
-           tiene veinte no vuelve: añadir veinte juegos de uno en uno
-           es la clase de trabajo que hace que se cierre la página.
-
-           El constructor de marcadorpr ya sabe hacer eso, y hasta hoy
-           eran dos productos que no se hablaban: el entrenador tenía
-           que descubrirlo por su cuenta y volver a escribir su
-           código. Va en el enlace. -->
-      <h2 id="tHorario"></h2>
-      <p class="help" id="tHorarioP"></p>
-      <p><a class="btn line" id="jHorario" target="_blank" rel="noopener"></a></p>
 
       <h2 id="tTeams"></h2>
       <div id="teams"></div>
