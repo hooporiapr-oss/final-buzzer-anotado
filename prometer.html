@@ -422,6 +422,8 @@ var S={
   cerradaP:'Ya hay marcador, así que esta promesa llega tarde. Pero el equipo vuelve a jugar — pídele el próximo enlace.',
   cancelada:'Este juego no se jugó',
   canceladaP:'El juego se canceló, así que no hay nada que prometer. Nadie debe nada.',
+  sinPadrinos:'Este juego no lleva padrinos',
+  sinPadrinosP:'El equipo no abrió este juego a promesas: se juega y se anota, y nada más. No es que llegues tarde — pídeles el enlace de otro juego, que ahí sí puedes.',
   jugado:'Marcador final',
   yaVan:'{N} ya prometieron en este juego.',
   yaVan1:'1 persona ya prometió en este juego.',
@@ -460,6 +462,8 @@ var S={
   cerradaP:'The score is already in, so this pledge is late. But the team plays again — ask them for the next link.',
   cancelada:'This game was not played',
   canceladaP:'The game was cancelled, so there is nothing to pledge on. Nobody owes anything.',
+  sinPadrinos:'This game has no padrinos',
+  sinPadrinosP:'The team did not open this game to pledges: it gets played and scored, and that is all. You are not late \u2014 ask them for another game\u2019s link, and on that one you can.',
   jugado:'Final score',
   yaVan:'{N} people have already pledged on this game.',
   yaVan1:'1 person has already pledged on this game.',
@@ -653,11 +657,16 @@ function pintar(){
   $('enviar').textContent=T('enviar');
   $('aviso').textContent=T('aviso');
   $('pie').textContent=T('pie');
-  /* Cerrado por marcador y cancelado no son lo mismo, y a un padrino
-     le importan de maneras distintas: del primero puede pedir el
-     enlace del próximo juego; del segundo no hay nada que pedir. */
-  $('cerradoH').textContent = ESTADO.cancelado ? T('cancelada') : T('cerrada');
-  $('cerradoP').textContent = ESTADO.cancelado ? T('canceladaP') : T('cerradaP');
+  /* Cerrado por marcador, cancelado y sin padrinos no son lo mismo, y
+     a un padrino le importan de maneras distintas: del primero puede
+     pedir el enlace del próximo juego; del segundo no hay nada que
+     pedir; y del tercero —que nunca estuvo abierto— decirle «llegas
+     tarde» sería mentirle, porque no llegó tarde a nada. */
+  var cerr = ESTADO.cancelado        ? ['cancelada','canceladaP']
+           : (ESTADO.recauda === false) ? ['sinPadrinos','sinPadrinosP']
+           : ['cerrada','cerradaP'];
+  $('cerradoH').textContent = T(cerr[0]);
+  $('cerradoP').textContent = T(cerr[1]);
   $('listoH').textContent=T('listoH');
   $('listoP').textContent=T('listoP');
   $('volver').textContent=T('volver');
