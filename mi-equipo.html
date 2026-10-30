@@ -289,13 +289,37 @@ header{color:#fff}
         <div><label for="jCancha" id="tCancha"></label>
              <input id="jCancha"></div>
       </div>
-      <label for="jCasa" id="tDonde"></label>
-      <select id="jCasa">
-        <option value="1" id="tCasa"></option>
-        <option value="0" id="tFuera"></option>
-      </select>
+      <div class="fila2">
+        <div><label for="jCasa" id="tDonde"></label>
+          <select id="jCasa">
+            <option value="1" id="tCasa"></option>
+            <option value="0" id="tFuera"></option>
+          </select></div>
+        <!-- Si en ESTE juego hay padrinos. No todo juego lo es: un
+             entrenador quiere padrinos en el de la rivalidad y no en
+             el amistoso del martes. Se puede cambiar después. -->
+        <div><label for="jRecauda" id="tPadrinos"></label>
+          <select id="jRecauda">
+            <option value="1" id="tPadSi"></option>
+            <option value="0" id="tPadNo"></option>
+          </select></div>
+      </div>
+      <p class="help" id="tPadP"></p>
       <button class="btn go" id="jCrear"></button>
       <p class="msg" id="jm"></p>
+
+      <!-- ══ LA TEMPORADA ENTERA, DE UNA VEZ ═══════════════════
+           Un juego cada vez está bien para el que tiene tres. El que
+           tiene veinte no vuelve: añadir veinte juegos de uno en uno
+           es la clase de trabajo que hace que se cierre la página.
+
+           El constructor de marcadorpr ya sabe hacer eso, y hasta hoy
+           eran dos productos que no se hablaban: el entrenador tenía
+           que descubrirlo por su cuenta y volver a escribir su
+           código. Va en el enlace. -->
+      <h2 id="tHorario"></h2>
+      <p class="help" id="tHorarioP"></p>
+      <p><a class="btn line" id="jHorario" target="_blank" rel="noopener"></a></p>
 
       <h2 id="tTeams"></h2>
       <div id="teams"></div>
@@ -368,13 +392,25 @@ var S={
     rival:'Contra quién', fecha:'Qué día',
     hora:'Hora (opcional)', cancha:'Cancha (opcional)',
     donde:'Dónde', casa:'En casa', fuera:'De visita',
+    padrinos:'Padrinos', padSi:'Sí', padNo:'No',
+    padP:'«No» hace un juego de puro marcador: sale en tu lista y lleva puntos como cualquiera, pero no tiene enlace para prometer y no te cuesta licencia. Lo puedes cambiar después, juego por juego.',
     crear:'Añadir el juego',
+    horario:'¿Tienes la temporada entera?',
+    horarioP:'Súbela de una vez en el constructor de marcadorpr: escribes la lista de juegos, marcas en cuáles quieres padrinos, y vuelven aquí con sus enlaces. Tu código va puesto.',
+    irHorario:'Montar mi calendario',
     teams:'Tus juegos',
     sinJuegos:'Todavía no tienes ningún juego. Añade el primero arriba.',
     nPromesas:'{N} promesas', nPromesa:'1 promesa', sinPromesas:'sin promesas',
     sinMarcador:'sin marcador',
     deTorneo:'de un torneo',
     esPrueba:'JUEGO DE PRUEBA — no se factura',
+    sinRecaudo:'SIN PADRINOS — sólo marcador',
+    abrir:'Abrir a padrinos', cerrar:'Quitar los padrinos',
+    confCerrar:'¿Quitar los padrinos de este juego?\n\nDeja de tener enlace para prometer. El juego se queda y lleva marcador igual.',
+    okAbierto:'Listo. Ya tiene enlace para prometer.',
+    okCerrado:'Listo. Este juego se queda sólo con el marcador.',
+    errConPromesas:'Este juego ya tiene {N} promesa(s). No se le pueden quitar los padrinos por detrás: alguien ya prometió sobre él.',
+    errYaJugado:'Este juego ya tiene marcador. Eso ya no se cambia.',
     copiar:'Copiar el enlace', copiado:'Copiado',
     lMios:'nosotros', lSuyos:'ellos',
     poner:'Poner el marcador', retirar:'Retirar el marcador',
@@ -418,13 +454,25 @@ var S={
     rival:'Against who', fecha:'What day',
     hora:'Time (optional)', cancha:'Court (optional)',
     donde:'Where', casa:'At home', fuera:'Away',
+    padrinos:'Padrinos', padSi:'Yes', padNo:'No',
+    padP:'“No” makes it a scoreboard-only game: it shows in your list and takes a score like any other, but it has no pledge link and costs you no licence. You can change it later, game by game.',
     crear:'Add the game',
+    horario:'Got the whole season?',
+    horarioP:'Put it up in one go in the marcadorpr builder: you type the list of games, tick which ones you want padrinos on, and they come back here with their links. Your code travels with you.',
+    irHorario:'Build my schedule',
     teams:'Your games',
     sinJuegos:'No games yet. Add your first one above.',
     nPromesas:'{N} pledges', nPromesa:'1 pledge', sinPromesas:'no pledges',
     sinMarcador:'no score yet',
     deTorneo:'from a tournament',
     esPrueba:'TEST GAME — not invoiced',
+    sinRecaudo:'NO PADRINOS — scoreboard only',
+    abrir:'Open it to padrinos', cerrar:'Take the padrinos off',
+    confCerrar:'Take the padrinos off this game?\n\nIt loses its pledge link. The game stays and takes a score just the same.',
+    okAbierto:'Done. It has a pledge link now.',
+    okCerrado:'Done. This game is scoreboard only now.',
+    errConPromesas:'This game already has {N} pledge(s). The padrinos cannot be taken off behind their backs: someone already pledged on it.',
+    errYaJugado:'This game already has a score. That does not change now.',
     copiar:'Copy the link', copiado:'Copied',
     lMios:'us', lSuyos:'them',
     poner:'Post the score', retirar:'Withdraw the score',
@@ -478,12 +526,13 @@ function paintStatic(){
   $('tCodeH').textContent=T('codeH');
   $('tGo').textContent=T('go');
   $('tTeams').textContent=T('teams');
-  ['tNuevo','nuevo'],['tNuevoP','nuevoP'],['tRival','rival'],['tFecha','fecha'],
-  ['tHora','hora'],['tCancha','cancha'],['tDonde','donde'],['tCasa','casa'],
-  ['tFuera','fuera'],['jCrear','crear'];
   [['tNuevo','nuevo'],['tNuevoP','nuevoP'],['tRival','rival'],['tFecha','fecha'],
    ['tHora','hora'],['tCancha','cancha'],['tDonde','donde'],['tCasa','casa'],
-   ['tFuera','fuera'],['jCrear','crear']].forEach(function(par){
+   ['tFuera','fuera'],['jCrear','crear'],
+   ['tPadrinos','padrinos'],['tPadSi','padSi'],['tPadNo','padNo'],
+   ['tPadP','padP'],['tHorario','horario'],['tHorarioP','horarioP'],
+   ['jHorario','irHorario']
+  ].forEach(function(par){
     var e=$(par[0]); if(e) e.textContent=T(par[1]);
   });
   $('hout').textContent=T('out');
@@ -493,7 +542,7 @@ function paintStatic(){
   document.documentElement.lang=LANG;
 }
 
-var CODE=null, PROGRAMA='', JUEGOS=[];
+var CODE=null, PROGRAMA='', EQUIPO='', JUEGOS=[];
 var SERVER='https://hooporia-server.onrender.com';
 
 /* Acepta la sesión que ya tenga de cualquiera de las dos páginas
@@ -533,6 +582,7 @@ function entrar(auto){
     .then(function(r){
       if(!r||!r.ok){ if(auto) olvidar(); return say(T('bad'),'bad'); }
       CODE=k; JUEGOS=r.juegos||[]; PROGRAMA=r.campana||'';
+      EQUIPO=r.equipo||'';
       recordar(k);
       say('');
       $('gate').className='gate hide';
@@ -548,6 +598,7 @@ function recargar(){
   if(!CODE) return;
   rpc('juegos_del_codigo',{p_code:CODE})
     .then(function(r){ if(r&&r.ok){ JUEGOS=r.juegos||[]; PROGRAMA=r.campana||PROGRAMA;
+                                    EQUIPO=r.equipo||EQUIPO;
                                     pintarJuegos(); } })
     .catch(function(){});
 }
@@ -556,6 +607,19 @@ function enlace(id){ return 'https://cadapunto.com/prometer.html?g=' + id }
 
 function pintarJuegos(){
   $('quien').textContent = T('quien').replace('{P}', PROGRAMA || '');
+
+  /* El enlace al constructor, con el código y el nombre del equipo ya
+     puestos. Los dos importan: el código, para que no tenga que
+     buscarlo otra vez; el nombre, porque es lo que engancha sus
+     juegos con su campaña y teclearlo distinto —«Canovanas» donde se
+     inscribió «Canóvanas»— le deja un calendario sin botón de
+     prometer y sin un solo mensaje de error que se lo explique. */
+  /* Sin &lang=: el constructor es sólo en español, y mandarle un
+     idioma que no lee sería un parámetro que parece que hace algo. */
+  var H = $('jHorario');
+  if (H) H.href = 'https://marcadorpr.com/constructor.html?modo=temporada'
+                + '&code=' + encodeURIComponent(CODE || '')
+                + (EQUIPO ? '&equipo=' + encodeURIComponent(EQUIPO) : '');
 
   if(!JUEGOS.length){
     $('teams').innerHTML = '<p class="help">'+esc(T('sinJuegos'))+'</p>';
@@ -580,11 +644,28 @@ function pintarJuegos(){
       (g.es_prueba ? '<p class="help" style="color:var(--orange);font-weight:800;margin:6px 0 0">'+
                        esc(T('esPrueba'))+'</p>' : '')+
 
-      /* El enlace primero: es lo que el entrenador viene a buscar. */
-      '<div class="lin">'+
-        '<input readonly value="'+esc(enlace(g.game_id))+'" onclick="this.select()">'+
-        '<button class="btn mini" data-cop="'+esc(g.game_id)+'">'+esc(T('copiar'))+'</button>'+
-      '</div>'+
+      /* El enlace primero: es lo que el entrenador viene a buscar.
+         Salvo que este juego no tenga padrinos, y entonces enseñar un
+         enlace que no lleva a ningún sitio sería lo peor que podría
+         hacer esta página: lo copiaría y lo mandaría igual. En su
+         sitio va la manera de encenderlo. */
+      (g.recauda === false
+        ? '<p class="help" style="font-weight:800;margin:6px 0 0">'+
+            esc(T('sinRecaudo'))+'</p>'+
+          (g.jugado ? ''
+            : '<div class="lin"><button class="btn mini line" data-rec="'+
+                esc(g.game_id)+'">'+esc(T('abrir'))+'</button></div>')
+        : '<div class="lin">'+
+            '<input readonly value="'+esc(enlace(g.game_id))+'" onclick="this.select()">'+
+            '<button class="btn mini" data-cop="'+esc(g.game_id)+'">'+esc(T('copiar'))+'</button>'+
+          '</div>'+
+          /* Y quitarlos sólo mientras no haya nadie dentro. Con una
+             promesa encima el botón ni sale: la base lo rechaza
+             igual, pero un botón que siempre falla es una trampa. */
+          ((np === 0 && !g.jugado)
+            ? '<div class="lin"><button class="btn mini line" data-norec="'+
+                esc(g.game_id)+'">'+esc(T('cerrar'))+'</button></div>'
+            : ''))+
 
       '<div class="lin">'+
         '<input class="pts" data-a="'+esc(g.game_id)+'" type="number" min="0" max="300" '+
@@ -626,6 +707,37 @@ function pintarJuegos(){
   [].forEach.call(L.querySelectorAll('button[data-avi]'), function(b){
     b.onclick = function(){ avisar(b.getAttribute('data-avi'), b) };
   });
+  [].forEach.call(L.querySelectorAll('button[data-rec]'), function(b){
+    b.onclick = function(){ recaudar(b.getAttribute('data-rec'), true, b) };
+  });
+  [].forEach.call(L.querySelectorAll('button[data-norec]'), function(b){
+    b.onclick = function(){ recaudar(b.getAttribute('data-norec'), false, b) };
+  });
+}
+
+/* Encender o apagar los padrinos de un juego.
+   Apagarlo pregunta; encenderlo no, porque encenderlo no le quita
+   nada a nadie — igual que mandar un aviso pregunta y copiar un
+   enlace no. */
+function recaudar(id, on, boton){
+  if (!on && !confirm(T('confCerrar'))) return;
+  boton.disabled = true;
+  dice('…');
+
+  rpc('juego_recaudar', { p_code:CODE, p_game:id, p_recauda:on })
+    .then(function(d){
+      if(!d || d.ok !== true){
+        boton.disabled = false;
+        var r = d && d.reason;
+        return dice(
+          r === 'con-promesas' ? T('errConPromesas').replace('{N}', d.promesas || 0) :
+          r === 'ya-jugado'    ? T('errYaJugado') :
+          T('errGen'), 'bad');
+      }
+      dice(on ? T('okAbierto') : T('okCerrado'), 'ok');
+      recargar();
+    })
+    .catch(function(e){ boton.disabled = false; dice(T('errGen')+porque(e), 'bad') });
 }
 
 /* Los avisos de un juego. Dos pulsaciones y no una: un correo no se
@@ -681,13 +793,15 @@ $('jCrear').onclick = function(){
   var hora=($('jHora').value||'').trim();
   var cancha=($('jCancha').value||'').trim();
   var casa=$('jCasa').value==='1';
+  var rec=$('jRecauda').value==='1';
 
   if(!rival) return dice(T('errRival'),'bad');
   if(!fecha) return dice(T('errFecha'),'bad');
 
   dice('…');
   rpc('juego_crear',{p_code:CODE,p_rival:rival,p_fecha:fecha,
-                     p_hora:hora||null,p_cancha:cancha||null,p_casa:casa})
+                     p_hora:hora||null,p_cancha:cancha||null,p_casa:casa,
+                     p_recauda:rec})
     .then(function(d){
       if(!d||d.ok!==true){
         var r=d&&d.reason;
