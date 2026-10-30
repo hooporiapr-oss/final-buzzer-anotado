@@ -272,6 +272,15 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
       <option value="1">At home</option>
       <option value="0">Away</option>
     </select>
+    <!-- Whether this game takes pledges at all. "No" makes it a
+         scoreboard-only game: it shows in the list and takes a score,
+         but it has no pledge link and raises no licence. The coach
+         can change it from their own page. -->
+    <label for="jgRecauda">Padrinos</label>
+    <select id="jgRecauda">
+      <option value="1">Yes &mdash; this game takes pledges</option>
+      <option value="0">No &mdash; scoreboard only</option>
+    </select>
     <div class="btns">
       <button id="jgCrear">Create the game</button>
       <button class="q sm" id="jgRecargar">Reload the list</button>
@@ -1374,12 +1383,18 @@ function pintarJuegosSueltos(filas){
         ? '<p class="sub" style="margin:6px 0 0;color:var(--orange);font-weight:800">' +
           'TEST GAME — NO LICENCE INVOICE</p>' : '') +
 
-      '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
-        '<input readonly value="' + esc(jgLink(f.game_id)) + '" ' +
-          'style="flex:1 1 220px;min-width:0;font-size:.8rem" ' +
-          'onclick="this.select()">' +
-        '<button class="q sm" data-copiar="' + esc(f.game_id) + '">Copy link</button>' +
-      '</div>' +
+      /* No pledge link on a scoreboard-only game. Showing one that
+         goes nowhere is worse than showing none: it gets copied and
+         sent anyway. */
+      (f.recauda === false
+        ? '<p class="sub" style="margin:6px 0 0;font-weight:800">' +
+          'NO PADRINOS — SCOREBOARD ONLY</p>'
+        : '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+            '<input readonly value="' + esc(jgLink(f.game_id)) + '" ' +
+              'style="flex:1 1 220px;min-width:0;font-size:.8rem" ' +
+              'onclick="this.select()">' +
+            '<button class="q sm" data-copiar="' + esc(f.game_id) + '">Copy link</button>' +
+          '</div>') +
 
       '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
         '<input class="jgPts" data-mios="' + esc(f.game_id) + '" type="number" min="0" max="300" ' +
@@ -1453,6 +1468,7 @@ $('jgCrear').onclick = function(){
   var hora   = ($('jgHora').value   || '').trim();
   var cancha = ($('jgCancha').value || '').trim();
   var casa   = $('jgCasa').value === '1';
+  var rec    = $('jgRecauda').value === '1';
 
   if (!rival) return di('mJuego', 'Who are they playing?', 'mal');
   if (!fecha) return di('mJuego', 'What day?', 'mal');
@@ -1460,7 +1476,7 @@ $('jgCrear').onclick = function(){
   di('mJuego', '…');
   rpc('juego_crear', { p_code: CODE || 'x', p_rival: rival, p_fecha: fecha,
                        p_hora: hora || null, p_cancha: cancha || null,
-                       p_casa: casa, p_campaign: CAMP.id })
+                       p_casa: casa, p_recauda: rec, p_campaign: CAMP.id })
     .then(function(d){
       if (!d || d.ok !== true){
         var r = d && d.reason;
