@@ -233,6 +233,12 @@ h1 em{font-style:normal;color:var(--orange)}
 .srow.hole .smatch{color:var(--muted)}
 .schnota{padding:.7rem 1.1rem;border-top:1px solid var(--linea);background:var(--cream);
   color:var(--muted);font-size:.78rem}
+/* El cartel de entrada. Fondo del color oscuro de la pieza para que
+   las bandas que sobren a los lados en una pantalla ancha no se
+   lean como un hueco. */
+.cartel{background:#0a1018;line-height:0}
+.cartel img{display:block;width:100%;height:auto;max-height:58vh;object-fit:contain;
+  margin:0 auto}
 /* ── La maqueta del reporte del entrenador ──────────────────────
    Mismo armazón que el calendario de arriba —panel, cabecera crema,
    filas separadas— porque son la misma familia: lo que se ve antes
@@ -482,6 +488,28 @@ button.lang{padding:0 10px;font-size:.8rem}
 </div>
 </div>
 </header>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     0 · EL CARTEL
+
+     Va ARRIBA del hero y no en su sitio. Lo de abajo tiene la cuenta
+     —25¢ × 68 puntos = $17— y ésa es la pieza que convence: enseña en
+     tres números lo que un párrafo tarda en explicar. El cartel hace
+     la otra mitad del trabajo, la que no se escribe.
+
+     Y no es una pantalla de entrada con un botón. Una puerta que hay
+     que abrir es un paso más entre el entrenador y lo que vino a
+     entender, y hoy se quitaron tres de ésos. Esto se ve al llegar,
+     se pasa de largo con el dedo, y no pide nada.
+
+     La altura va tope a 58vh para que en un teléfono se vea el
+     cartel Y asome lo de abajo: un cartel que llena la pantalla
+     entera se lee como una puerta aunque no lo sea.
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="cartel">
+  <img src="cadapunto-hero.jpg" width="1200" height="942" decoding="async"
+       alt="Cada Punto Cuenta — baloncesto y voleibol. Nada que vender, sin rifas, nada que entregar: tu equipo anota y tu programa cobra.">
+</section>
 
 <!-- ══════════════════════════════════════════════════════════════════
      1 · UN PADRINO, UN JUEGO, DIECISIETE DÓLARES
