@@ -237,8 +237,24 @@ h1 em{font-style:normal;color:var(--orange)}
    las bandas que sobren a los lados en una pantalla ancha no se
    lean como un hueco. */
 .cartel{background:#0a1018;line-height:0}
-.cartel img{display:block;width:100%;height:auto;max-height:58vh;object-fit:contain;
-  margin:0 auto}
+/* DE BORDE A BORDE, y por eso `cover` y no `contain`.
+
+   Con `contain` el cartel se encogía hasta caber de alto y dejaba el
+   fondo oscuro a los lados: en una pantalla ancha se leía como una
+   columna centrada en vez de una pieza. Con `cover` manda el ancho y
+   lo que sobra de alto se recorta.
+
+   object-position en 38% y no en el centro: el centro geométrico de
+   esta pieza cae en el titular, y recortando desde ahí se van los
+   dos logos de arriba. Subiéndolo, el recorte se lleva el borde de
+   la cancha de abajo, que no dice nada. */
+.cartel img{display:block;width:100%;height:54vh;min-height:260px;max-height:520px;
+  object-fit:cover;object-position:center 20%}
+/* En un teléfono la pieza ya es casi tan alta como ancha, así que
+   cabe entera: ahí no hace falta recortar nada. */
+@media(max-width:620px){
+  .cartel img{height:auto;max-height:52vh;object-fit:contain}
+}
 /* ── La maqueta del reporte del entrenador ──────────────────────
    Mismo armazón que el calendario de arriba —panel, cabecera crema,
    filas separadas— porque son la misma familia: lo que se ve antes
