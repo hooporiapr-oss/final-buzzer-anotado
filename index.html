@@ -19,7 +19,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101c2a">
 <title>Cada Punto Cuenta | Cada punto queda anotado.</title>
-<meta name="description" content="Recaudación por promesas sobre un juego que tu equipo ya tiene en calendario. Un padrino promete unos centavos por punto, los dos equipos del tablero recaudan, y al programa le pagan directo.">
+<meta name="description" content="Recaudación por promesas sobre un juego de baloncesto o voleibol que tu equipo ya tiene en calendario. Un padrino promete unos centavos por punto, los dos equipos del tablero recaudan, y al programa le pagan directo.">
 
 <!-- El icono y la imagen de compartir. og:image va en absoluto
      a propósito: WhatsApp y los demás no resuelven rutas
@@ -29,11 +29,23 @@
 <link rel="apple-touch-icon" href="logo.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Cada Punto Cuenta">
-<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
+<!-- EL CARTEL, Y EN 1200x630 A PROPÓSITO.
+
+     El original —cadapunto.png, 1415x1111— está en el repo y es el
+     que se manda a imprimir. Pero una vista previa de WhatsApp es
+     1.91:1: con una imagen casi cuadrada no sale el cartel ancho,
+     sale una miniatura pequeña al lado del texto, y lo que se gana
+     con un cartel es justo el tamaño.
+
+     cadapunto-card.jpg es el mismo cartel entero, sin recortarle
+     nada, centrado sobre su propio fondo ampliado y desenfocado. No
+     se pierde ni el logo de arriba ni la dirección de abajo. -->
+<meta property="og:image" content="https://cadapunto.com/cadapunto-card.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Un nene en una cancha al atardecer, con el brazo en alto, mientras su marcador sube: 1, 3, 6, 10, 15, 21">
+<meta property="og:image:alt" content="Cada Punto Cuenta — baloncesto y voleibol. Nada que vender, sin rifas, nada que entregar: tu equipo anota y tu programa cobra.">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cadapunto.com/cadapunto-card.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap">
@@ -534,8 +546,13 @@ button.lang{padding:0 10px;font-size:.8rem}
      el calendario — que es lo que el entrenador hace de todas formas
      y es donde empieza la recaudación. -->
 <h2 data-i="howH2">Programa. Promete. Juega. Cobra.</h2>
-<p class="lede" data-i="howP">Cuatro pasos, y los dos del medio son juegos de baloncesto
-  que ya ibas a jugar.</p>
+<!-- Decía «juegos de baloncesto» y era la única línea de la página
+     que cerraba la puerta a otro deporte. El voleibol entra sin tocar
+     nada del dinero: se promete por punto, y un partido de tres sets
+     son sesenta o setenta puntos para un lado, el mismo rango que un
+     juego de baloncesto. -->
+<p class="lede" data-i="howP">Cuatro pasos, y los dos del medio son juegos que ya ibas
+  a jugar &mdash; de baloncesto o de voleibol.</p>
 </div>
 
 <div class="pasos">
@@ -1112,7 +1129,7 @@ sumPie:'That is <b>one single padrino</b>. There is no ceiling: each player brin
 
 howEye:'As simple as that',
 howH2:'Schedule. Pledge. Play. Paid.',
-howP:'Four steps, and the two in the middle are basketball games you were already playing.',
+howP:'Four steps, and the two in the middle are games you were already playing &mdash; basketball or volleyball.',
 q1w:'Schedule',
 q1p:'Put your games on marcadorpr: one, ten or the whole season. Every game comes with its pledge link, and you choose which ones carry it.',
 q2w:'Pledge',
