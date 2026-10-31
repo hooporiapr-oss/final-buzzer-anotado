@@ -355,7 +355,7 @@ var S={
 
     kick:'Reporte del juego',
     nPromesas:'promesas',
-    nPrometido:'prometido',
+    nPrometido:'en promesas que cualifican',
     nCobrables:'pasan el mínimo',
     sinJugar:'sin jugar',
     marcador:'Marcador final',
@@ -373,6 +373,8 @@ var S={
     sinTope:'—',
     sinPromesas:'Este juego no tiene promesas.',
     totalCualifican:'Total de promesas que cualifican:',
+    ejT:'Esto es un ejemplo.',
+    ejP:'El juego, los doce padrinos y las cifras son inventados, para que veas cómo se ve un reporte de verdad. El tuyo sale igual, con tus padrinos.',
 
     /* Las tres cosas que distinguen a quien no debe nada de quien
        debe y no se enteró. Son problemas muy distintos y el segundo
@@ -429,7 +431,7 @@ var S={
 
     kick:'Game report',
     nPromesas:'pledges',
-    nPrometido:'pledged',
+    nPrometido:'in qualifying pledges',
     nCobrables:'over the minimum',
     sinJugar:'not played yet',
     marcador:'Final score',
@@ -446,6 +448,8 @@ var S={
     sinTope:'—',
     sinPromesas:'This game has no pledges.',
     totalCualifican:'Total of qualifying pledges:',
+    ejT:'This is an example.',
+    ejP:'The game, the twelve padrinos and the figures are invented, so you can see what a real report looks like. Yours comes out the same, with your padrinos.',
 
     eBajo:'under the {P} minimum — nothing is asked of him',
     eCorregido:'correction pending: he was told {V}',
@@ -569,6 +573,44 @@ function toggleLang(){
   estatico();
   if(RETOS.length) llenarRetos();
   if(REP) pintar();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EL REPORTE DE EJEMPLO:  reporte.html?ejemplo=1
+
+   La portada enseña una tabla con los mismos datos, pero una tabla
+   suelta no es el reporte: el entrenador que quiere saber qué va a
+   usar necesita ver ESTA página — con su resumen, sus avisos, su
+   botón de bajar y su impresión.
+
+   Va aquí dentro y no en una copia aparte a propósito. Una copia
+   habría envejecido sola: se toca el reporte de verdad y el ejemplo
+   se queda contando la versión del año pasado, que es exactamente
+   el fallo que esta página ya tuvo con el dibujo del correo.
+
+   Los datos son los mismos de reporte-es.csv, así que la portada, el
+   fichero y esta página no pueden decir cifras distintas. No se
+   llama a la base: no hay código que valga, y nada de esto existe.
+   ══════════════════════════════════════════════════════════════ */
+var EJEMPLO = {"ok":true,"campana":"Canóvanas Basketball Club","juego":"Canóvanas 15U vs Loíza","rival":"Loíza","fecha":"2026-11-07","puntos":68,"rival_puntos":61,"jugado":true,"entrenador":{"nombre":"John Burgos","correo":"entrenador@ejemplo.com"},"pledges":[{"padrino":"María Rivera","correo":"maria.rivera@ejemplo.com","tarifa":0.25,"tope":null,"puntos":68,"total":17.0,"avisado":true},{"padrino":"José Correa","correo":"jcorrea@ejemplo.com","tarifa":0.5,"tope":25.0,"puntos":68,"total":25.0,"avisado":true},{"padrino":"Tía Carmen","correo":"carmen.v@ejemplo.com","tarifa":0.05,"tope":null,"puntos":68,"total":0.0,"avisado":false,"bajo_minimo":true},{"padrino":"Luis Figueroa","correo":"lfigueroa@ejemplo.com","tarifa":0.1,"tope":null,"puntos":68,"total":6.8,"avisado":true},{"padrino":"Ana Delgado","correo":"ana.delgado@ejemplo.com","tarifa":1.0,"tope":50.0,"puntos":68,"total":50.0,"avisado":true},{"padrino":"Pedro Santiago","correo":"psantiago@ejemplo.com","tarifa":0.25,"tope":10.0,"puntos":68,"total":10.0,"avisado":true},{"padrino":"Rosa Vega","correo":"rvega@ejemplo.com","tarifa":0.3,"tope":null,"puntos":68,"total":20.4,"avisado":true,"no_entregable":true},{"padrino":"Carlos Mejías","correo":"cmejias@ejemplo.com","tarifa":0.15,"tope":null,"puntos":68,"total":10.2,"avisado":true,"corregido":true},{"padrino":"Jorge Pagán","correo":"jpagan@ejemplo.com","tarifa":0.07,"tope":null,"puntos":68,"total":0.0,"avisado":false,"bajo_minimo":true},{"padrino":"Sonia Ortiz","correo":"sortiz@ejemplo.com","tarifa":0.2,"tope":null,"puntos":68,"total":13.6,"avisado":false,"pendiente":true},{"padrino":"Héctor Burgos","correo":"hburgos@ejemplo.com","tarifa":0.4,"tope":30.0,"puntos":68,"total":27.2,"avisado":true},{"padrino":"Daniela Cruz","correo":"dcruz@ejemplo.com","tarifa":0.25,"tope":null,"puntos":68,"total":17.0,"avisado":true}],"resumen":{"promesas":12,"cobrables":10,"prometido":197.2,"bajo_minimo":2,"corregidos":1,"sin_avisar":1,"no_entregables":1,"por_avisar":1}};
+
+function esEjemplo(){ return /[?&](ejemplo|demo)=1\b/.test(location.search) }
+
+function montarEjemplo(){
+  REP = EJEMPLO; RETO = 'ejemplo'; CODE = null;
+  $('gate').classList.add('hide');
+  $('out').classList.remove('hide');
+  pintar();
+  /* EL AVISO VA DENTRO DEL REPORTE, no en la cabecera: quien llega
+     aquí desde la portada tiene que saber, sin buscarlo, que estos
+     doce padrinos no existen. */
+  var o = $('out');
+  if (o && !$('ejAviso')){
+    var d = document.createElement('div');
+    d.id = 'ejAviso'; d.className = 'card aviso';
+    d.innerHTML = '<p><b>' + esc(T('ejT')) + '</b> ' + esc(T('ejP')) + '</p>';
+    o.insertBefore(d, o.firstChild);
+  }
 }
 
 function estatico(){
@@ -953,6 +995,7 @@ $('code').addEventListener('keydown',function(e){
 });
 
 estatico();
+if (esEjemplo()) montarEjemplo();
 </script>
 
 <script>
