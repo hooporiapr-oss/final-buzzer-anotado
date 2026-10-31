@@ -109,7 +109,7 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
   await page.evaluate(() => {
     const v = { team:'Canóvanas 15U', prog:'Canóvanas Basketball Club',
                 name:'John Burgos', email:'prueba@ejemplo.invalid', phone:'7871234567' };
-    for (const [id,val] of Object.entries({ tm:v.team, pg:v.prog, nm:v.name,
+    for (const [id,val] of Object.entries({ pn:'4827', tm:v.team, pg:v.prog, nm:v.name,
                                             em:v.email, ph:v.phone })){
       const el = document.getElementById(id);
       if (el) el.value = val;
@@ -188,7 +188,7 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
        hay que devolverlo antes de volver a llenarlo. */
     SENT = null;
     draw();
-    for (const [id,val] of Object.entries({ tm:'Canóvanas 15U',
+    for (const [id,val] of Object.entries({ pn:'4827', tm:'Canóvanas 15U',
         pg:'Canóvanas Basketball Club', nm:'John Burgos',
         em:'prueba@ejemplo.invalid', ph:'7871234567' })){
       const el = document.getElementById(id); if (el) el.value = val;
