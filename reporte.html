@@ -124,6 +124,49 @@ tbody tr.cero td{color:var(--muted)}
 tfoot td{border-top:2px solid var(--navy);font-weight:900;background:var(--cream)}
 .vacio{padding:22px;text-align:center;color:var(--muted)}
 
+/* ══════════════════════════════════════════════════════════════════
+   EN EL TELÉFONO, LA TABLA SE DESHACE EN FICHAS
+
+   Siete columnas en 388px daban una tabla de 867px dentro de una
+   caja con overflow:hidden: el dinero quedaba fuera de la pantalla y
+   no había forma de llegar a él. Un entrenador en la cancha veía
+   nombres y correos y ni una cifra.
+
+   Cada fila pasa a ser una ficha: el nombre arriba con su aviso, y
+   debajo una línea por dato con su rótulo a la izquierda y el número
+   a la derecha. El rótulo sale de data-r, que lo escribe el JS ya
+   traducido. Nada se esconde y nada se desliza.
+   ══════════════════════════════════════════════════════════════════ */
+@media(max-width:700px){
+  .card table,.card tbody,.card tfoot,.card tr,.card td{display:block;width:auto}
+  .card thead{display:none}
+  .card tbody tr{border-top:1px solid var(--linea);padding:12px 14px 14px}
+  .card tbody tr:first-child{border-top:none}
+  .card tbody td{border-top:none;padding:3px 0;text-align:left;white-space:normal}
+
+  /* El nombre manda: va solo, grande, con su aviso debajo. */
+  .card td.nm{font-size:1.05rem;padding-bottom:6px}
+  .card td.nm::before{content:none}
+  .card td.co{color:var(--muted);font-size:.84rem;padding-bottom:8px;
+    overflow-wrap:anywhere}
+  .card td.co::before{content:none}
+
+  /* Los datos, con su rótulo delante. */
+  .card tbody td:not(.nm):not(.co){display:flex;justify-content:space-between;
+    align-items:baseline;gap:14px;padding:4px 0}
+  .card tbody td:not(.nm):not(.co)::before{content:attr(data-r);
+    font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);flex:0 0 auto}
+  .card tbody td.tot{border-top:1px solid var(--linea);margin-top:6px;
+    padding-top:8px;font-weight:900;font-size:1.05rem}
+  .card tbody td.tot::before{color:var(--navy)}
+
+  /* El pie: el total del juego, en su propia ficha. */
+  .card tfoot tr{display:flex;justify-content:space-between;align-items:baseline;
+    gap:14px;padding:12px 14px;border-top:2px solid var(--navy);background:var(--cream)}
+  .card tfoot td{padding:0;border:none;font-weight:900}
+}
+
 .acc{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0 0}
 
 /* El aviso lleva borde naranja y no gris como las otras tarjetas: lo
@@ -374,6 +417,7 @@ var S={
     sinPromesas:'Este juego no tiene promesas.',
     totalCualifican:'Total de promesas que cualifican:',
     ejT:'Esto es un ejemplo.',
+    ejAvisoNota:'En el ejemplo no se manda nada. En tu reporte, este botón le manda UN aviso a cada padrino con su total — sin enlace de pago y sin recordatorios.',
     ejP:'El juego, los doce padrinos y las cifras son inventados, para que veas cómo se ve un reporte de verdad. El tuyo sale igual, con tus padrinos.',
 
     /* Las tres cosas que distinguen a quien no debe nada de quien
@@ -449,6 +493,7 @@ var S={
     sinPromesas:'This game has no pledges.',
     totalCualifican:'Total of qualifying pledges:',
     ejT:'This is an example.',
+    ejAvisoNota:'Nothing is sent in the example. In your report, this button sends ONE notice to each padrino with his total — no payment link and no reminders.',
     ejP:'The game, the twelve padrinos and the figures are invented, so you can see what a real report looks like. Yours comes out the same, with your padrinos.',
 
     eBajo:'under the {P} minimum — nothing is asked of him',
@@ -741,14 +786,21 @@ function pintar(){
     var valor = Math.min(Number(p.tarifa||0) * Number(p.puntos||0),
                          p.tope!=null ? Number(p.tope) : Infinity);
     valor = Math.round(valor*100)/100;
+    /* CADA CELDA LLEVA SU RÓTULO ENCIMA, en data-r. En el escritorio
+       no se ve —lo dice la cabecera— pero en el teléfono la tabla se
+       deshace en fichas y cada dato necesita decir qué es.
+
+       Va aquí y no en el CSS porque el rótulo está en dos idiomas:
+       content:attr(data-r) lo saca de donde ya lo tradujo T(). */
+    var r_ = function(k){ return ' data-r="'+esc(T(k))+'"' };
     return '<tr'+(!cual?' class="cero"':'')+'>'+
-      '<td class="nm">'+esc(p.padrino)+estado(p)+'</td>'+
-      '<td>'+esc(p.correo||'')+'</td>'+
-      '<td class="num">'+money(p.tarifa)+'</td>'+
-      '<td class="num">'+(p.tope!=null?money(p.tope):T('sinTope'))+'</td>'+
-      '<td class="num">'+money(valor)+'</td>'+
-      '<td class="num">'+esc(cual?T('cualSi'):T('cualNo'))+'</td>'+
-      '<td class="num">'+(cual?money(p.total):'&mdash;')+'</td>'+
+      '<td class="nm"'+r_('thPadrino')+'>'+esc(p.padrino)+estado(p)+'</td>'+
+      '<td class="co"'+r_('thCorreo')+'>'+esc(p.correo||'')+'</td>'+
+      '<td class="num"'+r_('thTarifa')+'>'+money(p.tarifa)+'</td>'+
+      '<td class="num"'+r_('thTope')+'>'+(p.tope!=null?money(p.tope):T('sinTope'))+'</td>'+
+      '<td class="num"'+r_('thValor')+'>'+money(valor)+'</td>'+
+      '<td class="num"'+r_('thCualifica')+'>'+esc(cual?T('cualSi'):T('cualNo'))+'</td>'+
+      '<td class="num tot"'+r_('thTotal')+'>'+(cual?money(p.total):'&mdash;')+'</td>'+
     '</tr>';
   }).join('') : '';
 
@@ -852,6 +904,14 @@ function pintar(){
    ══════════════════════════════════════════════════════════════════ */
 function pedirConfirma(){
   var n=$('avisoAcc'); if(!n) return;
+  /* EN EL EJEMPLO NO SE MANDA NADA, y hay que decirlo. mandarAvisos()
+     ya se para solo —sin código no llama al servidor— pero callado:
+     el visitante pulsaba, confirmaba y no pasaba nada, que se lee
+     como una página rota. Mejor decir qué haría el botón. */
+  if (esEjemplo()){
+    n.innerHTML = '<p class="nota">'+esc(T('ejAvisoNota'))+'</p>';
+    return;
+  }
   var cuantos = Number((REP&&REP.resumen&&REP.resumen.por_avisar) || 0);
   n.innerHTML =
     '<button class="btn" onclick="mandarAvisos()">'+esc(T('avisoConfirma',{N:cuantos}))+'</button>'+
