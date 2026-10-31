@@ -1,0 +1,15 @@
+Padrino,Correo,Por punto,Tope,Puntos,Valor de la promesa,Cualifica,Total,Cómo va
+María Rivera,maria.rivera@ejemplo.com,0.25,,68,17.00,sí,17.00,avisado
+José Correa,jcorrea@ejemplo.com,0.50,25.00,68,25.00,sí,25.00,avisado
+Tía Carmen,carmen.v@ejemplo.com,0.05,,68,3.40,no,0.00,bajo el mínimo de $5.00 — no se le pide nada
+Luis Figueroa,lfigueroa@ejemplo.com,0.10,,68,6.80,sí,6.80,avisado
+Ana Delgado,ana.delgado@ejemplo.com,1.00,50.00,68,50.00,sí,50.00,avisado
+Pedro Santiago,psantiago@ejemplo.com,0.25,10.00,68,10.00,sí,10.00,avisado
+Rosa Vega,rvega@ejemplo.com,0.30,,68,20.40,sí,20.40,no se le pudo avisar
+Carlos Mejías,cmejias@ejemplo.com,0.15,,68,10.20,sí,10.20,corregido · esta cifra es la buena
+Jorge Pagán,jpagan@ejemplo.com,0.07,,68,4.76,no,0.00,bajo el mínimo de $5.00 — no se le pide nada
+Sonia Ortiz,sortiz@ejemplo.com,0.20,,68,13.60,sí,13.60,sin avisar todavía
+Héctor Burgos,hburgos@ejemplo.com,0.40,30.00,68,27.20,sí,27.20,avisado
+Daniela Cruz,dcruz@ejemplo.com,0.25,,68,17.00,sí,17.00,avisado
+
+Total prometido,,,,,,,197.20,
