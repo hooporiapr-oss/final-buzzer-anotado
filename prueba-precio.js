@@ -120,10 +120,24 @@ console.log('\n2 · La portada lo dice en una línea, sin tabla\n');
   si(!/escCuantas|escTope/.test(idx),
      'ni los rótulos que la rellenaban');
 
-  /* Lo que sí tiene que estar: la regla dicha, y qué cualifica. */
-  si(/priceQ1/.test(idx) && /priceQ2/.test(idx),
-     'pero sí dice qué hace que una promesa cualifique, con su ejemplo');
-  si(/priceNoPay/.test(idx), 'y qué pasa si no se paga');
+  /* Lo que sí tiene que estar en la portada: qué cualifica. Sin esa
+     frase, «$1 por promesa que cualifica» no se puede leer — el
+     padrino de cinco centavos no sabría que la suya no cuesta nada.
+     Era un párrafo con ejemplo; desde que la portada se vació el 31
+     de octubre de 2026 es una línea, y con eso basta. */
+  si(/llega a \$5 o/.test(idx), 'pero sí dice qué hace que una promesa cualifique');
+  si(/Máximo \$99 por juego/.test(idx), 'y el tope por juego');
+
+  /* QUÉ PASA SI NO SE PAGA YA NO ESTÁ EN LA PORTADA, y es correcto:
+     es una condición del contrato, no un argumento de venta. Pero
+     tiene que seguir estando donde se firma, que es lo que esto
+     vigila. Si desapareciera de las tres, el entrenador aceptaría
+     una licencia cuya suspensión no se le dijo en ningún sitio. */
+  const legales = ['terms.html','custodia.html','equipo.html'];
+  const sinPolitica = legales.filter(f => !/suspend/i.test(leer(f)));
+  si(sinPolitica.length === 0,
+     'y la suspensión por impago sigue en los tres documentos donde se firma',
+     'falta en: ' + sinPolitica.join(', '));
   si(/licenciaDe/.test(idx),
      'y la regla sigue escrita una sola vez, para poder comprobarla');
 
