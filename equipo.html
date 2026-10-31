@@ -358,22 +358,20 @@ header{color:#fff}
 <footer>
   <div class="wrap">
     <p class="f-co">© 2026 Gostar Digital LLC · Puerto Rico</p>
-<p class="f-what" id="fWhat"></p>
-<script>
-/* Lo que somos, dicho donde se ve: una herramienta que se cobra, no
-   una obra benéfica. Lee el mismo idioma guardado que el resto del
-   sitio, así que no hace falta cablearlo a cada sistema de traducción. */
-(function(){
-  var l = 'es';
-  try{ l = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
-           localStorage.getItem('fc-lang') ||
-           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
-  var el = document.getElementById('fWhat');
-  if (el) el.textContent = (l === 'es')
-    ? 'Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
-    : 'Cada Punto Cuenta is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
-})();
-</script>
+<!-- LO QUE SOMOS, dicho donde se ve: una herramienta que se cobra,
+     no una obra benéfica.
+
+     Esta frase estaba vacía en el marcado y la escribía un script
+     suyo, con dos consecuencias. Sin JavaScript desaparecía entera
+     —y es justo la que aclara que esto es una empresa con fines de
+     lucro, que no es una frase que convenga perder—. Y escogía
+     idioma por su cuenta, leyendo localStorage y navigator.language
+     en vez del idioma de la página: con ?lang=es salía la página en
+     español y el pie en inglés, que es exactamente lo que se veía
+     en la captura de la pantalla de hecho.
+
+     Ahora es una llave más del marcado. Un solo idioma manda. -->
+<p class="f-what" id="fWhat" data-i="fWhat">Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.</p>
     <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
     <p class="f-legal">
       <a href="terms.html">Términos</a><span class="f-dot">·</span><a href="custodia.html">Dinero</a><span class="f-dot">·</span><a href="privacy.html">Privacidad</a>
@@ -445,6 +443,7 @@ var S = {
     doneP:'Te escribimos a {E} para confirmarlo y abrirte la campaña. Normalmente el mismo día.'
   },
   en:{
+    fWhat:'Cada Punto Cuenta is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.',
     kick:'Sign up your program',
     h1:'Your team plays. Your program raises.',
     lede:'Padrinos pledge a few cents on every point your team scores in a game. You were playing the game anyway: the final score does the arithmetic. Win or lose, every point counts. Nothing to sell, nothing to deliver, nobody to gather.',
