@@ -283,7 +283,12 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      impide leer el total de la temporada como un por ciento. */
   has(t,/son veinte licencias de/,'y que la temporada son veinte licencias, no un por ciento');
   has(t,/una por juego/,'una por juego');
-  has(t,/la licencia no te persigue/,'y se dice que la licencia sube por tramos y se para');
+  /* El rótulo decía «sube por tramos y se para», que era la
+     escalera. Lo que comprueba la línea —que la frase exista— no
+     ha cambiado; lo que decía de sí misma sí. Un rótulo viejo en
+     una prueba que pasa es peor que uno en la página: al que lee
+     la salida le dice que se vigila algo que ya no está. */
+  has(t,/la licencia no te persigue/,'y se dice que la licencia no te persigue');
 
   /* ── NADIE «DEBE» NADA ───────────────────────────────────────────
      La portada decía tres veces que no se debe nada y una que le
