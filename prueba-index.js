@@ -120,17 +120,25 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      marcador juego a juego, y el torneo es lo que el mismo tablero
      sabe hacer ADEMÁS. Si algún día vuelve a darse la vuelta, la
      portada vuelve a contradecirse sola. */
-  has(t,/calendario de recaudación/,'marcador es un calendario de recaudación, no sólo un tablero');
-  has(t,/Cada juego que programas sale con su botón de prometer/,
-      'y TODO juego programado sale con su botón de prometer');
+  has(t,/El calendario que recauda/,
+      'marcador es un calendario de recaudación, no sólo un tablero');
+  has(t,/cada juego sale con su enlace para recibir promesas por punto/,
+      'cada juego sale con su enlace de prometer');
   has(t,/uno, diez o la temporada entera/,'uno, diez o la temporada entera');
-  has(t,/el mismo calendario te arma un torneo/i,'el torneo lo arma el mismo calendario');
+  has(t,/\u00bfOrganizas torneos\? Tambi\u00e9n/i,'y el mismo sitio arma un torneo entero');
   not(t,/el tablero que tu torneo ya usa/,'y ya no da por hecho que tengas un torneo');
-  /* Y QUE NO SE VUELVA A DECIR QUE SE ESCOGE. Mientras las promesas
-     se activaban juego a juego, «tú escoges en qué juegos van» era
-     verdad y era el trato. Desde que todo juego programado sale con
-     botón, escoger ya no es el trato: el trato es que programes. */
-  not(t,/escoges en qué juegos/,'y ya no dice que el entrenador escoja en cuáles van');
+  /* ESCOGER VOLVIÓ A SER EL TRATO, y esta prueba está al revés de
+     como estuvo dos días.
+
+     Mientras todo juego programado salía con botón, «tú escoges en
+     qué juegos van» era falso y había que vigilar que no se dijera.
+     Desde el 30 de octubre de 2026 el entrenador escoge juego por
+     juego —lo pide la base y lo pide la página de su equipo— así que
+     ahora lo que hay que vigilar es que SÍ se diga: es la respuesta
+     a lo primero que piensa un entrenador, que no va a pedirle
+     dinero a su gente veinte veces en la temporada. */
+  has(t,/t\u00fa decides en cu\u00e1les s\u00ed y en cu\u00e1les no/,
+      'y dice que el entrenador escoge en cuáles van los padrinos');
   /* UN AVISO, NO UN ENLACE DE PAGO.
 
      La portada prometía «un enlace para pagarle directo a tu
@@ -149,8 +157,10 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      que hace que esto no sea un recaudador más. */
   has(t,/marcadorpr/,'marcadorpr sale nombrado');
   has(t,/El cuadro se llena solo/,'y que el cuadro se llena solo');
-  has(t,/Nadie escribe un número dos veces/,'y que el marcador no se escribe dos veces');
-  has(t,/cómo recaudar/,'un equipo sin campaña ve cómo conseguirla');
+  has(t,/para los dos equipos si los dos est\u00e1n inscritos/,
+      'y que recaudan los dos equipos, si los dos están inscritos');
+  has(t,/Tu programa recibe directamente lo que recaude/,
+      'y que lo recaudado va directo al programa');
 
   console.log('\n3 · La cuenta, y que los dos equipos salen');
   has(t,/Sesenta y ocho puntos/,'la cuenta va sobre el juego del tablero');
@@ -159,12 +169,12 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(t,/no se ha movido un peso/,'y se dice que no es una promesa');
 
   /* ── SIN TOPE DE PADRINOS ────────────────────────────────────────
-     La escalera termina en cuarenta y ocho y cuarenta y ocho acababa
-     leyéndose como la respuesta. La sección del tope enseña el MISMO
+     El tope de la licencia está en noventa y nueve y noventa y nueve
+     acaba leyéndose como el techo de padrinos, que no lo es. La sección del tope enseña el MISMO
      juego con tres cantidades de padrinos, y sus números no se
      escriben a mano: salen de 68 puntos × 25¢ × padrinos.
 
-     Se calculan aquí a partir de TARIFAS y de la cuenta, y no se
+     Se calculan aquí a partir de FEE y de la cuenta, y no se
      copian del marcado, porque una tabla que se queda vieja cuando
      alguien toca el precio es exactamente el fallo que esto existe
      para encontrar: la página seguiría leyéndose perfecta. */
@@ -174,16 +184,22 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(t,/programa la temporada entera/,'y que se puede programar la temporada entera');
   {
     const PUNTOS = 68, CENTAVOS = 0.25;
-    /* La escalera se lee del propio index.html, igual que hace
+    /* La tarifa se lee del propio index.html, igual que hace
        prueba-precio.js: así estas tres filas no pueden quedarse
-       viejas cuando alguien toque el precio. */
+       viejas cuando alguien toque el precio.
+
+       YA NO ES UNA ESCALERA. Era una de seis tramos y ahora es un
+       dólar por promesa que cualifica con tope de noventa y nueve,
+       así que esto lee FEE y no TARIFAS. Cuando la escalera se
+       retiró, lo que aquí quedó fue un indexOf devolviendo -1 y un
+       new Function montando basura: el fichero entero se caía antes
+       de la primera comprobación. */
     const _src = fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
-    const _mt  = _src.indexOf('const TARIFAS = [');
-    const TAR  = new Function('return ' +
-      _src.slice(_src.indexOf('[', _mt), _src.indexOf('];', _mt) + 1))();
-    const escalon = n => { for (const p of TAR)
-                             if (p.hasta !== null && n <= p.hasta) return p.precio;
-                           return null; };
+    const _mf  = _src.indexOf('const FEE = {');
+    if (_mf < 0) throw new Error('index.html ya no define FEE: el precio se movió de sitio');
+    const FEE  = new Function('return ' +
+      _src.slice(_src.indexOf('{', _mf), _src.indexOf('};', _mf) + 1))();
+    const escalon = n => n > 0 ? Math.min(n, FEE.tope) * FEE.porPromesa : 0;
     const dinero = n => '$' + (n * PUNTOS * CENTAVOS)
                           .toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     let bien = true;
@@ -196,7 +212,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
         mal('falta la licencia ' + lic + ' del tramo de ' + n); bien = false;
       }
     }
-    if (bien) ok('las tres filas de padrinos cuadran con la cuenta y con la escalera');
+    if (bien) ok('las tres filas de padrinos cuadran con la cuenta y con la tarifa');
 
     /* ── Y EL SEGUNDO EJE: LOS JUEGOS ──────────────────────────────
        La dirección nueva de la plataforma. Un entrenador no tiene un
@@ -208,7 +224,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
        alguna vez deja de multiplicar, la tabla estaría prometiendo
        una temporada a precio de un sábado. */
     const BASE = 48 * PUNTOS * CENTAVOS;          // $816 el juego
-    const LIC  = escalon(48);                     // $25 el juego
+    const LIC  = escalon(48);                     // $48 el juego
     let bienT = true;
     for (const j of [1, 10, 20]){
       const pro = '$' + (BASE*j).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -248,21 +264,32 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   not(t,/\bse debe\b|\ble debe\b|\bdeben\b|\bdeuda\b|\bdeudor/,
       'no se le dice a nadie que debe nada');
 
-  console.log('\n4 · El precio sale de la escalera');
-  /* La escalera, por PROMESAS del juego. Se exigen los dos extremos:
-     los de en medio los comprueba prueba-precio.js, que además mira
-     que las otras seis páginas digan lo mismo. */
-  has(t,/Hasta 10 promesas/,'el peldaño de abajo');
-  has(t,/201 promesas o más/,'y el de arriba, abierto');
-  has(t,/Hablemos/,'que no lleva número: se habla');
-  has(t,/y nada más/,'y que lo fija cuántas promesas, nada más');
-  has(t,/Sin promesas, sin cargo/,'la promesa que se hace sobre el cargo');
-  has(t,/Con un juego\s+basta/,"con un juego basta: no hay mínimo");
-  has(t,/cada juego de más es otra oportunidad/,"y cada juego de más es otra oportunidad");
+  console.log('\n4 · El precio: un dólar por promesa que cualifica');
+  /* YA NO HAY ESCALERA. Eran seis tramos por cantidad de promesas y
+     ahora es un dólar por promesa que cualifica con tope de noventa
+     y nueve por juego. Lo que esto vigila no es la aritmética
+     —prueba-precio.js la cuadra contra las otras páginas— sino que
+     la página siga diciendo las dos cifras y, sobre todo, la
+     definición: sin «cualifica» explicado, un dólar por promesa se
+     lee como un dólar por CADA promesa, y el padrino de cinco
+     centavos cree que cuesta dinero. */
+  has(t,/\$1 por cada promesa que cualifica/,'el dólar por promesa que cualifica');
+  has(t,/Máximo \$99 por\s+juego/,'y el tope de noventa y nueve por juego');
+  has(t,/alcanza \$5 o\s+más/,'qué es cualificar: que el valor final llegue a $5');
+  has(t,/después de publicarse el marcador/,'y que se sabe cuando se pone el marcador');
+  has(t,/no hay cargo/,'sin promesas que cualifiquen, no hay cargo');
+  has(t,/se incluyen sin\s+costo/,'y pasado el tope, las demás van sin costo');
+  has(t,/Nada por adelantado/,'nada por adelantado');
+  has(t,/Sin porcentajes ni comisiones/,'sin por cientos y sin comisiones');
+  has(t,/Sin suscripciones/,'y sin suscripciones');
   not(t,/\{[A-Z]\}/,'sin plantillas sin rellenar');
 
+  /* Y QUE NO QUEDE UN PELDAÑO PINTADO. La escalera se pintaba desde
+     JS; si alguien devuelve ese bloque, la página enseñaría dos
+     precios a la vez y ninguno de los dos se leería como el falso. */
   const n=await p.evaluate(()=>document.querySelectorAll('.peldano').length);
-  n===6?ok('la escalera se pintó entera: '+n+' peldaños'):mal('salieron '+n+' peldaños');
+  n===0?ok('no quedó ni un peldaño de la escalera retirada')
+       :mal('todavía se pintan '+n+' peldaños de la escalera');
 
   console.log('\n5 · Nada de custodia, nada de impuestos');
   has(t,/El dinero .*no pasa por nosotros/s,'el dinero no pasa por nosotros');
@@ -298,10 +325,10 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   has(en,/Schedule\. Pledge\. Play\. Paid\./,"los cuatro pasos, empezando por programar");
   has(en,/every point your team\s+scores/,'por punto del EQUIPO');
   has(en,/marcadorpr/,'marcadorpr sale nombrado');
-  has(en,/Nobody types a number twice/,'y que el marcador no se escribe dos veces');
-  has(en,/Up to 10 pledges/,'el peldaño de abajo');
-  has(en,/201 pledges or more/,'y el de arriba, abierto');
-  has(en,/No pledges, no fee/,'la promesa sobre el cargo');
+  has(en,/\$1 for each pledge that qualifies/,'el dólar por promesa que cualifica');
+  has(en,/\$99 maximum per game/,'y el tope por juego');
+  has(en,/final value reaches \$5/,'qué es cualificar');
+  has(en,/No qualifying pledges, no charge/,'sin promesas que cualifiquen, no hay cargo');
   has(en,/strictly a pledge management software provider/i,'la frase legal');
   has(en,/independently manage all proceeds/i,'y quién maneja los fondos');
   has(en,/one notice with the final score/,'el padrino recibe un aviso');
@@ -431,7 +458,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   const sinEs = llaves.marcado.filter(k=>!(k in TAB.en));
   /* Una llave está VIVA si tiene un elemento con data-i... o si el
      JS le pone el inglés a mano. La escalera del precio la pinta el
-     JS desde TARIFAS, así que sus cinco frases no cuelgan de ningún
+     JS desde FEE, así que sus cinco frases no cuelgan de ningún
      elemento del marcado y aquí salían como texto muerto cuando no
      lo son. Se cuentan las dos formas. */
   const aMano = [...fuenteIdx.matchAll(/spanish\.([A-Za-z0-9_]+)\s*=/g)].map(m=>m[1]);
@@ -455,7 +482,7 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
      ficheros existen de verdad vive en prueba-marca.js, que mira
      todas las páginas y no sólo ésta. */
   has(src,/<link[^>]+rel="icon"[^>]+href="logo\.png"/,'el icono de la pestaña');
-  has(src,/og:image"[^>]+content="https:\/\/cadapunto\.com\/compartir\.jpg"/,
+  has(src,/og:image"[^>]+content="https:\/\/cadapunto\.com\/cadapunto-card\.jpg"/,
       'la imagen de compartir, en absoluto');
   errs.length?errs.forEach(e=>mal(e)):ok('sin errores de página');
 
