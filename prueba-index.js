@@ -215,13 +215,27 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
      queda: lo que se quitó fue la sección que lo explicaba largo. */
   const tSec = await p.evaluate(() =>
     [...document.querySelectorAll('section')].map(s => s.innerText).join('\n'));
-  not(tSec, /El dinero .*no pasa por nosotros/s,    'sin la explicación larga del dinero');
+  /* LA FRASE SE QUEDA; LA SECCIÓN NO. «El dinero no pasa por
+     nosotros» es ahora una línea del bloque «No cobramos», y es la
+     respuesta a la primera pregunta que hace un director de
+     programa. Lo que se quitó fue la sección de ocho párrafos que
+     la explicaba, y eso se vigila por su rótulo. */
+  not(tSec, /A dónde va el dinero/,                 'sin la sección larga del dinero');
+  has(tSec, /No cobramos/,                          'pero se dice que no cobramos');
+  has(tSec, /no lo procesamos, no lo guardamos/,    'y qué significa eso');
   not(t, /lavado de carros|car wash/,               'sin las comparaciones');
 
   /* LAS DOS QUE NO SE NEGOCIAN. Estaban antes y siguen: no se promete
      un enlace de pago —custodia.html dice que no procesamos nada— y
      no se dice ni se insinúa que una promesa sea deducible. */
-  not(t, /enlace para pagar|enlace de pago/, 'y no se promete ningún enlace de pago');
+  /* SE PROHÍBE PROMETERLO, NO NOMBRARLO. La portada dice «sin enlace
+     de pago» —que es justo lo que custodia.html promete— y la regla
+     anterior lo tomaba por una promesa de uno. Se vigila la promesa:
+     un enlace de pago mencionado sin un «sin» delante. */
+  const prometePago = /(?<!sin\s)enlace (?:para pagar|de pago)/i.test(t);
+  !prometePago ? ok('y no se promete ningún enlace de pago')
+               : mal('la portada promete un enlace de pago');
+  has(t, /sin enlace de pago/, 'al contrario: dice que no lo hay');
   not(t, /deducib/i,                         'ni una palabra de deducciones');
   not(t, /\bdeuda\b|\bdeudor\b/,             'ni se le llama deuda a una promesa');
 
