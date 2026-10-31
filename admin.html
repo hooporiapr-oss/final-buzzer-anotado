@@ -710,6 +710,7 @@ function pintarTorneos(rows){
       '<div class="btns">' +
         '<button class="q sm" data-tor="' + esc(t.id) + '">' +
           (abierto ? 'Hide games' : 'Show games') + '</button>' +
+        '<button class="q sm" data-torborrar="' + esc(t.id) + '" data-tornombre="' + esc(t.nombre) + '">Delete</button>' +
       '</div>' +
       (abierto ? '<div class="juegos" id="tj-' + esc(t.id) + '">Loading…</div>' : '') +
     '</div>';
@@ -721,6 +722,11 @@ function pintarTorneos(rows){
      sitio donde se ejecuta. */
   [].forEach.call(caja.querySelectorAll('button[data-tor]'), function(b){
     b.onclick = function(){ alternarTorneo(b.getAttribute('data-tor')) };
+  });
+  [].forEach.call(caja.querySelectorAll('button[data-torborrar]'), function(b){
+    b.onclick = function(){
+      borrarTorneo(b.getAttribute('data-torborrar'), b.getAttribute('data-tornombre'), b)
+    };
   });
 
   if (TOR_ABIERTO) cargarJuegos(TOR_ABIERTO);
@@ -738,6 +744,46 @@ function pintarTorneos(rows){
     sel.innerHTML = opciones;
     if (antes) sel.value = antes;
   });
+}
+
+/* ── Borrar un calendario ─────────────────────────────────────────
+   El torneo es un objeto aparte de las solicitudes: puede tener
+   juegos de varios equipos, así que borrar un equipo no se lo lleva
+   y tiene su propio botón. La función de detrás (torneo_borrar,
+   admin-borrar.sql) se lleva el torneo, sus juegos del calendario y
+   los marcadores con sus números, y se niega si hay una licencia
+   facturada por medio. */
+function borrarTorneo(id, nombre, boton){
+  var cual = nombre || 'this tournament';
+  if (!confirm('Delete ' + cual + '?\n\n' +
+      'This removes the registered calendar, its games and their scores.\n\n' +
+      'It cannot be undone.')) return;
+  boton.disabled = true;
+  di('mTor', '…');
+  rpc('torneo_borrar', { p_id: id })
+    .then(function(r){
+      if (!r || !r.ok){
+        boton.disabled = false;
+        var porQue = r && r.reason === 'no-admin'
+            ? 'you are not signed in as an admin'
+          : r && r.reason === 'gone'
+            ? 'it was already removed — reloading'
+          : r && r.reason === 'facturado'
+            ? 'that tournament has an invoiced licence, so it cannot be deleted from here'
+          : 'it did not go through' + porque(r);
+        di('mTor', 'Could not delete: ' + porQue + '.', 'mal');
+        if (r && r.reason === 'gone') cargarTorneos();
+        return;
+      }
+      di('mTor', 'Deleted ' + (r.nombre || cual) + ': ' +
+        (r.juegos || 0) + ' calendar games and ' +
+        (r.marcadores || 0) + ' scores went with it.', 'bien');
+      cargarTorneos();
+    })
+    .catch(function(e){
+      boton.disabled = false;
+      di('mTor', 'Could not delete' + porque(e), 'mal');
+    });
 }
 
 
@@ -1006,13 +1052,13 @@ function pintarJuegos(id, js){
      Si estos números dejaran de ser los de index.html, el admin
      facturaría una cifra distinta de la que un programa aceptó.
      prueba-precio.js vigila que no pase. */
-  var ESCALERA = [[10,5],[25,12],[50,25],[100,45],[200,79],[null,null]];
-  var peldano = function(n){
-    for (var i = 0; i < ESCALERA.length; i++){
-      if (ESCALERA[i][0] === null || n <= ESCALERA[i][0]) return ESCALERA[i][1];
-    }
-    return null;
-  };
+  /* One dollar per qualifying pledge, capped at 99. Same rule as
+     index.html and the database — prueba-precio.js checks they agree.
+     A pledge qualifies when it is worth $5 or more once the final
+     score is in; the licence calculation has always counted exactly
+     those, so this only changes the price, not what is counted. */
+  var TOPE_LIC = 99;
+  var peldano = function(n){ return n > 0 ? Math.min(n, TOPE_LIC) : 0; };
 
   c.innerHTML = '<table><tr>' +
       '<th>Game</th><th>When</th><th>Teams</th><th>Score</th>' +
@@ -1172,15 +1218,20 @@ function pintarSolicitudes(rows){
        con ese nombre —sin acentos, como lo compara el tablero— la
        aprobación va a fallar con «taken», y eso se ve mejor aquí que
        en un mensaje de error. */
-    var botones = s.estado === 'pending'
-      ? (s.ocupado
+    /* «Delete» sale en TODAS las filas, no sólo en las pendientes: la
+       que hace falta limpiar después de una prueba es justamente la
+       aprobada, que ya tiene campaña y juegos colgando. Aprobar y
+       rechazar siguen siendo cosa de las pendientes. */
+    var botones = (s.estado === 'pending' && s.ocupado
           ? '<small style="display:block;color:#A8323F">That team name is already taken</small>'
           : '') +
         '<div class="btns">' +
-          '<button class="q sm" data-aprobar="' + esc(s.id) + '">Approve</button>' +
-          '<button class="q sm" data-rechazar="' + esc(s.id) + '">Decline</button>' +
-        '</div>'
-      : '';
+          (s.estado === 'pending'
+            ? '<button class="q sm" data-aprobar="' + esc(s.id) + '">Approve</button>' +
+              '<button class="q sm" data-rechazar="' + esc(s.id) + '">Decline</button>'
+            : '') +
+          '<button class="q sm" data-borrar="' + esc(s.id) + '" data-equipo="' + esc(s.equipo) + '">Delete</button>' +
+        '</div>';
 
     return '<div class="item">' +
       '<div>' +
@@ -1205,6 +1256,52 @@ function pintarSolicitudes(rows){
   [].slice.call(caja.querySelectorAll('[data-rechazar]')).forEach(function(b){
     b.onclick = function(){ decidir('bw_decline_request', b.getAttribute('data-rechazar'), b) };
   });
+  [].slice.call(caja.querySelectorAll('[data-borrar]')).forEach(function(b){
+    b.onclick = function(){
+      borrarSolicitud(b.getAttribute('data-borrar'), b.getAttribute('data-equipo'), b)
+    };
+  });
+}
+
+/* ── Borrar una solicitud entera ──────────────────────────────────
+   Lo que antes era abrir el editor SQL de Supabase y correr un guion
+   a mano después de cada prueba. La función de detrás
+   (solicitud_borrar, admin-borrar.sql) se lleva la campaña, los
+   juegos, las promesas y los marcadores, y se niega si hay una
+   licencia facturada por medio. */
+function borrarSolicitud(id, equipo, boton){
+  var nombre = equipo || 'this team';
+  if (!confirm('Delete ' + nombre + '?\n\n' +
+      'This removes the signup and everything created from it: ' +
+      'its campaign, its games, its pledges and its scores.\n\n' +
+      'It cannot be undone.')) return;
+  boton.disabled = true;
+  di('mSol', '…');
+  rpc('solicitud_borrar', { p_id: id })
+    .then(function(r){
+      if (!r || !r.ok){
+        boton.disabled = false;
+        var porQue = r && r.reason === 'no-admin'
+            ? 'you are not signed in as an admin'
+          : r && r.reason === 'gone'
+            ? 'it was already removed — reloading'
+          : r && r.reason === 'facturado'
+            ? 'that program has an invoiced licence, so it cannot be deleted from here'
+          : 'it did not go through' + porque(r);
+        di('mSol', 'Could not delete: ' + porQue + '.', 'mal');
+        if (r && r.reason === 'gone') cargarSolicitudes();
+        return;
+      }
+      di('mSol', 'Deleted ' + (r.equipo || nombre) +
+        (r.programa ? ' (' + r.programa + ')' : '') + ': ' +
+        (r.juegos || 0) + ' games, ' + (r.promesas || 0) + ' pledges and ' +
+        (r.marcadores || 0) + ' scores went with it.', 'bien');
+      cargarSolicitudes();
+    })
+    .catch(function(e){
+      boton.disabled = false;
+      di('mSol', 'Could not delete' + porque(e), 'mal');
+    });
 }
 
 function decidir(fn, id, boton){
