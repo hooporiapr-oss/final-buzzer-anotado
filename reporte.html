@@ -368,9 +368,12 @@ var S={
     thPuntos:'Puntos', thTotal:'Total',
     thPadrino:'Padrino', thCorreo:'Correo', thTarifa:'Por punto', thTope:'Tope',
     thEstado:'Cómo va',
+    thValor:'Valor de la promesa', thCualifica:'Cualifica',
+    cualSi:'sí', cualNo:'no',
     sinTope:'—',
     sinPromesas:'Este juego no tiene promesas.',
     totalFila:'Total prometido',
+    totalCualifican:'Total de promesas que cualifican:',
 
     /* Las tres cosas que distinguen a quien no debe nada de quien
        debe y no se enteró. Son problemas muy distintos y el segundo
@@ -439,9 +442,12 @@ var S={
     thPuntos:'Points', thTotal:'Total',
     thPadrino:'Padrino', thCorreo:'Email', thTarifa:'Per point', thTope:'Cap',
     thEstado:'Where it stands',
+    thValor:'Pledge value', thCualifica:'Qualifies',
+    cualSi:'yes', cualNo:'no',
     sinTope:'—',
     sinPromesas:'This game has no pledges.',
     totalFila:'Total pledged',
+    totalCualifican:'Total of qualifying pledges:',
 
     eBajo:'under the {P} minimum — nothing is asked of him',
     eCorregido:'correction pending: he was told {V}',
@@ -864,8 +870,20 @@ function bajarCSV(){
      entrenador va a trabajar de verdad —ordenar, filtrar, tachar— y
      sin ella tendría que volver a la pantalla para saber a quién no
      se le pudo avisar. */
+  /* VALOR Y CUALIFICA, DELANTE DE TOTAL.
+     La hoja traía Total y nada más, así que un padrino que prometió
+     por debajo del piso salía en 0.00 y la razón vivía sólo en la
+     columna de estado — que es la que se pierde de vista en cuanto
+     alguien ordena por Total en Excel. El entrenador veía un cero
+     junto a alguien que sí prometió, y no tenía con qué contestarle
+     «¿y lo mío?».
+
+     Ahora se ve la cuenta entera: lo que dio la promesa, si llegó al
+     piso, y lo que se le pide. Es el modelo de precio escrito en la
+     hoja en vez de dado por supuesto. */
   var filas=[[T('thPadrino'),T('thCorreo'),T('thTarifa'),T('thTope'),
-              T('thPuntos'),T('thTotal'),T('thEstado')].map(q).join(',')];
+              T('thPuntos'),T('thValor'),T('thCualifica'),
+              T('thTotal'),T('thEstado')].map(q).join(',')];
   (r.pledges||[]).forEach(function(p){
     var est = p.no_entregable ? T('eMuerto')
             : p.bajo_minimo   ? T('eBajo')
@@ -874,15 +892,30 @@ function bajarCSV(){
                                   : T('eCorregidoYa'))
             : !p.avisado      ? T('eSinAvisar')
             : T('eAvisado');
+    /* El valor de la promesa es lo que dio la cuenta ANTES del
+       piso: tarifa x puntos, con el tope si lo puso. El reporte no
+       lo devuelve aparte —`total` ya viene en cero cuando no
+       cualifica— así que se rehace aquí con la misma regla. */
+    var valor = Math.min(Number(p.tarifa||0) * Number(p.puntos||0),
+                         p.tope!=null ? Number(p.tope) : Infinity);
+    valor = Math.round(valor*100)/100;
+    var cual = Number(p.total||0) > 0;
     filas.push([p.padrino,p.correo,
                 Number(p.tarifa||0).toFixed(2),
                 p.tope!=null?Number(p.tope).toFixed(2):'',
                 p.puntos||0,
+                valor.toFixed(2),
+                cual?T('cualSi'):T('cualNo'),
                 Number(p.total||0).toFixed(2),
                 est].map(q).join(','));
   });
   filas.push('');
-  filas.push([T('totalFila'),'','','','',
+  /* El pie dice QUÉ se está sumando. «Total prometido» se leía
+     como todo lo que prometieron los padrinos, y no lo es: las
+     promesas que no llegan al piso no entran en esa suma. Decirlo
+     en el rótulo evita que un entrenador cuadre esa cifra contra
+     una lista en la que sí están. */
+  filas.push([T('totalCualifican'),'','','','','','',
               Number((r.resumen&&r.resumen.prometido)||0).toFixed(2),''].map(q).join(','));
 
   /* El nombre del fichero sin acentos ni eñes: "Canóvanas" salía
