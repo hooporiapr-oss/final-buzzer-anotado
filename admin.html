@@ -1507,10 +1507,14 @@ function pintarJuegosSueltos(filas){
         (!f.jugado
           ? '<button class="q sm" data-prueba2="' + esc(f.game_id) + '" data-si="' +
               (f.es_prueba ? '0' : '1') + '">' +
-              (f.es_prueba ? 'Make it real' : 'Mark as test') + '</button>' +
-            (f.promesas === 0
-              ? '<button class="q sm" data-borrar="' + esc(f.game_id) + '">Delete</button>' : '')
+              (f.es_prueba ? 'Make it real' : 'Mark as test') + '</button>'
           : '') +
+        /* «Delete» en TODO juego, jugado o no y con promesas o sin
+           ellas: el que hay que limpiar después de una prueba es el
+           que se jugó y se prometió, y ése era justo el que no lo
+           tenía. Lo facturado lo frena la función, no el botón. */
+        '<button class="q sm" data-borrar="' + esc(f.game_id) + '" data-n="' +
+          (f.promesas || 0) + '">Delete</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -1533,7 +1537,8 @@ function pintarJuegosSueltos(filas){
                                      b.getAttribute('data-si') === '1') };
   });
   [].forEach.call(L.querySelectorAll('button[data-borrar]'), function(b){
-    b.onclick = function(){ jgBorrar(b.getAttribute('data-borrar')) };
+    b.onclick = function(){ jgBorrar(b.getAttribute('data-borrar'),
+                                     +b.getAttribute('data-n') || 0) };
   });
 }
 
@@ -1640,15 +1645,21 @@ function jgPrueba(id, si){
     .catch(function(e){ di('mJuego', 'It did not save' + porque(e), 'mal') });
 }
 
-function jgBorrar(id){
-  if (!confirm('Delete this game?\n\nOnly works while it has no pledges and no score.')) return;
-  rpc('juego_borrar', { p_code: CODE, p_game: id })
+function jgBorrar(id, n){
+  if (!confirm('Delete this game?\n\n' +
+      (n ? 'Its ' + n + ' pledge' + (n === 1 ? '' : 's') + ' and its score go with it. ' : '') +
+      'It cannot be undone.')) return;
+  rpc('juego_borrar_admin', { p_game: id })
     .then(function(d){
       if (!d || d.ok !== true)
-        return di('mJuego', (d && d.reason) === 'con-promesas'
-          ? 'It already has pledges — somebody is counting on that game.'
+        return di('mJuego', (d && d.reason) === 'facturado'
+            ? 'That game has an invoiced licence, so it cannot be deleted from here.'
+          : (d && d.reason) === 'no-admin'
+            ? 'You are not signed in as an admin.'
           : 'It did not delete' + porque(d), 'mal');
-      di('mJuego', 'Deleted.', 'ok');
+      di('mJuego', 'Deleted the game against ' + (d.rival || '?') +
+        (d.promesas ? ', with its ' + d.promesas + ' pledge' + (d.promesas === 1 ? '' : 's') : '') +
+        '.', 'ok');
       cargarJuegosSueltos();
     })
     .catch(function(e){ di('mJuego', 'It did not delete' + porque(e), 'mal') });
