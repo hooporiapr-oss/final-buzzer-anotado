@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>El aviso al padrino — Cada Punto Cuenta</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cada Punto Cuenta">
+<meta property="og:title" content="El aviso al padrino">
+<meta property="og:description" content="El único correo que recibe un padrino: el marcador final, lo que dio su promesa, y a quién se lo paga. Sin enlace de pago y sin recordatorios.">
+<meta property="og:url" content="https://cadapunto.com/aviso.html">
+<meta property="og:image" content="https://cadapunto.com/compartir.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Un nene en una cancha al atardecer, con el brazo en alto, y su puntuación subiendo: 1, 3, 6, 10, 15, 21">
+<meta property="og:locale" content="es_PR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="El aviso al padrino">
+<meta name="twitter:description" content="El único correo que recibe un padrino: el marcador final, lo que dio su promesa, y a quién se lo paga.">
+<meta name="twitter:image" content="https://cadapunto.com/compartir.jpg">
+<meta name="description" content="El único correo que recibe un padrino: el marcador final, lo que dio su promesa, y a quién se lo paga. Sin enlace de pago y sin recordatorios.">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   EL AVISO AL PADRINO, ENSEÑADO TAL CUAL SALE
+
+   Esta página no describe el correo: lo reproduce. El cuerpo de
+   abajo es el mismo que arma enviarAviso() en el servidor —las
+   mismas frases, el mismo orden, el mismo pie— con los datos del
+   ejemplo que usan la portada y el reporte: Canóvanas 15U contra
+   Arecibo, 68–61, María Rivera a 25¢ el punto.
+
+   Se enseña porque es la única cosa que un padrino recibe de
+   nosotros, y porque lo que más preocupa a quien decide por un
+   programa no es lo que ve el entrenador: es lo que les va a llegar
+   a las abuelas y a los vecinos que prometieron.
+   ══════════════════════════════════════════════════════════════════ */
+:root{
+  --navy:#101c2a; --navy2:#192b3d; --orange:#ff7a18;
+  --cream:#faf8f4; --ink:#1b2937; --muted:#617083;
+  --linea:#e7e6e2;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;line-height:1.6}
+.wrap{width:min(680px,92vw);margin:0 auto}
+
+header{background:var(--navy);color:#fff;padding:14px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.marca{font-weight:900;letter-spacing:.01em;font-size:1rem}
+.marca span{color:var(--orange)}
+.langb{background:#fff;color:var(--navy);border:0;border-radius:999px;
+  padding:7px 14px;font-weight:800;font-size:.82rem;cursor:pointer}
+
+main{padding:30px 0 44px}
+.eyebrow{font-size:.68rem;font-weight:900;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--orange)}
+h1{font-size:clamp(1.6rem,5vw,2.2rem);line-height:1.12;margin:.4rem 0 .6rem;
+  letter-spacing:-.015em}
+.lede{color:var(--muted);margin:0 0 1.4rem}
+
+/* ── El sobre ────────────────────────────────────────────────────
+   Una cabecera de correo de verdad —de quién, asunto— para que se
+   lea como lo que es y no como un párrafo de la página. */
+.sobre{background:#fff;border:1px solid var(--linea);border-radius:14px;
+  overflow:hidden;box-shadow:0 8px 25px #17243808}
+.sobrecab{padding:14px 18px;background:var(--cream);border-bottom:1px solid var(--linea)}
+.sobrefila{display:flex;gap:10px;font-size:.84rem;line-height:1.5}
+.sobrefila b{flex:0 0 58px;color:var(--muted);font-weight:800;font-size:.7rem;
+  letter-spacing:.08em;text-transform:uppercase;padding-top:3px}
+.sobrefila span{min-width:0;overflow-wrap:anywhere}
+.asunto{font-weight:800;font-size:1rem;margin-top:2px}
+
+/* El cuerpo: mismas medidas que el correo de verdad. */
+.cuerpo{padding:22px 18px 10px;font-size:15px;line-height:1.6;color:#12202E}
+.cuerpo p{margin:0 0 14px}
+.cuerpo .pie{color:#5A6B7C;font-size:.8rem;margin-top:22px;
+  border-top:1px solid #D7E0E8;padding-top:14px}
+
+.nota{margin:1.5rem 0 0;color:var(--muted);font-size:.9rem}
+.nota b{color:var(--ink)}
+
+.volver{margin:2rem 0 0;text-align:center}
+.volver a{display:inline-block;background:var(--orange);color:var(--navy);
+  font-weight:900;text-decoration:none;padding:12px 20px;border-radius:999px}
+.volver a:hover{filter:brightness(1.07)}
+
+footer{background:var(--navy);color:#aebbc9;padding:22px 0;font-size:.82rem}
+footer a{color:#fff}
+.f-what{margin:.5rem 0 0;font-size:.78rem;color:#8da0b4}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="marca">CADA PUNTO CUENTA<span>.</span></div>
+    <button class="langb" id="langBtn" onclick="cambiar()">English</button>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <div class="eyebrow" data-i="eye">El aviso al padrino</div>
+  <h1 data-i="h1">Esto es todo lo que recibe un padrino.</h1>
+  <p class="lede" data-i="lede">Un correo, cuando se publica el marcador. No hay otro:
+    ni recordatorios, ni enlace de pago, ni nada después. Si el marcador se corrige, le
+    llega la corrección y se acabó.</p>
+
+  <!-- EL CORREO. Las frases son las del servidor, no una versión
+       bonita para la web: si alguna cambia allí y no aquí, esta
+       página estaría enseñando un correo que ya no se manda. -->
+  <div class="sobre">
+    <div class="sobrecab">
+      <div class="sobrefila"><b data-i="de">De</b><span>Cada Punto Cuenta &lt;avisos@cadapunto.com&gt;</span></div>
+      <div class="sobrefila"><b data-i="para">Para</b><span>maria.rivera@ejemplo.com</span></div>
+      <div class="asunto" data-i="asunto">Canóvanas 15U anotó 68 — tu promesa</div>
+    </div>
+    <div class="cuerpo">
+      <p data-i="c1">Hola María,</p>
+      <p data-i="c2"><b>Canóvanas 15U</b> anotó <b>68 puntos</b> contra Arecibo (68–61).</p>
+      <p data-i="c3">Prometiste $0.25 por punto, así que tu promesa es de <b>$17.00</b>.</p>
+      <p data-i="c4">Ese dinero se lo pagas directamente a Canóvanas 15U: <b>ATH Móvil al
+        787-555-0100</b>. Si algo no te cuadra, escríbele a John Burgos:
+        entrenador@ejemplo.com. Cada Punto Cuenta no cobra pagos y no te va a escribir
+        otra vez por esto, salvo que el marcador se corrija.</p>
+      <p class="pie" data-i="cpie">Cada Punto Cuenta · Gostar Digital LLC · Puerto Rico</p>
+    </div>
+  </div>
+
+  <p class="nota" data-i="nota"><b>Ejemplo con datos ficticios.</b> El aviso sale en
+    español o en inglés, según el padrino. El tope, si lo puso, sale dicho en su propia
+    línea: cuánto habría sido y cuánto es con el tope aplicado.</p>
+
+  <p class="volver"><a href="https://cadapunto.com/" data-i="volver">&larr; Cada Punto Cuenta</a></p>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p style="margin:0">© 2026 Gostar Digital LLC · Puerto Rico ·
+      <a href="https://cadapunto.com/">cadapunto.com</a></p>
+    <p class="f-what" id="fWhat"></p>
+  </div>
+</footer>
+
+<script>
+/* El español vive en el marcado, igual que en la portada: quien no
+   ejecute esto lee la página entera en español. Aquí sólo el inglés. */
+var EN = {
+  eye:'The padrino&rsquo;s notice',
+  h1:'This is everything a padrino receives.',
+  lede:'One email, when the final score is posted. There is no other: no reminders, no payment link, nothing afterwards. If the score is corrected, the correction arrives and that is the end of it.',
+  de:'From', para:'To',
+  asunto:'Canóvanas 15U scored 68 — your pledge',
+  c1:'Hi María,',
+  c2:'<b>Canóvanas 15U</b> scored <b>68 points</b> against Arecibo (68–61).',
+  c3:'You pledged $0.25 a point, so your pledge comes to <b>$17.00</b>.',
+  c4:'You pay that directly to Canóvanas 15U: <b>ATH Móvil to 787-555-0100</b>. If something does not look right, write to John Burgos: entrenador@ejemplo.com. Cada Punto Cuenta does not take payments and will not write to you about this again, unless the final score is corrected.',
+  cpie:'Cada Punto Cuenta · Gostar Digital LLC · Puerto Rico',
+  nota:'<b>Example with fictional data.</b> The notice goes out in Spanish or English, depending on the padrino. A cap, if one was set, gets its own line: what it would have come to, and what it is with the cap applied.',
+  volver:'&larr; Cada Punto Cuenta'
+};
+
+var ES = {};
+document.querySelectorAll('[data-i]').forEach(function(el){ ES[el.getAttribute('data-i')] = el.innerHTML });
+
+var LANG = 'es';
+try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
+           localStorage.getItem('fc-lang') ||
+           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+var q = (location.search.match(/[?&]lang=(es|en)\b/i)||[])[1];
+if (q) LANG = q.toLowerCase();
+
+function pintar(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i]').forEach(function(el){
+    var k = el.getAttribute('data-i');
+    var t = (LANG === 'en') ? (EN[k] || ES[k]) : ES[k];
+    if (t != null) el.innerHTML = t;
+  });
+  document.getElementById('langBtn').textContent = LANG === 'es' ? 'English' : 'Español';
+  document.title = LANG === 'es'
+    ? 'El aviso al padrino — Cada Punto Cuenta'
+    : 'The padrino’s notice — Cada Punto Cuenta';
+  var f = document.getElementById('fWhat');
+  if (f) f.textContent = LANG === 'es'
+    ? 'Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
+    : 'Cada Punto Cuenta is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.';
+}
+
+function cambiar(){
+  LANG = LANG === 'es' ? 'en' : 'es';
+  try{ localStorage.setItem('cfh_lang',LANG); localStorage.setItem('cp-lang',LANG);
+       localStorage.setItem('fc-lang',LANG); }catch(e){}
+  pintar();
+}
+
+pintar();
+</script>
+</body>
+</html>
