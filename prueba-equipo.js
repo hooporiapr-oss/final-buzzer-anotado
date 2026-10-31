@@ -55,12 +55,20 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
 
   di('1 · Lo que dice');
   let txt = await page.evaluate(() => document.body.innerText);
-  has(txt, /Tus jugadores anotan/,             'tus jugadores anotan');
-  has(txt, /El juego anota los puntos solo/,   'el juego anota solo');
-  has(txt, /nadie tiene que reportar un marcador ni que le crean/,
-      'nadie tiene que reportar ni que le crean');
-  has(txt, /Antes de la ventana/,              'los pasos van por ventana, no por día');
-  has(txt, /una sola corrida oficial/,         'una sola corrida oficial');
+  /* LA PROMESA ES DEL EQUIPO, NO DEL JUGADOR. La página decía «tus
+     jugadores anotan» y hablaba de ventanas y de una corrida
+     oficial: el producto por estudiante, que se retiró. Lo que se
+     vende hoy es un juego — el que ya se iba a jugar — y el
+     marcador final haciendo la cuenta. Se vigila eso, que es lo que
+     el entrenador firma dos pantallas más abajo. */
+  has(txt, /que anote tu equipo/,              'se promete por los puntos del equipo');
+  has(txt, /El juego ya lo ibas a jugar/,      'y el juego ya se iba a jugar');
+  has(txt, /el marcador final hace la cuenta/, 'el marcador final hace la cuenta');
+  has(txt, /Antes del juego/,                  'los pasos van por juego');
+  has(txt, /Al publicarse el marcador/,        'y el último lo dispara el marcador');
+  has(txt, /Ganen o pierdan, cada punto cuenta/,'ganen o pierdan, cada punto cuenta');
+  not(txt, /ventana|corrida oficial|tus jugadores anotan/i,
+      'y no quedó nada del producto por estudiante');
   /* El HECHO —se licencia POR JUEGO— y no la frase con la que se
      decia. Esta linea pedia primero "por equipo y por evento" y
      despues "por evento"; las dos son la frase vieja. El producto se
@@ -76,13 +84,23 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
      entrenador es trabajo que el producto le quita, así que
      prometerlo en la página y luego no pedírselo no era un error
      bonito: era la página contando otro producto. */
-  has(txt, /se dan de alta solos/,             'los jugadores se dan de alta solos');
-  has(txt, /No nos mandas ninguna lista/,      'y se dice que no se manda ninguna lista');
-  has(txt, /tú apruebas quién queda dentro/,   'con el entrenador aprobando');
-  /* Lo que importa es que se diga que corre mas gente que la
-     plantilla, no con que palabra. "El equipo" paso a "la
-     plantilla" cuando la pagina dejo de hablarle solo a un equipo. */
-  has(txt, /no tiene que ser sólo (el equipo|la plantilla)/, 'y abierto a más que la plantilla');
+  /* AL REVÉS DE COMO ESTABA. Esta parte pedía que la página dijera
+     que los jugadores se dan de alta solos y que el entrenador
+     aprueba. Hoy dice lo contrario y a propósito: las campañas se
+     abren a mano, una por una, y nada sale al aire hasta que el
+     entrenador lo diga. Un guardia que exigiera la frase vieja
+     estaría pidiendo que se volviera a prometer un alta automática
+     que nadie quiere.
+
+     Lo que sí se mantiene —y es lo que le quita trabajo— es que no
+     hay listas: se promete por los puntos del EQUIPO, así que un
+     solo enlace sirve para todas las familias. */
+  has(txt, /Nadie se da de alta solo/,         'las campañas no se abren solas');
+  has(txt, /a mano/,                           'se abren a mano, una por una');
+  has(txt, /hasta que tú lo digas/,            'y nada sale al aire sin el entrenador');
+  has(txt, /No hay listas de jugadores que mandar/,'no hay listas que mandar');
+  has(txt, /ni nombres que escribir/,          'ni nombres que escribir');
+  has(txt, /sirve para todas las familias/,    'un solo enlace para todas las familias');
   not(txt, /[Nn]os pasas tu plantilla|[Mm]ándanos|[Pp]ásanos (tu|la) plantilla/,
       'y en ningún sitio se le piden los nombres al entrenador');
 
