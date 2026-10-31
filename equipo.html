@@ -27,6 +27,22 @@
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
 <meta property="og:image" content="https://cadapunto.com/compartir.jpg">
+<!-- LAS DOS QUE FALTABAN, y las dos sólo para compartir — no tienen
+     nada que ver con que la página se lea sin JavaScript, que es
+     harina de otro costal y se vigila aparte.
+
+     · twitter:image. La página ya declaraba twitter:card como
+       «summary_large_image», que es la tarjeta grande CON foto, y
+       después no decía cuál. X no hereda og:image, así que pedía una
+       tarjeta de foto y no daba foto.
+     · og:url. Sin ella, cada enlace a esta página con algo detrás
+       —?lang=en, una etiqueta de campaña, lo que pegue alguien— se
+       cuenta como una página distinta al compartirse.
+
+     WhatsApp lee og:image, og:title y og:description, y esas tres
+     estaban bien desde el principio. -->
+<meta name="twitter:image" content="https://cadapunto.com/compartir.jpg">
+<meta property="og:url" content="https://cadapunto.com/equipo.html">
 <style>
 /* ── El look nuevo: crema, navy y naranja ─────────────────────────
    El mismo de la portada y de mi-equipo. Cambia la piel; el marcado
@@ -220,22 +236,123 @@ header{color:#fff}
   <div class="wrap bar">
     <a class="mark" href="index.html"><em>CADA PUNTO CUENTA</em><i>.</i></a>
     <nav class="menu" id="menu">
-      <a href="index.html" data-m="inicio">Home</a>
-      <a href="index.html#how" data-m="como">How it works</a>
-      <a href="index.html#precio" data-m="precio">What it costs</a>
-      <a href="ayuda.html" data-m="ayuda">Questions</a>
-      <a href="mi-equipo.html" data-m="mia">My team</a>
-      <a class="cta" href="equipo.html" data-m="alta">Sign up a team</a>
+      <!-- EL MENÚ TAMBIÉN EN ESPAÑOL. Estaba en inglés en el
+           marcado y lo pintaba pintar() a español al cargar, así que
+           sin JavaScript la única parte legible de la página salía
+           en el idioma equivocado. Y «My team» / «Sign up a team»
+           no eran ni la frase de hoy: el diccionario dice programa,
+           no equipo. -->
+      <a href="index.html" data-m="inicio">Inicio</a>
+      <a href="index.html#how" data-m="como">C&oacute;mo funciona</a>
+      <a href="index.html#precio" data-m="precio">Cu&aacute;nto cuesta</a>
+      <a href="ayuda.html" data-m="ayuda">Preguntas</a>
+      <a href="mi-equipo.html" data-m="mia">Mi programa</a>
+      <a class="cta" href="equipo.html" data-m="alta">Registra un programa</a>
     </nav>
     <div class="barra-dcha">
-      <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
+      <button class="langb" id="langBtn" onclick="toggleLang()">English</button>
       <button class="hamb" id="hamb" type="button" aria-controls="menu" aria-expanded="false"><b></b></button>
     </div>
   </div>
 </header>
 
 <main>
-  <div class="wrap" id="app"></div>
+  <div class="wrap" id="app">
+<!-- ══════════════════════════════════════════════════════════════════
+     EL ESPAÑOL VIVE AQUÍ, EN EL MARCADO.
+
+     Esta página se pintaba entera desde el diccionario: el marcado
+     era <div id="app"></div> y nada más. Con el JavaScript apagado
+     —un buscador, la vista previa de un enlace, una conexión que se
+     cae a medias— quedaban 223 caracteres: la cabecera y el pie.
+     Para el entrenador al que se le manda este enlace, eso es una
+     página en blanco.
+
+     Así que el español pasó al marcado, con el mismo convenio que
+     usa la portada: cada elemento lleva data-i con su llave, el
+     español es lo que hay escrito, y el diccionario sólo guarda el
+     inglés. Quien no ejecuta el JavaScript lee la página completa en
+     español, que es el idioma en el que se usa.
+
+     DOS REGLAS QUE VIENEN DE LA PORTADA, APRENDIDAS A GOLPES:
+
+       · Ninguna llave dentro de otra llave. paint() recorre los
+         [data-i] en orden y le mete innerHTML a cada uno; al pintar
+         el padre, el hijo se va del documento y se pinta
+         desconectado. Por eso .s, .ok y .fine no llevan data-i: lo
+         llevan sus hijos.
+       · El español NO se duplica en el diccionario. Si viviera en
+         los dos sitios, un día dirían cosas distintas y el que
+         tuviera razón sería el que nadie estuviera mirando.
+
+     Los avisos de error y el acuse de recibo sí siguen en el
+     diccionario en los dos idiomas: se inyectan al pulsar, no
+     existen en el marcado, y no hay nada con lo que se puedan
+     desincronizar.
+     ══════════════════════════════════════════════════════════════════ -->
+<div class="kick" data-i="kick">Inscribe tu programa</div>
+<h1 data-i="h1">Tu equipo juega. Tu programa recauda.</h1>
+<p class="lede" data-i="lede">Los padrinos prometen unos centavos por cada punto que anote tu equipo en un juego. El juego ya lo ibas a jugar: el marcador final hace la cuenta. Ganen o pierdan, cada punto cuenta. No hay nada que vender, nada que repartir y nadie a quien juntar.</p>
+
+<div class="how">
+<div class="s"><b data-i="s1b">Una vez · Te abrimos la campaña.</b><span data-i="s1">Nos escribes, te la montamos, y te damos tu código. Nadie se da de alta solo — las abrimos una por una, a mano, y nada sale al aire hasta que tú lo digas.</span></div>
+<div class="s"><b data-i="s2b">Una vez · Pones tus juegos en el marcador.</b><span data-i="s2">Tu calendario, o el del torneo en el que juegas. Cada juego queda con su enlace propio, y ese enlace es por el que se promete. No hay listas de jugadores que mandar ni nombres que escribir: se promete por los puntos del EQUIPO, así que el mismo enlace sirve para todas las familias.</span></div>
+<div class="s"><b data-i="s3b">Antes del juego · Los padrinos prometen.</b><span data-i="s3">Mandas el enlace del juego al grupo del programa. Cada padrino escoge cuánto por punto y pone su tope si quiere. No hace falta que se abra cuenta ni que sepa nada nuestro. Las promesas de un juego cierran en el momento en que se publica su marcador: prometer sabiendo el resultado no es prometer.</span></div>
+<div class="s"><b data-i="s4b">Al publicarse el marcador · Todos reciben el número.</b><span data-i="s4">La plataforma calcula el total de cada padrino con su tope aplicado si mordió, y a cada uno le llega UN aviso con el marcador final y su total — sin enlace de pago y sin recordatorios. Si el marcador se corrige después, a quien se le dijo otra cifra le llega la corrección. A ti te queda la lista completa, para imprimir o bajar. Cobrar lo haces tú, por donde ya hablas con esa gente.</span></div>
+</div>
+
+<h2 data-i="formH">Dinos de tu programa</h2>
+<!-- LOS DOS CAMPOS DECÍAN «Nombre del programa».
+     Son dos cosas distintas y una de ellas decide si esto funciona:
+     el nombre del EQUIPO es con el que se buscan sus juegos en el
+     marcador. Si el entrenador escribe ahí el nombre de la
+     organización —que es lo que pedían los dos rótulos— no encaja
+     con ninguno, no se le crea juego, y nadie puede prometer. -->
+<label for="tm" data-i="teamL">Nombre del EQUIPO</label>
+<input id="tm" data-ph="teamPh" placeholder="Canóvanas" type="text" maxlength="60" autocapitalize="words" enterkeyhint="next">
+<p class="hint" data-i="teamAyuda">Tal como sale en el marcador, letra por letra. Es lo que engancha tus juegos con tu campaña — si aquí pones otra cosa, tus juegos no aparecen.</p>
+<label for="pg" data-i="progL">Nombre del programa</label>
+<input id="pg" data-ph="progPh" placeholder="Canóvanas Basketball Club" type="text" maxlength="60" autocapitalize="words" autocomplete="organization" enterkeyhint="next">
+<p class="hint" data-i="progAyuda">El de la organización, el que verán las familias en los avisos.</p>
+<label for="nm" data-i="nameL">Tu nombre</label>
+<input id="nm" data-ph="namePh" placeholder="Nombre y apellido" type="text" maxlength="60" autocomplete="name" autocapitalize="words" enterkeyhint="next">
+<label for="em" data-i="emailL">Tu correo</label>
+<input id="em" data-ph="emailPh" placeholder="Ahí te escribimos y por ahí entras" type="email" maxlength="80" autocomplete="email" autocapitalize="off" spellcheck="false" enterkeyhint="next">
+<label for="ph" data-i="phoneL">Tu teléfono (opcional)</label>
+<input id="ph" data-ph="phonePh" placeholder="787…" type="tel" maxlength="25" autocomplete="tel" enterkeyhint="done">
+
+<div class="ok">
+<input id="lc" type="checkbox">
+<span data-i="lic" onclick="document.getElementById('lc').click()">Acepto la licencia por juego: <b>un dólar por cada promesa que cualifica, con un máximo de $99 por juego</b>. Una promesa cualifica cuando vale cinco dólares o más una vez puesto el marcador final. No hay mínimo: con un juego basta, y cada juego de más es otra oportunidad. El precio entero está en la portada. No se paga nada por adelantado; se factura por los juegos que llevaron promesas y se paga dentro de siete días. Un juego que no recoge ni una promesa no se factura. Si el cargo no se paga dentro de los siete días, el acceso al manejo de promesas y a los reportes de ese juego queda suspendido hasta que se complete el pago. Los registros del juego y de sus promesas se conservan durante la suspensión, y en general doce meses desde la fecha del juego, según la política de conservación de datos. Al pagarse la licencia pendiente se restablece el acceso, y la suspensión no afecta a los demás juegos con licencia al día.</span>
+</div>
+<div class="ok">
+<input id="cu" type="checkbox">
+<span data-i="custody" onclick="document.getElementById('cu').click()">He leído <a href="custodia.html" target="_blank">que el dinero no pasa por nosotros</a>: Cada Punto Cuenta no procesa ni guarda pagos, y el dinero lo cobra y lo maneja mi programa.</span>
+</div>
+<div class="ok">
+<input id="tc" type="checkbox">
+<span data-i="terms" onclick="document.getElementById('tc').click()">He leído y acepto los <a href="terms.html" target="_blank">Términos de Uso</a> y la <a href="privacy.html" target="_blank">Política de Privacidad</a>.</span>
+</div>
+<button class="btn" onclick="send()" data-i="go">Inscribir mi programa</button>
+<p class="msg" id="msg"></p>
+
+<div class="fine"><b data-i="fineH">Lo que cuesta</b><p data-i="fineP">Cada Punto Cuenta se licencia <b>por juego</b>: un dólar por cada promesa que cualifica —las que valen cinco dólares o más con el marcador puesto— con un máximo de $99 por juego, sin mínimo de juegos: con un juego basta, y cada juego de más es otra oportunidad. La tarifa está en la portada y no depende del tamaño de la plantilla. Se factura por los juegos que llevaron promesas y se paga dentro de siete días; nada por adelantado, y un juego que no recoge ni una promesa no se factura. No es un por ciento de nada, no sale de ninguna promesa, y a tus padrinos no les cobramos nada. Una cosa que conviene tener clara desde el principio: <b>lo prometido no es lo recaudado</b>. Nosotros anotamos lo prometido; lo que entre, y cuándo, depende de tu cobro — por eso un padrino que paga vale más que diez promesas apuntadas. Lo que recaudes es tuyo, incluido cualquier acuerdo que tengas con tu liga o con quien te trajo.</p></div>
+</div>
+<!-- EL ACUSE DE RECIBO TIENE SU PROPIO SITIO.
+
+     Antes se escribía encima de #app, y con eso se iba el
+     formulario entero: el marcado quedaba destruido y no había
+     manera de devolverlo sin recargar. Mientras la página se
+     construía desde el diccionario eso daba igual —draw() la
+     levantaba otra vez— pero ahora el español vive en el marcado y
+     lo que se pisa no vuelve.
+
+     Así que el acuse va aparte y el formulario se esconde. Nada se
+     destruye, y volver atrás es quitar un atributo. Nace vacío a
+     propósito: su texto lleva el correo dentro y no existe hasta
+     que alguien se inscribe, así que no hay nada que leer aquí
+     para quien no ejecuta el JavaScript. -->
+<div class="wrap" id="done" hidden></div>
 </main>
 
 <footer>
@@ -305,45 +422,27 @@ function porque(x){
 }
 
 var S = {
+  /* EL ESPAÑOL DE LA PÁGINA NO ESTÁ AQUÍ: está en el marcado, de
+     donde lo recoge spanish{} al cargar. Aquí quedan sólo las frases
+     que no existen en el marcado porque se inyectan al pulsar —los
+     avisos de error y el acuse de recibo—, y ésas sí hacen falta en
+     los dos idiomas.
+
+     Si alguna vuelve a aparecer en las dos partes, la que se lea
+     será la del marcado y la de aquí envejecerá en silencio. Eso ya
+     pasó con el precio en la portada. */
   es:{
-    kick:'Inscribe tu programa',
-    h1:'Tu equipo juega. Tu programa recauda.',
-    lede:'Los padrinos prometen unos centavos por cada punto que anote tu equipo en un juego. El juego ya lo ibas a jugar: el marcador final hace la cuenta. Ganen o pierdan, cada punto cuenta. No hay nada que vender, nada que repartir y nadie a quien juntar.',
-    s1b:'Una vez · Te abrimos la campaña.',
-    s1:'Nos escribes, te la montamos, y te damos tu código. Nadie se da de alta solo — las abrimos una por una, a mano, y nada sale al aire hasta que tú lo digas.',
-    s2b:'Una vez · Pones tus juegos en el marcador.',
-    s2:'Tu calendario, o el del torneo en el que juegas. Cada juego queda con su enlace propio, y ese enlace es por el que se promete. No hay listas de jugadores que mandar ni nombres que escribir: se promete por los puntos del EQUIPO, así que el mismo enlace sirve para todas las familias.',
-    s3b:'Antes del juego · Los padrinos prometen.',
-    s3:'Mandas el enlace del juego al grupo del programa. Cada padrino escoge cuánto por punto y pone su tope si quiere. No hace falta que se abra cuenta ni que sepa nada nuestro. Las promesas de un juego cierran en el momento en que se publica su marcador: prometer sabiendo el resultado no es prometer.',
-    s4b:'Al publicarse el marcador · Todos reciben el número.',
-    s4:'La plataforma calcula el total de cada padrino con su tope aplicado si mordió, y a cada uno le llega UN aviso con el marcador final y su total — sin enlace de pago y sin recordatorios. Si el marcador se corrige después, a quien se le dijo otra cifra le llega la corrección. A ti te queda la lista completa, para imprimir o bajar. Cobrar lo haces tú, por donde ya hablas con esa gente.',
-    formH:'Dinos de tu programa',
-    teamL:'Nombre del EQUIPO', teamPh:'Canóvanas',
-    teamAyuda:'Tal como sale en el marcador, letra por letra. Es lo que engancha tus juegos con tu campaña — si aquí pones otra cosa, tus juegos no aparecen.',
-    progL:'Nombre del programa', progPh:'Canóvanas Basketball Club',
-    progAyuda:'El de la organización, el que verán las familias en los avisos.',
-    nameL:'Tu nombre', namePh:'Nombre y apellido',
-    emailL:'Tu correo', emailPh:'Ahí te escribimos y por ahí entras',
-    phoneL:'Tu teléfono (opcional)', phonePh:'787…',
-    terms:'He leído y acepto los <a href="terms.html" target="_blank">Términos de Uso</a> y la <a href="privacy.html" target="_blank">Política de Privacidad</a>.',
-    errTerms:'Tienes que aceptar los términos para seguir.',
-    custody:'He leído <a href="custodia.html" target="_blank">que el dinero no pasa por nosotros</a>: Cada Punto Cuenta no procesa ni guarda pagos, y el dinero lo cobra y lo maneja mi programa.',
-    errCustody:'Tienes que aceptar cómo funciona el dinero para seguir.',
-    lic:'Acepto la licencia por juego: <b>un dólar por cada promesa que cualifica, con un máximo de $99 por juego</b>. Una promesa cualifica cuando vale cinco dólares o más una vez puesto el marcador final. No hay mínimo: con un juego basta, y cada juego de más es otra oportunidad. El precio entero está en la portada. No se paga nada por adelantado; se factura por los juegos que llevaron promesas y se paga dentro de siete días. Un juego que no recoge ni una promesa no se factura. Si el cargo no se paga dentro de los siete días, el acceso al manejo de promesas y a los reportes de ese juego queda suspendido hasta que se complete el pago. Los registros del juego y de sus promesas se conservan durante la suspensión, y en general doce meses desde la fecha del juego, según la política de conservación de datos. Al pagarse la licencia pendiente se restablece el acceso, y la suspensión no afecta a los demás juegos con licencia al día.',
-    errLic:'Tienes que aceptar la licencia y su cargo para seguir.',
-    go:'Inscribir mi programa',
     errTeam:'Escribe el nombre del equipo, como sale en el marcador.',
     errProg:'Escribe el nombre del programa.',
     errWho:'Tu nombre y tu correo, por favor.',
+    errLic:'Tienes que aceptar la licencia y su cargo para seguir.',
+    errCustody:'Tienes que aceptar cómo funciona el dinero para seguir.',
+    errTerms:'Tienes que aceptar los términos para seguir.',
     errTaken:'Ese programa ya tiene campaña. Escríbenos si crees que es un error.',
     errPending:'Ya hay una petición para ese programa. Te escribimos pronto.',
     errGen:'No se pudo enviar. Intenta otra vez.',
     doneH:'Recibido.',
-    doneP:'Te escribimos a {E} para confirmarlo y abrirte la campaña. Normalmente el mismo día.',
-    doneMore:'Mientras tanto, así se ve el tablero de un programa el día que juega.',
-    seeBoard:'Ver un tablero',
-    fineH:'Lo que cuesta',
-    fineP:'Cada Punto Cuenta se licencia <b>por juego</b>: un dólar por cada promesa que cualifica —las que valen cinco dólares o más con el marcador puesto— con un máximo de $99 por juego, sin mínimo de juegos: con un juego basta, y cada juego de más es otra oportunidad. La tarifa está en la portada y no depende del tamaño de la plantilla. Se factura por los juegos que llevaron promesas y se paga dentro de siete días; nada por adelantado, y un juego que no recoge ni una promesa no se factura. No es un por ciento de nada, no sale de ninguna promesa, y a tus padrinos no les cobramos nada. Una cosa que conviene tener clara desde el principio: <b>lo prometido no es lo recaudado</b>. Nosotros anotamos lo prometido; lo que entre, y cuándo, depende de tu cobro — por eso un padrino que paga vale más que diez promesas apuntadas. Lo que recaudes es tuyo, incluido cualquier acuerdo que tengas con tu liga o con quien te trajo.'
+    doneP:'Te escribimos a {E} para confirmarlo y abrirte la campaña. Normalmente el mismo día.'
   },
   en:{
     kick:'Sign up your program',
@@ -380,19 +479,42 @@ var S = {
     errGen:'That did not send. Try again.',
     doneH:'Got it.',
     doneP:'We will write to {E} to confirm and open your campaign. Usually the same day.',
-    doneMore:'Meanwhile, this is the board of a program already running.',
-    seeBoard:'See a board →',
     fineH:'What it costs',
     fineP:'Cada Punto Cuenta is licensed <b>per game</b>: one dollar for each qualifying pledge — those worth five dollars or more once the score is in — capped at $99 a game, with no minimum number of games: one game is enough, and every additional game is another opportunity. The rate is on the home page and does not depend on the size of the roster. It is invoiced for the games that carried pledges and due within seven days; nothing up front, and a game that records no pledges is not invoiced. It is not a percentage of anything, it does not come out of any pledge, and we charge your padrinos nothing. One thing worth having straight from the start: <b>pledged is not collected</b>. We record what was pledged; what comes in, and when, depends on your collecting \u2014 so one padrino who pays is worth more than ten pledges on a list. What you raise is yours, including any arrangement you have with your league or with whoever brought you in.'
   }
 };
 
+/* EL ESPAÑOL SE RECOGE DEL MARCADO, antes de pintar nada, así que
+   guarda la página tal y como salió del servidor. Mismo convenio que
+   la portada. */
+var spanish = {};
+document.querySelectorAll('[data-i]').forEach(function(el){
+  spanish[el.getAttribute('data-i')] = el.innerHTML;
+});
+document.querySelectorAll('[data-ph]').forEach(function(el){
+  spanish[el.getAttribute('data-ph')] = el.getAttribute('placeholder') || '';
+});
+
 var LANG='es';
 try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') || localStorage.getItem('fc-lang') ||
   ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+/* Y ?lang= manda sobre lo guardado, para poder mandar el enlace ya
+   en un idioma y que se vea en la dirección. */
+var _q = (location.search.match(/[?&]lang=(es|en)\b/i)||[])[1];
+if (_q){
+  LANG = _q.toLowerCase();
+  try{ localStorage.setItem('cfh_lang',LANG); localStorage.setItem('cp-lang',LANG);
+       localStorage.setItem('fc-lang',LANG); }catch(e){}
+}
 
+/* El español se busca primero en el marcado y después en S.es, que
+   es donde quedan los avisos que no existen en el marcado. El inglés
+   va al revés: su diccionario, y si una llave le faltara, el español
+   del marcado antes que un hueco en blanco. */
 function T(k,v){
-  var s = (S[LANG] && S[LANG][k]) || S.es[k] || '';
+  var s = (LANG === 'en')
+        ? ((S.en && S.en[k]) || spanish[k] || S.es[k] || '')
+        : (spanish[k] || S.es[k] || '');
   if (v) Object.keys(v).forEach(function(x){ s = s.split('{'+x+'}').join(v[x]); });
   return s;
 }
@@ -413,10 +535,19 @@ function esc(s){
 }
 
 function draw(){
+  document.documentElement.lang = LANG;
+
+  var hecho = document.getElementById('done');
+
   if (SENT){
-    app.innerHTML =
+    /* El acuse SÍ se construye: no existe en el marcado porque sólo
+       aparece después de pulsar, y a estas alturas el JavaScript ya
+       está corriendo por definición. */
+    app.hidden = true;
+    hecho.hidden = false;
+    hecho.innerHTML =
       '<div class="done">' +
-        '<div class="tick">✓</div>' +
+        '<div class="tick">\u2713</div>' +
         '<h1>' + T('doneH') + '</h1>' +
         '<p class="lede">' + T('doneP', { E: esc(SENT) }) + '</p>' +
       '</div>';
@@ -441,60 +572,36 @@ function draw(){
     return;
   }
 
-  app.innerHTML =
-    '<div class="kick">' + T('kick') + '</div>' +
-    '<h1>' + T('h1') + '</h1>' +
-    '<p class="lede">' + T('lede') + '</p>' +
+  /* Y si se vuelve atrás —SENT a null y draw()— el formulario sigue
+     entero, con lo que estuviera escrito. */
+  app.hidden = false;
+  hecho.hidden = true;
+  hecho.innerHTML = '';
 
-    '<div class="how">' +
-      '<div class="s"><b>' + T('s1b') + '</b><span>' + T('s1') + '</span></div>' +
-      '<div class="s"><b>' + T('s2b') + '</b><span>' + T('s2') + '</span></div>' +
-      '<div class="s"><b>' + T('s3b') + '</b><span>' + T('s3') + '</span></div>' +
-      '<div class="s"><b>' + T('s4b') + '</b><span>' + T('s4') + '</span></div>' +
-    '</div>' +
+  /* Y EL FORMULARIO NO SE RECONSTRUYE. Antes esta función escribía
+     la página entera con innerHTML; ahora el español ya está en el
+     marcado y lo único que hace falta es cambiarle el texto a cada
+     elemento cuando se pide el inglés.
 
-    '<h2>' + T('formH') + '</h2>' +
-    /* LOS DOS CAMPOS DECÍAN «Nombre del programa».
-       Son dos cosas distintas y una de ellas decide si esto funciona:
-       el nombre del EQUIPO es con el que se buscan sus juegos en el
-       marcador. Si el entrenador escribe ahí el nombre de la
-       organización —que es lo que pedían los dos rótulos— no encaja
-       con ninguno, no se le crea juego, y nadie puede prometer. Sin
-       un solo error por ningún lado. */
-    '<label for="tm">' + T('teamL') + '</label>' +
-    '<input id="tm" type="text" maxlength="60" placeholder="' + T('teamPh') + '" ' +
-      'autocapitalize="words" enterkeyhint="next">' +
-    '<p class="hint">' + T('teamAyuda') + '</p>' +
-    '<label for="pg">' + T('progL') + '</label>' +
-    '<input id="pg" type="text" maxlength="60" placeholder="' + T('progPh') + '" ' +
-      'autocapitalize="words" autocomplete="organization" enterkeyhint="next">' +
-    '<p class="hint">' + T('progAyuda') + '</p>' +
-    '<label for="nm">' + T('nameL') + '</label>' +
-    '<input id="nm" type="text" maxlength="60" placeholder="' + T('namePh') + '" ' +
-      'autocomplete="name" autocapitalize="words" enterkeyhint="next">' +
-    '<label for="em">' + T('emailL') + '</label>' +
-    '<input id="em" type="email" maxlength="80" placeholder="' + T('emailPh') + '" ' +
-      'autocomplete="email" autocapitalize="off" spellcheck="false" enterkeyhint="next">' +
-    '<label for="ph">' + T('phoneL') + '</label>' +
-    '<input id="ph" type="tel" maxlength="25" placeholder="' + T('phonePh') + '" ' +
-      'autocomplete="tel" enterkeyhint="done">' +
+     No es sólo por el buscador. Reconstruir el formulario borraba lo
+     que el entrenador llevara escrito: pulsar «English» a mitad de
+     rellenarlo le vaciaba los cinco campos y le desmarcaba las tres
+     casillas. Ahora cambia el idioma y lo escrito se queda donde
+     estaba.
 
-    '<div class="ok">' +
-      '<input id="lc" type="checkbox">' +
-      '<span onclick="document.getElementById(\'lc\').click()">' + T('lic') + '</span>' +
-    '</div>' +
-    '<div class="ok">' +
-      '<input id="cu" type="checkbox">' +
-      '<span onclick="document.getElementById(\'cu\').click()">' + T('custody') + '</span>' +
-    '</div>' +
-    '<div class="ok">' +
-      '<input id="tc" type="checkbox">' +
-      '<span onclick="document.getElementById(\'tc\').click()">' + T('terms') + '</span>' +
-    '</div>' +
-    '<button class="btn" onclick="send()">' + T('go') + '</button>' +
-    '<p class="msg" id="msg"></p>' +
-
-    '<div class="fine"><b>' + T('fineH') + '</b><p>' + T('fineP') + '</p></div>';
+     En español se devuelve el texto del marcado —no se repinta desde
+     ninguna tabla— así que lo que lee quien no ejecuta el JavaScript
+     no puede desincronizarse de lo que ve quien sí. */
+  document.querySelectorAll('[data-i]').forEach(function(el){
+    var k = el.getAttribute('data-i');
+    var t = (LANG === 'en') ? (S.en[k] || spanish[k]) : spanish[k];
+    if (t != null) el.innerHTML = t;
+  });
+  document.querySelectorAll('[data-ph]').forEach(function(el){
+    var k = el.getAttribute('data-ph');
+    var t = (LANG === 'en') ? (S.en[k] || spanish[k]) : spanish[k];
+    if (t != null) el.setAttribute('placeholder', t);
+  });
 }
 
 function say(t,c){
