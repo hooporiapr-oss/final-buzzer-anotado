@@ -272,6 +272,70 @@ h1 em{font-style:normal;color:var(--orange)}
    filas separadas— porque son la misma familia: lo que se ve antes
    del juego y lo que llega después. */
 .colrep{min-width:0}
+/* min-width:0 y max-width:100% en los tres: sin ellos la tabla
+   —que tiene min-width propio— empuja a sus contenedores y el que
+   acaba ensanchándose es el documento. En el teléfono eso era la
+   página entera moviéndose de lado. */
+.rphoja{border:1px solid var(--linea);border-radius:14px;overflow:hidden;
+  background:var(--panel);margin:1.1rem 0;min-width:0;max-width:100%}
+.rpcab{padding:.8rem 1rem;background:var(--cream);border-bottom:1px solid var(--linea)}
+.rpcab b{display:block;font-family:Archivo,sans-serif;font-size:1rem}
+.rpcab span{display:block;color:var(--muted);font-size:.8rem;margin-top:.15rem}
+/* Sólo donde la tabla de verdad se desliza. En el escritorio cabe
+   entera y el aviso sobraría. */
+.rppista{display:none;margin:0;padding:.5rem 1rem 0;color:var(--muted);font-size:.74rem}
+@media(max-width:860px){ .rppista{display:block} }
+.rpscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;max-width:100%}
+.rptab{width:100%;border-collapse:collapse;font-size:.82rem;min-width:600px}
+.rptab th{text-align:left;padding:.55rem .42rem;border-bottom:2px solid var(--tinta);
+  font-family:Archivo,sans-serif;font-size:.63rem;font-weight:900;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--muted);line-height:1.25}
+.rptab th.rpC{text-align:right}
+
+.rptab td{padding:.55rem .42rem;border-bottom:1px solid var(--linea);vertical-align:top}
+.rptab tbody tr:last-child td{border-bottom:0}
+.rpN b{display:block;font-weight:800}
+.rpN span{display:block;color:var(--muted);font-size:.74rem;margin-top:.1rem}
+.rpC{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.rpT{font-size:.95rem}
+.rpE{color:var(--muted);font-size:.76rem;min-width:96px}
+.rptab tr.eb td{color:var(--muted)}
+.rptab tr.eb .rpT b{color:var(--muted)}
+.rptab tr.em .rpE{color:#A8323F;font-weight:800}
+.rpsuma td{padding:.7rem .42rem;border-top:2px solid var(--tinta);border-bottom:0;
+  font-weight:800;font-family:Archivo,sans-serif}
+.rpsuma td.rpFin{text-align:right}
+.rpnocual{border-top:1px solid var(--linea)}
+.rpsep td{padding:.75rem .42rem .5rem;background:var(--cream);border-bottom:1px solid var(--linea)}
+.rpsep b{display:block;font-family:Archivo,sans-serif;font-size:.68rem;font-weight:900;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.rpsep span{display:block;color:var(--muted);font-size:.76rem;margin-top:.18rem}
+.rpnocual td{color:var(--muted)}
+@media(max-width:860px){ .rpOcu{display:none} .rptab{min-width:540px} }
+/* EN EL TELÉFONO, LAS TRES QUE IMPORTAN. Con todas las columnas, lo
+   primero que se veía era el nombre y los centavos por punto, y el
+   dinero quedaba fuera de pantalla a la derecha: justo al revés de
+   lo que busca un entrenador. Se retiran la tarifa, el tope, los
+   puntos y el desglose —que siguen en el CSV y en el escritorio— y
+   quedan padrino, total y en qué quedó. Así no hay que deslizar
+   nada. */
+@media(max-width:700px){
+  .rpSec{display:none}
+  /* EL CORREO, FUERA DEL TELÉFONO. No tiene por dónde partirse y
+     sostenía la columna del nombre a 166px; partiéndolo a la fuerza
+     quedaba «maria.rivera@ej / emplo.com», que no se lee ni sirve.
+     Nadie escribe un correo desde esta tabla — está en el CSV y en
+     el escritorio. Quitándolo, los nombres caben en una línea. */
+  .rpN span{display:none}
+  .rptab{font-size:.78rem}
+  .rpE{font-size:.72rem;line-height:1.35}
+  .rptab td{padding:.5rem .35rem}
+  .rptab th{padding:.5rem .35rem}
+  .rptab{min-width:0}
+  .rppista{display:none}
+  .rpE{min-width:0}
+  .rptab tfoot td.rpFin{text-align:left}
+}
 .formatos{display:grid;gap:.7rem}
 .fmt{position:relative;background:var(--panel);border:1px solid var(--linea);
   border-radius:14px;padding:1rem 1.1rem 1.05rem 3.1rem}
@@ -280,14 +344,17 @@ h1 em{font-style:normal;color:var(--orange)}
 .fmt b{display:block;font-size:1rem;margin-bottom:.22rem}
 .fmt span{display:block;color:var(--muted);font-size:.88rem;line-height:1.5}
 .muestra{margin-top:1.1rem;background:var(--cream);border:1px solid var(--linea);
-  border-radius:15px;padding:1.2rem 1.15rem}
+  border-radius:15px;padding:1.2rem 1.15rem;min-width:0;max-width:100%}
 .muestra b{display:block;font-family:Archivo,sans-serif;font-size:1.05rem}
 .muestra p{color:var(--muted);font-size:.9rem;line-height:1.55;margin:.4rem 0 .9rem}
 /* El botón y su nota, centrados. El titular y el párrafo se quedan
    alineados a la izquierda: es texto corrido y centrarlo se lee peor.
    width:fit-content para que el botón no se estire de borde a borde
    en el teléfono. */
-.muestra .button{display:block;width:fit-content;margin-left:auto;margin-right:auto}
+.rpacc{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center}
+.muestra .button{display:inline-block}
+.muestra .button.line{background:transparent;color:var(--tinta);
+  box-shadow:inset 0 0 0 2px var(--tinta)}
 .muestra .fine{margin:.75rem 0 0;font-size:.78rem;text-align:center}
 .mail{background:var(--panel);border:1px solid var(--linea);border-radius:15px;
   overflow:hidden;min-width:0}
@@ -1067,17 +1134,161 @@ button.lang{padding:0 10px;font-size:.8rem}
     juego por tu lado, sin que tengas que entrar a buscarlo.</span>
 </div>
 </div>
+</div>
+</div><!-- cierra .wrap.split: el panel de abajo va a lo ancho de la
+             sección, no dentro de la columna derecha -->
 
+<!-- EL REPORTE, EN PANTALLA Y NO EN UN FICHERO.
+     El botón bajaba un .csv y ahí se acababa: en un teléfono eso es
+     un fichero que cae en una carpeta y que casi nadie vuelve a
+     abrir. El entrenador que quería ver cómo es un reporte se
+     quedaba sin verlo.
+
+     Así que el reporte se enseña aquí mismo, con sus columnas y sus
+     doce padrinos, y el fichero se queda debajo para el que lo
+     quiera de verdad. La tabla se genera del propio reporte-es.csv,
+     así que las dos cosas no pueden decir cifras distintas. -->
+<div class="wrap">
 <div class="muestra">
   <b data-i="rpMuH">Míralo tú mismo</b>
   <p data-i="rpMuP">Este es un reporte de verdad, bajado del botón: Canóvanas 15U
     contra Loíza, doce padrinos, el equipo anotó 68. Trae dentro los casos que de
     verdad pasan &mdash; un tope que mordió, dos promesas que no llegaron al mínimo,
     un correo que rebotó y una cifra corregida.</p>
-  <a class="button" href="reporte-es.csv" download data-i="rpMuB">Bajar el reporte de ejemplo (CSV)</a>
-  <p class="fine" data-i="rpMuF">Se baja un fichero .csv. El reporte existe en español y en
-    inglés, y los padrinos de este ejemplo son inventados.</p>
+<div class="rphoja">
+<div class="rpcab">
+  <b data-i="rpHjT">Canóvanas 15U &nbsp;vs&nbsp; Loíza</b>
+  <span data-i="rpHjS">7 de noviembre de 2026 &middot; el equipo anotó 68 puntos</span>
 </div>
+<p class="rppista" data-i="rpPista">Desliza la tabla para ver el resto &rarr;</p>
+<div class="rpscroll">
+<table class="rptab">
+<thead><tr>
+<th data-i="rpThPad">Padrino</th><th class="rpC rpSec" data-i="rpThTar">Por punto</th>
+<th class="rpC rpSec" data-i="rpThTop">Tope</th><th class="rpC rpOcu rpSec" data-i="rpThPts">Puntos</th>
+<th class="rpC rpSec" data-i="rpThVal">Valor de la promesa</th>
+<th class="rpC rpSec" data-i="rpThCua">Cualifica</th>
+<th class="rpC" data-i="rpThTot">Total</th><th data-i="rpThEst">Cómo va</th>
+</tr></thead>
+
+<tbody>
+<tr>
+<td class="rpN"><b>María Rivera</b><span>maria.rivera@ejemplo.com</span></td>
+<td class="rpC rpSec">0.25</td><td class="rpC rpSec">—</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">17.00</td><td class="rpC rpSec"><span data-i="rpCuSi">sí</span></td>
+<td class="rpC rpT"><b>17.00</b></td>
+<td class="rpE"><span data-i="rpEAvis">avisado</span></td>
+</tr>
+<tr>
+<td class="rpN"><b>José Correa</b><span>jcorrea@ejemplo.com</span></td>
+<td class="rpC rpSec">0.50</td><td class="rpC rpSec">25.00</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">25.00</td><td class="rpC rpSec"><span data-i="rpCuSi">sí</span></td>
+<td class="rpC rpT"><b>25.00</b></td>
+<td class="rpE"><span data-i="rpEAvis">avisado</span></td>
+</tr>
+<tr>
+<td class="rpN"><b>Luis Figueroa</b><span>lfigueroa@ejemplo.com</span></td>
+<td class="rpC rpSec">0.10</td><td class="rpC rpSec">—</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">6.80</td><td class="rpC rpSec"><span data-i="rpCuSi">sí</span></td>
+<td class="rpC rpT"><b>6.80</b></td>
+<td class="rpE"><span data-i="rpEAvis">avisado</span></td>
+</tr>
+<tr>
+<td class="rpN"><b>Ana Delgado</b><span>ana.delgado@ejemplo.com</span></td>
+<td class="rpC rpSec">1.00</td><td class="rpC rpSec">50.00</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">50.00</td><td class="rpC rpSec"><span data-i="rpCuSi">sí</span></td>
+<td class="rpC rpT"><b>50.00</b></td>
+<td class="rpE"><span data-i="rpEAvis">avisado</span></td>
+</tr>
+<tr>
+<td class="rpN"><b>Pedro Santiago</b><span>psantiago@ejemplo.com</span></td>
+<td class="rpC rpSec">0.25</td><td class="rpC rpSec">10.00</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">10.00</td><td class="rpC rpSec"><span data-i="rpCuSi">sí</span></td>
+<td class="rpC rpT"><b>10.00</b></td>
+<td class="rpE"><span data-i="rpEAvis">avisado</span></td>
+</tr>
+<tr class="em">
+<td class="rpN"><b>Rosa Vega</b><span>rvega@ejemplo.com</span></td>
+<td class="rpC rpSec">0.30</td><td class="rpC rpSec">—</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">20.40</td><td class="rpC rpSec"><span data-i="rpCuSi">sí</span></td>
+<td class="rpC rpT"><b>20.40</b></td>
+<td class="rpE"><span data-i="rpEMuerto">no se le pudo avisar</span></td>
+</tr>
+<tr class="ec">
+<td class="rpN"><b>Carlos Mejías</b><span>cmejias@ejemplo.com</span></td>
+<td class="rpC rpSec">0.15</td><td class="rpC rpSec">—</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">10.20</td><td class="rpC rpSec"><span data-i="rpCuSi">sí</span></td>
+<td class="rpC rpT"><b>10.20</b></td>
+<td class="rpE"><span data-i="rpECorr">corregido · esta cifra es la buena</span></td>
+</tr>
+<tr class="es">
+<td class="rpN"><b>Sonia Ortiz</b><span>sortiz@ejemplo.com</span></td>
+<td class="rpC rpSec">0.20</td><td class="rpC rpSec">—</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">13.60</td><td class="rpC rpSec"><span data-i="rpCuSi">sí</span></td>
+<td class="rpC rpT"><b>13.60</b></td>
+<td class="rpE"><span data-i="rpESin">sin avisar todavía</span></td>
+</tr>
+<tr>
+<td class="rpN"><b>Héctor Burgos</b><span>hburgos@ejemplo.com</span></td>
+<td class="rpC rpSec">0.40</td><td class="rpC rpSec">30.00</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">27.20</td><td class="rpC rpSec"><span data-i="rpCuSi">sí</span></td>
+<td class="rpC rpT"><b>27.20</b></td>
+<td class="rpE"><span data-i="rpEAvis">avisado</span></td>
+</tr>
+<tr>
+<td class="rpN"><b>Daniela Cruz</b><span>dcruz@ejemplo.com</span></td>
+<td class="rpC rpSec">0.25</td><td class="rpC rpSec">—</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">17.00</td><td class="rpC rpSec"><span data-i="rpCuSi">sí</span></td>
+<td class="rpC rpT"><b>17.00</b></td>
+<td class="rpE"><span data-i="rpEAvis">avisado</span></td>
+</tr>
+<tr class="rpsuma">
+  <td colspan="6" class="rpFin" data-i="rpThFin">Total de promesas que cualifican:</td>
+  <td class="rpC rpT"><b>197.20</b></td><td></td>
+</tr>
+</tbody>
+
+<!-- LAS QUE NO CUALIFICAN, DEBAJO DE LA SUMA Y APARTE.
+     Estaban intercaladas con las demás y con un 0.00 en la columna
+     del total, justo encima de la línea que suma esa columna. Se
+     leía como si entraran en el total aportando cero — y no es eso:
+     no entran. Ahora van después de la suma, bajo su propio
+     encabezado, y su total lleva una raya en vez de un cero. El
+     valor de la promesa sigue a la vista, que es lo que el padrino
+     va a preguntar. -->
+<tbody class="rpnocual">
+<tr class="rpsep"><td colspan="8">
+  <b data-i="rpNoT">No cualifican</b>
+  <span data-i="rpNoS">No llegaron a $5.00 con el marcador final. No se les pide nada y no entran en el total.</span>
+</td></tr>
+<tr class="eb">
+<td class="rpN"><b>Tía Carmen</b><span>carmen.v@ejemplo.com</span></td>
+<td class="rpC rpSec">0.05</td><td class="rpC rpSec">—</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">3.40</td><td class="rpC rpSec"><span data-i="rpCuNo">no</span></td>
+<td class="rpC rpT">&mdash;</td>
+<td class="rpE"><span data-i="rpEBajo">bajo el mínimo de $5.00 — no se le pide nada</span></td>
+</tr>
+<tr class="eb">
+<td class="rpN"><b>Jorge Pagán</b><span>jpagan@ejemplo.com</span></td>
+<td class="rpC rpSec">0.07</td><td class="rpC rpSec">—</td><td class="rpC rpOcu rpSec">68</td>
+<td class="rpC rpSec">4.76</td><td class="rpC rpSec"><span data-i="rpCuNo">no</span></td>
+<td class="rpC rpT">&mdash;</td>
+<td class="rpE"><span data-i="rpEBajo">bajo el mínimo de $5.00 — no se le pide nada</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+  <!-- DOS SALIDAS: la página entera y el fichero. La tabla de
+       arriba es el reporte sin su página; el enlace lleva al reporte
+       de verdad —resumen, avisos, botón de bajar, impresión— con
+       estos mismos doce padrinos dentro. -->
+  <div class="rpacc">
+    <a class="button" href="reporte.html?ejemplo=1" data-i="rpVerB">Ver el reporte completo &rarr;</a>
+    <a class="button line" href="reporte-es.csv" download data-i="rpMuB">Bajar el CSV</a>
+  </div>
+  <p class="fine" data-i="rpMuF">El reporte se abre como página; el CSV se baja como fichero. El reporte existe en español y en
+    inglés, y los padrinos de este ejemplo son inventados.</p>
 </div>
 </div>
 </section>
@@ -1301,10 +1512,25 @@ rpF3b:'Printed',
 rpF3:'The same list on paper, for collecting with the sheet in your hand and no phone in sight.',
 rpF4b:'In your inbox',
 rpF4:'When the notices go out to the padrinos, the same game comes to you from your side, without having to go and look for it.',
+rpPista:'Swipe the table to see the rest &rarr;',
+rpNoT:'Do not qualify',
+rpNoS:'They did not reach $5.00 once the final score was in. Nothing is asked of them and they are not in the total.',
+rpHjT:'Canóvanas 15U &nbsp;vs&nbsp; Loíza',
+rpHjS:'7 November 2026 &middot; the team scored 68 points',
+rpThPad:'Padrino', rpThTar:'Per point', rpThTop:'Cap', rpThPts:'Points',
+rpThVal:'Pledge value', rpThCua:'Qualifies', rpThTot:'Total', rpThEst:'Where it stands',
+rpThFin:'Total of qualifying pledges:',
+rpCuSi:'yes', rpCuNo:'no',
+rpEAvis:'notified',
+rpEBajo:'under the $5.00 minimum — nothing is asked of him',
+rpEMuerto:'could not be notified',
+rpECorr:'corrected · this figure is the right one',
+rpESin:'not notified yet',
+rpVerB:'See the full report &rarr;',
+rpMuB:'Download the CSV',
 rpMuH:'See one yourself',
 rpMuP:'This is a real report, pulled from the button: Canóvanas 15U against Loíza, twelve padrinos, the team scored 68. It has the cases that actually happen inside it &mdash; a cap that bit, two pledges that did not reach the minimum, an email that bounced and a corrected figure.',
-rpMuB:'Download the sample report (CSV)',
-rpMuF:'Downloads a .csv file. The report exists in Spanish and English, and the padrinos in this example are invented.',
+rpMuF:'The report opens as a page; the CSV downloads as a file. The report exists in Spanish and English, and the padrinos in this example are invented.',
 rpP3:'No payment link and nothing asked of you. Collecting stays yours &mdash; this is only the list of who and how much.',
 sdDay:'Saturday 21 November',
 sdEg:'Example',
