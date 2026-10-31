@@ -311,6 +311,15 @@ header{color:#fff}
 <label for="tm" data-i="teamL">Nombre del EQUIPO</label>
 <input id="tm" data-ph="teamPh" placeholder="Canóvanas" type="text" maxlength="60" autocapitalize="words" enterkeyhint="next">
 <p class="hint" data-i="teamAyuda">Tal como sale en el marcador, letra por letra. Es lo que engancha tus juegos con tu campaña — si aquí pones otra cosa, tus juegos no aparecen.</p>
+<!-- EL CÓDIGO PARA ENTRAR ES EL EQUIPO MÁS ESTOS CUATRO NÚMEROS.
+     Antes aprobar repartía un COACH-7F3A9C21B que nadie iba a
+     recordar, y un entrenador que no puede entrar a su página no
+     tiene producto. El nombre solo no basta: sale en cada calendario
+     y en cada aviso, y con él cualquiera abriría la página del
+     equipo. Los cuatro números los escoge él, así que los recuerda. -->
+<label for="pn" data-i="pinL">Escoge 4 números</label>
+<input id="pn" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4827" enterkeyhint="next" style="max-width:9rem;letter-spacing:.2em;font-weight:800">
+<p class="hint" data-i="pinAyuda">Con el nombre del equipo forman tu código para entrar. Si tu equipo es <b>Canóvanas 15U</b> y escoges <b>4827</b>, tu código es <b>CANOVANAS15U-4827</b>. Escoge cuatro que no se te olviden.</p>
 <label for="pg" data-i="progL">Nombre del programa</label>
 <input id="pg" data-ph="progPh" placeholder="Canóvanas Basketball Club" type="text" maxlength="60" autocapitalize="words" autocomplete="organization" enterkeyhint="next">
 <p class="hint" data-i="progAyuda">El de la organización, el que verán las familias en los avisos.</p>
@@ -431,6 +440,9 @@ var S = {
      pasó con el precio en la portada. */
   es:{
     errTeam:'Escribe el nombre del equipo, como sale en el marcador.',
+    errPin:'Escoge cuatro números: con el nombre del equipo forman tu código.',
+    doneCode:'Tu código para entrar',
+    doneCodeH:'Es el nombre de tu equipo y los cuatro números que escogiste. <b>Empieza a funcionar cuando te aprobemos.</b> Con él entras a <b>Mi calendario</b> en cadapunto.com: ahí montas tus juegos, sacas el enlace para tus padrinos y pones el marcador. No importan las mayúsculas, los acentos ni los espacios. Apúntalo ahora, y no lo compartas fuera de tu cuerpo técnico: quien lo tenga entra a la página de tu equipo.',
     errProg:'Escribe el nombre del programa.',
     errWho:'Tu nombre y tu correo, por favor.',
     errLic:'Tienes que aceptar la licencia y su cargo para seguir.',
@@ -439,8 +451,8 @@ var S = {
     errTaken:'Ese programa ya tiene campaña. Escríbenos si crees que es un error.',
     errPending:'Ya hay una petición para ese programa. Te escribimos pronto.',
     errGen:'No se pudo enviar. Intenta otra vez.',
-    doneH:'Recibido.',
-    doneP:'Te escribimos a {E} para confirmarlo y abrirte la campaña. Normalmente el mismo día.'
+    doneH:'Recibido — pendiente de aprobación.',
+    doneP:'Revisamos tu inscripción y te escribimos a {E} cuando esté aprobada. Normalmente el mismo día.'
   },
   en:{
     fWhat:'Cada Punto Cuenta is a pledge management system from Gostar Digital LLC, a for-profit company. The program receives its money directly; we charge for use of the tool.',
@@ -458,6 +470,8 @@ var S = {
     formH:'Tell us about your program',
     teamL:'TEAM name', teamPh:'Canóvanas',
     teamAyuda:'Exactly as it appears on the scoreboard, letter for letter. This is what links your games to your campaign — put anything else here and your games will not show up.',
+    pinL:'Pick 4 numbers',
+    pinAyuda:'Together with the team name they make your sign-in code. If your team is <b>Canóvanas 15U</b> and you pick <b>4827</b>, your code is <b>CANOVANAS15U-4827</b>. Pick four you will not forget.',
     progL:'Program name', progPh:'Canóvanas Basketball Club',
     progAyuda:'The organisation’s name, the one families will see on the notices.',
     nameL:'Your name', namePh:'First and last name',
@@ -471,13 +485,16 @@ var S = {
     errLic:'You have to accept the license and its fee to continue.',
     go:'Sign up my program',
     errTeam:'Write the team name, as it appears on the scoreboard.',
+    errPin:'Pick four numbers: together with the team name they make your code.',
+    doneCode:'Your sign-in code',
+    doneCodeH:'It is your team name and the four numbers you picked. <b>It starts working once we approve you.</b> With it you open <b>My schedule</b> on cadapunto.com: that is where you set up your games, get the link for your padrinos and post the score. Capitals, accents and spaces do not matter. Write it down now, and do not share it outside your coaching staff: whoever has it gets into your team’s page.',
     errProg:'Write the program name.',
     errWho:'Your name and email, please.',
     errTaken:'That program already has a campaign. Write to us if that seems wrong.',
     errPending:'There is already a request for that program. We will be in touch.',
     errGen:'That did not send. Try again.',
-    doneH:'Got it.',
-    doneP:'We will write to {E} to confirm and open your campaign. Usually the same day.',
+    doneH:'Received — pending approval.',
+    doneP:'We review your signup and write to {E} once it is approved. Usually the same day.',
     fineH:'What it costs',
     fineP:'Cada Punto Cuenta is licensed <b>per game</b>: one dollar for each qualifying pledge — those worth five dollars or more once the score is in — capped at $99 a game, with no minimum number of games: one game is enough, and every additional game is another opportunity. The rate is on the home page and does not depend on the size of the roster. It is invoiced for the games that carried pledges and due within seven days; nothing up front, and a game that records no pledges is not invoiced. It is not a percentage of anything, it does not come out of any pledge, and we charge your padrinos nothing. One thing worth having straight from the start: <b>pledged is not collected</b>. We record what was pledged; what comes in, and when, depends on your collecting \u2014 so one padrino who pays is worth more than ten pledges on a list. What you raise is yours, including any arrangement you have with your league or with whoever brought you in.'
   }
@@ -526,6 +543,15 @@ function toggleLang(){
 
 var app = document.getElementById('app');
 var SENT = null;
+var SENT_CODE = '';
+
+/* La misma cuenta que bw_codigo_norm en la base: sin acentos, en
+   mayúsculas, sólo letras y números. El guion es para leerlo; al
+   entrar no hace falta escribirlo. */
+function codigoDe(team, pin){
+  return String(team || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+           .toUpperCase().replace(/[^A-Z0-9]/g, '') + '-' + pin;
+}
 
 function esc(s){
   return String(s==null?'':s).replace(/[&<>"\']/g, function(m){
@@ -549,6 +575,15 @@ function draw(){
         '<div class="tick">\u2713</div>' +
         '<h1>' + T('doneH') + '</h1>' +
         '<p class="lede">' + T('doneP', { E: esc(SENT) }) + '</p>' +
+        /* EL CÓDIGO, AQUÍ MISMO Y EN GRANDE. Es el momento en que el
+           entrenador lo está mirando con la mano en el teléfono; si lo
+           ve aquí, lo apunta. */
+        (SENT_CODE
+          ? '<p style="margin:1.4rem 0 .3rem;font-weight:800">' + T('doneCode') + '</p>' +
+            '<p style="font-size:1.5rem;font-weight:900;letter-spacing:.04em;margin:0">' +
+              esc(SENT_CODE) + '</p>' +
+            '<p class="hint" style="max-width:34rem;margin:.6rem auto 0">' + T('doneCodeH') + '</p>'
+          : '') +
       '</div>';
       /* AQUÍ IBA UN BOTÓN PARA VER UN TABLERO DE EJEMPLO.
 
@@ -616,6 +651,8 @@ function send(){
   var phone = (document.getElementById('ph').value || '').trim();
 
   if (!team) return say(T('errTeam'), 'bad');
+  var pin = (document.getElementById('pn').value || '').replace(/\D/g, '');
+  if (!/^\d{4}$/.test(pin)) return say(T('errPin'), 'bad');
   if (!prog) return say(T('errProg'), 'bad');
   if (!name || email.indexOf('@') === -1) return say(T('errWho'), 'bad');
 
@@ -643,7 +680,16 @@ function send(){
       return say(T('errGen'), 'bad');
     }
     SENT = email;
+    SENT_CODE = codigoDe(team, pin);
     draw();
+
+    /* LOS CUATRO NÚMEROS, guardados con la solicitud. Van por su
+       propia función y no por bw_request_team, que vive en la base y
+       no en este repo: cambiarle la firma a ciegas es la manera de
+       romper la inscripción entera. Si esto fallara, aprobar cae al
+       código de siempre y el admin lo ve igual al aprobar. */
+    rpc('bw_request_pin', { p_email: email, p_pin: pin })
+      .catch(function(e){ console.error('bw_request_pin', e) });
 
     /* DE QUÉ PRODUCTO ES ESTA SOLICITUD. Dos productos comparten la
        base y escriben los dos en bw_requests; `campaigns.product` es,
