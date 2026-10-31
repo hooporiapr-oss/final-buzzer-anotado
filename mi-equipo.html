@@ -549,6 +549,25 @@ function salir(){ olvidar(); location.reload(); }
 
 function say(t,c){ var e=$('gm'); if(e){ e.textContent=t||''; e.className='msg '+(c||'') } }
 
+/* EL CÓDIGO COMO LO ESCRIBA. «Canóvanas 15U 4827», «canovanas15u-4827»
+   y «CANOVANAS15U4827» son el mismo código: se prueba primero tal
+   cual —así los códigos de siempre, con su guion, no se tocan— y si
+   no abre, se prueba limpio, sin acentos, espacios ni guiones, que es
+   como lo guarda la base. */
+function codigoLimpio(s){
+  return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+           .toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+function probarCodigo(k){
+  return rpc('juegos_del_codigo', { p_code: k }).then(function(r){
+    var n = codigoLimpio(k);
+    if ((r && r.ok) || n === k || n.length < 4) return { k: k, r: r };
+    return rpc('juegos_del_codigo', { p_code: n }).then(function(r2){
+      return (r2 && r2.ok) ? { k: n, r: r2 } : { k: k, r: r };
+    });
+  });
+}
+
 function entrar(auto){
   var k = auto ? CODE : ($('code').value||'').trim();
   if(!k || k.length<4) return say(T('bad'),'bad');
@@ -558,8 +577,9 @@ function entrar(auto){
      después se pedían los retos de cada campaña por separado. Lo que
      un entrenador necesita ver es sus JUEGOS, y juegos_del_codigo
      valida y los trae a la vez. */
-  rpc('juegos_del_codigo',{p_code:k})
-    .then(function(r){
+  probarCodigo(k)
+    .then(function(x){
+      var r = x.r; k = x.k;
       if(!r||!r.ok){ if(auto) olvidar(); return say(T('bad'),'bad'); }
       CODE=k; JUEGOS=r.juegos||[]; PROGRAMA=r.campana||'';
       EQUIPO=r.equipo||'';
@@ -594,10 +614,13 @@ function pintarJuegos(){
      juegos con su campaña y teclearlo distinto —«Canovanas» donde se
      inscribió «Canóvanas»— le deja un calendario sin botón de
      prometer y sin un solo mensaje de error que se lo explique. */
-  /* Sin &lang=: el constructor es sólo en español, y mandarle un
-     idioma que no lee sería un parámetro que parece que hace algo. */
+  /* Con &lang=: el constructor ya tiene los dos idiomas, y el que
+     leyó esta página en inglés tiene que seguir en inglés al otro
+     lado. Sin esto, el constructor le preguntaría otra vez a su
+     teléfono, que puede decir otra cosa. */
   var H = $('jHorario');
   if (H) H.href = 'https://marcadorpr.com/constructor.html?modo=temporada'
+                + '&lang=' + encodeURIComponent(LANG)
                 + '&code=' + encodeURIComponent(CODE || '')
                 + (EQUIPO ? '&equipo=' + encodeURIComponent(EQUIPO) : '');
 
