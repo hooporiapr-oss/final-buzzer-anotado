@@ -29,12 +29,22 @@ const di  = (m) => console.log('\n' + m);
 const PROHIBIDO = [
   [/catorce días|fourteen days/i,          'los catorce días'],
   [/día quince|day fifteen/i,              'el día quince'],
-  [/marcador final|final score/i,          'un marcador final'],
-  [/lo reportas tú|you report the score/i, 'que el entrenador reporte el marcador'],
   [/\bHooporia\b/i,                       'el nombre retirado'],
   [/cincuenta centavos|fifty cents/i,      'el mínimo de cincuenta centavos, que aquí no existe'],
-  [/puntos del equipo|points the team/i,   'promesas por los puntos del equipo'],
+  /* EL VOCABULARIO DEL PRODUCTO POR ESTUDIANTE. El FAQ seguía
+     contestando sobre plantillas, retos, corridas y ventanas — un
+     producto que se retiró — en la página que una familia abre
+     justo cuando tiene una duda, que es donde más daño hace. */
+  [/\bcorrida|\bel reto\b|\bun reto\b|official run/i, 'las corridas y los retos'],
+  [/la plantilla|the roster/i,             'la plantilla de jugadores'],
+  [/la ventana|the window/i,               'la ventana del reto'],
+  [/lo reportas tú|you report the score/i, 'que el entrenador reporte el marcador'],
 ];
+
+/* Y LO QUE «marcador final» DEJÓ DE SER. Estaba prohibido: el
+   producto de antes no tenía uno, sólo corridas de un minuto. El de
+   ahora se sostiene sobre él —se promete por punto y se cierra
+   cuando el marcador se publica— así que ahora se EXIGE. */
 
 (async () => {
   const browser = await chromium.launch({
@@ -71,7 +81,7 @@ const PROHIBIDO = [
 
     forma.preguntas >= 25 ? ok(forma.preguntas + ' preguntas')
       : mal('sólo salieron ' + forma.preguntas + ' preguntas — ¿se comió algo la lista?');
-    forma.secciones.length === 6 ? ok('las seis secciones: ' + forma.secciones.join(' · '))
+    forma.secciones.length === 7 ? ok('las siete secciones: ' + forma.secciones.join(' · '))
       : mal('salieron ' + forma.secciones.length + ' secciones: ' + forma.secciones.join(' · '));
     forma.vacias === 0 ? ok('ninguna respuesta vacía')
       : mal(forma.vacias + ' respuesta(s) sin contenido');
@@ -85,33 +95,30 @@ const PROHIBIDO = [
       [...document.querySelectorAll('details')].map(d => d.textContent).join('\n'));
 
     const quiero = L === 'es'
-      ? [[/El juego lo anota solo/,              'el juego anota solo'],
-         [/una sola corrida oficial/,            'una sola corrida oficial'],
-         [/la segunda la rechaza la base de datos/, 'y la segunda la rechaza la base'],
-         [/Tú pones la ventana/,                 'la ventana la pone el programa'],
-         /* Se comprueba QUE SE LICENCIA POR EVENTO, no la frase con
-            la que se decia. Esta linea pedia "por equipo, por reto",
-            que era el precio de dos peldanos, y fallo el dia que el
-            FAQ paso a la escalera — una prueba quejandose de que la
-            pagina se puso al dia. El precio en si lo vigila
-            prueba-precio.js, contra la escalera de index.html. */
-         /* POR JUEGO, no «por evento». La licencia dejo de ser por
-            evento cuando el producto paso a cobrarse juego a juego, y
-            esta linea se quedo pidiendo la palabra vieja: llevaba dos
-            dias suspendiendo por quejarse de que la pagina esta al
-            dia. El numero lo vigila prueba-precio.js. */
-         [/se licencia <b>por juego<\/b>|se licencia por juego/, 'la licencia, por juego'],
-         [/45 puntos son \$4\.50/,               'el ejemplo del padrino, con su cuenta'],
-         [/No decimos que lo sea/,               'impuestos: no decimos que lo sea'],
-         [/no los escribió una persona/,         'por qué los puntos son de verdad']]
-      : [[/The game records it itself/,          'the game records it itself'],
-         [/one official run/,                    'one official run'],
-         [/the database refuses the second/,     'and the database refuses the second'],
-         [/You set the window/,                  'the program sets the window'],
-         [/licensed <b>per game<\/b>|licensed per game/,  'licensed per game'],
-         [/45-point run is \$4\.50/,             'the padrino example, with its sum'],
-         [/We do not say that it is/,            'tax: we do not say that it is'],
-         [/a person did not write them/,         'why the points are real']];
+      ? [[/se publica el marcador/,             'el marcador se publica, no lo reporta nadie'],
+         [/La mesa, en marcadorpr/,             'y lo pone la mesa'],
+         [/llega a \$5 o más/,          'qué es una promesa que cualifica'],
+         [/\$1 por cada promesa que cualifica/,  'el precio'],
+         [/máximo de \$99 por juego/,           'y su tope'],
+         [/Sin suscripción y sin mínimo/,       'sin suscripción ni mínimo'],
+         [/Un correo, cuando se publica/,                  'un solo aviso al padrino'],
+         [/Sin enlace de pago y sin recordatorios/, 'sin enlace de pago ni recordatorios'],
+         [/El dinero no pasa por nosotros/,     'el dinero no pasa por nosotros'],
+         [/no decimos que una promesa sea deducible/, 'impuestos: no decimos que lo sea'],
+         [/Ganen o pierdan, cada punto cuenta/, 'ganen o pierdan, cada punto cuenta'],
+         [/queda suspendido hasta que se complete el pago/, 'qué pasa si no se paga']]
+      : [[/the score is posted/,                'the score is posted, nobody reports it'],
+         [/table, in marcadorpr/,               'and the table posts it'],
+         [/reaches \$5 or more/,        'what a qualifying pledge is'],
+         [/\$1 for each qualifying pledge/,     'the price'],
+         [/\$99 maximum per game/,              'and its cap'],
+         [/No subscription and no minimum/,     'no subscription, no minimum'],
+         [/One email, when the score/,                  'one notice to the padrino'],
+         [/No payment link and no reminders/,   'no payment link, no reminders'],
+         [/The money does not pass through us/, 'the money does not pass through us'],
+         [/we do not say a pledge is deductible/, 'tax: we do not say that it is'],
+         [/Win or lose, every point counts/,    'win or lose, every point counts'],
+         [/suspended until payment is completed/, 'what happens if it is not paid']];
 
     for (const [re, qué] of quiero)
       re.test(txt) ? ok(qué) : mal('falta: ' + qué + '  ' + re);
@@ -119,9 +126,13 @@ const PROHIBIDO = [
     for (const [re, qué] of PROHIBIDO)
       if (re.test(txt)) mal('volvió ' + qué + '  ' + re);
 
-    // El ejemplo del padrino tiene que cuadrar: 45 puntos a 10¢.
-    if (/45/.test(txt) && /4\.50/.test(txt)) ok('45 × $0.10 = $4.50, y la página lo dice así');
-    else mal('el ejemplo no cuadra');
+    /* LAS TRES PUERTAS. El FAQ contesta con ejemplos que se pueden
+       abrir: la hoja de promesa, el aviso al padrino y el reporte.
+       Si alguno se cae, la respuesta se queda en una promesa. */
+    const puertas = await page.evaluate(() =>
+      [...document.querySelectorAll('details a')].map(a => a.getAttribute('href')));
+    for (const h of ['prometer.html?ejemplo=1','aviso.html','reporte.html?ejemplo=1','custodia.html'])
+      puertas.includes(h) ? ok('enlaza a ' + h) : mal('falta el enlace a ' + h);
 
     if (errores.length === 0) ok('sin errores de página');
     else errores.forEach(e => mal(e));
