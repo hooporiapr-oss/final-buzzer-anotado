@@ -394,20 +394,93 @@ h1 em{font-style:normal;color:var(--orange)}
 
    Un número que no sale del anterior llega frío, y éste es EL número
    de la página. */
-.esc{display:grid;gap:.7rem;max-width:46rem;margin:0 auto}
-.escp{background:var(--navy2);border:1px solid var(--borde);border-radius:14px;
-  padding:1.1rem 1.3rem;display:grid;grid-template-columns:1fr auto;
-  gap:.2rem 1.2rem;align-items:center}
-.escp .k{grid-column:1;font-family:Archivo,sans-serif;font-size:.6rem;font-weight:900;
-  letter-spacing:.17em;text-transform:uppercase;color:#8fa3b8}
-.escp .m{grid-column:1;font-size:.96rem;color:#d7e1ea;min-width:0}
-.escp .v{grid-column:2;grid-row:1 / span 2;font-family:Archivo,sans-serif;
-  font-weight:900;font-size:clamp(1.5rem,5.4vw,2.05rem);letter-spacing:-.03em;
-  line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap;color:#fff}
-/* El último peldaño es el número que alguien se lleva en la cabeza. */
-.escp.last{border-color:var(--orange);background:rgba(255,122,24,.1)}
-.escp.last .v{color:var(--orange);font-size:clamp(1.95rem,7.6vw,2.9rem)}
-.escpie{max-width:46rem;margin:1.5rem auto 0;color:var(--claro);font-size:.93rem}
+/* .expasos y no .pasos: ese nombre ya es de los cuatro bloques de
+   «Programa · Promete · Juega · Cobra» de más arriba, que es una
+   rejilla de cuatro columnas. Escribiendo encima se le deshacía esa
+   sección sin tocarla. */
+.expasos{max-width:40rem;margin:1.8rem auto 0;padding:0;list-style:none;
+  counter-reset:paso;text-align:left}
+.expasos li{counter-increment:paso;position:relative;padding:.55rem 0 .55rem 2.5rem;
+  font-size:1.06rem;color:#fff;line-height:1.45}
+.expasos li::before{content:counter(paso) ".";position:absolute;left:0;top:.55rem;
+  font-family:Archivo,sans-serif;font-weight:900;color:var(--orange);font-size:1.06rem}
+@media(max-width:560px){ .expasos li{font-size:.98rem;padding-left:2.1rem} }
+.cuenta{max-width:46rem;margin:1.6rem auto 0;background:rgba(255,255,255,.05);
+  border:1px solid var(--borde);border-radius:18px;padding:1.6rem 1.3rem 1.4rem;text-align:center}
+.cuentaK{display:block;font-family:Archivo,sans-serif;font-size:.68rem;font-weight:900;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--claro)}
+.cuentaL{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;
+  gap:.4rem .6rem;margin:.9rem 0 .7rem}
+.cuentaOp{font-family:Archivo,sans-serif;font-weight:900;font-size:2rem;color:#fff;
+  line-height:1.1}
+.cuentaX{font-family:Archivo,sans-serif;font-weight:900;font-size:1.5rem;color:var(--claro)}
+.cuentaR{font-family:Archivo,sans-serif;font-weight:900;font-size:3rem;color:var(--orange);
+  line-height:1.05}
+.cuentaPie{display:block;color:var(--claro);font-size:.9rem}
+@media(max-width:560px){
+  .cuentaOp{font-size:1.5rem} .cuentaX{font-size:1.2rem} .cuentaR{font-size:2.3rem}
+  .cuenta{padding:1.3rem 1rem 1.2rem}
+}
+.priceSub{font-family:Archivo,sans-serif;font-weight:900;font-size:1.6rem;
+  color:var(--ink);margin:.35rem 0 1.1rem}
+@media(max-width:560px){ .priceSub{font-size:1.3rem} }
+/* La muestra ocupa lo que le dejan. En el escritorio el paso 03 va
+   a lo ancho de los dos de arriba, y una tarjeta de 30rem dentro de
+   1120px dejaba 320px de aire muerto a cada lado. */
+.rpcard{max-width:40rem;margin:1.3rem auto .2rem;width:100%}
+/* 01 y 02 en fila; 03 y 04 debajo, cada uno a lo ancho. El 04 lleva
+   la muestra del reporte dentro y en una columna de cuarta parte no
+   cabría; apilándolos, la muestra se lee y los dos primeros pasos
+   siguen cortos. */
+@media(min-width:58rem){
+  .pasos{grid-template-columns:repeat(2,1fr)}
+  .pasos .ancho{grid-column:1 / -1}
+}
+/* El 03 va centrado entero —número, rótulo, línea y muestra— porque
+   ocupa el ancho de los dos de arriba y alineado a la izquierda
+   dejaba medio paso vacío. */
+.pasos .ancho{text-align:center}
+.pasos .ancho .n{margin-left:auto;margin-right:auto}
+/* La muestra NO se centra por dentro: sus columnas tienen su sitio
+   —nombre a la izquierda, dinero a la derecha— y centrarlas rompe
+   la lectura de una tabla. Sólo su cabecera, sus botones y su nota
+   van centrados, como ya estaban. */
+.pasos .ancho .rpcard{text-align:left}
+.pasos .ancho .rpcHead,.pasos .ancho .rpcTot{text-align:center}
+.pasos .ancho .rpcM,.pasos .ancho .rpcS{text-align:right}
+
+/* ── EN EL ESCRITORIO, EL 03 VA EN DOS COLUMNAS ──────────────────
+   Centrado dejaba 240px de aire muerto a cada lado de la muestra
+   dentro de una caja de 1120. Con el texto a la izquierda y la
+   muestra a la derecha, el paso usa el ancho que ocupa.
+
+   En el teléfono no cambia nada: la rejilla sólo existe a partir de
+   58rem, y debajo de eso todo sigue apilado y centrado. */
+@media(min-width:58rem){
+  /* Tres filas: las dos primeras se ajustan al texto y la tercera se
+     come el resto. Sin esto, los tres elementos de la izquierda se
+     repartían el alto de la muestra y quedaban separados por medio
+     paso de aire cada uno. */
+  .pasos .ancho{display:grid;grid-template-columns:1fr 1fr;
+    grid-template-rows:auto auto 1fr;gap:0 2.2rem;text-align:left}
+  .pasos .ancho .n,.pasos .ancho h3,.pasos .ancho p{grid-column:1;margin-left:0;margin-right:0}
+  .pasos .ancho .n{grid-row:1}
+  .pasos .ancho h3{grid-row:2}
+  .pasos .ancho p{grid-row:3;align-self:start}
+  .pasos .ancho .rpcard{grid-column:2;grid-row:1 / span 3;
+    margin:0;max-width:none;align-self:center}
+}
+/* Un enlace por paso, debajo de su texto: cada promesa de la columna
+   se puede comprobar ahí mismo, sin bajar a buscarla. */
+.pasoLink{margin:.7rem 0 0}
+.pasoLink a{font-weight:700;font-size:.86rem;color:var(--ink);
+  text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px}
+.pasoLink a:hover{color:var(--orange)}
+.pasoLink + .pasoLink{margin-top:.25rem}
+.verrep a{font-weight:700;color:var(--ink);text-decoration:underline;
+  text-underline-offset:4px;text-decoration-thickness:2px}
+.verrep a:hover{color:var(--orange)}
+.escpie{max-width:46rem;margin:1.5rem auto 0;color:var(--claro);font-size:1rem;text-align:center}
 .escpie b{color:#fff}
 .escpie + .escpie{margin-top:.9rem}
 
@@ -639,477 +712,46 @@ button.lang{padding:0 10px;font-size:.8rem}
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     1 · UN PADRINO, UN JUEGO, DIECISIETE DÓLARES
-     ══════════════════════════════════════════════════════════════════ -->
-<section class="hero oscuro" id="top">
-<div class="wrap hero-grid">
-<div class="hero-copy">
-<div class="eyebrow" data-i="heroEye">Recaudación juego por juego</div>
-<h1 data-i="heroH1">Ganes o pierdas, <em>tu marcador es la recaudación.</em></h1>
-<p class="hero-sub" data-i="heroSub">Convertimos tus juegos en eventos de recaudación.</p>
-<p class="hero-p" data-i="heroP">Ni dulces que vender, ni lavado de carros, ni otro evento
-  que montar &mdash; ya los tienes en el calendario. Un padrino &mdash;un papá, un vecino,
-  un tío&mdash; promete unos centavos por cada punto que anota tu equipo. Programa un juego
-  o la temporada entera: no hay límite.</p>
-</div>
-
-<div class="suma hero-sum">
-<div class="suma-fila">
-<span class="suma-c"><span class="suma-n num">25&cent;</span>
-  <span class="suma-u" data-i="sumA">por punto</span></span>
-<span class="suma-op">&times;</span>
-<span class="suma-c"><span class="suma-n num">68</span>
-  <span class="suma-u" data-i="sumB">puntos</span></span>
-<span class="suma-op">=</span>
-<span class="suma-c"><span class="suma-n num tot">$17</span>
-  <span class="suma-u" data-i="sumC">un padrino</span></span>
-</div>
-<!-- «Eso es UN padrino» y no «un padrino»: la cuenta de arriba es
-     por unidad, y sin esta frase la página entera se lee como si un
-     equipo tuviera un padrino. El tope se niega aquí, en la primera
-     pantalla, y se demuestra con números más abajo. -->
-<!-- NADA DE «DEBER». Esto decía «no se debe nada hasta que se
-     juegue», que es verdad y suena a factura. El padrino no está
-     firmando una deuda: está diciendo que si el equipo juega, él
-     pone unos centavos por punto. La frase cuenta lo mismo por el
-     lado que no asusta. -->
-<p class="suma-pie" data-i="sumPie">Eso es <b>un solo padrino</b>. No hay tope: cada
-  jugador trae los que consiga, y la promesa sólo cuenta cuando el equipo juega.</p>
-</div>
-
-<div class="hero-ctas">
-<div class="ctas">
-<a class="button" href="equipo.html" data-i="heroCta1">Inscribir mi equipo</a>
-<a class="button linea" href="#how" data-i="heroCta2">Cómo funciona</a>
-</div>
-<p class="hero-nota" data-i="heroNota">La incorporación va supervisada mientras entran los
-  primeros programas.</p>
-</div>
-</div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════
-     2 · LOS CUATRO PASOS
+     2 · CÓMO FUNCIONA
      ══════════════════════════════════════════════════════════════════ -->
 <section class="section" id="how">
 <div class="wrap">
 <div class="cab">
-<div class="eyebrow" data-i="howEye">Así de sencillo</div>
-<!-- «PROGRAMA» ABRE LOS CUATRO PASOS desde el 28 de octubre de 2026.
-     Decía «Promete. Juega. Anota. Cobra.» y empezaba por la promesa,
-     que es el segundo movimiento. El primero es poner los juegos en
-     el calendario — que es lo que el entrenador hace de todas formas
-     y es donde empieza la recaudación. -->
-<h2 data-i="howH2">Programa. Promete. Juega. Cobra.</h2>
-<!-- Decía «juegos de baloncesto» y era la única línea de la página
-     que cerraba la puerta a otro deporte. El voleibol entra sin tocar
-     nada del dinero: se promete por punto, y un partido de tres sets
-     son sesenta o setenta puntos para un lado, el mismo rango que un
-     juego de baloncesto. -->
-<p class="lede" data-i="howP">Cuatro pasos, y los dos del medio son juegos que ya ibas
-  a jugar &mdash; de baloncesto o de voleibol.</p>
+<div class="eyebrow" data-i="howEye">Cómo funciona</div>
+<h2 data-i="howH2">Así de sencillo.</h2>
 </div>
-
 <div class="pasos">
+<!-- INVITA Y PROMETE ERAN DOS PASOS CON EL MISMO ENLACE, y eso es
+     la señal de que son uno: el jugador manda la hoja y el padrino
+     la llena. Dos tarjetas para un solo movimiento alargaban la
+     sección y repetían el enlace. -->
 <article class="paso">
 <div class="n num">01</div>
-<h3 data-i="q1w">Programa</h3>
-<p data-i="q1p">Pon tus juegos en marcadorpr: uno, diez o la temporada entera. Cada juego
-  sale con su enlace de prometer, y tú escoges en cuáles lo quieres.</p>
+<h3 data-i="q1w">Invita y promete</h3>
+<p data-i="q1p">Los jugadores comparten el enlace con sus padrinos, y cada padrino
+  elige cuánto prometer por punto.</p>
+<p class="pasoLink"><a href="prometer.html?ejemplo=1" data-i="vHoja1">Ver una hoja de promesa &rarr;</a></p>
 </article>
 <article class="paso">
 <div class="n num">02</div>
-<h3 data-i="q2w">Promete</h3>
-<p data-i="q2p">Tus jugadores mandan el enlace. Cada padrino promete unos centavos por
-  punto &mdash; de 10¢ a $1 &mdash; y la promesa sólo cuenta cuando se juega.</p>
-</article>
-<article class="paso">
-<div class="n num">03</div>
 <h3 data-i="q3w">Juega</h3>
-<p data-i="q3p">El equipo juega &mdash; sin cancha que reservar y sin evento que montar
-  &mdash; y el anotador publica el marcador final. Cada promesa sale de ahí.</p>
+<p data-i="q3p">El equipo juega y se publica el marcador final.</p>
+<p class="pasoLink"><a href="https://marcadorpr.com" target="_blank" rel="noopener" data-i="vCal">Ver un calendario de verdad &rarr;</a></p>
 </article>
-<article class="paso">
-<div class="n num">04</div>
-<h3 data-i="q4w">Cobra</h3>
-<p data-i="q4p">A cada padrino le llega un aviso con el marcador final y lo que dio su
-  promesa. Lo arregla con tu programa como ya lo haría.</p>
-</article>
-</div>
-</div>
-</section>
+<article class="paso ancho">
+<div class="n num">03</div>
+<h3 data-i="q4w">Reporte</h3>
+<p data-i="q4p">Cada Punto Cuenta calcula las promesas y entrega el reporte.</p>
+<!-- EL REPORTE, ENSEÑADO Y NO EXPLICADO.
 
-<!-- ══════════════════════════════════════════════════════════════════
-     3 · LA RECAUDACIÓN CORRE SOBRE MARCADOR, JUEGO A JUEGO
+     El paso 04 dice que entregamos un reporte. Esto lo enseña: tres
+     filas y un total, que es lo que convence a quien decide por un
+     programa. Un enlace que hay que pulsar para creerse algo es una
+     prueba mucho más débil que ver $197.20 y tres nombres.
 
-     EL ORDEN DE ESTA SECCIÓN SE DIO LA VUELTA el 28 de octubre de
-     2026, y es la corrección más importante de la página.
-
-     Antes decía «el tablero que tu torneo ya usa» y empezaba por el
-     cuadro que se llena solo. Eso da por hecho que el entrenador
-     tiene un torneo — y la portada, cuatro pantallas más arriba, le
-     acaba de decir que no necesita ninguno. Las dos cosas no podían
-     ser verdad a la vez, y la que manda es la portada.
-
-     Lo cierto es esto: la recaudación es POR JUEGO y corre sobre
-     marcador. Y marcador, ADEMÁS, arma torneos, calendarios,
-     categorías y cuadros para quien los quiera. El torneo es lo que
-     el tablero sabe hacer de más, no el precio de entrada.
-     ══════════════════════════════════════════════════════════════════ -->
-<section class="section blanco">
-<div class="wrap split">
-<div>
-<div class="eyebrow" data-i="scEye">El calendario que recauda</div>
-<h2 style="margin-top:.55rem" data-i="scH2">Tus jugadores anotan. Cada punto puede generar
-  apoyo para tu equipo.</h2>
-<!-- LO QUE CAMBIÓ AQUÍ el 30 de octubre de 2026, y por qué:
-
-     Decía «sale con su botón de prometer puesto, sobre los dos
-     equipos, sin que tengas que activar nada». Las tres cosas se
-     quedaron viejas el mismo día:
-
-       · ya no es automático — el entrenador escoge juego por juego,
-         y ésa es justo la respuesta a lo primero que piensa: «no voy
-         a pedirle dinero a mi gente veinte veces en la temporada»;
-       · «sobre los dos equipos» sólo si el otro equipo está
-         inscrito. Si no lo está, lo que ve es cómo inscribirse;
-       · y «es gratis» a secas prometía algo que la factura
-         desmiente. Registrar sí es gratis, siempre; lo que se
-         factura es el juego que RECOGIÓ promesas. Dicho entero es
-         una oferta mejor, y no sorprende a nadie después. -->
-<p class="lede" style="margin-top:1rem" data-i="scP1">Un juego, diez o la temporada
-  completa. En marcadorpr registras los juegos que tu equipo ya tiene programados, sin
-  importar dónde se jueguen, y <b>cada juego sale con su enlace para recibir promesas por
-  punto &mdash; y tú decides en cuáles sí y en cuáles no</b>. No hace falta organizar un
-  torneo ni montar un evento aparte. Tus padrinos prometen unos centavos por cada punto que
-  anote tu equipo, y cuando se publica el marcador final, Cada Punto Cuenta calcula lo que
-  dio cada promesa y le escribe a cada padrino <b>una sola vez</b>. Sin recordatorios.</p>
-<p class="fine" data-i="scP2">&iquest;Organizas torneos? También. Crea categorías, asigna
-  canchas, establece horarios y genera los cuadros; el cuadro se llena solo &mdash; en
-  cuanto entra un resultado, el ganador aparece en el juego que le toca después. Y cada
-  juego del torneo es también una oportunidad de recaudar, para los dos equipos si los dos
-  están inscritos. <b>marcadorpr organiza los juegos. Cada Punto Cuenta administra las
-  promesas. Tu programa recibe directamente lo que recaude.</b> Registrar es gratis: un
-  juego que no recoge una sola promesa no se factura.</p>
-<p style="margin-top:1.4rem"><a class="button linea" href="https://marcadorpr.com"
-  data-i="scCta">Mira cómo se ve un torneo &rarr;</a></p>
-</div>
-
-<div class="sched">
-<div class="sday"><span data-i="sdDay">Sábado 21 de noviembre</span><span data-i="sdEg">Ejemplo</span></div>
-<div class="srow">
-<span class="stime">2:00PM</span>
-<span class="smatch"><b>Canóvanas</b> <i data-i="vs1">vs</i> Arecibo</span>
-<span class="spills">
-<span class="pill" data-i="p1">Canóvanas &mdash; prometer</span>
-<span class="pill" data-i="p2">Arecibo &mdash; prometer</span>
-</span>
-</div>
-<!-- EL CUADRO TAMBIÉN LLEVA BOTÓN. Esta fila salía pelada y decía lo
-     contrario de lo que la página promete ahora: que TODO juego que
-     se programa es un juego de promesas. Un juego del cuadro todavía
-     no sabe quién lo juega, y el botón sale igual — se activa con el
-     equipo en cuanto el cuadro lo llena. -->
-<div class="srow hole">
-<span class="stime">4:00PM</span>
-<span class="smatch" data-i="holeRow">Ganador CL-3 <i>vs</i> Ganador CL-4</span>
-<span class="spills">
-<span class="pill esp" data-i="p3">Prometer &mdash; al llenarse el cuadro</span>
-</span>
-</div>
-<p class="schnota" data-i="schNota">Todo juego que programas sale con su botón. El del
-  cuadro se activa solo en cuanto entra el resultado de antes y se sabe quién juega.</p>
-</div>
-</div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════
-     4 · LA ESCALERA: $17 → $68 → $816
-     ══════════════════════════════════════════════════════════════════ -->
-<section class="section oscuro" id="example">
-<div class="wrap">
-<div class="cab">
-<div class="eyebrow" data-i="exEye">Cada punto suma</div>
-<h2 data-i="exH2">Sesenta y ocho puntos, y lo que valieron.</h2>
-<p class="lede" data-i="exP">El entrenador comparte un enlace. Cada jugador trae sus
-  propios padrinos, y todos prometen sobre ese mismo juego. Aquí no hay ninguna promesa y
-  no se ha movido un peso.</p>
-</div>
-
-<div class="esc">
-<div class="escp">
-<span class="k" data-i="s1k">Un padrino</span>
-<span class="m" data-i="s1m">25¢ por punto, sobre 68 puntos</span>
-<span class="v num">$17.00</span>
-</div>
-<div class="escp">
-<span class="k" data-i="s2k">Un jugador</span>
-<span class="m" data-i="s2m">&times; los 4 padrinos que busca él mismo</span>
-<span class="v num">$68.00</span>
-</div>
-<div class="escp last">
-<span class="k" data-i="s3k">La plantilla entera</span>
-<span class="m" data-i="s3m">&times; 12 jugadores &mdash; 48 padrinos en total</span>
-<span class="v num">$816.00</span>
-</div>
-</div>
-
-<!-- LO PROMETIDO NO ES LO RECAUDADO, y esto va AQUÍ: pegado al
-     número grande, no en otra página.
-
-     La frase estaba en ayuda.html, equipo.html y reporte.html —
-     todas por detrás de la portada. La portada enseñaba $816.00 en
-     naranja y no decía ni una vez que es una promesa: un entrenador
-     lo multiplica por diez juegos y espera que entren $8,160.
-
-     Lo que entre depende de su cobro, y ésa es exactamente la parte
-     que hunde estas recaudaciones cuando alguien la descubre tarde. -->
-<p class="escpie" data-i="cPend"><b>Prometido no es cobrado.</b> Nosotros anotamos lo
-  prometido y sacamos el total de cada promesa. Lo que entre de verdad, y cuándo,
-  depende de tu cobro &mdash; un padrino que paga vale más que diez promesas apuntadas.</p>
-<p class="escpie" data-i="exFine">Las promesas van de 10¢ a $1 por punto, así que el
-  padrino que quiera dar más lo hace por punto y no porque se le pida dos veces. Una
-  promesa que no llega a $5 no cualifica: se cierra en $0.00 y no se cobra por ella.</p>
-</div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════
-     5 · SIN TOPE DE PADRINOS
-
-     La escalera de arriba termina en cuarenta y ocho, y cuarenta y
-     ocho acababa leyéndose como la respuesta. Es un ejemplo. Aquí se
-     enseña el MISMO juego —los mismos 68 puntos, los mismos 25¢— con
-     tres cantidades de padrinos distintas, para que se vea que lo
-     único que mueve el número es cuánta gente hay detrás.
-     ══════════════════════════════════════════════════════════════════ -->
-<section class="section" id="tope">
-<div class="wrap">
-<div class="cab">
-<div class="eyebrow" data-i="npEye">Sin tope</div>
-<h2 data-i="npH2">No hay techo. Ni de padrinos, ni de juegos.</h2>
-<p class="lede" data-i="npP">Nadie pone un límite por ningún lado. El jugador que consigue
-  diez padrinos recauda por diez, y el que consigue veinte recauda por veinte. Tampoco
-  tienen que estar en el pueblo: un tío en Orlando, una prima en Nueva York, el entrenador
-  de hace diez años. Y lo mismo con los juegos: programa uno, o programa la temporada
-  entera.</p>
-</div>
-
-<div class="topesub"><span class="nn">01</span><span class="tt" data-i="npSubA">Más
-  padrinos en el mismo juego</span></div>
-<div class="topes">
-<div class="tphead">
-<span class="h1c" data-i="npTh1">Padrinos en el juego</span>
-<span class="h2c" data-i="npTh2">Prometido</span>
-<span class="h3c" data-i="npTh3">Licencia</span>
-</div>
-<div class="tp">
-<span class="q" data-i="npR1">12 padrinos &mdash; <i>uno por jugador</i></span>
-<span class="pro num">$204.00</span>
-<span class="lic num">$12</span>
-</div>
-<div class="tp suyo">
-<span class="q" data-i="npR2">48 padrinos &mdash; <i>cuatro por jugador</i></span>
-<span class="pro num">$816.00</span>
-<span class="lic num">$48</span>
-</div>
-<div class="tp">
-<span class="q" data-i="npR3">120 padrinos &mdash; <i>diez por jugador</i></span>
-<span class="pro num">$2,040.00</span>
-<span class="lic num">$99</span>
-</div>
-</div>
-
-<p class="topepie" data-i="npPie">El mismo juego las tres veces: los mismos 68 puntos y los
-  mismos 25¢ por punto. Lo único que cambia es cuánta gente hay detrás del equipo.</p>
-
-<div class="topegap"></div>
-
-<!-- EL SEGUNDO EJE: LOS JUEGOS. Es la dirección nueva de la
-     plataforma — marcador no es un tablero con promesas encima, es
-     un calendario de recaudación. Un entrenador no tiene un juego:
-     tiene una temporada, y cada fecha de esa temporada ya es un
-     evento de recaudación que nadie estaba cobrando.
-
-     Los números son los de arriba multiplicados por juegos. Y la
-     licencia va al lado otra vez, porque veinte juegos son veinte
-     licencias y esconderlo aquí sería justo donde más duele. -->
-<div class="topesub"><span class="nn">02</span><span class="tt" data-i="npSubB">Más juegos
-  en la temporada</span></div>
-<div class="topes">
-<div class="tphead">
-<span class="h1c" data-i="npTh4">Juegos con promesas</span>
-<span class="h2c" data-i="npTh5">Prometido</span>
-<span class="h3c" data-i="npTh6">Licencia</span>
-</div>
-<div class="tp suyo">
-<span class="q" data-i="npG1">1 juego &mdash; <i>un sábado</i></span>
-<span class="pro num">$816.00</span>
-<span class="lic num">$48</span>
-</div>
-<div class="tp">
-<span class="q" data-i="npG2">10 juegos &mdash; <i>media temporada</i></span>
-<span class="pro num">$8,160.00</span>
-<span class="lic num">$480</span>
-</div>
-<div class="tp">
-<span class="q" data-i="npG3">20 juegos &mdash; <i>la temporada entera</i></span>
-<span class="pro num">$16,320.00</span>
-<span class="lic num">$960</span>
-</div>
-</div>
-
-<p class="topepie" data-i="npPie2">Los mismos 48 padrinos, juego tras juego. Un lavado de
-  carros te da un sábado; una temporada te da veinte. <b>Prometido no es cobrado</b>
-  &mdash; lo que entre de verdad depende de tu cobro, como siempre.</p>
-<!-- LA COLUMNA DE LA LICENCIA NO SE ESCONDE. Enseñar lo que sube sin
-     enseñar lo que cuesta sería vender media verdad, y esta página
-     se sostiene sobre lo contrario.
-
-     Y ojo con los $960 de veinte juegos: un entrenador los divide
-     entre los $16,320 y le sale un seis por ciento. NO es un por
-     ciento, y aquí se dice, porque los términos dicen lo mismo y una
-     página que invita a esa división se contradice sola.
-
-     LA CIFRA VA EN LETRAS, Y POR ESO SOBREVIVIÓ. Cuando se retiró la
-     escalera, este párrafo siguió diciendo «veinticinco dólares» y
-     «de 120 a 200 padrinos cuesta lo mismo» con la tabla de al lado
-     ya en $48 y $960. Los guardias buscaban «$25» y aquí no había
-     ningún signo de dólar que encontrar. Si vuelve a cambiar el
-     precio, esta frase es la que hay que leer a mano. -->
-<p class="topepie" data-i="npFine"><b>Y la licencia no te persigue.</b> Sube un dólar por
-  cada promesa que cualifica y se para en $99 por juego: de ahí para arriba, cada promesa
-  de más se incluye sin costo. No es un por ciento de nada &mdash; son veinte licencias de
-  cuarenta y ocho dólares, una por juego, y el juego que no recoge promesas no lleva
-  ninguna.</p>
-</div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════
-     6 · Y EL QUE PERDIÓ
-     ══════════════════════════════════════════════════════════════════ -->
-<section class="section blanco">
-<div class="wrap split">
-<div>
-<div class="eyebrow" data-i="bdEye">Y el equipo que perdió</div>
-<!-- «Ganes o pierdas, ganas» va AQUÍ y no en la portada. En la
-     portada sería un eslogan sin nada detrás; aquí cae encima del
-     marcador que lo demuestra, con los dos equipos y sus dos
-     números. Un eslogan se gana el sitio después de la prueba. -->
-<h2 style="margin-top:.55rem" data-i="bdH2">Ganes o pierdas, ganas. Arecibo perdió por
-  siete y recaudó igual.</h2>
-<p class="lede" style="margin-top:1rem" data-i="bdP">Los dos equipos de un juego pueden
-  llevar promesas, y cada uno recauda sobre sus propios puntos. Arecibo, que lo perdió,
-  salió exactamente igual con sus 61.</p>
-<p class="fine" data-i="bdFine">Ésta es la parte que ningún otro recaudador puede ofrecer.
-  Un lavado de carros necesita fecha, solar, voluntarios y el sábado de alguien. Un juego
-  necesita el juego &mdash; y le paga a los dos banquillos.</p>
-</div>
-
-<div class="board">
-<div class="board-top">
-<span class="board-id">Semifinal &middot; CL-7</span>
-<span class="eg"><span class="dot"></span><span data-i="egLabel">Ejemplo</span></span>
-</div>
-<div class="teams">
-<span class="tm win">Canóvanas</span><span class="pts win num">68</span>
-<span class="tm">Arecibo</span><span class="pts num">61</span>
-</div>
-<div class="raises">
-<div class="raise">
-<div class="lbl" data-i="r1">Prometido sobre los 68 de Canóvanas</div>
-<div class="big num">$816.00</div>
-</div>
-<div class="raise">
-<div class="lbl" data-i="r2">Prometido sobre los 61 de Arecibo</div>
-<div class="big num">$732.00</div>
-</div>
-</div>
-<p class="board-note" data-i="boardNote">Los dos programas llevan promesas encima. Perder
-  le costó a Arecibo siete puntos &mdash; unos ochenta y cuatro dólares de promesas
-  &mdash;, no la recaudación.</p>
-<div class="board-foot" data-i="boardFoot">Un ejemplo, no un resultado. Aquí nadie prometió
-  nada, y los dos equipos salen con 48 padrinos a 25¢ por punto.</div>
-</div>
-</div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════
-     7 · DE QUIÉN ES EL DINERO
-     ══════════════════════════════════════════════════════════════════ -->
-<section class="section">
-<div class="wrap split">
-<div>
-<div class="eyebrow" data-i="mEye">A dónde va el dinero</div>
-<p class="claim-q" data-i="mQ">El dinero <em>no pasa por nosotros.</em></p>
-<p class="lede" data-i="mP">Anotamos lo que se promete y hacemos la cuenta. Tus padrinos le
-  pagan a tu programa como ya te pagan &mdash; ATH Móvil, efectivo, como lo arreglen. No
-  estamos en el medio.</p>
-</div>
-<div>
-<div class="nots">
-<div class="not yes" data-i="y1">Anotamos cada promesa, sus centavos por punto y su tope</div>
-<div class="not yes" data-i="y2">Sacamos cada total del marcador final</div>
-<div class="not yes" data-i="y3">Le mandamos a cada padrino el total de su promesa y a quién se lo entrega</div>
-<div class="not" data-i="n1">No procesamos pagos y no guardamos el dinero de nadie</div>
-<div class="not" data-i="n2">No nos llevamos un por ciento de lo que recaudes</div>
-<div class="not" data-i="n3">A tus padrinos no les cobramos absolutamente nada</div>
-<div class="not" data-i="n4">No verificamos ni conciliamos lo que cobró nadie</div>
-</div>
-<!-- NI UN ENLACE DE PAGO NI RECORDATORIOS. La portada prometía «un
-     enlace para pagarle directo a tu programa» mientras
-     custodia.html —la divulgación que lee una escuela antes de
-     firmar— dice desde antes «un aviso, y nada más». Manda custodia. -->
-<p class="fine" data-i="mAviso">Lo que recibe un padrino al cerrar el juego es un aviso: el
-  marcador final y lo que dio su promesa. Sin enlace de pago y sin recordatorios &mdash; el
-  pago es entre él y tu programa.</p>
-
-<!-- LA FRASE LEGAL. Dice qué es y qué no es este servicio, y no es
-     decoración: es la línea que una escuela enseña a quien le
-     pregunte de qué va esto, y la que sostiene todo lo de arriba. -->
-<p class="fine" data-i="mLegal">Cada Punto Cuenta es estrictamente un proveedor de software
-  de manejo de promesas. Las organizaciones manejan sus fondos de forma independiente.</p>
-</div>
-</div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════
-     7b · Y PARA COBRAR, TU LISTA
-
-     Va pegada a «el dinero no pasa por nosotros» a propósito. Esa
-     sección contesta una pregunta y abre otra: si ustedes no tocan el
-     dinero, ¿cómo sé yo a quién le toca cobrarle y cuánto? Dejarla
-     abierta es dejar al entrenador imaginándose una hoja de cálculo
-     que tiene que llevar él.
-
-     El reporte es la respuesta, y se enseña en vez de describirse:
-     llega solo al correo del entrenador cuando salen los avisos.
-     ══════════════════════════════════════════════════════════════════ -->
-<section class="section blanco" id="reporte">
-<div class="wrap split">
-<div>
-<div class="eyebrow" data-i="rpEye">Después del juego</div>
-<h2 style="margin-top:.55rem" data-i="rpH2">Tú no llevas la cuenta. Te llega hecha.</h2>
-<p class="lede" style="margin-top:1rem" data-i="rpP">Cuando termina el juego, Cada Punto
-  Cuenta calcula las promesas y te envía el reporte por correo. Sabrás quién prometió,
-  cuánto cualifica y qué padrinos necesitan atención.</p>
-<p class="rpcierre" data-i="rpPb"><b>Tú manejas los cobros. Nosotros manejamos las promesas.</b></p>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════════
-     UNA MUESTRA, NO EL REPORTE ENTERO.
-
-     Aquí estaban las cuatro maneras de ver el reporte, tres párrafos
-     explicando rebotes, correcciones y mínimos, y los doce padrinos
-     con sus nueve columnas. Todo cierto, y todo de más: la portada
-     tiene que vender lo que gana el programa, y el que quiera el
-     detalle tiene el reporte completo a un clic.
-
-     Quedan tres filas, escogidas porque cada una enseña un caso
-     distinto —una normal, un aviso que rebotó, y una que no llega al
-     mínimo— y el total, que es el número que importa. El total es el
-     de las DOCE promesas del ejemplo, no el de estas tres: por eso
-     la nota de abajo dice que son filas de muestra.
-     ══════════════════════════════════════════════════════════════ -->
+     Lo que NO vuelve son los párrafos: el rebote, la corrección, el
+     mínimo, las cuatro maneras de ver el reporte. Eso está en el
+     reporte completo, a un clic. Aquí sólo la muestra. -->
 <div class="rpcard">
   <div class="rpcHead">
     <b data-i="rpcJuego">Canóvanas 15U vs. Arecibo</b>
@@ -1120,133 +762,81 @@ button.lang{padding:0 10px;font-size:.8rem}
     <b>$197.20</b>
   </div>
   <table class="rpcTab">
-    <tr>
-      <td class="rpcN">María Rivera</td>
-      <td class="rpcM">$17.00</td>
-      <td class="rpcS" data-i="rpcE1">Avisada</td>
-    </tr>
-    <tr>
-      <td class="rpcN">Rosa Vega</td>
-      <td class="rpcM">$20.40</td>
-      <td class="rpcS mal" data-i="rpcE2">Aviso fallido</td>
-    </tr>
-    <tr class="rpcCero">
-      <td class="rpcN">Tía Carmen</td>
-      <td class="rpcM">$0.00</td>
-      <td class="rpcS" data-i="rpcE3">No cualifica</td>
-    </tr>
+    <tr><td class="rpcN">María Rivera</td><td class="rpcM">$17.00</td>
+        <td class="rpcS" data-i="rpcE1">Avisada</td></tr>
+    <tr><td class="rpcN">Rosa Vega</td><td class="rpcM">$20.40</td>
+        <td class="rpcS mal" data-i="rpcE2">Aviso fallido</td></tr>
+    <tr class="rpcCero"><td class="rpcN">Tía Carmen</td><td class="rpcM">$0.00</td>
+        <td class="rpcS" data-i="rpcE3">No cualifica</td></tr>
   </table>
   <div class="rpcPie">
-    <a class="button" href="reporte.html?ejemplo=1" data-i="rpVerB">Ver reporte completo &rarr;</a>
-    <a class="button linea" href="reporte-es.csv" download data-i="rpMuB">Bajar CSV &rarr;</a>
+    <a class="button" href="reporte.html?ejemplo=1" data-i="verRep">Ver reporte completo &rarr;</a>
+    <a class="button linea" href="reporte-es.csv" download data-i="verCsv">Bajar CSV &rarr;</a>
   </div>
-  <p class="rpcNota" data-i="rpMuF">Ejemplo con datos ficticios. Reportes disponibles en
-    español e inglés.</p>
+  <p class="rpcNota" data-i="rpcNota">Ejemplo con datos ficticios. Reportes en español e inglés.</p>
 </div>
+</article>
+</div>
+
 </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     8 · LO QUE CUESTA
+     3 · UN EJEMPLO
      ══════════════════════════════════════════════════════════════════ -->
-<section class="section blanco" id="precio">
+<section class="section oscuro" id="example">
 <div class="wrap">
 <div class="cab">
-<div class="eyebrow" data-i="priceLabel">Precios transparentes</div>
-<h2 data-i="priceTitle">Pagas por el software, no un porcentaje de lo prometido.</h2>
-<p class="lede" data-i="priceDesc"><b>$1 por cada promesa que cualifica. Máximo $99 por
-  juego.</b> Cada Punto Cuenta cobra únicamente por las promesas que cualifican. No importa
-  cuánto dinero se haya prometido: el precio depende del número de promesas que cualifiquen,
-  no de su valor.</p>
+<div class="eyebrow" data-i="exEye">Un ejemplo</div>
+<h2 data-i="exH2">Un juego. Cada punto cuenta.</h2>
 </div>
 
-<!-- CUÁNDO CUALIFICA, con los dos números al lado.
+<div class="cuenta">
+  <p class="cuentaL">
+    <span class="cuentaOp">25&cent;</span>
+    <span class="cuentaX">&times;</span>
+    <span class="cuentaOp" data-i="exPts">68 puntos</span>
+    <span class="cuentaX">=</span>
+    <span class="cuentaR">$17.00</span>
+  </p>
+  <span class="cuentaPie" data-i="exUno">La promesa de un padrino.</span>
+</div>
 
-     El piso de cinco dólares existía desde el primer día y se
-     mencionaba de pasada. Nombrarlo —«cualifica»— es lo que lo hace
-     entendible, y el ejemplo de los cinco centavos es el que evita
-     que alguien prometa algo que no le va a llegar a nadie: a 5¢ por
-     punto no se recauda nada y nadie se entera hasta que no pasa
-     nada. -->
-<h3 class="priceH3" data-i="priceQ">&iquest;Cu&aacute;ndo cualifica una promesa?</h3>
-<p class="fine" data-i="priceQ1">Una promesa cualifica cuando su valor final alcanza $5 o
-  más, después de publicarse el marcador del juego.</p>
-<p class="fine" data-i="priceQ2">Por ejemplo, si un padrino promete 5&cent; por punto y su
-  equipo anota 60 puntos, su promesa vale $3. No cualifica, no genera notificación de cobro
-  al padrino ni cargo por licencia.</p>
-<p class="fine" data-i="priceQ3">Si promete 25&cent; por punto, su promesa vale $15. Esa sí
-  cualifica y cuenta como $1 para la licencia del software.</p>
-
-<h3 class="priceH3" data-i="priceH">Así de sencillo</h3>
-<ul class="pricefacts">
-<li data-i="pf0"><b>Sin promesas que cualifiquen, no hay cargo.</b> Si ninguna promesa
-  alcanza $5, no se factura el juego.</li>
-<li data-i="pf1"><b>Máximo $99 por juego.</b> Una vez que 99 promesas cualifican, todas las
-  adicionales se incluyen sin costo.</li>
-<li data-i="pf2">Nada por adelantado. Registrarse, organizar juegos y utilizar el calendario
-  es gratis.</li>
-<li data-i="pf3">Pagas después del juego. La licencia se calcula cuando se publica el
-  marcador final y debe pagarse dentro de siete días.</li>
-<li data-i="pf4">Sin porcentajes ni comisiones. No cobramos sobre el dinero prometido ni
-  cobramos a los padrinos.</li>
-<!-- EL MÍNIMO DE CINCO JUEGOS SE RETIRÓ el 28 de octubre de 2026. No
-     era sólo una frase: era un número que le pedía al entrenador un
-     compromiso de temporada antes de haber visto funcionar un solo
-     juego — y chocaba de frente con lo que la página dice ahora.
-     Estaba también en ayuda.html, en custodia.html y en la casilla
-     de consentimiento de equipo.html; se retiró de las cuatro. -->
-<li data-i="pf5">Sin suscripciones. Cada juego se factura de manera independiente. No hay
-  compromisos de temporada ni cantidad mínima de juegos.</li>
-</ul>
-
-<!-- QUÉ PASA SI NO SE PAGA, y dicho aquí y no en la letra pequeña.
-
-     Es la pregunta que se hace en silencio quien está a punto de
-     aceptar algo, y no contestarla la deja contestada de la peor
-     manera. Lo que se suspende es el acceso; los datos del juego se
-     quedan donde están. -->
-<h3 class="priceH3" data-i="priceNoPay">&iquest;Qu&eacute; ocurre si no se paga la licencia?</h3>
-<p class="fine" data-i="priceNoPay1">Si la licencia no se paga dentro de los siete días
-  establecidos, el acceso a los informes y a la administración de promesas de ese juego
-  queda suspendido hasta que se complete el pago.</p>
-<p class="fine" data-i="priceNoPay2">Los datos del juego se conservan durante la suspensión.
-  La licencia puede reactivarse al realizar el pago pendiente.</p>
-
-<h3 class="priceH3" data-i="priceFunds">T&uacute; manejas tus recaudos</h3>
-<p class="fine" data-i="priceFunds1">Cada Punto Cuenta es una plataforma de administración
-  de promesas, no un servicio de recaudación.</p>
-<p class="fine" data-i="priceFunds2">Tu organización recibe y administra sus propios fondos.
-  Nosotros no recibimos, procesamos, retenemos, distribuimos ni conciliamos pagos de los
-  padrinos.</p>
-<p class="fine" data-i="priceFunds3"><b>Cada juego es una nueva oportunidad de conseguir
-  apoyo para tu equipo.</b></p>
-
-<p class="priceCta"><a class="button" href="equipo.html" data-i="register">Inscribir mi equipo</a></p>
+<p class="escpie" data-i="cPend"><b>Prometido no es cobrado.</b></p>
 </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════
-     9 · EL CIERRE
+     4 · CUÁNTO CUESTA
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="section blanco" id="precio">
+<div class="wrap close">
+<div class="eyebrow" data-i="priceLabel">Cuánto cuesta</div>
+<h2 data-i="priceTitle">$1 por promesa que cualifica.</h2>
+<p class="priceSub" data-i="priceSub">Máximo $99 por juego.</p>
+<!-- QUÉ CUALIFICA, EN UNA LÍNEA. No es un ejemplo ni una tabla: sin
+     ella, «$1 por promesa que cualifica» no se puede leer. El padrino
+     de cinco centavos tiene que poder saber que su promesa no cuesta
+     nada. La regla no cambia — es la misma que corre en la base. -->
+<p class="fine" data-i="priceQ">Una promesa cualifica cuando su valor final llega a $5 o
+  más, con el marcador ya publicado.</p>
+<p class="fine" data-i="priceNo">Sin suscripción. Sin mínimo de licencia.</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     5 · INSCRIBE TU EQUIPO
      ══════════════════════════════════════════════════════════════════ -->
 <section class="section oscuro" id="signup">
 <div class="wrap close">
-<div class="eyebrow" data-i="zEye">Tu próximo juego puede contar</div>
-<h2 data-i="zH2">No necesitas otro evento. Ya los tienes en el calendario.</h2>
-<!-- «tú escoges en qué juegos van las promesas» se cayó el 28 de
-     octubre de 2026: ahora TODO juego que se programa lleva su
-     botón, así que escoger ya no es el trato. El trato es que
-     programes. -->
-<p class="lede" data-i="zP">Inscribirse es gratis. Programa un juego para probar, o la
-  temporada entera &mdash; cada uno sale con su botón de prometer puesto.</p>
+<div class="eyebrow" data-i="zEye">Inscribe tu equipo</div>
+<h2 data-i="zH2">Tus juegos ya están programados. Haz que cada punto cuente.</h2>
 <div class="ctas">
 <a class="button" href="equipo.html" data-i="zCta1">Inscribir mi equipo</a>
-<a class="button linea" href="https://marcadorpr.com" data-i="zCta2">Mira cómo se ve un torneo</a>
 </div>
-<p class="fine" style="max-width:32rem" data-i="zPlayer">¿Eres jugador? Lo tiene que poner
-  tu programa &mdash; enséñale esta página a tu entrenador.</p>
-<p class="fine"><a href="ayuda.html" data-i="moreLink">Más preguntas, contestadas completas &rarr;</a></p>
 </div>
 </section>
+
 
 <footer>
 <div class="wrap">
@@ -1316,161 +906,50 @@ function licenciaDe(n){ return n > 0 ? Math.min(n, FEE.tope) * FEE.porPromesa : 
    ══════════════════════════════════════════════════════════════════ */
 const translations={
 en:{
+cPend:'<b>Prometido no es cobrado.</b>',
+exEye:'An example',
+exH2:'One game. Every point counts.',
+exPts:'68 points',
+exUno:'One padrino&rsquo;s pledge.',
+footer:'We manage the pledges. You manage the proceeds.',
+howEye:'How it works',
+howH2:'As simple as this.',
+lCollect:'How you collect',
+lHelp:'Questions',
+lMine:'My program',
+lMoney:'The money does not pass through us',
+lPriv:'Privacy',
+lTeam:'Sign up my team',
+lTerms:'Terms',
+navCta:'Sign up my team',
+navFaq:'Questions',
 navHow:'How it works',
 navPrice:'What it costs',
-navFaq:'Questions',
-navCta:'Sign up my team',
-
-heroEye:'Fundraising game by game',
-heroH1:'Win or lose, <em>your score is the fundraiser.</em>',
-heroSub:'We turn your games into funding events.',
-heroP:'No candy to sell, no car wash, no event to put on &mdash; you already have them on the calendar. A padrino &mdash; a parent, a neighbour, an uncle &mdash; pledges a few cents for every point your team scores. Schedule one game or the whole season: there is no limit.',
-heroCta1:'Sign up my team',
-heroCta2:'How it works',
-heroNota:'Onboarding is supervised while the first programs come in.',
-
-sumA:'a point',
-sumB:'points',
-sumC:'one padrino',
-sumPie:'That is <b>one single padrino</b>. There is no ceiling: each player brings as many as he finds, and the pledge only counts once the team plays.',
-
-howEye:'As simple as that',
-howH2:'Schedule. Pledge. Play. Paid.',
-howP:'Four steps, and the two in the middle are games you were already playing &mdash; basketball or volleyball.',
-q1w:'Schedule',
-q1p:'Put your games on marcadorpr: one, ten or the whole season. Every game comes with its pledge link, and you choose which ones carry it.',
-q2w:'Pledge',
-q2p:'Your players send the link. Each padrino promises a few cents per point &mdash; 10&cent; to $1 &mdash; and the pledge only counts once the game is played.',
+priceLabel:'What it costs',
+priceNo:'No subscription. No minimum licence.',
+priceQ:'A pledge qualifies when its final value reaches $5 or more, once the score is posted.',
+priceSub:'$99 maximum per game.',
+priceTitle:'$1 per qualifying pledge.',
+q1p:'The players share the link with their padrinos, and each padrino chooses how much to pledge per point.',
+q1w:'Invite and pledge',
+q3p:'The team plays and the final score is posted.',
 q3w:'Play',
-q3p:'The team plays &mdash; no gym to book and no event to host &mdash; and the scorekeeper posts the final score. Every pledge comes off that number.',
-q4w:'Paid',
-q4p:'Each padrino gets one notice with the final score and what their pledge came to. They settle it with your program the way they already would.',
-
-scEye:'The calendar that raises money',
-scH2:'Your players score. Every point can bring your team support.',
-scP1:'One game, ten, or the whole season. On marcadorpr you register the games your team already has scheduled, wherever they are played, and <b>every game comes with its link for pledges by the point &mdash; and you decide which games carry it and which do not</b>. No tournament to organise and no separate event to put on. Your padrinos pledge a few cents for every point your team scores, and when the final score goes up, Cada Punto Cuenta works out what each pledge came to and writes to each padrino <b>once</b>. No reminders.',
-scP2:'Running a tournament? That too. Create divisions, assign courts, set times and generate the brackets; the bracket fills itself in &mdash; the moment a result lands, the winner shows up in the game they play next. And every game of the tournament is a chance to raise as well, for both teams if both are registered. <b>marcadorpr organises the games. Cada Punto Cuenta handles the pledges. Your program receives what it raises directly.</b> Registering is free: a game that collects no pledges is never invoiced.',
-scCta:'See what a tournament looks like &rarr;',
-
-// ── El reporte que le llega al entrenador ──────────────────────
-rpEye:'After the game',
-rpH2:'You do not keep the tally. It arrives done.',
-rpP:'When the game ends, Cada Punto Cuenta works out the pledges and emails you the report. You will know who pledged, how much qualifies, and which padrinos need attention.',
-rpPb:'<b>You handle the collecting. We handle the pledges.</b>',
+q4p:'Cada Punto Cuenta works out the pledges and delivers the report.',
+q4w:'Report',
+vHoja1:'See a pledge sheet &rarr;',
+vCal:'See a real schedule &rarr;',
 rpcJuego:'Canóvanas 15U vs. Arecibo',
 rpcMeta:'68 points &middot; 12 padrinos &middot; Example',
 rpcTotL:'Total of qualifying pledges',
 rpcE1:'Notified',
 rpcE2:'Notice failed',
 rpcE3:'Does not qualify',
-rpVerB:'See full report &rarr;',
-rpMuB:'Download CSV &rarr;',
-rpMuF:'Example with fictional data. Reports available in Spanish and English.',
-sdDay:'Saturday 21 November',
-sdEg:'Example',
-vs1:'vs',
-p1:'Canóvanas &mdash; pledge',
-p2:'Arecibo &mdash; pledge',
-holeRow:'Winner of CL-3 <i>vs</i> Winner of CL-4',
-p3:'Pledge &mdash; once the bracket fills',
-schNota:'Every game you schedule comes with its button. The bracket one switches itself on the moment the earlier result lands and it knows who is playing.',
-
-exEye:'Every point adds up',
-exH2:'Sixty-eight points, and what they were worth.',
-exP:'The coach shares one link. Each player brings his own padrinos, and every one of them is pledging on that same game. Nothing here is a pledge and no money has moved.',
-s1k:'One padrino',
-s1m:'25&cent; a point, on 68 points',
-s2k:'One player',
-s2m:'&times; the 4 padrinos he finds himself',
-s3k:'The whole roster',
-s3m:'&times; 12 players &mdash; 48 padrinos in all',
-cPend:'<b>Prometido no es cobrado.</b> We record what was pledged and work out each padrino&rsquo;s total. What actually arrives, and when, depends on your collecting &mdash; one padrino who pays is worth more than ten pledges on a list.',
-exFine:'Pledges run from 10&cent; to $1 a point, so a padrino who wants to give more does it by the point rather than by being asked twice. A pledge that does not reach $5 does not qualify: it closes at $0.00 and nothing is charged for it.',
-
-npEye:'No ceiling',
-npH2:'There is no ceiling. Not on padrinos, not on games.',
-npP:'Nobody sets a limit anywhere. A player who finds ten padrinos raises on ten, and one who finds twenty raises on twenty. They do not have to be in town either: an uncle in Orlando, a cousin in New York, the coach he had ten years ago. Same with the games: schedule one, or schedule the whole season.',
-npSubA:'More padrinos on the same game',
-npSubB:'More games in the season',
-npTh4:'Games carrying pledges',
-npTh5:'Pledged',
-npTh6:'Licence',
-npG1:'1 game &mdash; <i>one Saturday</i>',
-npG2:'10 games &mdash; <i>half a season</i>',
-npG3:'20 games &mdash; <i>the whole season</i>',
-npPie2:'The same 48 padrinos, game after game. A car wash gives you one Saturday; a season gives you twenty. <b>Prometido no es cobrado</b> &mdash; what actually arrives still depends on your collecting, as always.',
-npTh1:'Padrinos on the game',
-npTh2:'Pledged',
-npTh3:'Licence',
-npR1:'12 padrinos &mdash; <i>one per player</i>',
-npR2:'48 padrinos &mdash; <i>four per player</i>',
-npR3:'120 padrinos &mdash; <i>ten per player</i>',
-npPie:'The same game all three times: the same 68 points and the same 25&cent; a point. The only thing that changes is how many people are behind the team.',
-npFine:'<b>And the licence does not chase you.</b> It climbs a dollar for each qualifying pledge and stops at $99 a game: past that, every further pledge is included at no cost. It is not a percentage of anything &mdash; it is twenty forty-eight-dollar licences, one per game, and a game that gathers no pledges carries none.',
-
-bdEye:'And the team that lost',
-bdH2:'Win or lose, you win. Arecibo lost by seven and raised anyway.',
-bdP:'Both teams on a game can carry pledges, and each one raises on its own points. Arecibo, who lost it, worked out exactly the same way on their 61.',
-bdFine:'This is the part no other fundraiser can offer. A car wash needs a date, a lot, volunteers and somebody&rsquo;s Saturday. A game needs the game &mdash; and it pays both benches.',
-
-egLabel:'Example',
-r1:'Pledged on Canóvanas&rsquo;s 68',
-r2:'Pledged on Arecibo&rsquo;s 61',
-boardNote:'Both programs have pledges on them. The loss cost Arecibo seven points &mdash; about eighty-four dollars of pledges &mdash; and not the fundraiser.',
-boardFoot:'An example, not a result. Nobody pledged on this one, and both teams are shown with 48 padrinos at 25&cent; a point.',
-
-mEye:'Where the money goes',
-mQ:'The money <em>never passes through us.</em>',
-mP:'We record what was pledged and do the arithmetic. Your padrinos pay your program the way they already pay you &mdash; ATH Móvil, cash, however you arrange it. We are not in the middle of it.',
-y1:'We record every pledge, its rate and its cap',
-y2:'We calculate each total from the final score',
-y3:'We send each padrino their pledge total and who to hand it to',
-n1:'We do not process payments or hold anyone&rsquo;s money',
-n2:'We do not take a percentage of what you raise',
-n3:'We charge your padrinos nothing at all',
-n4:'We do not check or reconcile what anybody collected',
-mAviso:'What a padrino gets when a game closes is a notice: the final score and what their pledge came to. No payment link and no reminders &mdash; the payment is between them and your program.',
-mLegal:'Cada Punto Cuenta is strictly a pledge management software provider. Organizations independently manage all proceeds.',
-
-priceLabel:'Transparent pricing',
-priceTitle:'You pay for the software, not a percentage of what was pledged.',
-priceDesc:'<b>$1 for each pledge that qualifies. $99 maximum per game.</b> Cada Punto Cuenta charges only for pledges that qualify. How much money was pledged does not matter: the price depends on how many pledges qualify, not on what they are worth.',
-priceQ:'When does a pledge qualify?',
-priceQ1:'A pledge qualifies when its final value reaches $5 or more, after the game score is posted.',
-priceQ2:'For example, if a padrino pledges 5&cent; a point and his team scores 60 points, his pledge is worth $3. It does not qualify, it raises no notice to the padrino and no licence charge.',
-priceQ3:'If he pledges 25&cent; a point, his pledge is worth $15. That one qualifies, and counts as $1 toward the software licence.',
-priceH:'As simple as that',
-pf0:'<b>No qualifying pledges, no charge.</b> If no pledge reaches $5, the game is not invoiced.',
-pf1:'<b>$99 maximum per game.</b> Once 99 pledges qualify, every additional one is included at no cost.',
-pf2:'Nothing up front. Registering, running games and using the calendar are free.',
-pf3:'You pay after the game. The licence is worked out when the final score is posted, and is due within seven days.',
-pf4:'No percentages and no commissions. We charge nothing on the money pledged and nothing to the padrinos.',
-pf5:'No subscriptions. Every game is invoiced on its own. There are no season commitments and no minimum number of games.',
-priceNoPay:'What happens if the licence is not paid?',
-priceNoPay1:'If the licence is not paid within the seven days, access to that game&rsquo;s reports and pledge management is suspended until payment is made.',
-priceNoPay2:'The game&rsquo;s data is kept during the suspension. The licence can be reactivated by making the outstanding payment.',
-priceFunds:'You manage your proceeds',
-priceFunds1:'Cada Punto Cuenta is a pledge management platform, not a collection service.',
-priceFunds2:'Your organization receives and manages its own funds. We do not receive, process, hold, distribute or reconcile payments from padrinos.',
-priceFunds3:'<b>Every game is a new chance to bring your team support.</b>',
-register:'Sign up my team',
-
-zEye:'Make your next game count',
-zH2:'You do not need another event. You already have them on the calendar.',
-zP:'Signing up is free. Schedule one game to try it, or the whole season &mdash; each one comes with its pledge button already on it.',
+rpcNota:'Example with fictional data. Reports in Spanish and English.',
+verRep:'See full report &rarr;',
+verCsv:'Download CSV &rarr;',
 zCta1:'Sign up my team',
-zCta2:'See what a tournament looks like',
-zPlayer:'Are you a player? Your program has to run it &mdash; show your coach this page.',
-moreLink:'More questions, answered in full &rarr;',
-
-footer:'We manage the pledges. You manage the proceeds.',
-lTeam:'Sign up my team',
-lMine:'My program',
-lHelp:'Questions',
-lCollect:'How you collect',
-lTerms:'Terms',
-lPriv:'Privacy',
-lMoney:'The money does not pass through us'
+zEye:'Sign up your team',
+zH2:'Your games are already scheduled. Make every point count.'
 }
 };
 
