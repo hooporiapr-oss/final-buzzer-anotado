@@ -431,6 +431,8 @@ var S={
   listoP:'Al publicarse el marcador te llega un aviso con el resultado y lo que dio tu promesa. Le pagas directo al programa — Cada Punto Cuenta no te va a cobrar nada.',
   volver:'Cambiar mi promesa',
   otraVez:'Ya tenías una promesa para este juego — la actualizamos con lo que acabas de poner.',
+  ejT:'Esto es un ejemplo.',
+  ejP:'El juego y las cifras son inventados, para que veas cómo se ve la hoja de promesa. Nada de lo que pongas aquí se manda.',
   noVa:'Este enlace no abre una promesa.',
   total:'Tot',
   pie:'Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC. No procesamos pagos: le pagas al programa, directo.'
@@ -471,6 +473,8 @@ var S={
   listoP:'When the score is posted you get one notice with the result and what your pledge came to. You pay the program directly — Cada Punto Cuenta will not charge you anything.',
   volver:'Change my pledge',
   otraVez:'You already had a pledge on this game — we updated it with what you just put in.',
+  ejT:'Esto es un ejemplo.',
+  ejP:'El juego y las cifras son inventados, para que veas cómo se ve la hoja de promesa. Nada de lo que pongas aquí se manda.',
   noVa:'This link does not open a pledge.',
   total:'Tot',
   pie:'Cada Punto Cuenta is a pledge management system by Gostar Digital LLC. We do not process payments: you pay the program, directly.'
@@ -687,7 +691,42 @@ $('lang').onclick=function(){
 };
 $('tope').oninput=pintarCuenta;
 
+/* ══════════════════════════════════════════════════════════════
+   LA HOJA DE PROMESA DE EJEMPLO:  prometer.html?ejemplo=1
+
+   Esta página necesita el id de un juego de verdad y lo pide a la
+   base; sin él no enseña nada. Eso deja sin ver la pantalla más
+   importante del producto a quien está decidiendo si inscribe su
+   programa — porque es la que van a ver los padrinos.
+
+   Con ?ejemplo=1 se pinta con datos inventados y sin tocar la base.
+   Mismo apaño que reporte.html?ejemplo=1, y por la misma razón: una
+   copia aparte envejecería sola. El botón de prometer no manda nada:
+   no hay juego al que mandarlo. */
+var EJEMPLO_P = {
+  ok:true, abierto:true,
+  equipo:'Canóvanas 15U', rival:'Arecibo',
+  juego:'Canóvanas 15U vs. Arecibo', cancha:'Gimnasio de Canóvanas', hora:'7:00 PM',
+  fecha:'2026-11-07', puntos:null, rival_puntos:null,
+  promesas:11, recauda:true, cancelado:false, piso_centavos:500
+};
+
+function esEjemploP(){ return /[?&](ejemplo|demo)=1\b/.test(location.search) }
+
 function arrancar(){
+  if (esEjemploP()){
+    ESTADO = EJEMPLO_P;
+    $('cargando').hidden = true;
+    $('todo').hidden = false;
+    $('form').hidden = false;
+    pintar();
+    var av = document.createElement('p');
+    av.className = 'nota';
+    av.style.cssText = 'text-align:center;margin:0 0 1rem';
+    av.innerHTML = '<b>' + esc(T('ejT')) + '</b> ' + esc(T('ejP'));
+    $('todo').insertBefore(av, $('todo').firstChild);
+    return;
+  }
   if(!GAME){ $('cargando').textContent=T('noVa'); return }
   rpc('juego_publico',{p_game:GAME}, function(d){
     if(!d||!d.ok){ $('cargando').textContent=T('noVa'); return }
