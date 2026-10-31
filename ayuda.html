@@ -276,111 +276,81 @@ var S={
     askP:'Escríbenos a <a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a> y dinos tu división. Contestamos el mismo día.',
     terms:'Términos',
     alt:'Una cancha de barrio en Puerto Rico de noche, vacía después de la lluvia, con un teléfono encendido en el banco',
-    secs:['Entrar','La plantilla','El reto','El tablero','El dinero','Si vas a prometer'],
+    secs:['Entrar','Los juegos','Las promesas','El marcador','El reporte y los avisos','El dinero','La licencia'],
     qs:[
       [0,'¿Dónde entro?',
        '<p>En <a href="mi-equipo.html">Mi equipo</a>, con el código que te dimos.</p>'+
-       '<p>Lo escribes <b>una sola vez</b>. De ahí en adelante ese teléfono ya te conoce — para la plantilla, para el tablero, para todo.</p>'],
-      [0,'¿Tengo que escribir el código en cada página?',
-       '<p>No. Una vez, en Mi equipo, y listo.</p>'+
-       '<p>Si te lo vuelve a pedir es porque estás en otro teléfono, en otro navegador, o en una ventana privada. Escríbelo otra vez y ya.</p>'],
+       '<p>Lo escribes <b>una sola vez</b>. De ahí en adelante ese teléfono ya te conoce.</p>'],
       [0,'Perdí mi código.',
        '<p>Escríbenos y te hacemos uno nuevo. No lo podemos buscar: se guarda cifrado, así que ni nosotros lo sabemos.</p>'],
       [0,'Dice que mi código no sirve.',
        '<p>Fíjate que no tenga espacios al principio o al final — al copiarlo y pegarlo se arrastran solos.</p>'+
        '<p>Si sigue sin entrar, escríbenos. Puede que esté apagado.</p>'],
 
-      [1,'¿Cómo apunto a mis jugadores?',
-       '<p>De dos maneras, y las dos valen a la vez.</p>'+
-       '<p><b>Tú:</b> en <a href="plantilla.html">La plantilla</a>, pegas los nombres, uno por línea.</p>'+
-       '<p><b>Ellos:</b> mandas el enlace de apuntarse al grupo del equipo y cada familia se apunta sola. Ésa es la buena — cada nene recibe su propio enlace para sus padrinos, y tú no tecleas nada.</p>'],
-      [1,'Un nene se apuntó y no lo veo en la plantilla.',
-       '<p>Está esperando que tú digas que sí. Ábrela y lo verás arriba, en un recuadro anaranjado, con <b>Aprobar</b> y <b>Rechazar</b>.</p>'+
-       '<p>Mientras no lo apruebes no sale en ningún sitio. Es a propósito: con el enlace del equipo cualquiera podría apuntar a quien sea.</p>'],
-      [1,'Se fue un nene del equipo.',
-       '<p>En La plantilla, <b>Sacar</b>. Baja al final de la lista en gris y deja de salir en el tablero.</p>'+
-       '<p>No se borra, y vuelve con un toque si fue un error. Si de verdad quieres borrarlo, el botón <b>Borrar</b> sale después de sacarlo — menos si ya tiene promesas encima, que entonces no se puede y se queda fuera de la lista.</p>'],
-      [1,'Escribí mal un nombre.',
-       '<p><b>Arreglar</b>, en su fila. También puedes cambiarle la escuadra ahí mismo.</p>'],
+      [1,'¿Cómo pongo mis juegos?',
+       '<p>En el constructor de <a href="https://marcadorpr.com" target="_blank" rel="noopener">marcadorpr</a>: uno, diez o la temporada entera. Son los juegos que ya tienes en calendario.</p>'+
+       '<p>Cada juego sale con su propio enlace de prometer.</p>'],
+      [1,'¿Tengo que organizar un torneo?',
+       '<p>No. Un juego basta, y no hace falta montar ningún evento aparte: se recauda sobre los juegos que ibas a jugar de todas formas.</p>'],
+      [1,'¿Puedo escoger en qué juegos se promete?',
+       '<p>Sí. Cada juego lleva su interruptor en <a href="mi-equipo.html">Mi equipo</a>: lo abres o lo cierras cuando quieras.</p>'],
+      [1,'¿Sirve para voleibol?',
+       '<p>Sí. Se promete por punto igual que en baloncesto, sobre el total del partido.</p>'],
 
-      [2,'¿Cómo funciona un reto?',
-       '<p>Tú pones la <b>ventana</b>: puede ser una tarde en el gimnasio o una semana con las familias jugando en su casa.</p>'+
-       '<p>Antes y durante la ventana, los nenes consiguen padrinos. Dentro de la ventana, cada uno hace su corrida. Al cerrar, la plataforma calcula el total de cada promesa y te deja el reporte. Lo revisas, pulsas mandar, y ahí le llega a cada padrino su aviso. Ahí el reto cierra.</p>'],
-      [2,'¿Cuánto dura todo esto?',
-       '<p>Lo que tú decidas. No hay una forma fija: la ventana la pones tú cuando te abrimos el reto.</p>'+
-       '<p>La parte nuestra se acaba al cerrarla: el total de cada promesa sale ese mismo momento, porque los puntos ya están anotados. De ahí en adelante el calendario es tuyo, porque el cobro es tuyo.</p>'+
-       '<p>Y se acaba. Un reto no se queda abierto: se abre, se juega, se reporta y se cierra.</p>'],
-      [2,'¿Hasta cuándo se puede prometer por un nene?',
-       '<p>Hasta que <b>él</b> empieza su corrida oficial. Ahí se cierran sus promesas, aunque la ventana siga abierta para los demás.</p>'+
-       '<p>Es a propósito: prometer sabiendo los puntos no es prometer. Los padrinos hay que buscarlos antes de sentarse a jugar.</p>'],
-      [2,'¿Puedo correr más de un reto?',
-       '<p>Sí, pero cada reto es su propio evento: sus propios padrinos, su propia licencia.</p>'+
-       '<p>Un consejo: la misma gente no promete diez veces en una temporada. Dos o tres retos bien hechos rinden más que ocho a medias.</p>'],
+      [2,'¿Cómo prometen mis padrinos?',
+       '<p>Mandas el enlace del juego al grupo del programa. Cada padrino escoge cuánto por punto y, si quiere, un tope.</p>'+
+       '<p>No hace falta que se abra cuenta ni que sepa nada nuestro. <a href="prometer.html?ejemplo=1">Mira cómo se ve una hoja de promesa</a>.</p>'],
+      [2,'¿Cuánto puede prometer uno?',
+       '<p>De 10&cent; a $1 por punto. El que quiera dar más lo hace subiendo los centavos, no porque se le pida dos veces.</p>'],
+      [2,'¿Puede poner un tope?',
+       '<p>Sí, y es lo que más tranquiliza a quien promete por primera vez. Si el equipo anota mucho, el tope manda.</p>'],
+      [2,'¿Hasta cuándo se puede prometer?',
+       '<p>Hasta que se publica el marcador. Prometer sabiendo el resultado no es prometer.</p>'],
+      [2,'¿Qué es una promesa que cualifica?',
+       '<p>Una cuyo valor final llega a <b>$5 o más</b> con el marcador ya puesto.</p>'+
+       '<p>Una que no llega no se le cobra a nadie, no genera aviso, y a ti no te cuesta nada.</p>'],
 
       [3,'¿Quién pone el marcador?',
-       '<p>Nadie. <b>El juego lo anota solo.</b> Los puntos de cada nene se escriben mientras juega, desde su propio enlace de corrida.</p>'+
-       '<p>Eso es lo que hace a este reto distinto: no hay nada que reportar, nada que esperar, y nadie a quien haya que creerle.</p>'],
-      [3,'¿Puede un nene jugar dos veces para mejorar su número?',
-       '<p>No. Cada nene tiene <b>una sola corrida oficial</b>, y la segunda la rechaza la base de datos — no es una regla de buena fe, es que no cabe.</p>'+
-       '<p>Practicar sí, todo lo que quiera, y además conviene: a la corrida que cuenta se llega caliente. Lo que no se repite es la que cuenta.</p>'],
-      [3,'¿Dónde veo cómo van?',
-       '<p>En el tablero del equipo. El enlace se puede mandar: las familias lo abren y lo ven igual que tú.</p>'+
-       '<p>Ahí están tus nenes, lo que ha anotado cada uno, y quién todavía no ha jugado.</p>'],
-      [3,'¿Cuándo sale el total de cada promesa?',
-       '<p>Al cerrar la ventana, cuando tú lo mandas. Se calcula el total de cada padrino con su tope aplicado si mordió, te lo enseña el reporte, y al pulsar mandar le llega a cada uno su aviso con los puntos de su nene y su cantidad. No sale solo: sale cuando tú lo ves bueno.</p>'+
-       '<p>A ti te queda la lista: cada padrino con su nombre, su nene y su cantidad, para imprimir o bajar. Cobrar lo haces tú, por donde ya hablas con esa gente.</p>'],
-      [3,'A un nene le fue mal en su corrida.',
-       '<p>Sus padrinos pagan por los puntos que anotó, sean los que sean. Nadie pierde nada y nadie debe más por una mala corrida.</p>'+
-       '<p>Y la del vecino no cambia la suya: cada nene tiene sus propios padrinos y sus propios puntos.</p>'],
+       '<p>La mesa, en marcadorpr, como en cualquier juego. Nadie escribe números a mano por su cuenta.</p>'],
+      [3,'¿Y si el marcador sale mal?',
+       '<p>Se corrige, y a quien se le dijo otra cifra le llega la corrección. Sale marcado en tu reporte para que no te sorprenda cuando llamen.</p>'],
+      [3,'¿Importa si ganamos o perdemos?',
+       '<p>No. Se promete por los puntos que anota tu equipo. Ganen o pierdan, cada punto cuenta.</p>'],
 
-      [4,'¿Ustedes le escriben a mis padrinos?',
-       '<p>Una sola vez, al cerrar el reto: cada padrino recibe los puntos de su nene y el total de su promesa. Sale solo, sin que nadie apriete nada.</p>'+
-       '<p>Ese aviso no trae enlace de pago, y después de ése no se vuelve a escribir: ni recordatorios, ni cobros, ni nada. Lo que sí trae es tu nombre y tu correo, para que un padrino que no sepa cómo pagarte te lo pueda preguntar a ti y no a nosotros.</p>'+
-       '<p>La lista completa te la damos a ti, y el cobro lo hablas con tu gente por donde ya hablas con ella.</p>'],
-      [4,'¿Cuándo me llega el dinero?',
-       '<p>Cuando tus padrinos te paguen. Va directo de ellos a ti.</p>'+
-       '<p>Nosotros no lo recibimos, no lo guardamos y no te lo remitimos, así que no hay fecha nuestra que esperar.</p>'],
-      [4,'¿Tengo que darles una cuenta?',
-       '<p>No. No te pedimos número de banco ni de ATH, porque nunca te vamos a mandar dinero.</p>'+
-       '<p>Cómo se trabaja la lista está en <a href="cobro.html">Cómo cobras</a>.</p>'],
-      [4,'¿Cuánto se quedan ustedes?',
-       '<p>Nada de lo que recaudes. Ese dinero no pasa por nuestras manos.</p>'+
-       '<p>Cada Punto Cuenta se licencia <b>por juego</b>: desde cinco dólares por cada juego con promesas, según cuántas recoja, sin mínimo de juegos: con un juego basta, y cada juego de más es otra oportunidad. Un juego que no recoge ni una promesa no se factura. La tarifa está en la portada y no depende del tamaño de la plantilla. No es un por ciento de nada, no sale de ninguna promesa, y a tus padrinos no les cobramos nada.</p>'+
-       '<p>Se factura cuando cierra el evento, y se paga dentro de siete días. Nada por adelantado: primero tienes tu reporte, después te llega el cargo.</p>'+
-       '<p><b>Y si el evento no recoge ni una promesa, no se factura nada.</b> El cargo es por el resultado de las promesas; donde no hay ninguna, no hay nada que pagar.</p>'+
-       '<p>Ojo con una cosa, que es distinta: <b>lo prometido no es lo recaudado</b>. Nosotros anotamos lo prometido; lo que entre, y cuándo, depende de tu cobro.</p>'],
-      [4,'¿Un padrino puede terminar debiendo una fortuna?',
-       '<p>No, si pone su tope. El padrino pone lo máximo que quiere pagar cuando promete, y el tope manda, suba lo que suba el número.</p>'+
-       '<p>Vale la pena decírselo cuando le pidas: a mucha gente le quita el miedo de encima y promete más por punto.</p>'],
-      [4,'Un padrino me preguntó algo que no sé contestar.',
-       '<p>Baja a <b>Si vas a prometer</b>, al final de esta página: ahí está contestado lo que preguntan ellos — cuánto van a pagar, cuándo se sabe la cantidad, el tope, y a dónde va el dinero.</p>'+
-       '<p>Mandarles esta misma página contesta mejor que explicarlo de memoria. Y si es algo que no está ahí, pásanoslo y lo contestamos nosotros.</p>'],
-      [4,'¿Esto es deducible de impuestos?',
-       '<p>No decimos que lo sea. Gostar Digital LLC es una empresa con fines de lucro, no una organización sin fines de lucro, y no emitimos recibos para impuestos.</p>'+
-       '<p>Si a un padrino le importa cómo se trata su pago, que lo consulte con su asesor.</p>'],
+      [4,'¿Qué reciben mis padrinos?',
+       '<p><b>Un</b> correo, cuando se publica el marcador: el marcador final, lo que dio su promesa, y a quién se lo pagan.</p>'+
+       '<p>Ése es el único que mandamos. Sin enlace de pago y sin recordatorios. <a href="aviso.html">Míralo aquí</a>.</p>'],
+      [4,'¿Les van a seguir escribiendo?',
+       '<p>No. Un aviso por juego, y nada más — salvo que el marcador se corrija.</p>'],
+      [4,'¿Qué me llega a mí?',
+       '<p>El reporte del juego: cada padrino con su tarifa, su tope, lo que dio su promesa y en qué quedó.</p>'+
+       '<p>Lo ves en pantalla, lo imprimes o lo bajas en hoja de cálculo. <a href="reporte.html?ejemplo=1">Mira un reporte de ejemplo</a>.</p>'],
+      [4,'¿Sale marcado el que no recibió su aviso?',
+       '<p>Sí. El padrino cuyo correo rebotó sale aparte: ése no se entera por correo y hay que llamarlo.</p>'],
 
-      /* De aquí para abajo no habla el entrenador: habla el padrino. Son
-         las preguntas que hace quien va a pagar, contestadas como se le
-         contestan a él y no como se le explican a un coach. Un
-         entrenador que no sabe qué decirle a una familia manda este
-         enlace y ya. */
-      [5,'¿Cuándo tengo que pagar?',
-       '<p>Después de que el nene juegue, nunca antes. Prometes una cantidad por punto, él hace su corrida, y al cerrar el reto el programa manda los avisos: te llega uno con sus puntos y tu cantidad.</p>'+
-       '<p>Le pagas directo al programa, por donde ellos te digan. Cada Punto Cuenta no cobra nada y no procesa pagos.</p>'],
-      [5,'¿Cuánto voy a pagar exactamente?',
-       '<p>Tu tarifa por los puntos que anotó <b>ese nene</b> en su corrida. A diez centavos el punto, una corrida de 45 puntos son $4.50.</p>'+
-       '<p>El aviso te trae el desglose: tu tarifa, los puntos y el tope si lo pusiste.</p>'],
-      [5,'¿Puedo poner un tope?',
-       '<p>Sí, y conviene. Al prometer pones lo máximo que quieres pagar y la cantidad nunca sale por encima de eso, anote lo que anote.</p>'],
-      [5,'¿Y si le va mal?',
-       '<p>Pagas por los puntos que anotó, sean los que sean. No hay bono por una buena corrida ni castigo por una mala: tu promesa es por los puntos.</p>'],
-      [5,'¿Cómo sé que esos puntos son de verdad?',
-       '<p>Porque no los escribió una persona: los anotó el juego mientras el nene jugaba, y la corrida se comprueba dentro de la base de datos.</p>'+
-       '<p>Y es una sola: la base rechaza una segunda corrida oficial del mismo nene. El número que te llega es el que salió, no el mejor de varios intentos.</p>'],
-      [5,'¿A dónde va el dinero?',
-       '<p>Al programa que escogiste, directo. Tu pago no pasa por Cada Punto Cuenta: no lo recibimos y no nos quedamos con nada de él.</p>'+
-       '<p>Lo que ese programa haga con lo recaudado es suyo, igual que cualquier otra contribución: a veces comparten parte con su liga o con el programa que los trajo. Eso es entre ellos.</p>'+
-       '<p>No se gana ni se rifa nada: es una contribución voluntaria cuya cantidad depende de los puntos.</p>']
+      [5,'¿Ustedes cobran el dinero?',
+       '<p>No. El dinero no pasa por nosotros: no lo procesamos, no lo guardamos y no lo reclamamos.</p>'+
+       '<p>Cada padrino le paga a tu programa directo, por donde ustedes ya hablan. <a href="custodia.html">Cómo funciona el dinero</a>.</p>'],
+      [5,'¿Cuándo me llega el dinero?',
+       '<p>Cuando tus padrinos te paguen. No hay fecha de corte ni cuenta de por medio: lo que te paguen te llega el mismo día, a tu cuenta.</p>'],
+      [5,'Entonces, ¿lo prometido es lo recaudado?',
+       '<p>No, y conviene tenerlo claro desde el principio. Nosotros anotamos lo prometido; lo que entre depende de tu cobro.</p>'+
+       '<p>Un padrino que paga vale más que diez promesas apuntadas.</p>'],
+      [5,'¿Esto es deducible de impuestos?',
+       '<p>No hacemos ninguna afirmación sobre impuestos. No emitimos recibos para impuestos y no decimos que una promesa sea deducible.</p>'+
+       '<p>Lo que tu programa le diga a sus padrinos sobre eso es del programa, y el programa responde por ello.</p>'],
+
+      [6,'¿Cuánto cuesta?',
+       '<p><b>$1 por cada promesa que cualifica</b>, con un <b>máximo de $99 por juego</b>.</p>'+
+       '<p>No es un por ciento de nada, no sale de ninguna promesa, y a tus padrinos no les cobramos nada.</p>'],
+      [6,'¿Hay suscripción o mínimo?',
+       '<p>No. Sin suscripción y sin mínimo de juegos: con uno basta, y cada juego de más es otra oportunidad.</p>'],
+      [6,'¿Cuándo se paga?',
+       '<p>Después del juego. La licencia se calcula cuando se publica el marcador final y se paga dentro de siete días.</p>'+
+       '<p>Nada por adelantado, y un juego que no recoge ni una promesa no se factura.</p>'],
+      [6,'¿Y si no se paga?',
+       '<p>El acceso al manejo de promesas y a los reportes de ese juego queda suspendido hasta que se complete el pago. Los registros se conservan, y al pagar se restablece el acceso.</p>'+
+       '<p>La suspensión no afecta a los demás juegos con licencia al día.</p>']
     ]
   },
   en:{
@@ -391,111 +361,81 @@ var S={
     askP:'Write to <a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a> and tell us your division. We answer the same day.',
     terms:'Terms',
     alt:'A neighbourhood basketball court in Puerto Rico at night, empty after rain, with a phone glowing on the bench',
-    secs:['Signing in','The roster','The challenge','The board','The money','If you are pledging'],
+    secs:['Signing in','The games','The pledges','The score','The report and the notices','The money','The licence'],
     qs:[
       [0,'Where do I sign in?',
        '<p>At <a href="mi-equipo.html">My team</a>, with the code we gave you.</p>'+
-       '<p>You type it <b>once</b>. From then on that phone knows you — for the roster, for the board, for everything.</p>'],
-      [0,'Do I have to type the code on every page?',
-       '<p>No. Once, at My team, and that is it.</p>'+
-       '<p>If it asks again you are on another phone, another browser, or a private window. Type it again and carry on.</p>'],
+       '<p>You type it <b>once</b>. After that the phone knows you.</p>'],
       [0,'I lost my code.',
        '<p>Write to us and we will make you a new one. We cannot look it up: it is stored encrypted, so not even we know it.</p>'],
       [0,'It says my code does not work.',
-       '<p>Check for a space at the start or the end — copying and pasting drags them along.</p>'+
+       '<p>Check for spaces at the start or the end — copying and pasting drags them along.</p>'+
        '<p>If it still will not go in, write to us. It may be switched off.</p>'],
 
-      [1,'How do I get my players on?',
-       '<p>Two ways, and both work at once.</p>'+
-       '<p><b>You:</b> at <a href="plantilla.html">The roster</a>, paste the names, one per line.</p>'+
-       '<p><b>They do:</b> send the sign-up link to the team group and each family adds itself. That is the good one — each child gets his own link for his padrinos, and you type nothing.</p>'],
-      [1,'A child signed up and I cannot see him on the roster.',
-       '<p>He is waiting on you. Open it and he is at the top, in an orange box, with <b>Approve</b> and <b>Decline</b>.</p>'+
-       '<p>Until you approve him he appears nowhere. That is deliberate: with the team link anybody could add anybody.</p>'],
-      [1,'A child left the team.',
-       '<p>On The roster, <b>Remove</b>. He drops to the bottom of the list in grey and stops appearing on the board.</p>'+
-       '<p>He is not deleted, and one tap brings him back if it was a mistake. If you really want him gone, <b>Delete</b> appears after removing him — unless he already has pledges on him, in which case he cannot be deleted and simply stays off the list.</p>'],
-      [1,'I spelled a name wrong.',
-       '<p><b>Fix</b>, on his row. You can change his squad there too.</p>'],
+      [1,'How do I put my games up?',
+       '<p>In the <a href="https://marcadorpr.com" target="_blank" rel="noopener">marcadorpr</a> builder: one game, ten, or the whole season. They are the games you already have scheduled.</p>'+
+       '<p>Each game comes out with its own pledge link.</p>'],
+      [1,'Do I have to organise a tournament?',
+       '<p>No. One game is enough, and there is no separate event to put on: you raise on the games you were going to play anyway.</p>'],
+      [1,'Can I choose which games take pledges?',
+       '<p>Yes. Each game has its own switch in <a href="mi-equipo.html">My team</a>: open or close it whenever you like.</p>'],
+      [1,'Does it work for volleyball?',
+       '<p>Yes. Pledges are per point, the same as basketball, on the match total.</p>'],
 
-      [2,'How does a challenge work?',
-       '<p>You set the <b>window</b>: it can be one afternoon in the gym or a week with families playing at home.</p>'+
-       '<p>Before and during the window, the children find padrinos. Inside the window, each one takes his run. When it closes, the platform works out every pledge and leaves you the report. You check it, press send, and each padrino gets his notice. That closes the challenge.</p>'],
-      [2,'How long does all this take?',
-       '<p>As long as you decide. There is no fixed shape: you set the window when we open the challenge for you.</p>'+
-       '<p>Our part ends when it closes: every pledge total comes out at that moment, because the points are already recorded. From there the calendar is yours, because the collecting is yours.</p>'+
-       '<p>And it ends. A challenge does not stay open: it opens, it is played, it is reported and it closes.</p>'],
-      [2,'How long can somebody pledge on a child?',
-       '<p>Until <b>he</b> starts his official run. His pledges close then, even if the window is still open for everybody else.</p>'+
-       '<p>That is deliberate: pledging while knowing the points is not pledging. Padrinos have to be found before sitting down to play.</p>'],
-      [2,'Can I run more than one challenge?',
-       '<p>Yes, but each challenge is its own event: its own padrinos, its own licence.</p>'+
-       '<p>One piece of advice: the same people will not pledge ten times in a season. Two or three challenges done properly bring in more than eight done badly.</p>'],
+      [2,'How do my padrinos pledge?',
+       '<p>You send the game link to the program group. Each padrino picks how much a point and, if he wants, a cap.</p>'+
+       '<p>He does not need an account or anything of ours. <a href="prometer.html?ejemplo=1">See what a pledge sheet looks like</a>.</p>'],
+      [2,'How much can someone pledge?',
+       '<p>From 10&cent; to $1 a point. Anyone who wants to give more does it by raising the cents, not because he is asked twice.</p>'],
+      [2,'Can he set a cap?',
+       '<p>Yes, and it is what settles a first-time padrino more than anything. If the team scores a lot, the cap wins.</p>'],
+      [2,'How long can people pledge?',
+       '<p>Until the score is posted. Pledging while knowing the result is not pledging.</p>'],
+      [2,'What is a qualifying pledge?',
+       '<p>One whose final value reaches <b>$5 or more</b> once the score is in.</p>'+
+       '<p>One that does not get there is charged to nobody, raises no notice, and costs you nothing.</p>'],
 
-      [3,'Who puts the score in?',
-       '<p>Nobody. <b>The game records it itself.</b> Each child’s points are written as he plays, from his own run link.</p>'+
-       '<p>That is what makes this different: there is nothing to report, nothing to wait for, and nobody who has to be taken at his word.</p>'],
-      [3,'Can a child play twice to improve his number?',
-       '<p>No. Each child gets <b>one official run</b>, and the database refuses the second — it is not a rule kept in good faith, there is simply no room for it.</p>'+
-       '<p>Practice, yes, as much as he likes, and it helps: you want to arrive at the run that counts already warm. What cannot be repeated is the one that counts.</p>'],
-      [3,'Where do I watch how it is going?',
-       '<p>On the team board. The link can be sent: families open it and see exactly what you see.</p>'+
-       '<p>Your children are there, what each one has scored, and who has not played yet.</p>'],
-      [3,'When does each pledge total come out?',
-       '<p>When the window closes, once you send them. Each padrino’s total is worked out with his cap applied if it bit, the report shows it to you, and when you press send each one gets his notice with his child’s points and his amount. It does not go out by itself: it goes out when you are satisfied with it.</p>'+
-       '<p>You are left with the list: every padrino with his name, his child and his amount, to print or download. The collecting you do yourself, wherever you already talk to those people.</p>'],
-      [3,'One of the children had a bad run.',
-       '<p>His padrinos pay on the points he scored, whatever they are. Nobody loses anything and nobody owes more for a bad run.</p>'+
-       '<p>And the next child’s run does not change his: each one has his own padrinos and his own points.</p>'],
+      [3,'Who posts the score?',
+       '<p>The scorer\'s table, in marcadorpr, as in any game. Nobody types numbers in on their own.</p>'],
+      [3,'What if the score comes out wrong?',
+       '<p>It is corrected, and anyone who was told a different figure gets the correction. It is marked in your report so it does not surprise you when they ring.</p>'],
+      [3,'Does it matter whether we win or lose?',
+       '<p>No. Pledges are on the points your team scores. Win or lose, every point counts.</p>'],
 
-      [4,'Do you write to my padrinos?',
-       '<p>Once, when the challenge closes: each padrino gets his child’s points and his pledge total. It goes out on its own, with nobody pressing anything.</p>'+
-       '<p>That notice carries no payment link, and after it nobody is written to again: no reminders, no collection notices, nothing. What it does carry is your name and your email, so a padrino who does not know how to pay you can ask you rather than us.</p>'+
-       '<p>The full list goes to you, and the collecting you arrange with your people wherever you already talk to them.</p>'],
-      [4,'When does the money reach me?',
-       '<p>When your padrinos pay you. It goes straight from them to you.</p>'+
-       '<p>We do not receive it, we do not hold it and we do not remit it to you, so there is no date of ours to wait on.</p>'],
-      [4,'Do I have to give you an account?',
-       '<p>No. We ask you for no bank or ATH number, because we are never going to send you money.</p>'+
-       '<p>How the list gets worked is at <a href="cobro.html">How you collect</a>.</p>'],
-      [4,'What do you keep?',
-       '<p>None of what you raise. That money never passes through our hands.</p>'+
-       '<p>Cada Punto Cuenta is licensed <b>per game</b>: from five dollars for each game that carries pledges, set by how many it gathered, with no minimum number of games: one game is enough, and every additional game is another opportunity. A game that records no pledges is not invoiced. The rate is on the home page and does not depend on the size of the roster. It is not a percentage of anything, it does not come out of any pledge, and we charge your padrinos nothing.</p>'+
-       '<p>It is invoiced when the event closes and due within seven days. Nothing up front: you have your report first, the bill comes after.</p>'+
-       '<p><b>And if the event records no pledges at all, nothing is invoiced.</b> The fee is for the pledge results; where there are none, there is nothing to pay.</p>'+
-       '<p>One thing worth having straight, because it is different: <b>pledged is not collected</b>. We record what was pledged; what comes in, and when, depends on your collecting.</p>'],
-      [4,'Could a padrino end up owing a fortune?',
-       '<p>Not if he sets his cap. A padrino sets the most he is willing to pay when he pledges, and the cap wins however high the number goes.</p>'+
-       '<p>It is worth telling him when you ask: for a lot of people it takes the fear away, and they pledge more per point.</p>'],
-      [4,'A padrino asked me something I could not answer.',
-       '<p>Scroll to <b>If you are pledging</b>, at the end of this page: what they ask is answered there — how much they will pay, when the amount is known, the cap, and where the money goes.</p>'+
-       '<p>Sending them this page answers better than explaining it from memory. And if it is something not there, pass it to us and we will answer it.</p>'],
-      [4,'Is this tax-deductible?',
-       '<p>We do not say that it is. Gostar Digital LLC is a for-profit company, not a non-profit, and we do not issue tax receipts.</p>'+
-       '<p>If it matters to a padrino how his payment is treated, he should ask his own adviser.</p>'],
+      [4,'What do my padrinos receive?',
+       '<p><b>One</b> email, when the score is posted: the final score, what their pledge came to, and who they pay.</p>'+
+       '<p>That is the only one we send. No payment link and no reminders. <a href="aviso.html">See it here</a>.</p>'],
+      [4,'Will you keep writing to them?',
+       '<p>No. One notice per game and nothing more — unless the score is corrected.</p>'],
+      [4,'What comes to me?',
+       '<p>The game report: each padrino with his rate, his cap, what his pledge came to and where it stands.</p>'+
+       '<p>You read it on screen, print it, or download it as a spreadsheet. <a href="reporte.html?ejemplo=1">See a sample report</a>.</p>'],
+      [4,'Is someone who did not get their notice flagged?',
+       '<p>Yes. A padrino whose email bounced is marked separately: that one will not hear by email and needs a call.</p>'],
 
-      /* From here down it is not the coach talking: it is the padrino.
-         These are the questions the person who is going to pay asks,
-         answered the way you answer him and not the way you explain it
-         to a coach. A coach who does not know what to tell a family
-         sends this link. */
-      [5,'When do I have to pay?',
-       '<p>After the child plays, never before. You pledge an amount per point, he takes his run, and when the challenge closes the program sends the notices: you get one with his points and your amount.</p>'+
-       '<p>You pay the program directly, however they tell you. Cada Punto Cuenta charges nothing and processes no payments.</p>'],
-      [5,'How much exactly am I going to pay?',
-       '<p>Your rate against the points <b>that child</b> scored in his run. At ten cents a point, a 45-point run is $4.50.</p>'+
-       '<p>The notice brings you the breakdown: your rate, the points, and the cap if you set one.</p>'],
-      [5,'Can I set a ceiling?',
-       '<p>Yes, and it is worth doing. When you pledge you set the most you are willing to pay, and the amount never comes out above it, whatever he scores.</p>'],
-      [5,'What if he does badly?',
-       '<p>You pay on the points he scored, whatever they are. There is no bonus for a good run and no penalty for a bad one: your pledge is on the points.</p>'],
-      [5,'How do I know those points are real?',
-       '<p>Because a person did not write them: the game recorded them as the child played, and the run is verified inside the database.</p>'+
-       '<p>And there is only one: the database refuses a second official run from the same child. The number you are sent is the one that happened, not the best of several tries.</p>'],
-      [5,'Where does the money go?',
-       '<p>To the program you chose, directly. Your payment does not pass through Cada Punto Cuenta: we do not receive it and we keep none of it.</p>'+
-       '<p>What that program does with what it raises is its own, like any other contribution: sometimes they share part with their league or with whoever brought them in. That is between them.</p>'+
-       '<p>Nothing is won and nothing is raffled: it is a voluntary contribution whose amount depends on the points.</p>']
+      [5,'Do you collect the money?',
+       '<p>No. The money does not pass through us: we do not process it, hold it or claim it.</p>'+
+       '<p>Each padrino pays your program directly, however you already talk to them. <a href="custodia.html">How the money works</a>.</p>'],
+      [5,'When does the money reach me?',
+       '<p>When your padrinos pay you. There is no cut-off date and no account in between: what they pay arrives the same day, in your account.</p>'],
+      [5,'So is pledged the same as collected?',
+       '<p>No, and it is worth having straight from the start. We record what was pledged; what comes in depends on your collecting.</p>'+
+       '<p>One padrino who pays is worth more than ten pledges on a list.</p>'],
+      [5,'Is this tax deductible?',
+       '<p>We make no representation about taxes. We do not issue tax receipts and we do not say a pledge is deductible.</p>'+
+       '<p>What your program tells its padrinos about that is the program\'s own, and the program answers for it.</p>'],
+
+      [6,'What does it cost?',
+       '<p><b>$1 for each qualifying pledge</b>, with a <b>$99 maximum per game</b>.</p>'+
+       '<p>It is not a percentage of anything, it does not come out of any pledge, and we charge your padrinos nothing.</p>'],
+      [6,'Is there a subscription or a minimum?',
+       '<p>No. No subscription and no minimum number of games: one is enough, and every additional game is another opportunity.</p>'],
+      [6,'When is it paid?',
+       '<p>After the game. The licence is worked out when the final score is posted and is due within seven days.</p>'+
+       '<p>Nothing up front, and a game that records no pledges is not invoiced.</p>'],
+      [6,'And if it is not paid?',
+       '<p>Access to that game\'s pledge management and reports is suspended until payment is completed. The records are kept, and paying restores access.</p>'+
+       '<p>Suspension does not affect other games with valid licences.</p>']
     ]
   }
 };
