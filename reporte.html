@@ -372,7 +372,6 @@ var S={
     cualSi:'sí', cualNo:'no',
     sinTope:'—',
     sinPromesas:'Este juego no tiene promesas.',
-    totalFila:'Total prometido',
     totalCualifican:'Total de promesas que cualifican:',
 
     /* Las tres cosas que distinguen a quien no debe nada de quien
@@ -446,7 +445,6 @@ var S={
     cualSi:'yes', cualNo:'no',
     sinTope:'—',
     sinPromesas:'This game has no pledges.',
-    totalFila:'Total pledged',
     totalCualifican:'Total of qualifying pledges:',
 
     eBajo:'under the {P} minimum — nothing is asked of him',
@@ -689,13 +687,26 @@ function pintar(){
     return '<small>'+esc(T('eAvisado'))+'</small>';
   }
 
+  /* LA PANTALLA ENSEÑA LO MISMO QUE LA HOJA. Tenía cinco columnas
+     —padrino, correo, tarifa, tope, total— mientras el CSV ya traía
+     ocho, así que el entrenador veía una cosa y se bajaba otra.
+
+     Y el total de una promesa que no cualifica va con raya, no con
+     0.00: un cero en la columna que se suma se lee como que entra
+     aportando nada, y lo que pasa es que no entra. */
   var fP = ps.length ? ps.map(function(p){
-    return '<tr'+(!(p.total>0)?' class="cero"':'')+'>'+
+    var cual = Number(p.total||0) > 0;
+    var valor = Math.min(Number(p.tarifa||0) * Number(p.puntos||0),
+                         p.tope!=null ? Number(p.tope) : Infinity);
+    valor = Math.round(valor*100)/100;
+    return '<tr'+(!cual?' class="cero"':'')+'>'+
       '<td class="nm">'+esc(p.padrino)+estado(p)+'</td>'+
       '<td>'+esc(p.correo||'')+'</td>'+
       '<td class="num">'+money(p.tarifa)+'</td>'+
       '<td class="num">'+(p.tope!=null?money(p.tope):T('sinTope'))+'</td>'+
-      '<td class="num">'+money(p.total)+'</td>'+
+      '<td class="num">'+money(valor)+'</td>'+
+      '<td class="num">'+esc(cual?T('cualSi'):T('cualNo'))+'</td>'+
+      '<td class="num">'+(cual?money(p.total):'&mdash;')+'</td>'+
     '</tr>';
   }).join('') : '';
 
@@ -741,9 +752,11 @@ function pintar(){
         '<th>'+esc(T('thCorreo'))+'</th>'+
         '<th class="num">'+esc(T('thTarifa'))+'</th>'+
         '<th class="num">'+esc(T('thTope'))+'</th>'+
+        '<th class="num">'+esc(T('thValor'))+'</th>'+
+        '<th class="num">'+esc(T('thCualifica'))+'</th>'+
         '<th class="num">'+esc(T('thTotal'))+'</th>'+
       '</tr></thead><tbody>'+fP+'</tbody>'+
-      '<tfoot><tr><td colspan="4">'+esc(T('totalFila'))+'</td>'+
+      '<tfoot><tr><td colspan="6">'+esc(T('totalCualifican'))+'</td>'+
         '<td class="num">'+money(res.prometido)+'</td></tr></tfoot></table>'
       : '<p class="vacio">'+esc(T('sinPromesas'))+'</p>') +
     '</div>'+
