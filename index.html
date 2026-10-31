@@ -472,6 +472,15 @@ h1 em{font-style:normal;color:var(--orange)}
 }
 /* Un enlace por paso, debajo de su texto: cada promesa de la columna
    se puede comprobar ahí mismo, sin bajar a buscarla. */
+/* No lleva .paso ni .ancho: no es un cuarto paso, y con .ancho
+   heredaba la rejilla de dos columnas del 03 — el enlace se le
+   montaba encima del párrafo. Es su propio bloque, a lo ancho. */
+.nocobra{grid-column:1 / -1;display:block;background:var(--navy);color:#fff;
+  border:1px solid var(--navy);border-radius:16px;padding:1.4rem 1.3rem}
+.nocobra h3{color:#fff;margin:0 0 .5rem;font-size:1.25rem}
+.nocobra p{color:var(--claro)}
+.nocobra .pasoLink a{color:#fff;text-decoration-color:var(--orange)}
+.nocobra .pasoLink a:hover{color:var(--orange)}
 .pasoLink{margin:.7rem 0 0}
 .pasoLink a{font-weight:700;font-size:.86rem;color:var(--ink);
   text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px}
@@ -735,8 +744,11 @@ button.lang{padding:0 10px;font-size:.8rem}
 <article class="paso">
 <div class="n num">02</div>
 <h3 data-i="q3w">Juega</h3>
-<p data-i="q3p">El equipo juega y se publica el marcador final.</p>
+<p data-i="q3p">El equipo juega y se publica el marcador final. A cada padrino le llega
+  UN aviso con el marcador y lo que dio su promesa &mdash; y ése es el único correo que
+  mandamos: sin enlace de pago y sin recordatorios.</p>
 <p class="pasoLink"><a href="https://marcadorpr.com/torneo.html?t=demonstration-basketball" target="_blank" rel="noopener" data-i="vCal">Ver un calendario de verdad &rarr;</a></p>
+<p class="pasoLink"><a href="aviso.html" data-i="vAviso">Ver el aviso al padrino &rarr;</a></p>
 </article>
 <article class="paso ancho">
 <div class="n num">03</div>
@@ -775,6 +787,21 @@ button.lang{padding:0 10px;font-size:.8rem}
   </div>
   <p class="rpcNota" data-i="rpcNota">Ejemplo con datos ficticios. Reportes en español e inglés.</p>
 </div>
+</article>
+
+<!-- NO COBRAMOS, dicho donde se acaban los pasos.
+
+     Es la primera pregunta de quien decide por un programa —¿por
+     dónde pasa el dinero?— y la respuesta corta es que no pasa por
+     aquí. Tenía una sección propia de ocho párrafos; cabe en cuatro
+     líneas, y la hoja entera sigue en custodia.html para quien la
+     quiera leer antes de firmar. -->
+<article class="nocobra">
+<h3 data-i="ncH">No cobramos.</h3>
+<p data-i="ncP">Cada Punto Cuenta anota las promesas y hace la cuenta. El dinero no pasa
+  por nosotros: no lo procesamos, no lo guardamos y no lo reclamamos. Cada padrino le
+  paga a tu programa directo, por donde ustedes ya hablan.</p>
+<p class="pasoLink"><a href="custodia.html" data-i="ncL">Cómo funciona el dinero &rarr;</a></p>
 </article>
 </div>
 
@@ -932,11 +959,15 @@ priceSub:'$99 maximum per game.',
 priceTitle:'$1 per qualifying pledge.',
 q1p:'The players share the link with their padrinos, and each padrino chooses how much to pledge per point.',
 q1w:'Invite and pledge',
-q3p:'The team plays and the final score is posted.',
+q3p:'The team plays and the final score is posted. Each padrino gets ONE notice with the score and what his pledge came to — and that is the only email we send: no payment link and no reminders.',
 q3w:'Play',
 q4p:'Cada Punto Cuenta works out the pledges and delivers the report.',
 q4w:'Report',
 vHoja1:'See a pledge sheet &rarr;',
+vAviso:'See the padrino&rsquo;s notice &rarr;',
+ncH:'We do not collect.',
+ncP:'Cada Punto Cuenta records the pledges and does the arithmetic. The money does not pass through us: we do not process it, hold it or claim it. Each padrino pays your program directly, however you already talk to them.',
+ncL:'How the money works &rarr;',
 vCal:'See a real schedule &rarr;',
 rpcJuego:'Canóvanas 15U vs. Arecibo',
 rpcMeta:'68 points &middot; 12 padrinos &middot; Example',
