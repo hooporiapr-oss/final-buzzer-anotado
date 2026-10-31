@@ -67,7 +67,7 @@ async function corrida(browser, lang, correo){
                               : mal('mandó algo con el formulario vacío');
 
   // ── 2 · los cinco campos, escritos como los escribe una persona ──
-  for (const [sel, val] of [['#tm','Canóvanas 15U'], ['#pg','Canóvanas Basketball Club'],
+  for (const [sel, val] of [['#tm','Canóvanas 15U'], ['#pn','4827'], ['#pg','Canóvanas Basketball Club'],
                             ['#nm','John Burgos'], ['#em', correo], ['#ph','7871234567']]){
     await p.click(sel); await p.fill(sel, val);
   }
