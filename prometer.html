@@ -209,6 +209,9 @@ button.enviar:disabled{opacity:.5}
 button.volver{background:transparent;border:1px solid var(--navy);color:var(--navy);
   border-radius:9px}
 button.volver:hover{background:var(--navy);color:#fff}
+#alCal{margin:14px 0 0;text-align:center}
+#alCal a{font-weight:800;font-size:.9rem;color:var(--navy);
+  text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px}
 
 .estado.mal{color:#b4231c}
 .estado.bien{color:var(--green)}
@@ -377,6 +380,15 @@ header{color:#101c2a}
            tarifa no tiene vuelta: el formulario se escondió y la
            única salida era recargar el enlace, que nadie adivina. -->
       <button type="button" class="volver" id="volver"></button>
+      <!-- LA VUELTA AL CALENDARIO. El que promete desde un calendario
+           llegaba aquí, confirmaba, y se quedaba: el formulario se
+           esconde y no hay ninguna salida salvo el botón del
+           navegador, que en un móvil a pantalla completa no está.
+
+           Sólo sale si vino de uno —el calendario manda &t= en el
+           enlace—. Quien recibió el enlace suelto por WhatsApp no ve
+           nada, porque no hay calendario al que devolverlo. -->
+      <p id="alCal" hidden><a id="alCalA" href="#"></a></p>
     </div>
 
     <p class="pie" id="pie"></p>
@@ -429,6 +441,7 @@ var S={
   yaVan1:'1 persona ya prometió en este juego.',
   listoH:'Listo. Eres su padrino.',
   listoP:'Al publicarse el marcador te llega un aviso con el resultado y lo que dio tu promesa. Le pagas directo al programa — Cada Punto Cuenta no te va a cobrar nada.',
+  alCal:'← Volver al calendario',
   volver:'Cambiar mi promesa',
   otraVez:'Ya tenías una promesa para este juego — la actualizamos con lo que acabas de poner.',
   ejT:'Esto es un ejemplo.',
@@ -471,10 +484,11 @@ var S={
   yaVan1:'1 person has already pledged on this game.',
   listoH:'Done. You are their padrino.',
   listoP:'When the score is posted you get one notice with the result and what your pledge came to. You pay the program directly — Cada Punto Cuenta will not charge you anything.',
+  alCal:'← Back to the schedule',
   volver:'Change my pledge',
   otraVez:'You already had a pledge on this game — we updated it with what you just put in.',
-  ejT:'Esto es un ejemplo.',
-  ejP:'El juego y las cifras son inventados, para que veas cómo se ve la hoja de promesa. Nada de lo que pongas aquí se manda.',
+  ejT:'This is an example.',
+  ejP:'The game and the figures are invented, so you can see what a pledge sheet looks like. Nothing you type here is sent.',
   noVa:'This link does not open a pledge.',
   total:'Tot',
   pie:'Cada Punto Cuenta is a pledge management system by Gostar Digital LLC. We do not process payments: you pay the program, directly.'
@@ -492,6 +506,9 @@ var par=new URLSearchParams(location.search);
 /* Un solo parámetro: el juego. `?c=` y `?p=` eran el reto y el
    alumno del producto retirado. */
 var GAME=par.get('g');
+/* De qué calendario vino, si vino de uno. Sólo para poder devolverlo:
+   no se manda a ninguna parte ni se guarda. */
+var DESDE=(par.get('t')||'').trim();
 
 /* Ya no hay cargo que sumarle al padrino: Cada Punto Cuenta se licencia al
    programa por evento y al padrino no se le cobra nada. Lo
@@ -674,6 +691,11 @@ function pintar(){
   $('listoH').textContent=T('listoH');
   $('listoP').textContent=T('listoP');
   $('volver').textContent=T('volver');
+  if (DESDE){
+    $('alCal').hidden=false;
+    $('alCalA').textContent=T('alCal');
+    $('alCalA').href='https://marcadorpr.com/torneo.html?t='+encodeURIComponent(DESDE);
+  }
   /* El marcador SÓLO cuando ya cerró. Abierta, un marcador hecho le
      estaría diciendo a un padrino que el nene ya anotó — y de paso le
      dejaría prometer sabiendo el resultado, que es justo lo que esta
