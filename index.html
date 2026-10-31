@@ -412,6 +412,12 @@ h1 em{font-style:normal;color:var(--orange)}
   padding:.95rem 1.25rem;background:var(--navy);color:#fff;
   font-family:Archivo,sans-serif;font-size:.67rem;font-weight:900;
   letter-spacing:.14em;text-transform:uppercase}
+/* Los subtítulos de la sección del precio. La sección pasó de ser
+   una tabla a ser un texto con tres preguntas, y sin un escalón de
+   tamaño entre el titular y los párrafos se lee como un muro. */
+.priceH3{font-family:Archivo,sans-serif;font-weight:800;font-size:1.05rem;
+  margin:2rem 0 .6rem;letter-spacing:-.01em}
+.priceH3:first-of-type{margin-top:1.6rem}
 .peldano,.cero{display:flex;justify-content:space-between;align-items:baseline;
   gap:1rem;padding:.9rem 1.25rem;border-top:1px solid var(--linea)}
 .cero{border-top:0;background:rgba(11,122,90,.07)}
@@ -749,7 +755,7 @@ button.lang{padding:0 10px;font-size:.8rem}
   depende de tu cobro &mdash; un padrino que paga vale más que diez promesas apuntadas.</p>
 <p class="escpie" data-i="exFine">Las promesas van de 10¢ a $1 por punto, así que el
   padrino que quiera dar más lo hace por punto y no porque se le pida dos veces. Una
-  promesa que no llega a $5 se cierra en $0.00 y no cuenta para el peldaño del juego.</p>
+  promesa que no llega a $5 no cualifica: se cierra en $0.00 y no se cobra por ella.</p>
 </div>
 </section>
 
@@ -790,12 +796,12 @@ button.lang{padding:0 10px;font-size:.8rem}
 <div class="tp suyo">
 <span class="q" data-i="npR2">48 padrinos &mdash; <i>cuatro por jugador</i></span>
 <span class="pro num">$816.00</span>
-<span class="lic num">$25</span>
+<span class="lic num">$48</span>
 </div>
 <div class="tp">
 <span class="q" data-i="npR3">120 padrinos &mdash; <i>diez por jugador</i></span>
 <span class="pro num">$2,040.00</span>
-<span class="lic num">$79</span>
+<span class="lic num">$99</span>
 </div>
 </div>
 
@@ -824,17 +830,17 @@ button.lang{padding:0 10px;font-size:.8rem}
 <div class="tp suyo">
 <span class="q" data-i="npG1">1 juego &mdash; <i>un sábado</i></span>
 <span class="pro num">$816.00</span>
-<span class="lic num">$25</span>
+<span class="lic num">$48</span>
 </div>
 <div class="tp">
 <span class="q" data-i="npG2">10 juegos &mdash; <i>media temporada</i></span>
 <span class="pro num">$8,160.00</span>
-<span class="lic num">$250</span>
+<span class="lic num">$480</span>
 </div>
 <div class="tp">
 <span class="q" data-i="npG3">20 juegos &mdash; <i>la temporada entera</i></span>
 <span class="pro num">$16,320.00</span>
-<span class="lic num">$500</span>
+<span class="lic num">$960</span>
 </div>
 </div>
 
@@ -1013,48 +1019,73 @@ button.lang{padding:0 10px;font-size:.8rem}
 <div class="wrap">
 <div class="cab">
 <div class="eyebrow" data-i="priceLabel">Precios transparentes</div>
-<h2 data-i="priceTitle">Pagas por el software, no un por ciento de lo prometido.</h2>
-<p class="lede" data-i="priceDesc">El peldaño lo fija cuántas promesas recogió el juego, y
-  nada más. Dos juegos con veinte promesas cuestan lo mismo aunque uno recogiera cien
-  dólares y el otro diez mil.</p>
+<h2 data-i="priceTitle">Pagas por el software, no un porcentaje de lo prometido.</h2>
+<p class="lede" data-i="priceDesc"><b>$1 por cada promesa que cualifica. Máximo $99 por
+  juego.</b> Cada Punto Cuenta cobra únicamente por las promesas que cualifican. No importa
+  cuánto dinero se haya prometido: el precio depende del número de promesas que cualifiquen,
+  no de su valor.</p>
 </div>
 
-<!-- La escalera se PINTA desde TARIFAS. Escribir seis peldaños a mano
-     en el marcado es garantizar que un día uno diga una cosa y la
-     tabla otra. La fila del CERO sí va a mano y con otra clase: no
-     sale de TARIFAS porque no es un peldaño, es la promesa de que no
-     hay cargo. -->
-<div class="prices">
-<div class="phead">
-<span data-i="thQ">Promesas en el juego</span>
-<span data-i="thP">Licencia del juego</span>
-</div>
-<div class="cero">
-<span class="cuantos" data-i="ceroQ">Ninguna &mdash; el juego no recogió promesas</span>
-<span class="cuesta">$0</span>
-</div>
-<div id="escalera"></div>
-</div>
+<!-- CUÁNDO CUALIFICA, con los dos números al lado.
 
+     El piso de cinco dólares existía desde el primer día y se
+     mencionaba de pasada. Nombrarlo —«cualifica»— es lo que lo hace
+     entendible, y el ejemplo de los cinco centavos es el que evita
+     que alguien prometa algo que no le va a llegar a nadie: a 5¢ por
+     punto no se recauda nada y nadie se entera hasta que no pasa
+     nada. -->
+<h3 class="priceH3" data-i="priceQ">&iquest;Cu&aacute;ndo cualifica una promesa?</h3>
+<p class="fine" data-i="priceQ1">Una promesa cualifica cuando su valor final alcanza $5 o
+  más, después de publicarse el marcador del juego.</p>
+<p class="fine" data-i="priceQ2">Por ejemplo, si un padrino promete 5&cent; por punto y su
+  equipo anota 60 puntos, su promesa vale $3. No cualifica, no genera notificación de cobro
+  al padrino ni cargo por licencia.</p>
+<p class="fine" data-i="priceQ3">Si promete 25&cent; por punto, su promesa vale $15. Esa sí
+  cualifica y cuenta como $1 para la licencia del software.</p>
+
+<h3 class="priceH3" data-i="priceH">Así de sencillo</h3>
 <ul class="pricefacts">
-<li data-i="pf0"><b>Sin promesas, sin cargo.</b> Un juego que no recoge ninguna no tiene
-  peldaño y no se factura nunca.</li>
-<li data-i="pf1">Nada por adelantado. Inscribirse es gratis y correrlo es gratis.</li>
-<li data-i="pf2">Se factura por los juegos que llevaron promesas, y se paga dentro de siete
-  días.</li>
-<li data-i="pf3">No es un por ciento de nada. No sale de ninguna promesa, y a tus padrinos
-  no les cobramos nada.</li>
-<li data-i="pf4">Si no se paga, esa licencia caduca y sus datos de promesas se retiran de
-  la plataforma. No lo reclamamos más allá de ahí.</li>
+<li data-i="pf0"><b>Sin promesas que cualifiquen, no hay cargo.</b> Si ninguna promesa
+  alcanza $5, no se factura el juego.</li>
+<li data-i="pf1"><b>Máximo $99 por juego.</b> Una vez que 99 promesas cualifican, todas las
+  adicionales se incluyen sin costo.</li>
+<li data-i="pf2">Nada por adelantado. Registrarse, organizar juegos y utilizar el calendario
+  es gratis.</li>
+<li data-i="pf3">Pagas después del juego. La licencia se calcula cuando se publica el
+  marcador final y debe pagarse dentro de siete días.</li>
+<li data-i="pf4">Sin porcentajes ni comisiones. No cobramos sobre el dinero prometido ni
+  cobramos a los padrinos.</li>
 <!-- EL MÍNIMO DE CINCO JUEGOS SE RETIRÓ el 28 de octubre de 2026. No
      era sólo una frase: era un número que le pedía al entrenador un
      compromiso de temporada antes de haber visto funcionar un solo
      juego — y chocaba de frente con lo que la página dice ahora.
      Estaba también en ayuda.html, en custodia.html y en la casilla
      de consentimiento de equipo.html; se retiró de las cuatro. -->
-<li data-i="pf5">Tampoco se mueve con tu plantilla, y no hay mínimo. <b>Con un juego
-  basta</b>, y cada juego de más es otra oportunidad.</li>
+<li data-i="pf5">Sin suscripciones. Cada juego se factura de manera independiente. No hay
+  compromisos de temporada ni cantidad mínima de juegos.</li>
 </ul>
+
+<!-- QUÉ PASA SI NO SE PAGA, y dicho aquí y no en la letra pequeña.
+
+     Es la pregunta que se hace en silencio quien está a punto de
+     aceptar algo, y no contestarla la deja contestada de la peor
+     manera. Lo que se suspende es el acceso; los datos del juego se
+     quedan donde están. -->
+<h3 class="priceH3" data-i="priceNoPay">&iquest;Qu&eacute; ocurre si no se paga la licencia?</h3>
+<p class="fine" data-i="priceNoPay1">Si la licencia no se paga dentro de los siete días
+  establecidos, el acceso a los informes y a la administración de promesas de ese juego
+  queda suspendido hasta que se complete el pago.</p>
+<p class="fine" data-i="priceNoPay2">Los datos del juego se conservan durante la suspensión.
+  La licencia puede reactivarse al realizar el pago pendiente.</p>
+
+<h3 class="priceH3" data-i="priceFunds">T&uacute; manejas tus recaudos</h3>
+<p class="fine" data-i="priceFunds1">Cada Punto Cuenta es una plataforma de administración
+  de promesas, no un servicio de recaudación.</p>
+<p class="fine" data-i="priceFunds2">Tu organización recibe y administra sus propios fondos.
+  Nosotros no recibimos, procesamos, retenemos, distribuimos ni conciliamos pagos de los
+  padrinos.</p>
+<p class="fine" data-i="priceFunds3"><b>Cada juego es una nueva oportunidad de conseguir
+  apoyo para tu equipo.</b></p>
 
 <p class="priceCta"><a class="button" href="equipo.html" data-i="register">Inscribir mi equipo</a></p>
 </div>
@@ -1109,10 +1140,11 @@ button.lang{padding:0 10px;font-size:.8rem}
 /* ══════════════════════════════════════════════════════════════════
    EL PRECIO, EN UN SOLO SITIO
 
-   La escalera por PROMESAS del juego. El peldaño lo decide cuántas
-   promesas lleva ESE juego, no cuánto dieron: dos juegos con veinte
-   promesas pagan lo mismo hayan recogido cien dólares o diez mil. Por
-   eso sigue sin ser un por ciento, que es lo que dicen los términos.
+   Un dólar por cada promesa que cualifica, y el techo en noventa y
+   nueve. Lo decide cuántas cualifican en ESE juego, no cuánto dieron:
+   dos juegos con veinte promesas que cualifican pagan lo mismo hayan
+   recogido cien dólares o diez mil. Por eso sigue sin ser un por
+   ciento, que es lo que dicen los términos.
 
    Un juego sin promesas no tiene peldaño: no se factura.
 
@@ -1120,15 +1152,21 @@ button.lang{padding:0 10px;font-size:.8rem}
    equipo, admin y la demostración— tienen que decir lo mismo, y
    prueba-precio.js comprueba que ninguna lo contradiga.
    ══════════════════════════════════════════════════════════════════ */
-const TARIFAS = [
-  { hasta:  10, precio:  5 },
-  { hasta:  25, precio: 12 },
-  { hasta:  50, precio: 25 },
-  { hasta: 100, precio: 45 },
-  { hasta: 200, precio: 79 },
-  { hasta: null, precio: null }      // más de 200: se habla
-];
-const FEE = { suelo: 5, tope: 79, desdeTope: 200 };
+/* UN DÓLAR POR PROMESA QUE CUALIFICA, CON TECHO DE NOVENTA Y NUEVE.
+
+   La escalera se retiró el 30 de octubre de 2026. Eran seis peldaños
+   —hasta 10 $5, hasta 25 $12, hasta 50 $25…— y para saber lo que iba
+   a costarle un juego, un entrenador tenía que buscar su fila. Un
+   precio que hay que consultar es un precio que se piensa dos veces.
+
+   Ahora se cuenta con los dedos: veintitrés promesas cualificaron,
+   veintitrés dólares. Y a partir de noventa y nueve deja de subir.
+
+   PROMESA QUE CUALIFICA es la que vale cinco dólares o más cuando se
+   pone el marcador. No es nuevo: la base lleva contando exactamente
+   eso desde el primer día. Lo nuevo es que tiene nombre. */
+const FEE = { porPromesa: 1, tope: 99, suelo: 5 };
+function licenciaDe(n){ return n > 0 ? Math.min(n, FEE.tope) * FEE.porPromesa : 0; }
 /* MINIMO se retiró el 28 de octubre de 2026 junto con el mínimo de
    cinco juegos. Con él se va {M}, que era su hueco: ya no hay ningún
    número de juegos que un programa tenga que activar. Con un juego
@@ -1214,7 +1252,7 @@ s2m:'&times; the 4 padrinos he finds himself',
 s3k:'The whole roster',
 s3m:'&times; 12 players &mdash; 48 padrinos in all',
 cPend:'<b>Prometido no es cobrado.</b> We record what was pledged and work out each padrino&rsquo;s total. What actually arrives, and when, depends on your collecting &mdash; one padrino who pays is worth more than ten pledges on a list.',
-exFine:'Pledges run from 10&cent; to $1 a point, so a padrino who wants to give more does it by the point rather than by being asked twice. A pledge that works out under $5 closes at $0.00 and does not count towards the game&rsquo;s step.',
+exFine:'Pledges run from 10&cent; to $1 a point, so a padrino who wants to give more does it by the point rather than by being asked twice. A pledge that does not reach $5 does not qualify: it closes at $0.00 and nothing is charged for it.',
 
 npEye:'No ceiling',
 npH2:'There is no ceiling. Not on padrinos, not on games.',
@@ -1263,20 +1301,25 @@ mLegal:'Cada Punto Cuenta is strictly a pledge management software provider. Org
 
 priceLabel:'Transparent pricing',
 priceTitle:'You pay for the software, not a percentage of what was pledged.',
-priceDesc:'The step is set by how many pledges a game gathered, and nothing else. Two games with twenty pledges cost the same whether one brought in a hundred dollars and the other ten thousand.',
-thQ:'Pledges on the game',
-thP:'Game licence',
-ceroQ:'None &mdash; the game gathered no pledges',
-escHasta:'Up to {H} pledges on the game',
-escEntre:'{D} to {H} pledges',
-escDesde:'{D} pledges or more',
-escHablar:'Let us talk',
-pf0:'<b>No pledges, no fee.</b> A game that gathers none has no step and is never invoiced.',
-pf1:'Nothing up front. Signing up is free and running it is free.',
-pf2:'Invoiced for the games that carried pledges, due within seven days.',
-pf3:'Not a percentage of anything. It does not come out of any pledge, and your padrinos are charged nothing.',
-pf4:'If it is not paid, that licence lapses and its pledge data comes off the platform. We do not chase it any further.',
-pf5:'It does not move with your roster either, and there is no minimum. <b>One game is enough</b>, and every additional game is another opportunity.',
+priceDesc:'<b>$1 for each pledge that qualifies. $99 maximum per game.</b> Cada Punto Cuenta charges only for pledges that qualify. How much money was pledged does not matter: the price depends on how many pledges qualify, not on what they are worth.',
+priceQ:'When does a pledge qualify?',
+priceQ1:'A pledge qualifies when its final value reaches $5 or more, after the game score is posted.',
+priceQ2:'For example, if a padrino pledges 5&cent; a point and his team scores 60 points, his pledge is worth $3. It does not qualify, it raises no notice to the padrino and no licence charge.',
+priceQ3:'If he pledges 25&cent; a point, his pledge is worth $15. That one qualifies, and counts as $1 toward the software licence.',
+priceH:'As simple as that',
+pf0:'<b>No qualifying pledges, no charge.</b> If no pledge reaches $5, the game is not invoiced.',
+pf1:'<b>$99 maximum per game.</b> Once 99 pledges qualify, every additional one is included at no cost.',
+pf2:'Nothing up front. Registering, running games and using the calendar are free.',
+pf3:'You pay after the game. The licence is worked out when the final score is posted, and is due within seven days.',
+pf4:'No percentages and no commissions. We charge nothing on the money pledged and nothing to the padrinos.',
+pf5:'No subscriptions. Every game is invoiced on its own. There are no season commitments and no minimum number of games.',
+priceNoPay:'What happens if the licence is not paid?',
+priceNoPay1:'If the licence is not paid within the seven days, access to that game&rsquo;s reports and pledge management is suspended until payment is made.',
+priceNoPay2:'The game&rsquo;s data is kept during the suspension. The licence can be reactivated by making the outstanding payment.',
+priceFunds:'You manage your proceeds',
+priceFunds1:'Cada Punto Cuenta is a pledge management platform, not a collection service.',
+priceFunds2:'Your organization receives and manages its own funds. We do not receive, process, hold, distribute or reconcile payments from padrinos.',
+priceFunds3:'<b>Every game is a new chance to bring your team support.</b>',
 register:'Sign up my team',
 
 zEye:'Make your next game count',
@@ -1310,28 +1353,16 @@ lMoney:'The money does not pass through us'
 const spanish={};
 document.querySelectorAll('[data-i]').forEach(el=>spanish[el.dataset.i]=el.innerHTML);
 
-/* Los rótulos de la escalera del precio no viven en ningún elemento:
-   los pinta el JS a partir de TARIFAS. El español va aquí al lado de
-   la recogida y el inglés arriba en la tabla, para que no haya dos
-   sitios donde buscarlo. */
-spanish.escHasta  = 'Hasta {H} promesas en el juego';
-spanish.escEntre  = 'De {D} a {H} promesas';
-spanish.escDesde  = '{D} promesas o más';
-spanish.escHablar = 'Hablemos';
-
 /* OJO CON LAS LETRAS QUE SE USAN AQUÍ. Esto corre sobre las dos
    tablas enteras antes de pintar nada, así que cualquier {X} que
-   aparezca en cualquier frase se sustituye.
+   aparezca en cualquier frase se sustituye. Hoy quedan dos: {P} para
+   lo que hace que una promesa cualifique, y {T} para el techo.
 
-   {D} y {H} NO pueden estar: son los huecos de los rótulos de la
-   escalera —«De {D} a {H} promesas»— y los rellena el pintor con el
-   peldaño de cada fila. Si se sustituyeran aquí, las seis filas
-   saldrían con el mismo número y la escalera diría seis veces lo
-   mismo sin que nada fallara. Por eso el techo va en {V}. */
+   {V} se retiró con la escalera: nombraba desde cuántas promesas
+   empezaba el último peldaño, y ya no hay peldaños. */
 function conPrecio(s){
   return String(s).split('{P}').join(FEE.suelo)
-                  .split('{T}').join(FEE.tope)
-                  .split('{V}').join(FEE.desdeTope);
+                  .split('{T}').join(FEE.tope);
 }
 Object.keys(spanish).forEach(k=>{ spanish[k]=conPrecio(spanish[k]) });
 Object.keys(translations.en).forEach(k=>{ translations.en[k]=conPrecio(translations.en[k]) });
@@ -1386,35 +1417,9 @@ document.querySelectorAll('[data-i]').forEach(el=>{
 el.innerHTML=locale==='en'?(translations.en[el.dataset.i]||spanish[el.dataset.i]):spanish[el.dataset.i];
 });
 
-/* ── LA ESCALERA DEL PRECIO, PINTADA ──────────────────────────────
-   Una fila por peldaño, leídas de TARIFAS. Se repinta al cambiar de
-   idioma porque las etiquetas son texto, no sólo números.
-
-   El peldaño del suelo va resaltado: es donde cae un juego normal, y
-   es el número que alguien se lleva en la cabeza. */
-var caja = document.getElementById('escalera');
-if (caja && typeof TARIFAS !== 'undefined'){
-  var t = function(k){
-    return (locale === 'en' ? (translations.en[k] || spanish[k]) : spanish[k]) || '';
-  };
-  var desde = 1, filas = '';
-  TARIFAS.forEach(function(p){
-    var etiqueta;
-    if (p.hasta === null)  etiqueta = t('escDesde').split('{D}').join(desde);
-    else if (desde === 1)  etiqueta = t('escHasta').split('{H}').join(p.hasta);
-    else                   etiqueta = t('escEntre').split('{D}').join(desde)
-                                                   .split('{H}').join(p.hasta);
-    var suyo = p.precio === FEE.suelo ? ' suyo' : '';
-    var cuesta = p.precio === null
-      ? '<span class="hablar">' + t('escHablar') + '</span>'
-      : '<span class="cuesta">$' + p.precio + '</span>';
-    filas += '<div class="peldano' + suyo + '">' +
-               '<span class="cuantos">' + etiqueta + '</span>' + cuesta +
-             '</div>';
-    if (p.hasta !== null) desde = p.hasta + 1;
-  });
-  caja.innerHTML = filas;
-}
+/* El precio ya no se pinta: es una línea de texto, no una tabla.
+   licenciaDe() se queda porque la usa prueba-precio.js para
+   comprobar que la regla no cambie sin que nadie se entere. */
 
 /* El botón dice a dónde lleva, no dónde estás: en español, «English».
    Y el aria-label igual, en el idioma al que lleva, porque quien usa
