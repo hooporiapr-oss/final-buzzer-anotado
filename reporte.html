@@ -673,6 +673,25 @@ function estatico(){
   $('fCobro').textContent=(LANG==='es')?'Cómo cobras':'How you collect';
 }
 
+/* EL CÓDIGO COMO LO ESCRIBA. «Canóvanas 15U 4827», «canovanas15u-4827»
+   y «CANOVANAS15U4827» son el mismo código: se prueba primero tal
+   cual —así los códigos de siempre, con su guion, no se tocan— y si
+   no abre, se prueba limpio, sin acentos, espacios ni guiones, que es
+   como lo guarda la base. */
+function codigoLimpio(s){
+  return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+           .toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+function probarCodigo(k){
+  return rpc('juegos_del_codigo', { p_code: k }).then(function(r){
+    var n = codigoLimpio(k);
+    if ((r && r.ok) || n === k || n.length < 4) return { k: k, r: r };
+    return rpc('juegos_del_codigo', { p_code: n }).then(function(r2){
+      return (r2 && r2.ok) ? { k: n, r: r2 } : { k: k, r: r };
+    });
+  });
+}
+
 /* Dos pasos con el mismo botón: primero el código trae los retos,
    después el reto escogido trae el reporte. Un paso menos que
    pedirle al entrenador que aprete dos veces para lo mismo. */
@@ -684,7 +703,8 @@ function seguir(){
   if(!k) return;
   $('tGo').disabled=true;
 
-  rpc('juegos_del_codigo',{p_code:k}).then(function(r){
+  probarCodigo(k).then(function(x){
+    var r = x.r; k = x.k;
     $('tGo').disabled=false;
     if(!r||!r.ok) throw new Error('bad');
     CODE=k;
