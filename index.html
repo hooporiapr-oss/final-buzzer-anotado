@@ -271,6 +271,20 @@ h1 em{font-style:normal;color:var(--orange)}
    Mismo armazón que el calendario de arriba —panel, cabecera crema,
    filas separadas— porque son la misma familia: lo que se ve antes
    del juego y lo que llega después. */
+.colrep{min-width:0}
+.formatos{display:grid;gap:.7rem}
+.fmt{position:relative;background:var(--panel);border:1px solid var(--linea);
+  border-radius:14px;padding:1rem 1.1rem 1.05rem 3.1rem}
+.fmtn{position:absolute;left:1.05rem;top:1.05rem;font-family:Archivo,sans-serif;
+  font-weight:900;font-size:.8rem;color:var(--naranja);letter-spacing:.04em}
+.fmt b{display:block;font-size:1rem;margin-bottom:.22rem}
+.fmt span{display:block;color:var(--muted);font-size:.88rem;line-height:1.5}
+.muestra{margin-top:1.1rem;background:var(--cream);border:1px solid var(--linea);
+  border-radius:15px;padding:1.2rem 1.15rem}
+.muestra b{display:block;font-family:Archivo,sans-serif;font-size:1.05rem}
+.muestra p{color:var(--muted);font-size:.9rem;line-height:1.55;margin:.4rem 0 .9rem}
+.muestra .button{display:inline-block}
+.muestra .fine{margin:.75rem 0 0;font-size:.78rem}
 .mail{background:var(--panel);border:1px solid var(--linea);border-radius:15px;
   overflow:hidden;min-width:0}
 .mailcab{padding:.75rem 1.1rem;background:var(--cream);border-bottom:1px solid var(--linea)}
@@ -1007,36 +1021,58 @@ button.lang{padding:0 10px;font-size:.8rem}
   siendo tuyo &mdash; esto es sólo la lista de a quién y cuánto.</p>
 </div>
 
-<div class="mail">
-<div class="mailcab">
-  <div class="mailde" data-i="rpDe">Cada Punto Cuenta &rarr; tu correo</div>
-  <div class="mailas" data-i="rpAs">Canóvanas · CP-1: $49.30 en promesas</div>
+<!-- ══════════════════════════════════════════════════════════════
+     LAS CUATRO MANERAS DE VER EL MISMO REPORTE.
+
+     Aquí había una imitación de un correo, dibujada con divs: un
+     asunto falso, cuatro padrinos inventados y un total. Enseñaba
+     una de las cuatro formas y la enseñaba de mentira — un dibujo de
+     un correo no es un correo, y el entrenador que quería ver cómo
+     era de verdad no tenía dónde mirar.
+
+     Ahora se dice lo que hay y se enseña lo de verdad: el enlace de
+     abajo baja un CSV que salió del propio botón de reporte.html,
+     con sus columnas, su pie y sus casos raros dentro. No es una
+     maqueta; es el fichero.
+     ══════════════════════════════════════════════════════════════ -->
+<div class="colrep">
+<div class="formatos">
+<div class="fmt">
+  <div class="fmtn">01</div>
+  <b data-i="rpF1b">En pantalla</b>
+  <span data-i="rpF1">Entras con tu código, escoges el juego y ahí está la lista: cada
+    padrino, su tarifa, su tope y lo que dio su promesa.</span>
 </div>
-<div class="mailtot">
-  <div class="num">$49.30</div>
-  <span data-i="rpTot">de 3 padrinos · Canóvanas anotó 58 puntos</span>
+<div class="fmt">
+  <div class="fmtn">02</div>
+  <b data-i="rpF2b">En hoja de cálculo</b>
+  <span data-i="rpF2">Un botón y lo bajas en CSV, listo para Excel o Google Sheets.
+    Es tuyo: ordénalo, fíltralo, tacha al que ya te pagó.</span>
+</div>
+<div class="fmt">
+  <div class="fmtn">03</div>
+  <b data-i="rpF3b">Impreso</b>
+  <span data-i="rpF3">La misma lista en papel, para el que cobra con la hoja en la
+    mano y sin mirar el teléfono.</span>
+</div>
+<div class="fmt">
+  <div class="fmtn">04</div>
+  <b data-i="rpF4b">En tu correo</b>
+  <span data-i="rpF4">Cuando salen los avisos a los padrinos, a ti te llega el mismo
+    juego por tu lado, sin que tengas que entrar a buscarlo.</span>
+</div>
 </div>
 
-<div class="mailfila">
-  <b>Tía Mari</b><span class="mo">$14.50</span>
-  <span class="co">mari@ejemplo.com &middot; 25&cent;/punto</span>
+<div class="muestra">
+  <b data-i="rpMuH">Míralo tú mismo</b>
+  <p data-i="rpMuP">Este es un reporte de verdad, bajado del botón: Canóvanas 15U
+    contra Loíza, doce padrinos, el equipo anotó 68. Trae dentro los casos que de
+    verdad pasan &mdash; un tope que mordió, dos promesas que no llegaron al mínimo,
+    un correo que rebotó y una cifra corregida.</p>
+  <a class="button" href="reporte-es.csv" download data-i="rpMuB">Bajar el reporte de ejemplo (CSV)</a>
+  <p class="fine" data-i="rpMuF">Se baja un fichero .csv. El reporte existe en español y en
+    inglés, y los padrinos de este ejemplo son inventados.</p>
 </div>
-<div class="mailfila">
-  <b>Don Luis Rivera</b><span class="mo">$29.00</span>
-  <span class="co">luis@ejemplo.com &middot; 50&cent;/punto</span>
-  <span class="et" data-i="rpCorr">corregido</span>
-</div>
-<div class="mailfila">
-  <b data-i="rpVec">Vecino del frente</b><span class="mo">$5.80</span>
-  <span class="co">malo@ejemplo.com &middot; 10&cent;/punto</span>
-  <span class="et mal" data-i="rpReb">rebotó &mdash; llámalo</span>
-</div>
-<div class="mailfila">
-  <b data-i="rpPri">Primo Ángel</b><span class="mo">$0.00</span>
-  <span class="co">primo@ejemplo.com &middot; 5&cent;/punto</span>
-  <span class="et" data-i="rpBajo">bajo el mínimo &mdash; no se le cobra</span>
-</div>
-<div class="mailpie" data-i="rpPie">Ejemplo. El reporte llega en español y en inglés.</div>
 </div>
 </div>
 </section>
@@ -1252,16 +1288,19 @@ rpEye:'After the game',
 rpH2:'You do not keep the tally. It arrives done.',
 rpP:'When the notices go out, the same game comes to you from your side: what it raised, who pledged what, and where each one ended up. No sheet to keep and no page to open &mdash; it lands in your inbox already done.',
 rpP2:'It carries what cannot be hidden. The padrino whose email bounced is marked, because that one will not hear by email and needs a call. The pledge that did not reach the minimum shows at $0.00 with its name, so you know what to tell them. And anyone who got a correction is marked, so it does not surprise you when they ring.',
+rpF1b:'On screen',
+rpF1:'You sign in with your code, pick the game, and there is the list: every padrino, his rate, his cap and what his pledge came to.',
+rpF2b:'As a spreadsheet',
+rpF2:'One button and it downloads as CSV, ready for Excel or Google Sheets. It is yours: sort it, filter it, cross off whoever has paid you.',
+rpF3b:'Printed',
+rpF3:'The same list on paper, for collecting with the sheet in your hand and no phone in sight.',
+rpF4b:'In your inbox',
+rpF4:'When the notices go out to the padrinos, the same game comes to you from your side, without having to go and look for it.',
+rpMuH:'See one yourself',
+rpMuP:'This is a real report, pulled from the button: Canóvanas 15U against Loíza, twelve padrinos, the team scored 68. It has the cases that actually happen inside it &mdash; a cap that bit, two pledges that did not reach the minimum, an email that bounced and a corrected figure.',
+rpMuB:'Download the sample report (CSV)',
+rpMuF:'Downloads a .csv file. The report exists in Spanish and English, and the padrinos in this example are invented.',
 rpP3:'No payment link and nothing asked of you. Collecting stays yours &mdash; this is only the list of who and how much.',
-rpDe:'Cada Punto Cuenta &rarr; your inbox',
-rpAs:'Canóvanas · CP-1: $49.30 in pledges',
-rpTot:'from 3 padrinos · Canóvanas scored 58 points',
-rpCorr:'corrected',
-rpVec:'Neighbour across the street',
-rpReb:'bounced &mdash; call them',
-rpPri:'Cousin Ángel',
-rpBajo:'below the minimum &mdash; not charged',
-rpPie:'Example. The report arrives in Spanish and English.',
 sdDay:'Saturday 21 November',
 sdEg:'Example',
 vs1:'vs',
