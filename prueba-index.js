@@ -237,6 +237,37 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
       }
     }
     if (bienT) ok('y las tres de la temporada: ' + LIC + ' por juego, multiplicado');
+
+    /* ── LA CIFRA ESCRITA EN LETRAS ────────────────────────────────
+       El párrafo de debajo de la tabla decía «son veinte licencias
+       de veinticinco dólares» mucho después de que la tabla dijera
+       $48 y $960. Sobrevivió a los guardias y al despliegue porque
+       la cifra no lleva signo de dólar: buscando /\$25\b/ no hay
+       nada que encontrar.
+
+       Así que aquí se vigilan las letras. La palabra de la cifra se
+       saca de la cuenta —no se escribe a mano— y además se prohíbe
+       el lenguaje de la escalera retirada, que es lo que arrastraba
+       la frase vieja. */
+    const LETRAS = { 48:['cuarenta y ocho','forty-eight'], 99:['noventa y nueve','ninety-nine'],
+                     25:['veinticinco','twenty-five'], 12:['doce','twelve'] };
+    const palabra = LETRAS[LIC] && LETRAS[LIC][0];
+    if (!palabra){
+      mal('la licencia por juego es $' + LIC + ' y no hay palabra para ella: '
+          + 'añádela a LETRAS para que esta comprobación siga sirviendo');
+    } else if (ci(new RegExp(palabra + '\\s+dólares')).test(t)){
+      ok('y la cifra escrita en letras dice ' + palabra + ', igual que la tabla');
+    } else {
+      mal('el párrafo de la temporada no dice «' + palabra + ' dólares»');
+    }
+    /* Las dos frases que sostenían la escalera. Si alguna vuelve,
+       vuelve con ella un precio que ya no existe. */
+    not(t,/por tramos|de 120 a 200|peldañ/i,'y no quedó lenguaje de la escalera');
+    for (const [n,[es,en]] of Object.entries(LETRAS)){
+      if (Number(n) === LIC) continue;
+      if (ci(new RegExp('(' + es + '|' + en + ')[ -]+(dólares|dollar)')).test(t))
+        mal('todavía se lee «' + es + ' dólares», que no es el precio de hoy');
+    }
   }
   /* EL NÚMERO GRANDE DE LA TEMPORADA NO PUEDE QUEDARSE SOLO. Son
      dieciséis mil dólares en naranja; sin esta frase al lado, un
@@ -246,7 +277,12 @@ const eqTexto=(a,b,q)=>a===b?ok(q+' → '+a):mal(q+'\n         esperaba: '+b+'\n
   /* NO ES UN POR CIENTO, Y AQUÍ HACE MÁS FALTA QUE EN NINGÚN SITIO:
      $500 entre $16,320 da un tres por ciento, y un entrenador hace
      esa división solo. La página tiene que adelantarse. */
-  has(t,/son veinte licencias de veinticinco dólares/,'y que los $500 son veinte licencias, no un por ciento');
+  /* La cifra NO se escribe aquí: la comprueba contra la cuenta el
+     bloque de LETRAS de más abajo. Esta línea sólo vigila la forma
+     de la frase —veinte licencias, una por juego— que es lo que
+     impide leer el total de la temporada como un por ciento. */
+  has(t,/son veinte licencias de/,'y que la temporada son veinte licencias, no un por ciento');
+  has(t,/una por juego/,'una por juego');
   has(t,/la licencia no te persigue/,'y se dice que la licencia sube por tramos y se para');
 
   /* ── NADIE «DEBE» NADA ───────────────────────────────────────────
