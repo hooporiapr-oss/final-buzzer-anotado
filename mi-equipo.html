@@ -395,7 +395,7 @@ var S={
     errConPromesas:'Este juego ya tiene {N} promesa(s). No se le pueden quitar los padrinos por detrás: alguien ya prometió sobre él.',
     errYaJugado:'Este juego ya tiene marcador. Eso ya no se cambia.',
     copiar:'Copiar el enlace', copiado:'Copiado',
-    lMios:'nosotros', lSuyos:'ellos',
+    lMios:'nosotros', lSuyos:'ellos', lMarcador:'Marcador final',
     poner:'Poner el marcador', retirar:'Retirar el marcador',
     verReporte:'Ver el reporte',
     avisar:'Mandar los avisos',
@@ -457,7 +457,7 @@ var S={
     errConPromesas:'This game already has {N} pledge(s). The padrinos cannot be taken off behind their backs: someone already pledged on it.',
     errYaJugado:'This game already has a score. That does not change now.',
     copiar:'Copy the link', copiado:'Copied',
-    lMios:'us', lSuyos:'them',
+    lMios:'us', lSuyos:'them', lMarcador:'Final score',
     poner:'Post the score', retirar:'Withdraw the score',
     verReporte:'See the report',
     avisar:'Send the notices',
@@ -670,6 +670,10 @@ function pintarJuegos(){
                 esc(g.game_id)+'">'+esc(T('cerrar'))+'</button></div>'
             : ''))+
 
+      /* CON SU RÓTULO. Eran dos casillas sueltas que decían
+         «nosotros» y «ellos» por dentro, y un entrenador buscándolo
+         no las reconoció como el sitio del marcador. */
+      '<p class="help" style="font-weight:800;margin:10px 0 0">'+esc(T('lMarcador'))+'</p>'+
       '<div class="lin">'+
         '<input class="pts" data-a="'+esc(g.game_id)+'" type="number" min="0" max="300" '+
           'placeholder="'+esc(T('lMios'))+'" value="'+(g.puntos==null?'':g.puntos)+'">'+
