@@ -783,6 +783,17 @@ $('form').onsubmit=function(ev){
     function(d){
       $('enviar').disabled=false;
       if(d&&d.ok){
+        /* AL ADMIN, LA PROMESA NUEVA. Se prometía y no se enteraba
+           nadie hasta abrir el admin. El servidor no se fía de lo que
+           le manden: busca la promesa en la base y sólo avisa si de
+           verdad acaba de entrar. Si esto falla, la promesa ya quedó
+           guardada igual — el aviso es un extra. */
+        try{
+          fetch('https://hooporia-server.onrender.com/promesa-aviso',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({ game:GAME, email:mail })
+          }).catch(function(){});
+        }catch(x){}
         $('form').hidden=true;
         $('listo').hidden=false;
         if(d.cambiada) $('listoP').textContent=T('otraVez');
