@@ -297,6 +297,10 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
       <button class="q sm" id="verNueva">+ New campaign</button>
       <button class="q sm" id="codigoNuevo">New coach code</button>
       <button class="q sm" id="recargar">Reload</button>
+      <!-- Borrar la campaña escogida en el desplegable, con todo lo
+           suyo. Para las que no tienen solicitud en la lista de
+           arriba: las de «+ New campaign» y las que quedaron solas. -->
+      <button class="q sm" id="campBorrar">Delete this campaign</button>
     </div>
     <!-- El código se guarda cifrado: esta caja es la única vez que
          se puede leer. -->
@@ -1457,6 +1461,35 @@ $('guardarPago').onclick = function(){
 };
 $('camp').onchange = function(){ escoger(this.value) };
 $('recargar').onclick = cargarCampanas;
+$('campBorrar').onclick = function(){
+  if (!CAMP) return di('mCamp', 'Pick a campaign first.', 'mal');
+  var nombre = CAMP.name || 'this campaign', boton = this;
+  if (!confirm('Delete ' + nombre + '?\n\n' +
+      'This removes the campaign and everything in it: its games, its pledges, ' +
+      'its coach and code, its scores, and the signup it came from.\n\n' +
+      'It cannot be undone.')) return;
+  boton.disabled = true;
+  di('mCamp', '…');
+  rpc('campana_borrar_admin', { p_campaign: CAMP.id })
+    .then(function(r){
+      boton.disabled = false;
+      if (!r || !r.ok){
+        var porQue = r && r.reason === 'no-admin' ? 'you are not signed in as an admin'
+          : r && r.reason === 'gone' ? 'it was already removed — reloading'
+          : r && r.reason === 'facturado'
+            ? 'it has an invoiced licence, so it cannot be deleted from here'
+          : 'it did not go through' + porque(r);
+        di('mCamp', 'Could not delete: ' + porQue + '.', 'mal');
+        if (r && r.reason === 'gone') cargarCampanas();
+        return;
+      }
+      di('mCamp', 'Deleted ' + (r.nombre || nombre) + ': ' + (r.juegos || 0) + ' games, ' +
+        (r.promesas || 0) + ' pledges and ' + (r.marcadores || 0) + ' scores went with it.', 'bien');
+      cargarCampanas();
+      try { cargarSolicitudes() } catch(e) {}
+    })
+    .catch(function(e){ boton.disabled = false; di('mCamp', 'Could not delete' + porque(e), 'mal') });
+};
 $('solRecargar').onclick = cargarSolicitudes;
 /* ══════════════════════════════════════════════════════════════════
    UN JUEGO, SIN TORNEO
