@@ -112,8 +112,10 @@ console.log('\n2 · El menú abre, cierra, y cerrado no estorba\n');
   await rayas.click();
   await pag.waitForTimeout(300);
   eq(await rayas.getAttribute('aria-expanded'), 'true', 'al pulsar, abre');
-  si(await menu.locator('a[href="#how"]').isVisible(),
-     'y «Cómo funciona» está ahí — el enlace que antes se escondía');
+  /* «Cómo funciona» salió del menú el 31 de octubre; lo que se mira
+     ahora es que el primer enlace de verdad se vea al abrir. */
+  si(await menu.locator('a[href="mi-equipo.html"]').isVisible(),
+     'y «Mi calendario» está ahí — el enlace no se esconde');
 
   /* El panel no puede taparse con la cabecera ni salirse de lado. */
   const caja = await menu.boundingBox();
@@ -135,8 +137,12 @@ console.log('\n2 · El menú abre, cierra, y cerrado no estorba\n');
   });
   eq(bajos, [], 'todos los enlaces del menú miden 44px o más de alto');
 
-  // Cerrar pulsando un enlace
-  await menu.locator('a[href="#precio"]').click();
+  // Cerrar pulsando un enlace. Los anclas de esta página salieron del
+  // menú el 31 de octubre; se pulsa uno de los que quedan sin dejar
+  // que navegue, que lo que se mira es que el panel se cierre.
+  await pag.evaluate(() => document.querySelector('#menu a[href="ayuda.html"]')
+    .addEventListener('click', e => e.preventDefault(), { once: true }));
+  await menu.locator('a[href="ayuda.html"]').click();
   await pag.waitForTimeout(300);
   eq(await rayas.getAttribute('aria-expanded'), 'false',
      'pulsar un enlace lo cierra — no se queda tapando la sección');
@@ -153,7 +159,7 @@ console.log('\n2 · El menú abre, cierra, y cerrado no estorba\n');
   eq(await rayas.getAttribute('aria-expanded'), 'false',
      'y al ensanchar a escritorio se cierra solo');
   si(!(await rayas.isVisible()), 'las rayas desaparecen en escritorio');
-  si(await menu.locator('a[href="#how"]').isVisible(),
+  si(await menu.locator('a[href="mi-equipo.html"]').isVisible(),
      'y los enlaces vuelven a la barra');
 
   await pag.close();
@@ -184,8 +190,8 @@ console.log('\n3 · El botón dice el idioma al que lleva\n');
      'y el botón ofrece el inglés, que es a donde lleva');
   si(await pag.locator('#lang').isVisible(),
      'el idioma se queda a la vista, no dentro del menú');
-  si((await pag.locator('[data-i="navPrice"]').first().textContent()).indexOf('Cu') === 0,
-     'y los enlaces salen en español («Cuánto cuesta»)');
+  si((await pag.locator('[data-i="navFaq"]').first().textContent()).indexOf('Pre') === 0,
+     'y los enlaces salen en español («Preguntas»)');
 
   /* Pero se puede ir al inglés, y el botón tiene que darse la vuelta:
      dice a dónde lleva, no dónde estás. */
@@ -209,8 +215,12 @@ console.log('\n3 · El botón dice el idioma al que lleva\n');
   await pag.waitForTimeout(150);
   eq(await pag.getAttribute('html', 'lang'), 'es',
      'y al recargar la portada vuelve al español, aunque quedara inglés guardado');
-  eq(await pag.evaluate(() => localStorage.getItem('cp-lang')), 'en',
-     'pero la elección queda guardada para las páginas de dentro');
+  /* Antes la elección se quedaba guardada. Ya no: la portada escribe
+     su propio idioma al cargar, a propósito, para que lo que se abra
+     desde aquí salga en el mismo (ver «Y SE GUARDA SIEMPRE» en
+     index.html). */
+  eq(await pag.evaluate(() => localStorage.getItem('cp-lang')), 'es',
+     'y al cargar, la portada deja guardado su propio idioma para las de dentro');
 
   /* Y PARA MANDAR EL ENLACE EN INGLÉS, ?lang=en: explícito, visible
      en la dirección, y sin depender de lo que tenga guardado nadie. */
@@ -249,9 +259,11 @@ console.log('\n4 · La cabecera pegada no tapa lo que buscas\n');
        bien colocado, es que todavía no había llegado. */
     await pag.evaluate(() => { window.scrollTo(0, 0); location.hash = '' });
     await pag.waitForTimeout(150);
-    await pag.locator('#hamb').click();
-    await pag.waitForTimeout(260);
-    await pag.locator('#menu a[href="#' + id + '"]').click();
+    /* Desde el 31 de octubre el menú ya no lleva a estas secciones;
+       se llega por la dirección, que es como llega quien abre un
+       enlace con #how o #precio. Lo que se mide no cambia: que la
+       cabecera pegada no tape el título. */
+    await pag.evaluate((x) => { location.hash = x }, id);
 
     await pag.waitForFunction(() => {
       // Dos lecturas iguales seguidas = ya no se mueve.
