@@ -287,6 +287,13 @@ header{color:#fff}
            hasta hoy eran dos productos que no se hablaban: había que
            descubrirlo por cuenta propia y volver a escribir el
            código. Va en el enlace, con el nombre del equipo. -->
+      <!-- SU CALENDARIO, A LA VISTA. El enlace salía una vez, al
+           registrar, y el entrenador que lo perdía no tenía cómo volver
+           a él. Aquí sale cada vez que entra, con su botón de copiar
+           para mandarlo otra vez al grupo. Vacío hasta que registre el
+           primero. -->
+      <div id="misCal"></div>
+
       <h2 id="tHorario"></h2>
       <p class="help" id="tHorarioP"></p>
       <p><a class="btn go" id="jHorario" target="_blank" rel="noopener"></a></p>
@@ -381,6 +388,9 @@ var S={
     horario:'¿Tienes la temporada entera?',
     horarioP:'Súbela de una vez en el constructor de marcadorpr: escribes la lista de juegos, marcas en cuáles quieres padrinos, y vuelven aquí con sus enlaces. Tu código va puesto.',
     irHorario:'Montar mi calendario',
+    verCal:'Ver mi calendario', copiarCal:'Copiar el enlace',
+    misCalT:'Tu calendario',
+    misCalP:'Tus juegos con sus marcadores y el botón de prometer. Es el enlace que mandas al grupo.',
     teams:'Tus juegos',
     sinJuegos:'Todavía no tienes ningún juego. Monta tu calendario arriba y salen aquí, cada uno con su enlace.',
     nPromesas:'{N} promesas', nPromesa:'1 promesa', sinPromesas:'sin promesas',
@@ -443,6 +453,9 @@ var S={
     horario:'Got the whole season?',
     horarioP:'Put it up in one go in the marcadorpr builder: you type the list of games, tick which ones you want padrinos on, and they come back here with their links. Your code travels with you.',
     irHorario:'Build my schedule',
+    verCal:'See my schedule', copiarCal:'Copy the link',
+    misCalT:'Your schedule',
+    misCalP:'Your games with their scores and the pledge button. It is the link you send to the group.',
     teams:'Your games',
     sinJuegos:'No games yet. Build your schedule above and they show up here, each with its link.',
     nPromesas:'{N} pledges', nPromesa:'1 pledge', sinPromesas:'no pledges',
@@ -590,6 +603,7 @@ function entrar(auto){
       $('hwho').className='who'; $('hwho').textContent=PROGRAMA;
       $('hout').className='out';
       pintarJuegos();
+      cargarMisCal();
     })
     .catch(function(e){ console.error(e); say(T('net') + porque(e), 'bad') });
 }
@@ -605,7 +619,43 @@ function recargar(){
 
 function enlace(id){ return 'https://cadapunto.com/prometer.html?g=' + id }
 
+/* Los calendarios de este equipo: el de su temporada y los torneos
+   en los que juega. Se piden al entrar y se repintan con el idioma. */
+var MIS_CAL = [];
+function cargarMisCal(){
+  rpc('calendarios_del_codigo', { p_code: CODE })
+    .then(function(r){ MIS_CAL = (r && r.ok && r.calendarios) || []; pintarMisCal(); })
+    .catch(function(){});
+}
+function pintarMisCal(){
+  var box = $('misCal'); if (!box) return;
+  if (!MIS_CAL.length){ box.innerHTML = ''; return; }
+  box.innerHTML = '<h2>' + esc(T('misCalT')) + '</h2>' +
+    '<p class="help">' + esc(T('misCalP')) + '</p>' +
+    MIS_CAL.map(function(c){
+      var url = 'https://marcadorpr.com/torneo.html?t=' + encodeURIComponent(c.id);
+      return '<div class="team"><b>' + esc(c.nombre) + '</b>' +
+        '<div class="lin">' +
+          '<a class="btn mini" href="' + esc(url) + '" target="_blank" rel="noopener">' +
+            esc(T('verCal')) + '</a>' +
+          '<button class="btn mini line" data-calurl="' + esc(url) + '">' +
+            esc(T('copiarCal')) + '</button>' +
+        '</div></div>';
+    }).join('');
+  [].forEach.call(box.querySelectorAll('button[data-calurl]'), function(b){
+    b.onclick = function(){
+      var u = b.getAttribute('data-calurl');
+      var ok = function(){ var x = b.textContent; b.textContent = T('copiado');
+                           setTimeout(function(){ b.textContent = x }, 1600) };
+      if (navigator.clipboard && navigator.clipboard.writeText)
+        navigator.clipboard.writeText(u).then(ok).catch(function(){});
+      else ok();
+    };
+  });
+}
+
 function pintarJuegos(){
+  pintarMisCal();
   $('quien').textContent = T('quien').replace('{P}', PROGRAMA || '');
 
   /* El enlace al constructor, con el código y el nombre del equipo ya
