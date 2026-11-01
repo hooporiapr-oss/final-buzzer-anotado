@@ -737,7 +737,19 @@ function esEjemploP(){ return /[?&](ejemplo|demo)=1\b/.test(location.search) }
 
 function arrancar(){
   if (esEjemploP()){
-    ESTADO = EJEMPLO_P;
+    /* DESDE EL CALENDARIO DE DEMOSTRACIÓN la hoja trae el juego que se
+       tocó —equipo, rival, día, hora, cancha— y enseña ése. Sin esos
+       datos, como desde la portada, sale el ejemplo de siempre. Se
+       pintan como texto, nunca como marcado. */
+    ESTADO = {};
+    for (var k in EJEMPLO_P) ESTADO[k] = EJEMPLO_P[k];
+    var q = function(n){ return (par.get(n) || '').trim().slice(0, 80); };
+    if (q('eq') && q('rv')){
+      ESTADO.equipo = q('eq'); ESTADO.rival = q('rv');
+      ESTADO.juego  = q('eq') + ' vs. ' + q('rv');
+      ESTADO.cancha = q('c'); ESTADO.hora = q('h');
+      if (/^\d{4}-\d{2}-\d{2}$/.test(q('f'))) ESTADO.fecha = q('f');
+    }
     $('cargando').hidden = true;
     $('todo').hidden = false;
     $('form').hidden = false;
