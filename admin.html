@@ -1227,7 +1227,7 @@ function pintarSolicitudes(rows){
           : '') +
         '<div class="btns">' +
           (s.estado === 'pending'
-            ? '<button class="q sm" data-aprobar="' + esc(s.id) + '">Approve</button>' +
+            ? '<button class="q sm" data-aprobar="' + esc(s.id) + '" data-coach="' + esc(s.coach || '') + '">Approve</button>' +
               '<button class="q sm" data-rechazar="' + esc(s.id) + '">Decline</button>'
             : '') +
           '<button class="q sm" data-borrar="' + esc(s.id) + '" data-equipo="' + esc(s.equipo) + '">Delete</button>' +
@@ -1345,9 +1345,34 @@ function decidir(fn, id, boton){
               'style="flex:1 1 200px;min-width:0;font-weight:800" onclick="this.select()">' +
             '<button class="q sm" id="solCopiar">Copy</button>' +
           '</div>' +
-          (r.correo ? '<p class="pista" style="margin:6px 0 0">Send it to ' +
-                        esc(r.correo) + '</p>' : '');
+          '<p class="pista" id="solBienvenida" style="margin:6px 0 0">' +
+            (r.correo ? 'Sending the welcome email to ' + esc(r.correo) + '…'
+                      : 'No email on this signup — give the code by hand.') + '</p>';
         $('solCodigo').classList.remove('oculto');
+        /* LA BIENVENIDA SALE SOLA. Antes el código se quedaba en esta
+           caja y había que copiarlo y mandarlo a mano; ahora le llega
+           al entrenador con su código, dónde entra, el constructor, la
+           guía y las preguntas. Si el correo no sale, se dice aquí y
+           el código sigue en la caja para darlo a mano. */
+        if (r.correo){
+          servidor('/coach-aprobado', {
+            correo: r.correo, equipo: r.team || r.program || '',
+            coach: boton.getAttribute('data-coach') || '', codigo: r.codigo
+          }).then(function(x){
+            var el = $('solBienvenida'); if (!el) return;
+            if (x && x.codigo === 200 && x.cuerpo && x.cuerpo.ok){
+              el.innerHTML = 'Welcome email sent to <b>' + esc(r.correo) + '</b>, with the code.';
+            } else {
+              el.innerHTML = '<b style="color:#A8323F">The welcome email did not go out</b>' +
+                porque(x && x.cuerpo) + '. Send the code above to ' + esc(r.correo) + ' by hand.';
+            }
+          }).catch(function(e){
+            var el = $('solBienvenida');
+            if (el) el.innerHTML = '<b style="color:#A8323F">The welcome email did not go out</b>' +
+              porque(e) + '. Send the code above to ' + esc(r.correo) + ' by hand.';
+          });
+        }
+
         var bc = $('solCopiar');
         if (bc) bc.onclick = function(){
           if (navigator.clipboard && navigator.clipboard.writeText)
