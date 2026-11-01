@@ -97,7 +97,13 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
   /* Y QUE NO SE REPITAN SUS LEMAS DEBAJO. El cartel ya dice «nada que
      vender» y «sin rifas»; decirlo otra vez en texto es la clase de
      repetición que infló la portada la primera vez. */
-  const t = await p.evaluate(() => document.body.innerText);
+  /* Salvo el lema de debajo del cartel (.lema), que dice «Sin rifas»
+     a propósito: es el mensaje que el dueño pidió ahí, el 1 de
+     noviembre. En el resto de la página la regla sigue igual. */
+  const t = await p.evaluate(() => {
+    const l = document.querySelector('.lema');
+    return document.body.innerText.replace(l ? l.innerText : '', '');
+  });
   not(t, /nada que vender|sin rifas|nada que entregar/,
       'y sus lemas no se repiten debajo en texto');
 
