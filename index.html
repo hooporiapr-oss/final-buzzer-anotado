@@ -280,6 +280,14 @@ h1 em{font-style:normal;color:var(--orange)}
    de la pantalla ocupa cuatro quintos de eso de alto. Es lo que pide
    un cartel completo. */
 .cartel img{display:block;width:100%;height:auto}
+/* Debajo del cartel, en su mismo fondo oscuro. line-height vuelve a la
+   normal: .cartel la pone a 0 para que la imagen no deje hueco. */
+.lema{line-height:1.6;color:#fff;text-align:center;padding:clamp(34px,6vw,56px) 0}
+.lema h2{color:#fff;max-width:22ch;margin:0 auto 14px}
+.lema p{max-width:40rem;margin:0 auto 12px;color:#c9d3de;font-size:clamp(1rem,2.4vw,1.15rem)}
+.lema .lemaSin{color:#fff;font-weight:800;letter-spacing:.01em}
+.lema .lemaTres{color:#fff;font-weight:700;margin-bottom:0;max-width:48rem}
+.lema .lemaTres b{color:var(--orange)}
 /* ── La maqueta del reporte del entrenador ──────────────────────
    Mismo armazón que el calendario de arriba —panel, cabecera crema,
    filas separadas— porque son la misma familia: lo que se ve antes
@@ -751,6 +759,18 @@ button.lang{padding:0 10px;font-size:.8rem}
 <section class="cartel">
   <img src="cadapunto-hero.jpg" width="1200" height="942" decoding="async"
        alt="Cada Punto Cuenta — baloncesto y voleibol. Nada que vender, sin rifas, nada que entregar: tu equipo anota y tu programa cobra.">
+  <!-- LA IDEA EN CUATRO LÍNEAS, justo debajo del cartel y antes de los
+       pasos: qué es, con qué se hace, qué no hace falta, y quién hace
+       qué. Va dentro del cartel y no como sección aparte: la portada
+       son cinco partes y ésta es la voz del cartel, no una sexta. -->
+  <div class="lema">
+    <div class="wrap">
+      <h2 data-i="lemaH">Tu equipo juega. Cada punto ayuda a recaudar.</h2>
+      <p data-i="lemaP">Convierte los juegos que ya tienes en calendario en oportunidades de recaudación para tu programa deportivo.</p>
+      <p class="lemaSin" data-i="lemaSin">Sin rifas. Sin ventas. Sin organizar otro evento.</p>
+      <p class="lemaTres" data-i="lemaTres">Tus jugadores juegan. Sus padrinos prometen. <b>Tu programa recauda.</b></p>
+    </div>
+  </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════
@@ -982,6 +1002,10 @@ exH2:'One game. Every point counts.',
 exPts:'68 points',
 exUno:'One padrino&rsquo;s pledge.',
 footer:'We manage the pledges. You manage the proceeds.',
+lemaH:'Your team plays. Every point helps raise funds.',
+lemaP:'Turn the games already on your schedule into fundraising opportunities for your sports program.',
+lemaSin:'No raffles. No sales. No extra event to organize.',
+lemaTres:'Your players play. Their padrinos pledge. <b>Your program raises the money.</b>',
 howEye:'How it works',
 howH2:'As simple as this.',
 lCollect:'How you collect',
