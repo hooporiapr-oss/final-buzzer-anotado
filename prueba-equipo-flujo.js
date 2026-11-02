@@ -67,7 +67,7 @@ async function corrida(browser, lang, correo){
                               : mal('mandó algo con el formulario vacío');
 
   // ── 2 · los cinco campos, escritos como los escribe una persona ──
-  for (const [sel, val] of [['#tm','Canóvanas 15U'], ['#pn','4827'], ['#pg','Canóvanas Basketball Club'],
+  for (const [sel, val] of [['#tm','Canóvanas 15U'], ['#pg','Canóvanas Basketball Club'],
                             ['#nm','John Burgos'], ['#em', correo], ['#ph','7871234567']]){
     await p.click(sel); await p.fill(sel, val);
   }
@@ -143,8 +143,12 @@ async function corrida(browser, lang, correo){
   }));
   fin.hecho && fin.appOculto ? ok('sale el acuse de recibo y el formulario se esconde')
                              : mal('el acuse no apareció');
-  fin.txt.includes(correo) ? ok('con el correo al que se le va a escribir')
-                           : mal('el acuse no dice el correo: ' + fin.txt.slice(0,70));
+  /* Desde el 1 de noviembre el acuse no repite el correo: dice que
+     la solicitud se recibió y que se revisará — sin prometer que el
+     programa queda activo. */
+  /Solicitud recibida|Request received/.test(fin.txt) && /Revisaremos|We will review/.test(fin.txt)
+    ? ok('dice que se recibió y que se revisará, sin activarlo')
+    : mal('el acuse no dice que se revisará: ' + fin.txt.slice(0,70));
   fin.campos ? ok('y el formulario sigue existiendo debajo, no se destruyó')
              : mal('el formulario se destruyó');
 
