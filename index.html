@@ -114,11 +114,6 @@ header{background:var(--navy);color:white;position:sticky;top:0;z-index:100}
    mi equipo» se partían en dos líneas y la barra crecía. */
 .navlinks a{text-decoration:none;font-weight:600;font-size:.9rem;white-space:nowrap}
 .navlinks a:hover{color:var(--orange)}
-/* El desplegable de los calendarios, vestido de enlace del menú. */
-.navsel{font:inherit;font-weight:600;font-size:.9rem;color:inherit;background:transparent;
-  border:1px solid #ffffff33;border-radius:8px;padding:6px 10px;cursor:pointer;max-width:13rem}
-.navsel:hover{border-color:var(--orange)}
-.navsel option,.navsel optgroup{color:#12202E;background:#fff}
 
 /* ── El menú de mano ──────────────────────────────────────────────
    En un teléfono los enlaces no caben. Esto los recoge detrás de un
@@ -691,8 +686,6 @@ footer strong{color:white}
 .navlinks a{font-size:1rem;padding:0 max(20px,calc((100vw - 1120px)/2 + 20px));
   min-height:52px;display:flex;align-items:center;border-top:1px solid #ffffff14}
 .navlinks a:first-child{border-top:0}
-.navsel{max-width:none;margin:10px max(20px,calc((100vw - 1120px)/2 + 20px));
-  min-height:48px;font-size:1rem}
 .navlinks a.button{margin:14px 20px 18px;justify-content:center;
   border-top:0;min-height:52px;border-radius:9px}
 }
@@ -709,23 +702,8 @@ button.lang{padding:0 10px;font-size:.8rem}
      prueba-marca.js en las quince páginas. -->
 <a class="brand" href="#top">CADA PUNTO CUENTA<span>.</span></a>
 <nav class="navlinks" id="menu">
-<!-- LOS CALENDARIOS, A UN TOQUE. Un calendario sólo se encontraba con
-     el enlace que salió al registrarlo; perdido el enlace, perdido el
-     calendario. Un desplegable y no una página: en el teléfono abre
-     la rueda del sistema, que es lo más rápido que hay para escoger
-     de una lista. Por deporte, y lo que se está jugando antes que lo
-     que ya se jugó. Las opciones las pone el script con lo que haya
-     en la base; si no hay ninguno, el desplegable no sale. -->
-<select id="navCal" class="navsel" hidden aria-label="Calendarios">
-<option value="" data-i="navCalSel">Calendarios</option>
-</select>
-<!-- Los rótulos de los grupos, en el marcado como todo el español de
-     esta página: el script los lee de aquí ya pintados en el idioma
-     que toque. -->
-<span hidden data-i="calBa">Baloncesto</span><span hidden data-i="calVo">Voleibol</span><span hidden data-i="calAct">en juego</span><span hidden data-i="calPas">ya jugados</span>
 <a href="mi-equipo.html" data-i="navMine">Mi calendario</a>
 <a href="ayuda.html" data-i="navFaq">Preguntas</a>
-<a href="https://marcadorpr.com/constructor.html" data-i="navCal">Crear calendario</a>
 <a href="admin.html" data-i="navAdmin">Admin</a>
 <a class="button" href="equipo.html" data-i="navCta">Inscribir mi equipo</a>
 </nav>
@@ -800,7 +778,6 @@ button.lang{padding:0 10px;font-size:.8rem}
 <p data-i="q3p">El equipo juega y se publica el marcador final. A cada padrino le llega
   UN aviso con el marcador y lo que dio su promesa &mdash; y ése es el único correo que
   mandamos: sin enlace de pago y sin recordatorios.</p>
-<p class="pasoLink"><a href="https://marcadorpr.com/torneo.html?t=demo-temporada" target="_blank" rel="noopener" data-i="vCal">Ver el calendario de un equipo &rarr;</a></p>
 <p class="pasoLink"><a href="aviso.html" data-i="vAviso">Ver el aviso al padrino &rarr;</a></p>
 </article>
 <article class="paso ancho">
@@ -1017,13 +994,7 @@ lTeam:'Sign up my team',
 lTerms:'Terms',
 navCta:'Sign up my team',
 navMine:'My schedule',
-navCalSel:'Schedules',
-calBa:'Basketball',
-calVo:'Volleyball',
-calAct:'in play',
-calPas:'already played',
 navFaq:'Questions',
-navCal:'Build a schedule',
 navAdmin:'Admin',
 priceLabel:'What it costs',
 priceNo:'No subscription. No minimum licence.',
@@ -1043,7 +1014,6 @@ faqB:'See the questions &rarr;',
 ncH:'We do not collect.',
 ncP:'Cada Punto Cuenta records the pledges and does the arithmetic. The money does not pass through us: we do not process it, hold it or claim it. Each padrino pays your program directly, however you already talk to them.',
 ncL:'How the money works &rarr;',
-vCal:'See a team’s schedule &rarr;',
 rpcJuego:'Canóvanas 15U vs. Arecibo',
 rpcMeta:'68 points &middot; 12 padrinos &middot; Example',
 rpcTotL:'Total of qualifying pledges',
@@ -1155,7 +1125,6 @@ locale=locale==='en'?'es':'en';
 try{ localStorage.setItem('cfh_lang',locale); localStorage.setItem('cp-lang',locale);
      localStorage.setItem('fc-lang',locale); }catch(e){}
 paint();
-pintarCal();
 });
 
 /* ── El menú ──────────────────────────────────────────────────────
@@ -1198,61 +1167,6 @@ addEventListener('resize', function(){
 });
 })();
 
-/* ── Los calendarios del menú ────────────────────────────────────
-   Se piden una vez y se repintan con cada cambio de idioma: los
-   nombres de los torneos no se traducen, los rótulos de los grupos
-   sí. Si la base no contesta, el desplegable se queda escondido — un
-   menú con una opción muerta es peor que un menú sin ella. */
-var CALS = null;
-function pintarCal(){
-  var s = document.getElementById('navCal');
-  if (!s || !CALS || !CALS.length) return;
-  var r = function(k){
-    var e = [].filter.call(document.querySelectorAll('[data-i]'),
-                           function(x){ return x.dataset.i === k; })[0];
-    return e ? e.textContent : k;
-  };
-  var esc = function(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
-  var grupos = [['baloncesto', true], ['baloncesto', false], ['voleibol', true], ['voleibol', false]];
-  var html = '<option value="">' + esc(r('navCalSel')) + '</option>';
-  grupos.forEach(function(g){
-    var lista = CALS.filter(function(c){ return c.deporte === g[0] && !!c.activo === g[1]; });
-    if (!lista.length) return;
-    /* Lo que se juega, por el que empieza antes; lo jugado, por el
-       más reciente. */
-    lista.sort(function(a, b){
-      var x = (g[1] ? a.desde : b.hasta) || '', y = (g[1] ? b.desde : a.hasta) || '';
-      return x < y ? -1 : x > y ? 1 : 0;
-    });
-    html += '<optgroup label="' + esc(r(g[0] === 'voleibol' ? 'calVo' : 'calBa') + ' · ' +
-                                      r(g[1] ? 'calAct' : 'calPas')) + '">' +
-      lista.map(function(c){
-        return '<option value="' + esc(c.id) + '">' + esc(c.nombre) +
-               (c.pueblo ? ' · ' + esc(c.pueblo) : '') + '</option>';
-      }).join('') + '</optgroup>';
-  });
-  s.innerHTML = html;
-  s.hidden = false;
-}
-(function(){
-  var s = document.getElementById('navCal');
-  if (!s) return;
-  s.addEventListener('change', function(){
-    if (s.value) location.href = 'https://marcadorpr.com/torneo.html?t=' + encodeURIComponent(s.value);
-  });
-  try {
-    fetch('https://sdaphocueugzfvjovuxd.supabase.co/rest/v1/rpc/calendarios_publicos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json',
-        apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M' },
-      body: '{}'
-    }).then(function(r){ return r.ok ? r.json() : null })
-      .then(function(d){ CALS = Array.isArray(d) ? d : null; pintarCal(); })
-      .catch(function(){});
-  } catch(e) {}
-})();
 
 paint();
 document.getElementById('year').textContent=new Date().getFullYear();
