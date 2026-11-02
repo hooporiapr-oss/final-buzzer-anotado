@@ -63,10 +63,16 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
      marcador final haciendo la cuenta. Se vigila eso, que es lo que
      el entrenador firma dos pantallas más abajo. */
   has(txt, /que anote tu equipo/,              'se promete por los puntos del equipo');
-  has(txt, /El juego ya lo ibas a jugar/,      'y el juego ya se iba a jugar');
-  has(txt, /el marcador final hace la cuenta/, 'el marcador final hace la cuenta');
-  has(txt, /Antes del juego/,                  'los pasos van por juego');
-  has(txt, /Al publicarse el marcador/,        'y el último lo dispara el marcador');
+  /* La página se acortó el 1 de noviembre: se fueron los cuatro
+     pasos y el segundo «Lo que cuesta». Se vigila lo que quedó —la
+     frase de venta, el precio en tres líneas, y que no vuelva el
+     relleno— y nada de lo que se fue. */
+  has(txt, /Sin rifas\. Sin ventas\. Sin organizar otro evento\./, 'sin rifas, sin ventas, sin otro evento');
+  has(txt, /\$1 por promesa que cualifica/,      'el precio: $1 por promesa que cualifica');
+  has(txt, /Máximo \$99 por juego/,              'con su máximo de $99 por juego');
+  has(txt, /Sin suscripción\. Sin pago adelantado/, 'sin suscripción ni pago adelantado');
+  not(txt, /Antes del juego|Al publicarse el marcador|Lo que cuesta/, 'y sin los pasos ni el segundo precio');
+  not(txt, /marcadorpr|en el marcador|torneo/i,  'ni el otro sitio, ni torneos');
   has(txt, /Ganen o pierdan, cada punto cuenta/,'ganen o pierdan, cada punto cuenta');
   not(txt, /ventana|corrida oficial|tus jugadores anotan/i,
       'y no quedó nada del producto por estudiante');
@@ -96,12 +102,9 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
      Lo que sí se mantiene —y es lo que le quita trabajo— es que no
      hay listas: se promete por los puntos del EQUIPO, así que un
      solo enlace sirve para todas las familias. */
-  has(txt, /Nadie se da de alta solo/,         'las campañas no se abren solas');
-  has(txt, /a mano/,                           'se abren a mano, una por una');
-  has(txt, /hasta que tú lo digas/,            'y nada sale al aire sin el entrenador');
-  has(txt, /No hay listas de jugadores que mandar/,'no hay listas que mandar');
-  has(txt, /ni nombres que escribir/,          'ni nombres que escribir');
-  has(txt, /sirve para todas las familias/,    'un solo enlace para todas las familias');
+  /* Que las campañas se aprueban a mano lo dice ahora el acuse
+     («Revisaremos tu inscripción»), que se mira en
+     prueba-equipo-flujo.js. */
   not(txt, /[Nn]os pasas tu plantilla|[Mm]ándanos|[Pp]ásanos (tu|la) plantilla/,
       'y en ningún sitio se le piden los nombres al entrenador');
 
@@ -109,7 +112,7 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
   await page.evaluate(() => {
     const v = { team:'Canóvanas 15U', prog:'Canóvanas Basketball Club',
                 name:'John Burgos', email:'prueba@ejemplo.invalid', phone:'7871234567' };
-    for (const [id,val] of Object.entries({ pn:'4827', tm:v.team, pg:v.prog, nm:v.name,
+    for (const [id,val] of Object.entries({ tm:v.team, pg:v.prog, nm:v.name,
                                             em:v.email, ph:v.phone })){
       const el = document.getElementById(id);
       if (el) el.value = val;
@@ -188,7 +191,7 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
        hay que devolverlo antes de volver a llenarlo. */
     SENT = null;
     draw();
-    for (const [id,val] of Object.entries({ pn:'4827', tm:'Canóvanas 15U',
+    for (const [id,val] of Object.entries({ tm:'Canóvanas 15U',
         pg:'Canóvanas Basketball Club', nm:'John Burgos',
         em:'prueba@ejemplo.invalid', ph:'7871234567' })){
       const el = document.getElementById(id); if (el) el.value = val;
@@ -240,7 +243,7 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
      ────────────────────────────────────────────────────────────── */
   di('6 · Con el JavaScript apagado');
   const crudo = fs.readFileSync(path.resolve(__dirname,'equipo.html'),'utf8');
-  const PISO = 3000;
+  const PISO = 900;
   const sinJs = crudo
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
@@ -257,11 +260,11 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
      las frases que hacen el trabajo: el titular, la promesa, y la
      licencia que el entrenador acepta. */
   has(texto, /Tu equipo juega\. Tu programa recauda/, 'el titular está en el marcado');
-  has(texto, /prometen unos centavos por cada punto/,  'y la promesa');
+  has(texto, /prometen centavos por cada punto/,  'y la promesa');
   has(texto, /Acepto la licencia por juego/,           'y la licencia que se acepta');
-  has(texto, /un m[áa]ximo de \$99 por juego/,         'con su tope');
-  has(texto, /Dinos de tu programa/,                   'y el formulario');
-  has(texto, /Nombre del EQUIPO/,                      'con el rótulo que decide si funciona');
+  has(texto, /Máximo \$99 por juego/,  'con su tope');
+  has(texto, /Nombre del programa u organización/,  'y el formulario');
+  has(texto, /Nombre del equipo/,  'con el rótulo del equipo');
 
   /* EL MENÚ, EN ESPAÑOL. Estaba en inglés en el marcado y lo
      traducía el JavaScript, así que sin él la única parte legible
