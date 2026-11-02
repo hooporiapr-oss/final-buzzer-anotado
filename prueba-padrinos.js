@@ -26,7 +26,7 @@
    Lo que mira:
 
      1 · que el markup y la tabla digan lo mismo, palabra por palabra
-     2 · que no quede rastro del modelo del equipo
+     2 · que hable del equipo en un juego, no del modelo viejo
      3 · el piso de $5, dicho y calculado
      4 · la aritmética de la tabla de ejemplo y de la calculadora
      5 · los dos idiomas, y que no falte una llave en ninguno
@@ -84,31 +84,28 @@ console.log('\n1 · El markup y la tabla, palabra por palabra\n');
   eq(fuera, [], 'y el markup dice exactamente lo mismo que la tabla');
 }
 
-// ── 2 · Ni rastro del modelo del equipo ───────────────────────────
-console.log('\n2 · Ni rastro de la puntuación del equipo\n');
+// ── 2 · El modelo del equipo, por juego ───────────────────────
+console.log('\n2 · Cada punto del equipo, en un juego\n');
 {
-  /* Hooporia puntúa POR JUGADOR: cuatro cuartos suyos, su mejor
-     cadena en cada uno. Cualquier frase que hable de lo que anota el
-     equipo es de Cada Punto y aquí miente. */
-  const sospechas = [
-    /the team scores/i, /one team point/i, /the score is the team/i,
-    /same for every(body|one) on the team/i, /points the team scored/i,
-    /puntos? del equipo/i, /anota el equipo/i, /la puntuación es del equipo/i,
-    /picks a game/i, /escoge el juego/i,          // Cada Punto tenía varios juegos
-    /your coach provides the final score/i,        // aquí lo anota el juego
-    /at tip-?off/i
+  /* Cada Punto Cuenta: el padrino promete por cada punto que anota el
+     EQUIPO en UN juego. Cualquier frase del modelo viejo por jugador
+     (corridas, cuartos, cadenas) aquí miente. */
+  const viejas = [
+    /\byour run\b/i, /\btu corrida\b/i, /\bbest streak\b/i, /\bmejor cadena\b/i,
+    /four quarters/i, /cuatro cuartos/i, /\bhooporia\b/i, /\btournament\b/i, /\btorneo\b/i
   ];
   const malas = [];
   const todo = JSON.stringify(T) + fuente;
-  sospechas.forEach(r => { if (r.test(todo)) malas.push(String(r)) });
-  eq(malas, [], 'ninguna frase del modelo del equipo, en el markup ni en las dos tablas');
+  viejas.forEach(r => { if (r.test(todo)) malas.push(String(r)) });
+  eq(malas, [], 'ninguna frase del modelo viejo por jugador, ni de torneos');
+  si(/team/i.test(JSON.stringify(T.en)) && /equipo/i.test(JSON.stringify(T.es)),
+     'las dos tablas hablan de los puntos del equipo');
 
-  /* Y la descripción, que es la única que paint() no toca y la que
-     sale cuando un nene manda su enlace por WhatsApp. */
+  /* La descripción es la que sale cuando se comparte por WhatsApp. */
   const desc = (fuente.match(/<meta name="description" content="([^"]+)"/) || [])[1] || '';
   si(desc.length > 60, 'la página tiene descripción (' + desc.length + ' letras)');
-  si(!/team/i.test(desc), 'y la descripción no habla del equipo');
-  si(/run|padrinos/i.test(desc), 'y sí de la corrida y de los padrinos');
+  si(/team/i.test(desc), 'y la descripción habla del equipo');
+  si(/game/i.test(desc) && /padrino/i.test(desc), 'y del juego y de los padrinos');
 }
 
 // ── 3 · El piso de $5 ─────────────────────────────────────────────
@@ -119,7 +116,7 @@ console.log('\n3 · El piso de $5, dicho y calculado\n');
      una corrida corta y ninguno cuenta. */
   ['en','es'].forEach(l => {
     si(/\$5/.test(T[l].pisoP || ''), l + ' · la página explica el piso de $5');
-    si(/(closes out|se cierra)/.test(T[l].pisoP || ''),
+    si(/(closes|se cierra)/.test(T[l].pisoP || ''),
        l + ' · y dice qué pasa: la promesa se cierra');
     si(/(nothing is owed|no se debe nada)/.test(T[l].pisoP || ''),
        l + ' · y que no se debe nada');
@@ -155,10 +152,10 @@ console.log('\n3 · El piso de $5, dicho y calculado\n');
   eq(r.tot, '$250',  'y el total $250');
   eq(r.piso, '', 'y sin aviso de piso, porque cada promesa da $25');
 
-  /* Y por debajo sí. Cinco centavos en una corrida de 40 son $2. */
-  r = await mueve(40, 10, 5);
-  si(r.piso.indexOf('$2.00') >= 0,
-     '40 puntos a 5¢ → avisa que esa promesa da $2.00' +
+  /* Y por debajo sí. Diez centavos en un juego de 40 son $4. */
+  r = await mueve(40, 10, 10);
+  si(r.piso.indexOf('$4.00') >= 0,
+     '40 puntos a 10¢ → avisa que esa promesa da $4.00' +
      (r.piso ? '' : ' — NO AVISÓ'));
   si(/\$5/.test(r.piso), 'y nombra el piso de $5');
   /* Y el número gordo baja a cero, que es lo que de verdad llega al
@@ -166,14 +163,18 @@ console.log('\n3 · El piso de $5, dicho y calculado\n');
      con el aviso debajo era enseñarle al nene que cinco centavos dan
      veinte dólares: el número gordo gana siempre. */
   eq(r.tot, '$0.00', 'y el número gordo baja a $0.00, que es lo que llegaría');
-  si(/(receives nothing|no le llega nada)/.test(r.piso),
-     'y el aviso dice que al programa no le llega nada');
+  si(/(nothing is owed|no se debe nada)/.test(r.piso),
+     'y el aviso dice que no se debe nada');
 
   /* El filo exacto: $5 justos pasan, un centavo menos no. */
-  r = await mueve(100, 10, 5);   // 5¢ × 100 = $5.00 justos
+  r = await mueve(50, 10, 10);   // 10¢ × 50 = $5.00 justos
   eq(r.piso, '', '$5.00 justos pasan el piso');
-  r = await mueve(80, 10, 5);    // 5¢ × 80 = $4.00
-  si(r.piso !== '', 'y $4.00 no');
+  r = await mueve(49, 10, 10);   // 10¢ × 49 = $4.90
+  si(r.piso !== '', 'y $4.90 no');
+
+  /* La calculadora no ofrece menos de 10¢ por punto. */
+  const tasa = await pag.evaluate(() => +document.getElementById('rate').min);
+  eq(tasa, 10, 'el valor por punto empieza en 10¢');
 
   await pag.close();
 }
@@ -201,9 +202,9 @@ console.log('\n4 · La tabla de ejemplo cuadra\n');
   const mRun = cabRun.match(/(\d{2,4})/);
   if (!mRun) mal('la cabecera de la tabla no dice de qué corrida habla («' + cabRun + '»)');
   const corrida = mRun ? +mRun[1] : 0;
-  si(corrida >= 40 && corrida <= 180,
-     'la cabecera habla de una corrida de ' + corrida + ' puntos, que cabe en la barra');
-  const acumulado = [1.00, 1.25, 1.35, 1.85, 3.85, 5.00];
+  si(corrida >= 20 && corrida <= 120,
+     'la cabecera habla de un juego de ' + corrida + ' puntos, que cabe en la barra');
+  const acumulado = [1.00, 1.25, 1.35, 1.85, 2.85, 5.00];
   const filas = await pag.evaluate(() =>
     Array.from(document.querySelectorAll('.mrow')).map(f => ({
       val: f.querySelector('.val').textContent.trim(),
@@ -222,8 +223,8 @@ console.log('\n4 · La tabla de ejemplo cuadra\n');
     const r = document.getElementById('rounds');
     return { min: +r.min, max: +r.max, val: +r.value };
   });
-  si(barra.min >= 40 && barra.max >= 180,
-     'la barra de puntos llega de ' + barra.min + ' a ' + barra.max);
+  eq([barra.min, barra.max], [20, 120],
+     'la barra de puntos del juego va de 20 a 120');
   si(barra.val === corrida, 'y arranca en los mismos ' + corrida + ' de la tabla');
 
   await pag.close();
@@ -277,7 +278,7 @@ console.log('\n6 · Cabe en un teléfono y no habla con ningún servidor\n');
       await pag.evaluate(() => {
         const set = (id, v) => { const e = document.getElementById(id);
           e.value = String(v); e.dispatchEvent(new Event('input', { bubbles:true })) };
-        set('rounds', 40); set('rate', 5);
+        set('rounds', 40); set('rate', 10);
       });
       await pag.waitForTimeout(80);
       const m2 = await pag.evaluate(() => ({
