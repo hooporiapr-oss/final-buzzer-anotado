@@ -239,85 +239,93 @@ header{color:#fff}
 var BODY = {
   en: `
 <h1>Privacy Policy</h1>
-<p class="updated">Last updated 3 October 2026</p>
+<p class="updated">Last updated 2 November 2026</p>
 
 <p class="lead">This explains what Cada Punto Cuenta collects, why, and what we do with it. Cada Punto Cuenta is
 operated by Gostar Digital LLC in Puerto Rico. Cada Punto Cuenta is a pledge management system: we record
-what is pledged and calculate every total. We process no payments, so we collect no payment data at
-all.</p>
+what is pledged on a game and calculate every total. No pledge money ever passes through us, so we
+collect no padrino payment data at all.</p>
 
 <h2>What we collect</h2>
 <p><strong>From a padrino.</strong> Your name, your email address, the rate you pledge, any
-maximum you set, and the participant you pledged on. That is the whole record. You pay the program
+maximum you set, and the game you pledged on. That is the whole record. You pay the program
 directly, by whatever method the two of you agree, and we are not a party to that payment.</p>
-<p><strong>From a program.</strong> The program's name, the coach's email, the window it sets for
-the event, and the roster of player names the program chooses to add.</p>
-<p><strong>From a run.</strong> For each player: the level he reached, the points that level is
-worth, how long the run took, and the time it was recorded. The game writes these itself. A run
-also carries a run key, which exists only so the database can tell a real run from a link somebody
-edited; it is not shown to anyone and it is of no use outside that check.</p>
+<p><strong>From a program.</strong> The team&rsquo;s name, the program or organization&rsquo;s name,
+the name and email of the person who registers it, a phone number if one is given, and the record of
+the terms and licence it accepted (who accepted them, when, and the text accepted).</p>
+<p><strong>From a game.</strong> What the program enters: the opponent, the date, the time and the
+court if given, whether the team plays at home, whether the game takes pledges, and the final score
+once the program publishes it.</p>
 <p><strong>From anyone visiting.</strong> Nothing beyond what your browser sends in the ordinary
 course. We do not use advertising trackers and we do not sell anything about you.</p>
 
 <h2>What we never see</h2>
-<p>Anything to do with a payment. We process no payments and we use no payment processor, so there
-is no card number, no bank detail and no payment record anywhere on our systems. There is nothing
-of that kind to hold, lose or hand over. We also do not know who has paid: the system has nowhere
-to record it.</p>
+<p>Anything to do with a pledge payment. A padrino pays the program directly, so there is no card
+number, no bank detail and no pledge payment record anywhere on our systems. We also do not know who
+has paid: the system has nowhere to record it.</p>
+<p>The only payment connected to Cada Punto Cuenta is the program&rsquo;s own software licence fee.
+That invoice is issued and paid through Stripe, and any card or bank details the program uses are
+entered with Stripe, not with us.</p>
 
 <h2>Why we hold it</h2>
 <ul>
-  <li>To work out what each pledge comes to when a game's score goes in.</li>
-  <li>To show a program its pledge list, and to let it print or download it.</li>
-  <li>To email a padrino their own pledge, and what it came to once the score was in.</li>
-  <li>To show the live board while a game day is open, and afterwards.</li>
+  <li>To work out what each pledge comes to when the program publishes a game&rsquo;s final score.</li>
+  <li>To show a program its pledge report, and to let it print or download it, including as a CSV
+      file.</li>
+  <li>To email a padrino the final score and what their pledge came to &mdash; and, only if the
+      score is corrected and their amount changes, a correction.</li>
+  <li>To review and approve a program&rsquo;s registration and send it its access code.</li>
+  <li>To invoice a program&rsquo;s software licence.</li>
   <li>To answer you when you write to us.</li>
 </ul>
 
 <h2>What is public</h2>
-<p>The team board shows the program's name, the window of the event, the roster names the program
-entered, and each player's points once his run is in. Anyone holding the link can see it, while the
-window is open and after it closes.</p>
-
-<p><strong>It does not show a padrino's name, email, rate or amount, and it never shows money at
-all.</strong> A program's coach can see the pledges on their own campaign; nobody else can.</p>
+<p>A game&rsquo;s pledge page shows the team&rsquo;s name, the opponent, the date, the time and court
+if given, how many people have pledged, and the final score once it is published. Anyone holding the
+link can see it.</p>
+<p><strong>It does not show a padrino&rsquo;s name, email, rate or amount, and it never shows money at
+all.</strong> A program&rsquo;s coach can see the pledges on their own games; nobody else can.</p>
 
 <h2>Players and minors</h2>
-<p>A roster holds a player's name, and nothing else — no address, no date of birth, no contact
-details. Players do not pledge and do not pay.</p>
-
-<p><strong>A participant's name and their score appear on the live board, which anyone with the
-link can open.</strong> A program decides who appears on its roster and is responsible for having
-any permission required to name a child and to show what that child scored. A program or a parent
-may ask us to remove a name, and we will do it — write to the address below.</p>
+<p>Pledges are made on the team&rsquo;s points, not on any player&rsquo;s, so Cada Punto Cuenta does
+not ask for players&rsquo; names or any information about players. Players do not pledge and do not
+pay. Padrinos must be 18 or over.</p>
+<p>If a program chooses to name a player anywhere on the platform &mdash; in a team name, for
+example &mdash; it is responsible for having any permission required. A program or a parent may ask
+us to remove a name, and we will do it &mdash; write to the address below.</p>
 
 <h2>Who else handles it</h2>
 <ul>
-  <li><strong>Supabase</strong> — stores the database.</li>
-  <li><strong>Resend</strong> — sends the emails.</li>
-  <li><strong>Render</strong> — hosts the site and the server.</li>
+  <li><strong>Supabase</strong> &mdash; stores the database.</li>
+  <li><strong>Resend</strong> &mdash; sends the emails.</li>
+  <li><strong>Render</strong> &mdash; hosts the site and the server.</li>
+  <li><strong>Stripe</strong> &mdash; issues and collects the program&rsquo;s software licence
+      invoice. It handles no pledge money.</li>
 </ul>
 <p>Each holds data only to do that job. We do not sell, rent or trade personal information to
 anyone, for any purpose.</p>
 
 <h2>Email</h2>
-<p>We email a padrino about their own pledge: that it was recorded, the score, and what the pledge
-came to. We send no bills, no invoices and no payment reminders — collecting is the program's, and
-the program does it its own way. We do not send marketing email and we do not add anyone to a
-list.</p>
+<p>We email a padrino about their own pledge: one notice with the final score and what the pledge
+came to, sent when the program instructs it, and a correction only if the score is corrected and
+their amount changes. We never send a padrino a bill, a payment link or a payment reminder &mdash;
+collecting is the program&rsquo;s, and the program does it its own way. We email a program about its
+registration, its access code and its software licence invoice. We do not send marketing email and
+we do not add anyone to a list.</p>
 
 <h2>How long we keep it</h2>
 <p><b>Pledge records for a game are kept for twelve months from the date of that game.</b> That
-applies whether or not the licence for the game was paid. A roster is kept while the program's
-campaign exists.</p>
-<p>If a licence fee is left unpaid, access to that game's pledge records and reports is suspended
-until payment is completed; the records are retained during the suspension, and paying the
-outstanding fee restores access. Suspension does not shorten or extend the twelve months, and it is
-not a way of deleting a program's records early.</p>
+applies whether or not the licence for the game was paid. A program&rsquo;s registration details are
+kept while its campaign exists.</p>
+<p>If a licence fee is left unpaid, Gostar Digital LLC may suspend that game&rsquo;s pledge
+management features until payment is completed. Correcting a score is never suspended, and every padrino whose amount changes still receives the correction notice. A suspension never takes a program&rsquo;s
+information away from it: the program can view, print and download that game&rsquo;s records and
+report, including the CSV file, at any time, including during a suspension. Suspension does not
+shorten or extend the twelve months, and it is not a way of deleting a program&rsquo;s records
+early.</p>
 <p>Nothing is deleted while a payment, a correction or a disagreement about that game is open. We
-will give a program at least thirty days' notice before any of its records are deleted, and the
-program can download what is theirs at any time, including during a suspension. You may ask for
-your own records to be deleted sooner.</p>
+will give a program at least thirty days&rsquo; notice before any of its records are deleted. You may
+ask for your own records to be deleted sooner.</p>
 <p>No records are deleted automatically today. We will not begin deleting on this schedule until
 this policy has been published for thirty days.</p>
 
@@ -344,88 +352,96 @@ PO Box 1980-345, Loíza, Puerto Rico 00772<br>
 `,
   es: `
 <h1>Política de Privacidad</h1>
-<p class="updated">Última actualización: 3 de octubre de 2026</p>
+<p class="updated">Última actualización: 2 de noviembre de 2026</p>
 
 <p class="lead">Esto explica qué recoge Cada Punto Cuenta, por qué, y qué hacemos con ello. Cada Punto Cuenta es
 operado por Gostar Digital LLC en Puerto Rico. Cada Punto Cuenta es un sistema de manejo de promesas:
-anotamos lo que se promete y hacemos la cuenta. No procesamos pagos, así que no recogemos ningún
-dato de pago.</p>
+anotamos lo que se promete sobre un juego y hacemos la cuenta. El dinero de las promesas nunca pasa
+por nosotros, así que no recogemos ningún dato de pago de los padrinos.</p>
 
 <h2>Qué recogemos</h2>
 <p><strong>De un padrino.</strong> Tu nombre, tu correo, la tarifa que prometes, el máximo que
-pongas si pones uno, y el participante por el que prometiste. Ese es el registro completo. Tú le
-pagas al programa directo, por el método que ustedes dos acuerden, y nosotros no somos parte de
-ese pago.</p>
-<p><strong>De un programa.</strong> El nombre del programa, el correo del entrenador, la ventana que
-ponga para el evento, y la lista de nombres de jugadores que el programa decida añadir.</p>
-<p><strong>De una corrida.</strong> De cada jugador: el nivel que alcanzó, los puntos que vale ese
-nivel, cuánto duró la corrida, y la hora en que quedó anotada. Eso lo escribe el juego solo. Una
-corrida también lleva una clave, que existe nada más para que la base de datos distinga una corrida
-de verdad de un enlace que alguien editó; no se le enseña a nadie y no sirve para otra cosa.</p>
+pongas si pones uno, y el juego sobre el que prometiste. Ese es el registro completo. Tú le pagas al
+programa directo, por el método que ustedes dos acuerden, y nosotros no somos parte de ese pago.</p>
+<p><strong>De un programa.</strong> El nombre del equipo, el nombre del programa u organización, el
+nombre y el correo de quien lo inscribe, un teléfono si lo da, y el registro de los términos y la
+licencia que aceptó (quién los aceptó, cuándo, y el texto aceptado).</p>
+<p><strong>De un juego.</strong> Lo que el programa entra: el rival, la fecha, la hora y la cancha si
+las pone, si el equipo juega en casa, si el juego recibe promesas, y el marcador final cuando el
+programa lo publica.</p>
 <p><strong>De quien visita.</strong> Nada más allá de lo que manda tu navegador normalmente. No
 usamos rastreadores de publicidad y no vendemos nada sobre ti.</p>
 
 <h2>Lo que nunca vemos</h2>
-<p>Nada que tenga que ver con un pago. No procesamos pagos y no usamos ningún procesador, así que
-no hay número de tarjeta, ni dato de banco, ni registro de pago en ninguno de nuestros sistemas.
-No hay nada de eso que guardar, que perder ni que entregar. Tampoco sabemos quién pagó: el sistema
-no tiene dónde anotarlo.</p>
+<p>Nada que tenga que ver con el pago de una promesa. El padrino le paga al programa directo, así que
+no hay número de tarjeta, ni dato de banco, ni registro de pago de promesas en ninguno de nuestros
+sistemas. Tampoco sabemos quién pagó: el sistema no tiene dónde anotarlo.</p>
+<p>El único pago relacionado con Cada Punto Cuenta es la licencia del software que paga el propio
+programa. Esa factura se emite y se paga por Stripe, y cualquier dato de tarjeta o de banco que use
+el programa se entra en Stripe, no con nosotros.</p>
 
 <h2>Por qué lo guardamos</h2>
 <ul>
-  <li>Para sacar lo que le corresponde a cada promesa cuando entra el marcador del juego.</li>
-  <li>Para enseñarle al programa su lista de promesas, y dejarlo imprimirla o bajarla.</li>
-  <li>Para mandarle a un padrino su propia promesa, y lo que dio cuando entró el marcador.</li>
-  <li>Para mostrar el tablero en vivo mientras el día de juego está abierto, y después.</li>
+  <li>Para sacar lo que le corresponde a cada promesa cuando el programa publica el marcador final
+      del juego.</li>
+  <li>Para enseñarle al programa su reporte de promesas, y dejarlo imprimirlo o bajarlo, también como
+      archivo CSV.</li>
+  <li>Para mandarle a un padrino el marcador final y lo que dio su promesa &mdash; y, sólo si el
+      marcador se corrige y cambia su cantidad, la corrección.</li>
+  <li>Para revisar y aprobar la inscripción de un programa y mandarle su código de acceso.</li>
+  <li>Para facturarle al programa su licencia del software.</li>
   <li>Para contestarte cuando nos escribes.</li>
 </ul>
 
 <h2>Qué es público</h2>
-<p>El tablero del equipo muestra el nombre del programa, la ventana del evento, los nombres de la
-lista que puso el programa, y los puntos de cada jugador cuando entre su corrida. Cualquiera que
-tenga el enlace puede verlo, mientras la ventana está abierta y después de que cierre.</p>
-
+<p>La página de promesa de un juego muestra el nombre del equipo, el rival, la fecha, la hora y la
+cancha si las hay, cuántas personas han prometido, y el marcador final cuando se publica. Cualquiera
+que tenga el enlace puede verla.</p>
 <p><strong>No muestra el nombre, el correo, la tarifa ni la cantidad de ningún padrino, y no
-muestra dinero en absoluto.</strong> El coach del programa ve las promesas de su propia campaña;
+muestra dinero en absoluto.</strong> El coach del programa ve las promesas de sus propios juegos;
 nadie más.</p>
 
 <h2>Jugadores y menores</h2>
-<p>Una lista guarda el nombre del jugador y nada más — sin dirección, sin fecha de nacimiento, sin
-datos de contacto. Los jugadores no prometen ni pagan.</p>
-
-<p><strong>El nombre de un participante y su marcador salen en el tablero en vivo, que puede abrir
-cualquiera que tenga el enlace.</strong> El programa decide quién aparece en su lista y es
-responsable de tener el permiso que haga falta para nombrar a un menor y para enseñar lo que ese
-menor anotó. Un programa o un padre puede pedirnos que quitemos un nombre, y lo hacemos — escriban
-a la dirección de abajo.</p>
+<p>Las promesas se hacen sobre los puntos del equipo, no de un jugador, así que Cada Punto Cuenta no
+pide nombres de jugadores ni ningún dato sobre ellos. Los jugadores no prometen ni pagan. Los
+padrinos tienen que ser mayores de 18.</p>
+<p>Si un programa decide nombrar a un jugador en cualquier parte de la plataforma &mdash; en el
+nombre de un equipo, por ejemplo &mdash; es responsable de tener el permiso que haga falta. Un
+programa o un padre puede pedirnos que quitemos un nombre, y lo hacemos &mdash; escriban a la
+dirección de abajo.</p>
 
 <h2>Quién más lo maneja</h2>
 <ul>
-  <li><strong>Supabase</strong> — guarda la base de datos.</li>
-  <li><strong>Resend</strong> — manda los correos.</li>
-  <li><strong>Render</strong> — aloja el sitio y el servidor.</li>
+  <li><strong>Supabase</strong> &mdash; guarda la base de datos.</li>
+  <li><strong>Resend</strong> &mdash; manda los correos.</li>
+  <li><strong>Render</strong> &mdash; aloja el sitio y el servidor.</li>
+  <li><strong>Stripe</strong> &mdash; emite y cobra la factura de la licencia del software del
+      programa. No maneja dinero de promesas.</li>
 </ul>
 <p>Cada uno guarda datos sólo para hacer ese trabajo. No vendemos, alquilamos ni intercambiamos
 información personal con nadie, para ningún fin.</p>
 
 <h2>Correo</h2>
-<p>Le escribimos a un padrino sobre su propia promesa: que quedó anotada, el marcador, y lo que
-dio la promesa. No mandamos facturas, ni cuentas, ni avisos de cobro — cobrar es del programa, y
-el programa lo hace a su manera. No mandamos correo de publicidad y no metemos a nadie en una
-lista.</p>
+<p>Le escribimos a un padrino sobre su propia promesa: un aviso con el marcador final y lo que dio
+la promesa, que sale cuando el programa lo indica, y una corrección sólo si el marcador se corrige y
+cambia su cantidad. A un padrino nunca le mandamos una cuenta, un enlace de pago ni un recordatorio
+de pago &mdash; cobrar es del programa, y el programa lo hace a su manera. Al programa le escribimos
+sobre su inscripción, su código de acceso y la factura de su licencia. No mandamos correo de
+publicidad y no metemos a nadie en una lista.</p>
 
 <h2>Cuánto tiempo lo guardamos</h2>
 <p><b>Los registros de promesas de un juego se guardan doce meses desde la fecha de ese juego.</b>
-Eso vale lo mismo si la licencia del juego se pagó que si no. Una lista se guarda mientras exista la
-campaña del programa.</p>
-<p>Si una licencia queda sin pagar, el acceso a los registros de promesas y a los reportes de ese
-juego queda suspendido hasta que se complete el pago; los registros se conservan durante la
-suspensión, y al pagarse la licencia pendiente se restablece el acceso. La suspensión no acorta ni
-alarga los doce meses, y no es una manera de borrarle los registros a un programa antes de tiempo.</p>
+Eso vale lo mismo si la licencia del juego se pagó que si no. Los datos de inscripción de un programa
+se guardan mientras exista su campaña.</p>
+<p>Si una licencia queda sin pagar, Gostar Digital LLC puede suspender las funciones de manejo de
+promesas de ese juego hasta que se complete el pago. Corregir un marcador nunca se suspende, y a cada padrino cuya cantidad cambie le llega su aviso de corrección. Una suspensión nunca le quita al programa su
+información: el programa puede ver, imprimir y bajar los registros y el reporte de ese juego,
+también el archivo CSV, en cualquier momento, también durante una suspensión. La suspensión no
+acorta ni alarga los doce meses, y no es una manera de borrarle los registros a un programa antes
+de tiempo.</p>
 <p>No se borra nada mientras haya un pago, una corrección o un desacuerdo abierto sobre ese juego.
 Le avisamos al programa con treinta días de antelación como mínimo antes de borrarle cualquier
-registro, y el programa puede bajarse lo suyo en cualquier momento, también durante una suspensión.
-Puedes pedir que borremos tus registros antes.</p>
+registro. Puedes pedir que borremos tus registros antes.</p>
 <p>Hoy no se borra ningún registro automáticamente. No empezaremos a borrar con este calendario
 hasta que esta política lleve treinta días publicada.</p>
 
