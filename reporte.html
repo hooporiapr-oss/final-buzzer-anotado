@@ -440,12 +440,12 @@ var S={
     sello:'Reporte generado el {D} · Cada Punto Cuenta · Gostar Digital LLC, Puerto Rico',
 
     hAviso:'El aviso al padrino',
-    avisoQue:'Cuando mandes esto, cada padrino con promesa recibe UN correo: el marcador final, su tarifa, su tope si mordió, y lo que dio su promesa. Nada más. Sin enlace de pago, sin recordatorios, y diciéndole que te paga a ti directo.',
-    avisoCuantos:'{N} padrino(s) por avisar',
-    avisoNinguno:'No hay a quién avisar: o ya salieron todos, o ninguna promesa llegó a {P}.',
-    avisoRevisa:'Revisa los números de arriba antes de mandar. Un correo no se puede retirar.',
+    avisoQue:'Al publicar el marcador, cada padrino con promesa recibe solo UN correo: el marcador final, su tarifa, su tope si mordió, y lo que dio su promesa. Nada más. Sin enlace de pago, sin recordatorios, y diciéndole que te paga a ti directo.',
+    avisoCuantos:'{N} padrino(s) todavía sin su aviso',
+    avisoNinguno:'No queda nadie por avisar: o ya salieron todos, o ninguna promesa llegó a {P}.',
+    avisoRevisa:'Para mandarlos, vuelve a poner el mismo marcador en Mi calendario: sale sólo lo que falta y nadie recibe dos.',
     avisoSinJugar:'Este juego todavía no tiene marcador. La promesa es por punto, así que no hay nada que avisar hasta que lo tenga.',
-    avisoRetirar:'El marcador se retiró y {N} padrino(s) tienen una cifra nuestra que ya no vale. Mándales la corrección: les dirá que no deben nada.',
+    avisoRetirar:'El marcador se retiró y {N} padrino(s) tienen una cifra nuestra que ya no vale. Pon el marcador correcto en Mi calendario y les llegará su corrección.',
     avisoBoton:'Mandar los avisos',
     avisoConfirma:'Mandar {N} correo(s) ahora',
     avisoCancela:'No, todavía no',
@@ -513,12 +513,12 @@ var S={
     sello:'Report generated {D} · Cada Punto Cuenta · Gostar Digital LLC, Puerto Rico',
 
     hAviso:'The padrino’s notice',
-    avisoQue:'When you send this, every padrino with a pledge gets ONE email: the final score, his rate, his cap if it bit, and what his pledge came to. Nothing else. No payment link, no reminders, and it tells him he pays you directly.',
-    avisoCuantos:'{N} padrino(s) to notify',
-    avisoNinguno:'Nobody to notify: either they have all gone out, or no pledge reached {P}.',
-    avisoRevisa:'Check the numbers above before sending. An email cannot be taken back.',
+    avisoQue:'When the score is published, every padrino with a pledge gets ONE email by itself: the final score, his rate, his cap if it bit, and what his pledge came to. Nothing else. No payment link, no reminders, and it tells him he pays you directly.',
+    avisoCuantos:'{N} padrino(s) still without their notice',
+    avisoNinguno:'Nobody left to notify: either they have all gone out, or no pledge reached {P}.',
+    avisoRevisa:'To send them, post the same score again in My schedule: only what is missing goes out, and nobody gets two.',
     avisoSinJugar:'This game has no score yet. The pledge is by the point, so there is nothing to tell anyone until it does.',
-    avisoRetirar:'The score was withdrawn and {N} padrino(s) are holding a figure from us that no longer stands. Send them the correction: it tells them they owe nothing.',
+    avisoRetirar:'The score was withdrawn and {N} padrino(s) are holding a figure from us that no longer stands. Post the correct score in My schedule and they will get their correction.',
     avisoBoton:'Send the notices',
     avisoConfirma:'Send {N} email(s) now',
     avisoCancela:'No, not yet',
@@ -875,9 +875,8 @@ function pintar(){
       : '<p class="vacio">'+esc(T('sinPromesas'))+'</p>') +
     '</div>'+
 
-    /* El aviso va DESPUÉS de la tabla a propósito: el entrenador tiene
-       que haber pasado por los números antes de llegar al botón que
-       los manda. */
+    /* LOS AVISOS SALEN SOLOS al publicar el marcador en Mi calendario.
+       Aquí ya no hay botón de mandar: sólo se cuenta en qué están. */
     '<h3>'+esc(T('hAviso'))+'</h3>'+
     '<div class="card aviso">'+
       '<p>'+esc(T('avisoQue'))+'</p>'+
@@ -890,10 +889,7 @@ function pintar(){
             ? '<p class="aviso-n"><b>'+
               esc(!r.jugado ? T('avisoRetirar',{N:porAvisar})
                             : T('avisoCuantos',{N:porAvisar}))+'</b></p>'+
-              '<p class="aviso-ojo">'+esc(T('avisoRevisa'))+'</p>'+
-              '<div class="aviso-acc" id="avisoAcc">'+
-                '<button class="btn" onclick="pedirConfirma()">'+esc(T('avisoBoton'))+'</button>'+
-              '</div>'
+              '<p class="aviso-ojo">'+esc(T('avisoRevisa'))+'</p>'
             : '<p class="vacio">'+esc(T('avisoNinguno'))+'</p>'))+
       '<p class="msg'+(AVISO&&AVISO.mal?' bad':'')+'" id="avisoMsg">'+
         esc(AVISO?AVISO.texto:'')+'</p>'+
@@ -909,82 +905,8 @@ function pintar(){
     '<p class="pie-print">'+esc(T('sello',{D:fecha(new Date().toISOString())}))+'</p>';
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   MANDAR LOS AVISOS
-
-   Dos pulsaciones, no una. La primera enseña a cuánta gente se le va
-   a escribir y pide confirmación; la segunda manda. Un correo no se
-   retira, y el botón está al lado de «Imprimir» y «Bajar CSV», que no
-   hacen daño: sin el paso de confirmar, el que viene a imprimir se
-   lleva cincuenta correos por delante.
-
-   El servidor decide qué sale y qué no. Esta página sólo pide,
-   cuenta lo que pasó, y vuelve a pedir el reporte para que los
-   estados que se vean sean los de la base y no los que había antes.
-   ══════════════════════════════════════════════════════════════════ */
-function pedirConfirma(){
-  var n=$('avisoAcc'); if(!n) return;
-  /* EN EL EJEMPLO NO SE MANDA NADA, y hay que decirlo. mandarAvisos()
-     ya se para solo —sin código no llama al servidor— pero callado:
-     el visitante pulsaba, confirmaba y no pasaba nada, que se lee
-     como una página rota. Mejor decir qué haría el botón. */
-  if (esEjemplo()){
-    n.innerHTML = '<p class="nota">'+esc(T('ejAvisoNota'))+'</p>';
-    return;
-  }
-  var cuantos = Number((REP&&REP.resumen&&REP.resumen.por_avisar) || 0);
-  n.innerHTML =
-    '<button class="btn" onclick="mandarAvisos()">'+esc(T('avisoConfirma',{N:cuantos}))+'</button>'+
-    '<button class="btn line" onclick="pintar()">'+esc(T('avisoCancela'))+'</button>';
-}
-
-function mandarAvisos(){
-  var n=$('avisoAcc'), m=$('avisoMsg');
-  if(!n||!CODE||!RETO) return;
-  n.innerHTML='<button class="btn" disabled>'+esc(T('avisoMandando'))+'</button>';
-  if(m){ m.className='msg'; m.textContent=T('avisoMandando') }
-
-  fetch(SERVER+'/game-notices',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({code:CODE,game_id:RETO})
-  }).then(function(res){
-    /* 403 es el código rechazado y se dice aparte: «no se pudo hablar
-       con el servidor» mandaría al entrenador a mirar su internet
-       cuando lo que pasa es que su código no abre ese reto. */
-    if(res.status===403) throw new Error('code');
-    if(!res.ok) throw new Error('server');
-    return res.json();
-  }).then(function(d){
-    if(!d||!d.ok) throw new Error('server');
-
-    /* Una corrección no es un aviso nuevo y se cuenta aparte: para el
-       entrenador no es lo mismo «salieron doce avisos» que «salieron
-       doce correcciones», que quiere decir que a doce personas se les
-       había dicho otra cifra. */
-    var partes=[];
-    if(d.sent)          partes.push(T('avisoHecho',{N:d.sent}));
-    if(d.corrected)     partes.push(T('avisoCorr',{N:d.corrected}));
-    if(!d.sent && !d.corrected) partes.push(T('avisoNada'));
-    if(d.zero)          partes.push(T('avisoCero',{N:d.zero}));
-    if(d.skipped)       partes.push(T('avisoYa',{N:d.skipped}));
-    if(d.undeliverable) partes.push(T('avisoMuerto',{N:d.undeliverable}));
-    if(d.failed)        partes.push(T('avisoFallo',{N:d.failed}));
-
-    AVISO={texto:partes.join(' '), mal:!!(d.failed||d.undeliverable)};
-
-    /* Volver a pedir el reporte: los estados acaban de cambiar en la
-       base y la página tiene que enseñar ésos, no los de hace un
-       minuto. Si la recarga fallara, el mensaje se pinta igual —el
-       envío ya pasó y eso es lo que hay que contar. */
-    return rpc('juego_reporte_cobro',{p_code:CODE,p_game:RETO})
-      .then(function(r){ if(r&&r.ok) REP=r; pintar(); })
-      .catch(function(){ pintar() });
-  }).catch(function(e){
-    AVISO={texto:(e&&e.message==='code')?T('avisoErrCodigo'):T('avisoErrServidor'), mal:true};
-    pintar();
-  });
-}
+/* Los avisos ya no se mandan desde aquí: salen solos al publicar el
+   marcador (Mi calendario), y el admin tiene el reenvío de rescate. */
 
 function volver(){
   REP=null; RETO=null; AVISO=null;
