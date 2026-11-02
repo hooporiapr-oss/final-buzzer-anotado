@@ -1562,6 +1562,12 @@ function pintarJuegosSueltos(filas){
         (f.jugado
           ? '<button class="q sm" data-retirar="' + esc(f.game_id) + '">Withdraw it</button>'
           : '') +
+        /* Recovery only. Notices go out by themselves when a score is
+           published; this is for the day some failed or the server
+           could not be reached. It sends only what is missing. */
+        (f.jugado && f.recauda !== false
+          ? '<button class="q sm" data-avisos="' + esc(f.game_id) + '">Resend missing notices</button>'
+          : '') +
         (!f.jugado
           ? '<button class="q sm" data-prueba2="' + esc(f.game_id) + '" data-si="' +
               (f.es_prueba ? '0' : '1') + '">' +
@@ -1589,6 +1595,13 @@ function pintarJuegosSueltos(filas){
   });
   [].forEach.call(L.querySelectorAll('button[data-retirar]'), function(b){
     b.onclick = function(){ jgMarcador(b.getAttribute('data-retirar'), true) };
+  });
+  [].forEach.call(L.querySelectorAll('button[data-avisos]'), function(b){
+    b.onclick = function(){
+      if (!confirm('Resend missing notices for this game?\n\nOnly notices that failed or ' +
+          'never went out are sent. Nobody who already has theirs gets a second one.')) return;
+      jgAvisos(b.getAttribute('data-avisos'));
+    };
   });
   [].forEach.call(L.querySelectorAll('button[data-prueba2]'), function(b){
     b.onclick = function(){ jgPrueba(b.getAttribute('data-prueba2'),
@@ -1667,8 +1680,12 @@ function jgMarcador(id, retirar){
      cada padrino se le escriba otra vez para decirle que no debe
      nada, y eso no se retira. */
   if (retirar && !confirm('Withdraw this score?\n\nThe game stays played — it just has no ' +
-      'number for now. Anyone already notified will get a correction saying they owe ' +
-      'nothing, the next time you send notices.')) return;
+      'number for now. No email goes out now: when the correct score is posted, every ' +
+      'padrino whose amount changed gets a correction.')) return;
+  if (!retirar && !confirm('Publish the score ' + a + (b !== null ? '–' + b : '') + '?\n\n' +
+      'Every padrino on this game gets ONE email right away with the final score and what ' +
+      'their pledge came to. No payment link and no reminders. An email cannot be taken back.'))
+    return;
 
   di('mJuego', '…');
   rpc('juego_marcador', { p_code: CODE, p_game: id, p_mios: a, p_suyos: b })
@@ -1678,12 +1695,42 @@ function jgMarcador(id, retirar){
           (d && d.reason) === 'code' ? 'Your code does not reach that game.' :
           (d && d.reason) === 'puntos' ? 'That is not a basketball score.' :
           'It did not save' + porque(d), 'mal');
-      di('mJuego', retirar
-        ? 'Score withdrawn. Send the notices to tell the padrinos.'
-        : 'Score posted. Pledging is closed on this game now.', 'ok');
-      cargarJuegosSueltos();
+      if (retirar) {
+        di('mJuego', 'Score withdrawn. No email went out: post the correct score and ' +
+           'the corrections go out by themselves.', 'ok');
+        cargarJuegosSueltos();
+        return;
+      }
+      di('mJuego', 'Score posted. Pledging is closed. Sending the notices…', 'ok');
+      jgAvisos(id);
     })
     .catch(function(e){ di('mJuego', 'It did not save' + porque(e), 'mal') });
+}
+
+/* The notices of one game. Called by itself right after a score is
+   posted, and by the recovery button. Safe to call again: the server
+   sends only what is missing and queues two passes of the same game. */
+function jgAvisos(id){
+  servidor('/game-notices', { code: CODE, game_id: id }).then(function(x){
+    var d = x.cuerpo || {};
+    if (x.codigo !== 200 || d.ok !== true) {
+      di('mJuego', 'Notices did not go out' +
+         (d.error ? ' (' + d.error + ')' : '') + '. Use “Resend missing notices”.', 'mal');
+      cargarJuegosSueltos();
+      return;
+    }
+    var p = [];
+    if (d.sent)          p.push(d.sent + ' notice(s) sent.');
+    if (d.corrected)     p.push(d.corrected + ' correction(s) sent.');
+    if (d.zero)          p.push(d.zero + ' closed under the $5 minimum, no notice.');
+    if (d.skipped)       p.push(d.skipped + ' already up to date.');
+    if (d.undeliverable) p.push(d.undeliverable + ' bounced for good.');
+    if (d.failed)        p.push(d.failed + ' failed — use “Resend missing notices”.');
+    if (!p.length)       p.push('No notices to send: this game has no pledges.');
+    if (d.licencia && d.licencia.estado === 'prueba') p.push('Test game: no licence invoice.');
+    di('mJuego', p.join(' '), (d.failed || d.undeliverable) ? 'mal' : 'ok');
+    cargarJuegosSueltos();
+  });
 }
 
 function jgPrueba(id, si){
