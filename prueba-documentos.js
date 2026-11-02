@@ -64,38 +64,52 @@ const PAGINAS = {
      contrario de lo que se le pedía, que es la peor manera de pasar.
      Ahora las dos piden el modelo que la página dice de verdad. */
   'custodia.html': {
+    /* Desde el 2 de noviembre de 2026: el marcador lo publica el
+       programa, la promesa es por los puntos del equipo, y lo único
+       que se factura es la licencia del programa. Y que una
+       suspensión nunca le quita al programa su información. */
     es: [/El dinero no pasa por nosotros/, /No recibimos dinero de nadie/,
-         /El marcador lo anota el juego/, /Nadie mete un marcador a mano/,
-         /se licencia por juego/, /No hay columna de pagado/],
+         /El marcador final lo publica el programa/, /Lo único que facturamos es la licencia del programa/,
+         /se licencia por juego/, /No hay columna de pagado/,
+         /Una suspensión nunca le quita al programa su información/],
     en: [/The money does not pass through us/, /We do not receive any money/,
-         /score is recorded by the game/, /Nobody enters a score by hand/,
-         /licensed per game/, /no paid column/]
+         /final score is published by the program/, /The only thing we invoice is the program/,
+         /licensed per game/, /no paid column/,
+         /A suspension never takes a program/]
   },
   'terms.html': {
-    /* Las dos últimas son la promesa de QUIÉN manda los avisos. Están
-       aquí porque los términos decían que los mandaba Cada Punto Cuenta sola al
-       cerrar la ventana, y no es verdad: los manda el programa cuando
-       pulsa el botón del reporte. Si alguien vuelve a poner que salen
-       solos, esto falla — un documento que un programa firma no puede
-       prometer un comportamiento que el código no tiene. */
-    es: [/El marcador lo anota el juego, no una persona/,
-         /la base de datos rechaza la segunda/, /una ventana que pone el programa/,
-         /El programa lo revisa y manda los avisos/,
-         /Cada Punto Cuenta\s+no le escribe a un padrino por su cuenta/],
-    en: [/recorded by the game, not by a person/,
-         /the database refuses a second/, /inside a window the program sets/,
-         /The program reviews it and sends the notices/,
-         /Cada Punto Cuenta does not write to a padrino on its\s+own/]
+    /* REESCRITOS EL 2 DE NOVIEMBRE DE 2026 para el modelo de un juego
+       a la vez: el programa registra el juego y publica el marcador,
+       la promesa es por los puntos del EQUIPO, y Cada Punto Cuenta no
+       toca el dinero. Se vigila eso, y que los avisos sigan siendo
+       del programa —nunca salen solos— con su única excepción: la
+       corrección. Si alguien vuelve a poner que salen solos, o que
+       hay recordatorios, esto falla. */
+    es: [/Funciona un juego a la vez/, /cada punto que anote el\s+equipo/,
+         /el programa entra y publica el marcador final/,
+         /no recibe, no guarda, no procesa, no verifica, no cobra y no lleva\s+cuenta de ningún pago/,
+         /Cada Punto Cuenta no le escribe a un padrino por\s+su cuenta/,
+         /recibe un aviso de corrección con la cantidad corregida/],
+    en: [/It works\s+one game at a time/, /every point the\s+team/,
+         /the program enters and publishes the final score/,
+         /does not receive, hold, process, verify, collect or track any\s+payment/,
+         /Cada Punto Cuenta does not write to a padrino\s+on its own/,
+         /receives one correction notice with\s+the corrected amount/]
   },
   'privacy.html': {
-    es: [/De una corrida/, /el nivel que alcanzó/, /una clave, que existe nada más/],
-    en: [/From a run/, /the level he reached/, /a run key, which exists only/]
+    /* Lo que se recoge hoy: el padrino, el programa y el juego. Nada de
+       corridas. Y Stripe, que factura la licencia del programa y no
+       toca dinero de promesas. */
+    es: [/De un juego\./, /el juego sobre el que prometiste/, /Stripe/,
+         /No maneja dinero de promesas/, /Una suspensión nunca le quita al programa su\s+información/],
+    en: [/From a game\./, /the game you pledged on/, /Stripe/,
+         /It handles no pledge money/, /A suspension never takes a program.s\s+information/]
   },
   'cobro.html': {
     es: [/Nosotros anotamos las promesas\. Tu programa cobra/, /Cada Punto Cuenta no procesa pagos ni guarda dinero/,
-         /Al cerrar la ventana del evento/, /no tiene columna de pagado y no la va a tener/],
+         /Cuando publicas el marcador final de un juego/, /no tiene columna de pagado y no la va a tener/],
     en: [/We record the pledges\. Your program collects/, /processes no payments and holds no money/,
-         /When the event window closes/, /no paid column and never will/]
+         /When you publish a game.s final score/, /no paid column and never will/]
   }
 };
 
