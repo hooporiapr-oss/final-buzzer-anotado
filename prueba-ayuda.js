@@ -96,7 +96,7 @@ const PROHIBIDO = [
 
     const quiero = L === 'es'
       ? [[/se publica el marcador/,             'el marcador se publica, no lo reporta nadie'],
-         [/La mesa, en marcadorpr/,             'y lo pone la mesa'],
+         [/pones el marcador final y mandas los avisos/, 'y lo pone el entrenador en Mi calendario'],
          [/llega a \$5 o más/,          'qué es una promesa que cualifica'],
          [/\$1 por cada promesa que cualifica/,  'el precio'],
          [/máximo de \$99 por juego/,           'y su tope'],
@@ -108,7 +108,7 @@ const PROHIBIDO = [
          [/Ganen o pierdan, cada punto cuenta/, 'ganen o pierdan, cada punto cuenta'],
          [/queda suspendido hasta que se complete el pago/, 'qué pasa si no se paga']]
       : [[/the score is posted/,                'the score is posted, nobody reports it'],
-         [/table, in marcadorpr/,               'and the table posts it'],
+         [/you post the final score and send the notices/, 'and the coach posts it in My schedule'],
          [/reaches \$5 or more/,        'what a qualifying pledge is'],
          [/\$1 for each qualifying pledge/,     'the price'],
          [/\$99 maximum per game/,              'and its cap'],
