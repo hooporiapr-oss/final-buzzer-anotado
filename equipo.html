@@ -90,6 +90,7 @@ h2{font-size:1.35rem;letter-spacing:-.028em;margin:38px 0 6px}
 /* «Sin rifas…», en negro y con peso: es la frase que vende. */
 /* Un solo botón, y que se vea: a lo ancho del formulario. */
 #app > .btn{display:block;width:100%;margin-top:22px;padding-top:16px;padding-bottom:16px;font-size:1.05rem}
+.siguiente{text-align:center;color:var(--muted);font-size:.92rem;margin:12px 0 0}
 .sinrifas{font-weight:900;font-size:1.1rem;margin:-10px 0 28px}
 /* El precio: una caja navy, tres líneas grandes y una nota. */
 .precio{background:var(--navy);color:#fff;border-radius:14px;padding:18px 20px;margin:26px 0 8px}
@@ -338,17 +339,19 @@ header{color:#fff}
      guarda como acuse (licFull, abajo), no esta línea. -->
 <div class="ok">
 <input id="lc" type="checkbox">
-<span data-i="lic" onclick="document.getElementById('lc').click()"><b>Acepto la licencia por juego y <a href="terms.html#licencia" target="_blank">sus condiciones</a>.</b></span>
+<span data-i="lic" onclick="document.getElementById('lc').click()"><b>Acepto la licencia por juego y <a href="https://cadapunto.com/terms.html#licencia" target="_blank">sus condiciones</a>.</b></span>
 </div>
 <div class="ok">
 <input id="cu" type="checkbox">
-<span data-i="custody" onclick="document.getElementById('cu').click()"><b>Entiendo que Cada Punto Cuenta <a href="custodia.html" target="_blank">no recibe ni procesa dinero</a> de los padrinos.</b></span>
+<span data-i="custody" onclick="document.getElementById('cu').click()"><b>Entiendo que Cada Punto Cuenta <a href="https://cadapunto.com/custodia.html" target="_blank">no recibe ni procesa dinero</a> de los padrinos.</b></span>
 </div>
 <div class="ok">
 <input id="tc" type="checkbox">
-<span data-i="terms" onclick="document.getElementById('tc').click()"><b>Acepto los <a href="terms.html" target="_blank">Términos de Uso</a> y la <a href="privacy.html" target="_blank">Política de Privacidad</a>.</b></span>
+<span data-i="terms" onclick="document.getElementById('tc').click()"><b>Acepto los <a href="https://cadapunto.com/terms.html" target="_blank">Términos de Uso</a> y la <a href="https://cadapunto.com/privacy.html" target="_blank">Política de Privacidad</a>.</b></span>
 </div>
 <button class="btn" onclick="send()" data-i="go">Inscribir mi programa</button>
+<!-- Lo que pasa después, dicho antes de pulsar: nada se activa solo. -->
+<p class="siguiente" data-i="siguiente">Revisaremos tu solicitud y te enviaremos las instrucciones para comenzar.</p>
 <p class="msg" id="msg"></p>
 
 
@@ -389,7 +392,7 @@ header{color:#fff}
 <p class="f-what" id="fWhat" data-i="fWhat">Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.</p>
     <p><a href="mailto:gostardigital@gmail.com">gostardigital@gmail.com</a></p>
     <p class="f-legal">
-      <a href="terms.html">Términos</a><span class="f-dot">·</span><a href="custodia.html">Dinero</a><span class="f-dot">·</span><a href="privacy.html">Privacidad</a>
+      <a href="https://cadapunto.com/terms.html">Términos</a><span class="f-dot">·</span><a href="https://cadapunto.com/custodia.html">Dinero</a><span class="f-dot">·</span><a href="https://cadapunto.com/privacy.html">Privacidad</a>
     </p>
   </div>
 </footer>
@@ -476,10 +479,11 @@ var S = {
     precio2:'Maximum $99 per game.',
     precio3:'No subscription. No upfront payment.',
     precio4:'A pledge qualifies when its final value is $5 or more.',
-    lic:'<b>I accept the per-game license and <a href="terms.html#licence" target="_blank">its conditions</a>.</b>',
-    custody:'<b>I understand that Cada Punto Cuenta <a href="custodia.html" target="_blank">does not receive or process money</a> from padrinos.</b>',
-    terms:'<b>I accept the <a href="terms.html" target="_blank">Terms of Use</a> and the <a href="privacy.html" target="_blank">Privacy Policy</a>.</b>',
+    lic:'<b>I accept the per-game license and <a href="https://cadapunto.com/terms.html#licence" target="_blank">its conditions</a>.</b>',
+    custody:'<b>I understand that Cada Punto Cuenta <a href="https://cadapunto.com/custodia.html" target="_blank">does not receive or process money</a> from padrinos.</b>',
+    terms:'<b>I accept the <a href="https://cadapunto.com/terms.html" target="_blank">Terms of Use</a> and the <a href="https://cadapunto.com/privacy.html" target="_blank">Privacy Policy</a>.</b>',
     go:'Sign up my program',
+    siguiente:'We will review your request and send you the instructions to get started.',
     errTeam:'Write the team name.',
     errProg:'Write the program or organization name.',
     errWho:'Your name and email, please.',
