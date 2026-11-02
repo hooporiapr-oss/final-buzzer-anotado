@@ -106,7 +106,7 @@ const PROHIBIDO = [
          [/El dinero no pasa por nosotros/,     'el dinero no pasa por nosotros'],
          [/no decimos que una promesa sea deducible/, 'impuestos: no decimos que lo sea'],
          [/Ganen o pierdan, cada punto cuenta/, 'ganen o pierdan, cada punto cuenta'],
-         [/queda suspendido hasta que se complete el pago/, 'qué pasa si no se paga']]
+         [/Tu información nunca se queda retenida/, 'qué pasa si no se paga: se puede suspender, pero nunca se retiene la información']]
       : [[/the score is posted/,                'the score is posted, nobody reports it'],
          [/you post the final score and send the notices/, 'and the coach posts it in My schedule'],
          [/reaches \$5 or more/,        'what a qualifying pledge is'],
@@ -118,7 +118,7 @@ const PROHIBIDO = [
          [/The money does not pass through us/, 'the money does not pass through us'],
          [/we do not say a pledge is deductible/, 'tax: we do not say that it is'],
          [/Win or lose, every point counts/,    'win or lose, every point counts'],
-         [/suspended until payment is completed/, 'what happens if it is not paid']];
+         [/Your information is never held back/, 'what happens if it is not paid: it may be suspended, but the information is never held back']];
 
     for (const [re, qué] of quiero)
       re.test(txt) ? ok(qué) : mal('falta: ' + qué + '  ' + re);
