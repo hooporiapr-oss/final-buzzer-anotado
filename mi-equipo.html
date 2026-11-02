@@ -414,22 +414,21 @@ var S={
     lMios:'nosotros', lSuyos:'ellos', lMarcador:'Marcador final',
     poner:'Poner el marcador', retirar:'Retirar el marcador',
     verReporte:'Ver el reporte',
-    avisar:'Mandar los avisos',
-    confAvisar:'¿Mandar los avisos de este juego?\n\nCada padrino recibe UN correo con el marcador final y lo que dio su promesa. Sin enlace de pago y sin recordatorios. Un correo no se puede retirar.',
-    avisando:'Mandando…',
+    confPublicar:'¿Publicar el marcador {M}?\n\nAl publicarlo, cada padrino de este juego recibe enseguida UN correo con el marcador final y lo que dio su promesa. Sin enlace de pago y sin recordatorios. Un correo no se puede retirar.',
+    avisando:'Marcador puesto. Mandando los avisos…',
     aviHechos:'{N} aviso(s) aceptado(s) por el correo.',
     aviCorr:'{N} corrección(es) salieron.',
-    aviNada:'No salió ninguno.',
+    aviNada:'No había avisos que mandar: este juego no tiene promesas.',
     aviCero:'{N} promesa(s) se cerraron sin aviso: no llegaron al mínimo.',
     aviYa:'{N} ya estaba(n) al día.',
     aviMuerto:'{N} rebotó(aron) para siempre. Esa gente no se entera por correo — llámalos.',
-    aviFallo:'{N} no salió(eron). Puedes volver a pulsar: sale sólo lo que faltó.',
-    aviErrServidor:'No se pudo hablar con el servidor. No se mandó nada.',
-    aviErrCodigo:'El servidor no aceptó tu código. No se mandó nada.',
+    aviFallo:'{N} no salió(eron). Vuelve a poner el mismo marcador: sale sólo lo que faltó.',
+    aviErrServidor:'El marcador quedó puesto, pero no se pudo hablar con el servidor de avisos. Vuelve a poner el mismo marcador y saldrán: nadie recibe dos.',
+    aviErrCodigo:'El marcador quedó puesto, pero el servidor de avisos no aceptó tu código. No se mandó nada.',
     okCreado:'Juego añadido. Su enlace está abajo — ése es el que mandas.',
     okMarcador:'Marcador puesto. Las promesas de este juego quedan cerradas.',
-    okRetirado:'Marcador retirado. Manda los avisos para decírselo a tus padrinos.',
-    confRetirar:'¿Retirar el marcador?\n\nEl juego sigue jugado, sólo se queda sin número. A quien ya se le avisó le llegará una corrección diciendo que no debe nada, la próxima vez que mandes avisos.',
+    okRetirado:'Marcador retirado. No sale ningún correo todavía: pon el marcador correcto y a cada padrino cuya cantidad cambie le llega su corrección.',
+    confRetirar:'¿Retirar el marcador?\n\nEl juego sigue jugado, sólo se queda sin número. No sale ningún correo ahora: cuando pongas el marcador correcto, a cada padrino cuya cantidad cambie le llega su corrección.',
     errRival:'¿Contra quién juegan?',
     errFecha:'¿Qué día?',
     errRepetido:'Ya tienes un juego contra ellos ese día.',
@@ -473,22 +472,21 @@ var S={
     lMios:'us', lSuyos:'them', lMarcador:'Final score',
     poner:'Post the score', retirar:'Withdraw the score',
     verReporte:'See the report',
-    avisar:'Send the notices',
-    confAvisar:'Send the notices for this game?\n\nEach padrino gets ONE email with the final score and what their pledge came to. No payment link and no reminders. An email cannot be taken back.',
-    avisando:'Sending…',
+    confPublicar:'Publish the score {M}?\n\nOnce it is published, every padrino on this game gets ONE email right away with the final score and what their pledge came to. No payment link and no reminders. An email cannot be taken back.',
+    avisando:'Score posted. Sending the notices…',
     aviHechos:'{N} notice(s) accepted by the mail provider.',
     aviCorr:'{N} correction(s) went out.',
-    aviNada:'None went out.',
+    aviNada:'There were no notices to send: this game has no pledges.',
     aviCero:'{N} pledge(s) closed with no notice: they did not reach the minimum.',
     aviYa:'{N} were already up to date.',
     aviMuerto:'{N} bounced for good. Those people will not hear by email — call them.',
-    aviFallo:'{N} did not go out. Press again and only the ones that failed will be sent.',
-    aviErrServidor:'Could not reach the server. Nothing was sent.',
-    aviErrCodigo:'The server did not accept your code. Nothing was sent.',
+    aviFallo:'{N} did not go out. Post the same score again and only the ones that failed will be sent.',
+    aviErrServidor:'The score is posted, but the notice server could not be reached. Post the same score again and they will go out — nobody gets two.',
+    aviErrCodigo:'The score is posted, but the notice server did not accept your code. Nothing was sent.',
     okCreado:'Game added. Its link is below — that is the one you send.',
     okMarcador:'Score posted. Pledging on this game is closed now.',
-    okRetirado:'Score withdrawn. Send the notices to tell your padrinos.',
-    confRetirar:'Withdraw the score?\n\nThe game stays played, it just has no number for now. Anyone already notified will get a correction saying they owe nothing, the next time you send notices.',
+    okRetirado:'Score withdrawn. No email goes out yet: post the correct score and every padrino whose amount changes gets a correction.',
+    confRetirar:'Withdraw the score?\n\nThe game stays played, it just has no number for now. No email goes out now: when you post the correct score, every padrino whose amount changes gets a correction.',
     errRival:'Who are they playing?',
     errFecha:'What day?',
     errRepetido:'You already have a game against them that day.',
@@ -684,16 +682,13 @@ function pintarJuegos(){
           : '')+
       '</div>'+
 
-      /* MANDAR DESDE AQUÍ, que es donde está el entrenador.
-         Antes el único camino era el reporte: añadía un salto a otra
-         página y volver a escribir el código, y para alguien que
-         maneja un juego cada semana eso es el paso que se olvida. El
-         reporte se queda —es donde se mira promesa por promesa y se
-         baja la hoja— pero no hace falta pasar por él para avisar. */
+      /* LOS AVISOS SALEN SOLOS al publicar el marcador: aquí no hay
+         botón de mandar. Era un paso que el entrenador tenía que
+         acordarse de dar, y el día que no se acordaba los padrinos no
+         se enteraban y el programa no cobraba. El reporte se queda: es
+         donde se mira promesa por promesa y se baja la hoja. */
       (g.jugado
         ? '<div class="lin">'+
-            '<button class="btn mini" data-avi="'+esc(g.game_id)+'">'+
-              esc(T('avisar'))+'</button>'+
             '<a class="btn mini line" href="reporte.html">'+esc(T('verReporte'))+'</a>'+
           '</div>'
         : '')+
@@ -709,9 +704,6 @@ function pintarJuegos(){
   });
   [].forEach.call(L.querySelectorAll('button[data-ret]'), function(b){
     b.onclick = function(){ marcador(b.getAttribute('data-ret'), true) };
-  });
-  [].forEach.call(L.querySelectorAll('button[data-avi]'), function(b){
-    b.onclick = function(){ avisar(b.getAttribute('data-avi'), b) };
   });
   [].forEach.call(L.querySelectorAll('button[data-rec]'), function(b){
     b.onclick = function(){ recaudar(b.getAttribute('data-rec'), true, b) };
@@ -749,9 +741,12 @@ function recaudar(id, on, boton){
 /* Los avisos de un juego. Dos pulsaciones y no una: un correo no se
    retira, y este botón está al lado de «Copiar el enlace», que no
    hace daño ninguno. */
-function avisar(id, boton){
-  if (!confirm(T('confAvisar'))) return;
-  boton.disabled = true;
+/* Los avisos de un juego, justo después de publicar su marcador.
+   Sin pregunta: la pregunta se hizo al publicar. Volver a llamarlo es
+   seguro —el servidor sólo manda lo que falta y pone en fila dos
+   pasadas del mismo juego—, así que «vuelve a poner el mismo
+   marcador» es el reintento del entrenador. */
+function enviarAvisos(id){
   dice(T('avisando'), '');
 
   fetch(SERVER + '/game-notices', {
@@ -762,22 +757,20 @@ function avisar(id, boton){
     if (!res.ok) throw new Error('server');
     return res.json();
   }).then(function(d){
-    boton.disabled = false;
     if (!d || d.ok !== true) throw new Error('server');
 
     var partes = [];
     if (d.sent)          partes.push(T('aviHechos').replace('{N}', d.sent));
     if (d.corrected)     partes.push(T('aviCorr').replace('{N}', d.corrected));
-    if (!d.sent && !d.corrected) partes.push(T('aviNada'));
     if (d.zero)          partes.push(T('aviCero').replace('{N}', d.zero));
     if (d.skipped)       partes.push(T('aviYa').replace('{N}', d.skipped));
     if (d.undeliverable) partes.push(T('aviMuerto').replace('{N}', d.undeliverable));
     if (d.failed)        partes.push(T('aviFallo').replace('{N}', d.failed));
+    if (!partes.length)  partes.push(T('aviNada'));
 
     dice(partes.join(' '), (d.failed || d.undeliverable) ? 'bad' : 'ok');
     recargar();
   }).catch(function(e){
-    boton.disabled = false;
     dice((e && e.message === 'code') ? T('aviErrCodigo') : T('aviErrServidor'), 'bad');
   });
 }
@@ -831,14 +824,22 @@ function marcador(id, retirar){
 
   if(!retirar && mios===null) return dice(T('errPuntos'),'bad');
   if(retirar && !confirm(T('confRetirar'))) return;
+  if(!retirar && !confirm(T('confPublicar').replace('{M}',
+       mios + (suyos!==null ? '–' + suyos : ''))) ) return;
 
   dice('…');
   rpc('juego_marcador',{p_code:CODE,p_game:id,p_mios:mios,p_suyos:suyos})
     .then(function(d){
       if(!d||d.ok!==true)
         return dice((d&&d.reason)==='puntos'?T('errMarcador'):T('errGen'),'bad');
-      dice(retirar?T('okRetirado'):T('okMarcador'),'ok');
-      recargar();
+      if(retirar){ dice(T('okRetirado'),'ok'); recargar(); return; }
+      dice(T('okMarcador'),'ok');
+      /* Un juego sólo de marcador no tiene padrinos: no hay nada que
+         mandar. Cualquier otro manda, aunque la lista diga cero
+         promesas: la lista puede ser de hace un rato. */
+      var j = JUEGOS.filter(function(x){ return String(x.game_id)===String(id) })[0];
+      if (j && j.recauda === false) { recargar(); return; }
+      enviarAvisos(id);
     })
     .catch(function(e){ dice(T('errGen')+porque(e),'bad') });
 }
