@@ -288,7 +288,11 @@ for (const img of IMAGENES){
 for (const f of archivos){
   const s = fs.readFileSync(path.join(__dirname, f), 'utf8');
   const icono = /<link[^>]+rel="icon"[^>]+href="logo\.png"/.test(s);
-  const abs   = /og:image"[^>]+content="https:\/\/cadapunto\.com\/compartir\.jpg"/.test(s);
+  /* La imagen de compartir de Cada Punto Cuenta es, desde el 1 de
+     noviembre de 2026, cadapunto-whatsapp-2026.jpg (el cartel nuevo);
+     compartir.jpg sigue en las páginas que aún no se han pasado. Las
+     dos valen: lo que se exige es que sea absoluta y de este dominio. */
+  const abs   = /og:image"[^>]+content="https:\/\/cadapunto\.com\/(cadapunto-whatsapp-2026|compartir)\.jpg"/.test(s);
   const rel   = /og:image"[^>]+content="(?!https?:)/.test(s);
   /* La imagen de compartir se exige donde compartir el enlace tiene
      sentido. Una página marcada noindex —el admin— no se manda por
