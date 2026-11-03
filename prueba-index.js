@@ -57,14 +57,18 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
   }
 
   // ════════ 1 · Las cinco partes, y ninguna más ════════
-  di('1 · Cinco secciones, y ninguna más');
+  di('1 · Seis secciones, y ninguna más');
   const { c:c1, p, errs } = await abrir('es');
 
   const secciones = await p.evaluate(() =>
     [...document.querySelectorAll('section')].map(s => s.id || s.className.split(' ')[0]));
-  const esperadas = ['cartel','how','example','precio','signup'];
+  /* SEIS desde el 3 de noviembre de 2026, y a propósito: el dueño
+     pidió la sección del Cognitivo Gym (The Reset, gratis con el
+     código del equipo) antes de «Inscribe tu equipo». Una sexta que
+     aparezca sin pedirla sigue haciendo fallar esto. */
+  const esperadas = ['cartel','how','example','precio','cognitivo','signup'];
   JSON.stringify(secciones) === JSON.stringify(esperadas)
-    ? ok('las cinco, en orden: ' + secciones.join(' · '))
+    ? ok('las seis, en orden: ' + secciones.join(' · '))
     : mal('salieron ' + secciones.length + ': ' + secciones.join(' · '));
 
   const marco = await p.evaluate(() => ({
@@ -190,6 +194,17 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
   const src = fs.readFileSync(path.resolve(__dirname,'index.html'), 'utf8');
   /const FEE = \{/.test(src) ? ok('FEE sigue en el fichero, que es de donde lo lee prueba-precio')
                              : mal('FEE desapareció: prueba-precio.js se queda sin fuente');
+
+  // ════════ 5b · Cognitivo Gym ════════
+  di('5b · Cognitivo Gym: The Reset');
+  has(t, /The Reset: entrena la próxima jugada/, 'el titular');
+  has(t, /Gratis para los equipos inscritos/,    'gratis para los inscritos');
+  const cg = await p.evaluate(() =>
+    [...document.querySelectorAll('#cognitivo a')].map(a => a.getAttribute('href')));
+  cg[0] === 'equipo.html' ? ok('su botón principal inscribe el equipo') : mal('el primer botón va a ' + cg[0]);
+  cg.includes('https://hooporia.mobi/005-reset.html') ? ok('y quien ya tiene código entra directo a The Reset')
+                                                      : mal('falta el enlace a The Reset');
+  cg.includes('https://hooporia.mobi') ? ok('y el enlace al Cognitivo Gym') : mal('falta el enlace al gym');
 
   // ════════ 6 · Inscribe tu equipo ════════
   di('6 · Inscribe tu equipo');
@@ -319,7 +334,7 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
 
   await b.close();
   console.log('\n' + (bad === 0
-    ? '✓ la portada son cinco partes y nada más'
+    ? '✓ la portada son seis partes y nada más'
     : '✗ ' + bad + ' fallo(s)'));
   process.exit(bad === 0 ? 0 : 1);
 })().catch(e => { console.error(e); process.exit(1) });
