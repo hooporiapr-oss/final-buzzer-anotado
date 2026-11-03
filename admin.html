@@ -163,6 +163,9 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
       <button class="q sm" id="solRecargar">Reload</button>
     </div>
     <p class="m" id="mSol"></p>
+    <!-- Equipos a los que alguien les está probando códigos. No se les
+         frena —eso dejaría fuera al entrenador—: se avisa aquí. -->
+    <div id="solAlertas"></div>
     <!-- El código del entrenador, que sólo se puede leer en el
          momento de aprobarlo. -->
     <div id="solCodigo" class="oculto" style="border:2px solid var(--orange);
@@ -626,8 +629,29 @@ var SOL_TODAS = false;
    el acuse de la licencia traído de `solicitudes`, que es donde se
    guarda el texto que el programa aceptó. Aprobar crea la campaña y
    cierra las dos filas. */
+/* Equipos con 20 o más códigos equivocados en 24 horas. Nadie queda
+   fuera por eso —sólo se frena a la conexión que adivina—, pero si
+   alguien insiste desde muchas conexiones, darle a esa campaña un
+   código nuevo (Campaign → The code) cierra la puerta. */
+function cargarAlertas(){
+  rpc('bw_alertas_codigos', {}).then(function(r){
+    var a = (r && r.ok && r.alertas) || [];
+    $('solAlertas').innerHTML = !a.length ? '' :
+      '<div style="border:2px solid #A8323F;border-radius:10px;padding:10px 14px;margin:10px 0 0">' +
+        '<p class="sub" style="margin:0 0 6px;color:#A8323F;font-weight:800">' +
+          'Someone is trying codes on these teams (last 24 hours)</p>' +
+        a.map(function(x){
+          return '<p class="sub" style="margin:2px 0"><b>' + esc(x.programa || x.equipo) + '</b> — ' +
+                 x.fallos + ' wrong codes from ' + x.conexiones + ' connection(s). ' +
+                 'The coach can still sign in. If it keeps up, give the campaign a new code.</p>';
+        }).join('') +
+      '</div>';
+  }).catch(function(){ $('solAlertas').innerHTML = '' });
+}
+
 function cargarSolicitudes(){
   di('mSol', '');
+  cargarAlertas();
   rpc('bw_solicitudes_admin', {})
     .then(function(r){
       if (!r || !r.ok){
@@ -1321,6 +1345,10 @@ function decidir(fn, id, boton){
             ? 'it was already decided — reloading'
           : r && r.reason === 'no-admin'
             ? 'you are not signed in as an admin'
+          : r && r.reason === 'codigo-repetido'
+            ? 'the four numbers this coach picked already make another program’s code. ' +
+              'Decline this request and ask ' + (r.correo || 'the coach') +
+              ' to sign up again with different numbers'
           : 'it did not go through';
         di('mSol', 'Could not do it: ' + porQue + '.', 'mal');
         if (r && r.reason === 'gone') cargarSolicitudes();
@@ -1361,7 +1389,8 @@ function decidir(fn, id, boton){
         if (r.correo){
           servidor('/coach-aprobado', {
             correo: r.correo, equipo: r.team || r.program || '',
-            coach: boton.getAttribute('data-coach') || '', codigo: r.codigo
+            coach: boton.getAttribute('data-coach') || '', codigo: r.codigo,
+            numeros: r.numeros || ''
           }).then(function(x){
             var el = $('solBienvenida'); if (!el) return;
             if (x && x.codigo === 200 && x.cuerpo && x.cuerpo.ok){
