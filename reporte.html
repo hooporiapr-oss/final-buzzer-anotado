@@ -342,7 +342,7 @@ header{color:#fff}
 
 <footer>
   <div class="wrap">
-    <a href="mi-equipo.html" id="fMine">Mi equipo</a><span class="f-dot">·</span><a href="ayuda.html" id="fHelp">Ayuda</a><span class="f-dot">·</span><a href="cobro.html" id="fCobro">Cómo cobras</a>
+    <a href="mi-equipo.html" id="fMine">Admin</a><span class="f-dot">·</span><a href="ayuda.html" id="fHelp">Ayuda</a><span class="f-dot">·</span><a href="cobro.html" id="fCobro">Cómo cobras</a>
   </div>
 </footer>
 
@@ -436,7 +436,7 @@ var S={
     imprimir:'Imprimir',
     csv:'Bajar en hoja de cálculo',
     otro:'Ver otro juego',
-    aMiEquipo:'← Mi equipo',
+    aMiEquipo:'← Admin',
     sello:'Reporte generado el {D} · Cada Punto Cuenta · Gostar Digital LLC, Puerto Rico',
 
     hAviso:'El aviso al padrino',
@@ -509,7 +509,7 @@ var S={
     imprimir:'Print',
     csv:'Download as a spreadsheet',
     otro:'See another game',
-    aMiEquipo:'← My team',
+    aMiEquipo:'← Admin',
     sello:'Report generated {D} · Cada Punto Cuenta · Gostar Digital LLC, Puerto Rico',
 
     hAviso:'The padrino’s notice',
@@ -668,7 +668,7 @@ function estatico(){
   $('tCodeH').textContent=T('codeH');
   $('tRetoL').textContent=T('retoL');
   $('tGo').textContent = RETOS.length ? T('go') : T('goNext');
-  $('fMine').textContent=(LANG==='es')?'Mi equipo':'My team';
+  $('fMine').textContent='Admin';
   $('fHelp').textContent=(LANG==='es')?'Ayuda':'Help';
   $('fCobro').textContent=(LANG==='es')?'Cómo cobras':'How you collect';
 }
