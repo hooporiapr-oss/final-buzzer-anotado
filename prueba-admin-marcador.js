@@ -112,6 +112,14 @@ const PUBLICO = JUEGOS.map(g => ({ game_id:g.game_id, juego:g.juego, fecha:g.fec
   await p.click('#mCoach a'); si(await p.isVisible('#gate'), 'el coach puede entrar desde ahí');
   si(errs.length === 0, 'sin errores' + (errs.length ? ': ' + errs.join(' | ') : ''));
   await c.close();
+  console.log('\n6 · El enlace público en el teléfono del coach');
+  ({ c, p, llamadas, errs } = await abrir('?e=' + CAMP, 'es'));
+  await p.evaluate(() => { localStorage.setItem('cp_code','CANOVANAS15U-4827'); localStorage.setItem('cp_build','CANOVANAS15U-4827') });
+  await p.reload(); await p.waitForTimeout(400);
+  si(await p.evaluate(() => document.body.classList.contains('publico')) && !(await p.isVisible('#mAdd')), 'abre lo público aunque el coach haya entrado: sin «Añadir un juego»');
+  await p.click('#mCoach a');
+  await p.waitForSelector('#mAdd', { state:'visible', timeout:3000 }).then(() => ok('«¿Eres el coach?» lo lleva directo a su Admin'), () => mal('«¿Eres el coach?» no llevó a su Admin'));
+  await c.close();
   ({ c, p, errs } = await abrir('?e=99999999-2222-3333-4444-555555555555', 'es'));
   si(/no existe/.test(await p.locator('#gm').innerText()), 'un enlace que no es de nadie: lo dice');
   await c.close();
