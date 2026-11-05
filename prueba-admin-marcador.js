@@ -11,6 +11,7 @@ const path = require('path');
 const FILE = 'file://' + path.resolve(__dirname, 'mi-equipo.html');
 let bad = 0; const ok = m => console.log('  ok   ' + m), mal = m => { bad++; console.log('  MAL  ' + m) }, si = (c, m) => c ? ok(m) : mal(m);
 const CAMP = '11111111-2222-3333-4444-555555555555';
+let PUB_OVERRIDE = null;
 const JUEGOS = [
  {game_id:'g1',juego:'vs Arecibo',fecha:'2026-11-07',hora:'2:00 PM',cancha:'Gimnasio Canóvanas',jugado:true,puntos:68,rival_puntos:61,promesas:12,recauda:true,es_prueba:false},
  {game_id:'g2',juego:'@ Caguas',fecha:'2026-11-14',hora:'10:00 AM',cancha:'Coliseo Caguas',jugado:false,puntos:null,rival_puntos:null,promesas:5,recauda:true,es_prueba:false},
@@ -31,7 +32,7 @@ const PUBLICO = JUEGOS.map(g => ({ game_id:g.game_id, juego:g.juego, fecha:g.fec
       const m = u.match(/\/rpc\/([a-z_]+)/);
       if (m) { const body = JSON.parse(r.request().postData() || '{}'); llamadas.push([m[1], body]);
         const R = { juegos_del_codigo: { ok:true, campana:'Canóvanas 15U', campana_id: CAMP, equipo:'Canóvanas', juegos: JUEGOS },
-                    calendario_publico: body.p_campaign === CAMP ? { ok:true, equipo:'Canóvanas', juegos: PUBLICO } : { ok:false, reason:'no-existe' },
+                    calendario_publico: body.p_campaign === CAMP ? { ok:true, equipo:'Canóvanas', juegos: PUB_OVERRIDE || PUBLICO } : { ok:false, reason:'no-existe' },
                     juego_marcador: { ok:true }, juego_crear: { ok:true, game_id:'g9' }, juego_recaudar: { ok:true } }[m[1]] || {};
         return r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify(R) }); }
       if (/game-notices/.test(u)) { llamadas.push(['/game-notices', JSON.parse(r.request().postData() || '{}')]);
@@ -83,6 +84,13 @@ const PUBLICO = JUEGOS.map(g => ({ game_id:g.game_id, juego:g.juego, fecha:g.fec
   p.once('dialog', d => d.accept()); await p.click('.r[data-id="g1"] .edel'); await p.waitForTimeout(300);
   const ret = llamadas.filter(x => x[0] === 'juego_marcador').pop();
   si(ret && ret[1].p_game === 'g1' && ret[1].p_mios === null, 'retirar un marcador ya puesto');
+  await p.click('.r[data-id="g4"]'); si(await p.locator('.r[data-id="g4"] .ed').count() === 1, 'tocar abre el marcador');
+  si((await p.locator('.r[data-id="g4"] .eclose').innerText()).startsWith('Cerrar'), 'con un botón «Cerrar» claro');
+  await p.click('.r[data-id="g4"] .eclose'); si(await p.locator('.r .ed').count() === 0, '«Cerrar» lo cierra');
+  await p.click('.r[data-id="g4"]'); await p.click('.r[data-id="g4"] .t'); si(await p.locator('.r .ed').count() === 0, 'tocar el juego otra vez lo cierra');
+  await p.click('.r[data-id="g4"]'); await p.click('.r[data-id="g3"]');
+  si(await p.locator('.r .ed').count() === 1 && await p.locator('.r[data-id="g3"] .ed').count() === 1, 'abrir otro juego cierra el anterior');
+  await p.click('.r[data-id="g3"] .eclose');
   const antes = llamadas.length; await p.click('.r[data-id="g4"] [data-cop]'); await p.waitForTimeout(150);
   si(await p.locator('.r[data-id="g4"] .ed').count() === 0, 'copiar el enlace no abre el marcador');
 
@@ -100,9 +108,14 @@ const PUBLICO = JUEGOS.map(g => ({ game_id:g.game_id, juego:g.juego, fecha:g.fec
   si(await p.isVisible('#app') && !(await p.isVisible('#gate')), 'abre el calendario sin pedir código');
   si(await p.locator('#hKick').innerText() === 'CALENDARIO' && (await p.locator('#hwho').innerText()).toLowerCase() === 'canóvanas', 'dice Calendario y el equipo');
   si((await p.locator('#mH1').innerText()).startsWith('Los 4 juegos'), 'Los 4 juegos');
+  const tabs = await p.locator('#mTabs .tab').allInnerTexts();
+  si(tabs.join('|') === 'Próximos juegos|Resultados', 'dos enlaces: Próximos juegos y Resultados');
+  si((await p.locator('#mTabs .tab.on').innerText()) === 'Próximos juegos' && await p.locator('.r').count() === 3, 'abre en los próximos');
   const proms = await p.locator('a.pl.prom').evaluateAll(a => a.map(x => x.getAttribute('href')));
   si(proms.length === 2 && proms.every(h => /prometer\.html\?g=g[24]$/.test(h)), 'Prometer sólo en los dos abiertos con padrinos');
-  si(await p.locator('.r[data-id="g1"] a.pl.prom').count() === 0 && /68/.test(await p.locator('.r[data-id="g1"] .sc').innerText()), 'el jugado: su resultado y sin Prometer');
+  await p.click('#mTabs .tab[data-f="jug"]');
+  si(await p.locator('.r').count() === 1 && await p.locator('.r[data-id="g1"] a.pl.prom').count() === 0 && /68/.test(await p.locator('.r[data-id="g1"] .sc').innerText()), 'Resultados: el jugado, con su marcador y sin Prometer');
+  await p.click('#mTabs .tab[data-f="prox"]');
   si(await p.locator('.r[data-id="g3"] a.pl.prom').count() === 0, 'el de solo marcador: sin Prometer');
   si(!(await p.isVisible('#mAdd')) && !(await p.isVisible('#mPub')) && await p.locator('[data-cop]').count() === 0, 'nada del coach: ni añadir, ni enlaces, ni copiar');
   si(!/c[oó]mo recaudar/i.test(await p.locator('body').innerText()), 'y ningún «cómo recaudar»');
@@ -120,6 +133,19 @@ const PUBLICO = JUEGOS.map(g => ({ game_id:g.game_id, juego:g.juego, fecha:g.fec
   await p.click('#mCoach a');
   await p.waitForSelector('#mAdd', { state:'visible', timeout:3000 }).then(() => ok('«¿Eres el coach?» lo lleva directo a su Admin'), () => mal('«¿Eres el coach?» no llevó a su Admin'));
   await c.close();
+  console.log('\n7 · Cuando no hay nada publicado');
+  for (const [nombre, lista, esperado] of [
+      ['sin juegos', [], /todavía no ha publicado juegos\. Vuelve pronto/],
+      ['sin resultados', PUBLICO.filter(g => !g.jugado), /Todavía no hay resultados publicados\. Vuelve pronto/],
+      ['sin próximos', PUBLICO.filter(g => g.jugado), /No hay juegos próximos publicados todavía\. Vuelve pronto/]]) {
+    PUB_OVERRIDE = lista;
+    ({ c, p } = await abrir('?e=' + CAMP, 'es'));
+    if (nombre === 'sin resultados') await p.click('#mTabs .tab[data-f="jug"]');
+    si(esperado.test(await p.locator('#teams').innerText()), nombre + ': «' + (await p.locator('#teams').innerText()).trim() + '»');
+    si(!/Añade|Add your first/i.test(await p.locator('body').innerText()), '  y nada de «añade tu primero»');
+    await c.close();
+  }
+  PUB_OVERRIDE = null;
   ({ c, p, errs } = await abrir('?e=99999999-2222-3333-4444-555555555555', 'es'));
   si(/no existe/.test(await p.locator('#gm').innerText()), 'un enlace que no es de nadie: lo dice');
   await c.close();
