@@ -274,6 +274,9 @@ body:not(.publico) #mCoach{display:none}
 .coachin{text-align:center;margin:18px 0 0;font-size:.82rem}
 .coachin a{color:var(--m-mute);font-weight:700}
 .pubcop{margin:0 0 12px}
+/* Back to the pledge page, when the public page was opened from it. */
+.volverP{display:inline-block;margin:0 0 12px;font-weight:800;font-size:.9rem;color:var(--navy,#101c2a);text-decoration:none}
+.volverP:hover{color:var(--orange,#ff7a18)}
 .pl.prom{background:var(--m-ball);border-color:var(--m-ball);color:#1A0C00}
 .pl.prom:hover{background:#e86a0c;color:#1A0C00}
 .mhint{margin:0 0 16px;color:var(--m-mute);font-size:.8rem}
@@ -365,6 +368,7 @@ footer{background:#12202E}
            su calendario por día, y el marcador se pone tocando el juego,
            ahí mismo, dos casillas y publicar. Lo de Cada Punto va dentro
            de cada fila: el enlace de padrinos, las promesas, el reporte. -->
+      <a class="volverP" id="volverP" href="#" hidden></a>
       <h1 class="mh1" id="mH1"></h1>
       <p class="lede" id="quien"></p>
       <div class="stat" id="mStat"></div>
@@ -504,7 +508,7 @@ var S={
     errConPromesas:'Este juego ya tiene {N} promesa(s). No se le pueden quitar los padrinos por detrás: alguien ya prometió sobre él.',
     errYaJugado:'Este juego ya tiene marcador. Eso ya no se cambia.',
     copiar:'Copiar el enlace', copiado:'Copiado',
-    tabPProx:'Próximos juegos', tabPRes:'Resultados', vacioProx:'No hay juegos próximos publicados todavía. Vuelve pronto.', vacioRes:'Todavía no hay resultados publicados. Vuelve pronto.', vacioPub:'Este equipo todavía no ha publicado juegos. Vuelve pronto.', vacioFiltro:'No hay juegos aquí.',
+    volverP:'← Volver a la promesa', tabPProx:'Próximos juegos', tabPRes:'Resultados', vacioProx:'No hay juegos próximos publicados todavía. Vuelve pronto.', vacioRes:'Todavía no hay resultados publicados. Vuelve pronto.', vacioPub:'Este equipo todavía no ha publicado juegos. Vuelve pronto.', vacioFiltro:'No hay juegos aquí.',
     pubKick:'Calendario', prometer:'Prometer →', coachEntra:'¿Eres el coach? Entra aquí', copiarPub:'🔗 Copiar la página pública', pubNo:'Este calendario no existe.', pJuegos:'Los {N} juegos', pJuego:'El juego',
     mJuegos:'Tus {N} juegos', mJuego:'Tu juego', mDel:', del {A} al {B}', mEl:', el {A}',
     sJuegos:'juegos', sJugados:'jugados', sPromesas:'promesas', sDias:'días',
@@ -572,7 +576,7 @@ var S={
     errConPromesas:'This game already has {N} pledge(s). The padrinos cannot be taken off behind their backs: someone already pledged on it.',
     errYaJugado:'This game already has a score. That does not change now.',
     copiar:'Copy the link', copiado:'Copied',
-    tabPProx:'Upcoming games', tabPRes:'Results', vacioProx:'No upcoming games posted yet. Check back soon.', vacioRes:'No results posted yet. Check back soon.', vacioPub:'This team has not posted any games yet. Check back soon.', vacioFiltro:'No games here.',
+    volverP:'← Back to the pledge', tabPProx:'Upcoming games', tabPRes:'Results', vacioProx:'No upcoming games posted yet. Check back soon.', vacioRes:'No results posted yet. Check back soon.', vacioPub:'This team has not posted any games yet. Check back soon.', vacioFiltro:'No games here.',
     pubKick:'Schedule', prometer:'Pledge →', coachEntra:'Coach? Sign in here', copiarPub:'🔗 Copy the public page link', pubNo:'This schedule does not exist.', pJuegos:'The {N} games', pJuego:'The game',
     mJuegos:'Your {N} games', mJuego:'Your game', mDel:', {A} to {B}', mEl:', {A}',
     sJuegos:'games', sJugados:'played', sPromesas:'pledges', sDias:'days',
@@ -613,7 +617,7 @@ var S={
 var LANG='es';
 try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
   localStorage.getItem('fc-lang')||
-  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en'); }catch(e){}
+  'es'; }catch(e){}
 function T(k,v){
   var s=(S[LANG]&&S[LANG][k])||S.es[k]||'';
   if(v)Object.keys(v).forEach(function(x){ s=s.split('{'+x+'}').join(v[x]) });
@@ -624,7 +628,7 @@ function toggleLang(){
   try{ localStorage.setItem('cfh_lang',LANG);localStorage.setItem('cp-lang',LANG);
        localStorage.setItem('fc-lang',LANG); }catch(e){}
   paintStatic();
-  if(CODE) pintarJuegos();
+  if(CODE || PUB) pintarJuegos();
 }
 /* El formulario de añadir, plegado: el calendario es lo primero que
    se ve, como en Marcador. */
@@ -635,6 +639,8 @@ function plegarAlta(abrir){
   if (on) { try { $('jRival').focus() } catch(e){} }
 }
 function paintStatic(){
+  if (DESDE_G){ $('volverP').hidden = false; $('volverP').textContent = T('volverP');
+    $('volverP').href = 'prometer.html?g=' + DESDE_G; }
   $('tH1').textContent=T('h1');
   $('tLede').textContent=T('lede');
   $('tCodeL').textContent=T('codeL');
@@ -1105,6 +1111,7 @@ var PUB = false, CAMP_ID = null;
 var PUB_ID = (location.search.match(/[?&]e=([0-9a-f-]{36})/i) || [])[1] || null;
 /* &t=jug opens the public page on Results (the pledge page links there). */
 if (PUB_ID && /[?&]t=jug(&|$)/.test(location.search)) FILTRO = 'jug';
+var DESDE_G = PUB_ID ? ((location.search.match(/[?&]g=([0-9a-f-]{36})(&|$)/i) || [])[1] || null) : null;
 function abrirPublico(){
   rpc('calendario_publico', { p_campaign: PUB_ID }).then(function(r){
     if (!r || !r.ok){ say(T('pubNo'), 'bad'); return; }
@@ -1159,7 +1166,7 @@ function idioma(){
   try{
     return localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
            localStorage.getItem('fc-lang') ||
-           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en');
+           'es';
   }catch(e){ return 'es' }
 }
 var b = document.getElementById('hamb'),
