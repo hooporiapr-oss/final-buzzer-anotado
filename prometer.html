@@ -515,7 +515,7 @@ var S={
 };
 var LANG='es';
 try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
-  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en') }catch(e){}
+  'es' }catch(e){}
 function T(k){ return (S[LANG]&&S[LANG][k])||S.es[k] }
 function $(id){ return document.getElementById(id) }
 function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){
@@ -708,7 +708,8 @@ function pintar(){
   /* With the team's page known, the way back is a link to its
      upcoming games, not "ask them for the next link". Without it
      (an older database), the old words stay. */
-  var eq = ESTADO.campana_id ? 'mi-equipo.html?e=' + encodeURIComponent(ESTADO.campana_id) : '';
+  /* &g= lets the team page offer a way back to this pledge. */
+  var eq = ESTADO.campana_id ? 'mi-equipo.html?e=' + encodeURIComponent(ESTADO.campana_id) + (GAME ? '&g=' + encodeURIComponent(GAME) : '') : '';
   if (eq && cerr[1] !== 'canceladaP') cerr[1] += 'Eq';
   $('cerradoH').textContent = T(cerr[0]);
   $('cerradoP').textContent = T(cerr[1]);
@@ -892,7 +893,7 @@ function idioma(){
   try{
     return localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
            localStorage.getItem('fc-lang') ||
-           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en');
+           'es';
   }catch(e){ return 'es' }
 }
 var b = document.getElementById('hamb'),
