@@ -240,15 +240,94 @@ header{color:#fff}
    del programa se quita: ya está escrito en grande justo debajo. */
 .who{display:none}
 }
+
+/* ══ ADMIN = MARCADOR ══════════════════════════════════════════════
+   El aspecto de la mesa de Marcador PR, tal cual: la misma barra, la
+   misma cabecera de calendario, los mismos días, las mismas filas y
+   la misma caja para poner el marcador. */
+:root{--m-ink:#12202E;--m-mute:#5A6B7C;--m-line:#D7E0E8;--m-tint:#F7FAFC;--m-accent:#0C6E8C;--m-ball:#FF7A18}
+body{font-family:Archivo,"Helvetica Neue",Helvetica,Arial,sans-serif;background:#fff;color:var(--m-ink)}
+header{background:#12202E!important;border-bottom:3px solid var(--m-ball)!important}
+header .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0}
+.mk-m{color:#fff;line-height:1.1;font-weight:900}
+.mk-m span{display:block;font-size:.58rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--m-ball)}
+.mk-m b{font-size:1.05rem;font-weight:900}
+.hright{display:flex;align-items:center;gap:8px}
+.by{font-size:.95rem;font-weight:900;letter-spacing:-.02em;color:#fff;text-decoration:none}
+@media(max-width:480px){.by{display:none}.hright{gap:6px}.mk-m b{font-size:.95rem}}
+.by span{color:var(--m-ball)}
+.mh1{font-size:clamp(1.4rem,4vw,1.9rem);letter-spacing:-.03em;margin:0 0 4px;font-weight:900}
+.stat{display:flex;gap:18px;flex-wrap:wrap;margin:0 0 16px;color:var(--m-mute);font-size:.86rem}
+.stat b{color:var(--m-ink)}
+.addg{display:block;width:100%;margin:0 0 14px;padding:13px;border:2px dashed var(--m-ball);border-radius:4px;
+  background:#FFF7F0;color:var(--m-ink);font:inherit;font-weight:900;font-size:.95rem;cursor:pointer}
+.alta{border:1px solid var(--m-line);border-radius:4px;padding:4px 14px 14px;margin:0 0 14px;background:var(--m-tint)}
+.alta.hide{display:none}
+.tabs{display:flex;gap:2px;margin:6px 0 8px;overflow-x:auto;border-bottom:2px solid var(--m-line)}
+.tabs:empty{display:none}
+.tab{flex:0 0 auto;white-space:nowrap;border:0;background:none;cursor:pointer;font:inherit;font-size:.85rem;
+  font-weight:800;color:var(--m-mute);padding:10px 14px;margin-bottom:-2px;border-bottom:3px solid transparent}
+.tab.on{color:var(--m-ink);border-bottom-color:var(--m-ink)}
+.publico .addg,.publico .alta,.publico #mHint,.publico #hout,.publico #quien{display:none!important}
+body:not(.publico) #mCoach{display:none}
+.coachin{text-align:center;margin:18px 0 0;font-size:.82rem}
+.coachin a{color:var(--m-mute);font-weight:700}
+.pubcop{margin:0 0 12px}
+.pl.prom{background:var(--m-ball);border-color:var(--m-ball);color:#1A0C00}
+.pl.prom:hover{background:#e86a0c;color:#1A0C00}
+.mhint{margin:0 0 16px;color:var(--m-mute);font-size:.8rem}
+.mhint:empty{display:none}
+.day{margin-bottom:24px}
+.day h2{font-size:1.02rem;font-weight:900;letter-spacing:-.02em;margin:0 0 8px;padding-bottom:6px;border-bottom:2px solid var(--m-ink)}
+.day h2 span{float:right;font-size:.7rem;font-weight:800;color:var(--m-mute);letter-spacing:.1em;text-transform:uppercase;padding-top:4px}
+.rows{display:grid;gap:4px}
+.r{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:8px 10px;border:1px solid var(--m-line);border-radius:4px;font-size:.88rem;cursor:pointer}
+.r:hover{border-color:var(--m-ink)}
+.r.p{border-color:var(--m-ball);background:rgba(255,122,24,.06)}
+.r.done{background:var(--m-tint);border-color:#C3D2DD}
+.r .t{font-weight:800;font-variant-numeric:tabular-nums;flex:0 0 auto;min-width:64px;white-space:nowrap}
+.r .m{flex:1 1 180px;min-width:0}
+.r .m b{font-weight:800}
+.r .m i{font-style:normal;color:var(--m-mute);font-size:.8rem;padding:0 3px}
+.r .won{color:#0B7A5A;font-weight:900}.r .won::after{content:' ✓';font-size:.8em}
+.r .lost{color:#9AA8B5;font-weight:500}
+.r .sc{display:block;margin-top:2px;font-variant-numeric:tabular-nums}
+.r .sc .hi{font-size:1.05rem;font-weight:900;color:var(--m-ink)}
+.r .sc .lo{font-size:.9rem;font-weight:700;color:#9AA8B5}
+.r .sc .d{padding:0 5px;color:#C3D2DD;font-weight:700}
+.r .sc b{font-size:1rem;font-weight:800}
+.r .sc .pend{font-style:normal;font-size:.74rem;font-weight:700;color:#9AA8B5}
+.r .j{color:var(--m-mute);font-size:.72rem;flex:0 0 auto}
+.r .k{font-size:.58rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--k);
+  border-radius:3px;padding:3px 8px;white-space:nowrap;flex-shrink:0}
+.r .pls{flex:1 1 100%;display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.pl{display:inline-block;border:1px solid var(--m-accent);border-radius:999px;padding:4px 11px;font:inherit;font-size:.74rem;
+  font-weight:800;color:var(--m-accent);text-decoration:none;background:#fff;cursor:pointer}
+.pl b{font-weight:900}
+.pl:hover{background:var(--m-accent);color:#fff}
+.pl.mine{border-color:var(--m-ink);color:var(--m-ink);cursor:default}
+.pl.mine:hover{background:#fff;color:var(--m-ink)}
+.pl.want{border-style:dashed;border-color:var(--m-line);color:var(--m-mute)}
+.ed{flex:1 1 100%;display:flex;gap:6px;align-items:center;margin-top:6px}
+.ep{width:58px;padding:9px 6px;border:2px solid var(--m-ink);border-radius:4px;font:inherit;font-size:1.05rem;font-weight:800;
+  text-align:center;color:var(--m-ink);background:#fff;font-variant-numeric:tabular-nums}
+.ep:focus{outline:none;border-color:var(--m-ball);box-shadow:0 0 0 3px rgba(255,122,24,.2)}
+.ep::placeholder{font-size:.68rem;font-weight:700;color:#9AA8B5}
+.edash{color:var(--m-mute);font-weight:800}
+.esave,.edel{padding:9px 14px;border:2px solid var(--m-ink);border-radius:4px;background:var(--m-ink);color:#fff;font:inherit;font-size:.82rem;font-weight:800;cursor:pointer}
+.edel{background:#fff;color:#A8323F;border-color:var(--m-line)}
+.eclose{margin-left:auto;padding:7px 12px;border:1px solid var(--m-line);border-radius:4px;background:#fff;color:var(--m-mute);font:inherit;font-size:1.1rem;line-height:1;cursor:pointer}
+@media(max-width:620px){.r .m{flex:1 1 100%}}
+footer{background:#12202E}
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <header>
   <div class="wrap bar">
-    <a class="mark" href="index.html"><em>CADA PUNTO CUENTA</em><i>.</i></a>
+    <div class="mark mk-m"><span id="hKick">ADMIN</span><b id="hwho">Cada Punto Cuenta</b></div>
     <div class="hright">
-      <span class="who hide" id="hwho"></span>
     <nav class="menu" id="menu">
       <a href="index.html" data-m="inicio">Home</a>
       <a href="index.html#how" data-m="como">How it works</a>
@@ -257,11 +336,9 @@ header{color:#fff}
       <a href="mi-equipo.html" data-m="mia">Admin</a>
       <a class="cta" href="equipo.html" data-m="alta">Sign up a team</a>
     </nav>
-      <div class="barra-dcha">
-        <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
-      <button class="hamb" id="hamb" type="button" aria-controls="menu" aria-expanded="false"><b></b></button>
-      </div>
+      <button class="langb" id="langBtn" onclick="toggleLang()">EN</button>
       <button class="out hide" id="hout" onclick="salir()">Salir</button>
+      <button class="hamb" id="hamb" type="button" aria-controls="menu" aria-expanded="false"><b></b></button>
     </div>
   </div>
 </header>
@@ -281,7 +358,17 @@ header{color:#fff}
     </div>
 
     <div id="app" class="hide">
+      <!-- ══ ADMIN = MARCADOR (5 de noviembre de 2026) ══════════════════
+           El entrenador manda aquí lo mismo que la mesa de Marcador PR:
+           su calendario por día, y el marcador se pone tocando el juego,
+           ahí mismo, dos casillas y publicar. Lo de Cada Punto va dentro
+           de cada fila: el enlace de padrinos, las promesas, el reporte. -->
+      <h1 class="mh1" id="mH1"></h1>
       <p class="lede" id="quien"></p>
+      <div class="stat" id="mStat"></div>
+      <button class="pl pubcop" id="mPub" onclick="copiarPublica(this)"></button>
+      <button class="addg" id="mAdd" onclick="plegarAlta()"></button>
+      <div class="alta hide" id="mAlta">
 
       <!-- ══ AÑADIR UN JUEGO, OTRA VEZ AQUÍ (1 de noviembre de 2026) ══
            Se había retirado el 30 de octubre en favor del constructor
@@ -321,12 +408,16 @@ header{color:#fff}
       </div>
       <p class="help" id="tPadP"></p>
       <button class="btn go" id="jCrear"></button>
+      </div>
       <p class="msg" id="jm"></p>
 
-      <h2 id="tTeams"></h2>
+      <h2 id="tTeams" class="hide"></h2>
+      <div class="tabs" id="mTabs"></div>
+      <p class="mhint" id="mHint"></p>
       <div id="teams"></div>
     </div>
 
+    <p class="coachin" id="mCoach"><a href="#" onclick="return entrarCoach()"></a></p>
     <p class="stuck" id="tStuck"></p>
 
   </div>
@@ -411,6 +502,15 @@ var S={
     errConPromesas:'Este juego ya tiene {N} promesa(s). No se le pueden quitar los padrinos por detrás: alguien ya prometió sobre él.',
     errYaJugado:'Este juego ya tiene marcador. Eso ya no se cambia.',
     copiar:'Copiar el enlace', copiado:'Copiado',
+    pubKick:'Calendario', prometer:'Prometer →', coachEntra:'¿Eres el coach? Entra aquí', copiarPub:'🔗 Copiar la página pública', pubNo:'Este calendario no existe.', pJuegos:'Los {N} juegos', pJuego:'El juego',
+    mJuegos:'Tus {N} juegos', mJuego:'Tu juego', mDel:', del {A} al {B}', mEl:', el {A}',
+    sJuegos:'juegos', sJugados:'jugados', sPromesas:'promesas', sDias:'días',
+    mAdd:'+ Añadir un juego', mAddCerrar:'− Cerrar', mHint:'Toca un juego para poner su marcador.',
+    tabTodo:'Todo', tabProx:'Próximos', tabJug:'Jugados',
+    dN:'{N} juegos', d1:'1 juego', sinHora:'Hora —',
+    kPad:'Padrinos', kSolo:'Solo marcador', kPrueba:'Prueba',
+    eGuardar:'Publicar', eBorrar:'Retirar', ePuntos:'pts',
+    stFinal:'Final', stPend:'Sin marcador',
     lMios:'nosotros', lSuyos:'ellos', lMarcador:'Marcador final',
     poner:'Poner el marcador', retirar:'Retirar el marcador',
     verReporte:'Ver el reporte',
@@ -469,6 +569,15 @@ var S={
     errConPromesas:'This game already has {N} pledge(s). The padrinos cannot be taken off behind their backs: someone already pledged on it.',
     errYaJugado:'This game already has a score. That does not change now.',
     copiar:'Copy the link', copiado:'Copied',
+    pubKick:'Schedule', prometer:'Pledge →', coachEntra:'Coach? Sign in here', copiarPub:'🔗 Copy the public page link', pubNo:'This schedule does not exist.', pJuegos:'The {N} games', pJuego:'The game',
+    mJuegos:'Your {N} games', mJuego:'Your game', mDel:', {A} to {B}', mEl:', {A}',
+    sJuegos:'games', sJugados:'played', sPromesas:'pledges', sDias:'days',
+    mAdd:'+ Add a game', mAddCerrar:'− Close', mHint:'Tap a game to post its score.',
+    tabTodo:'All', tabProx:'Upcoming', tabJug:'Played',
+    dN:'{N} games', d1:'1 game', sinHora:'Time —',
+    kPad:'Padrinos', kSolo:'Scoreboard only', kPrueba:'Test',
+    eGuardar:'Post', eBorrar:'Withdraw', ePuntos:'pts',
+    stFinal:'Final', stPend:'No score yet',
     lMios:'us', lSuyos:'them', lMarcador:'Final score',
     poner:'Post the score', retirar:'Withdraw the score',
     verReporte:'See the report',
@@ -512,6 +621,14 @@ function toggleLang(){
        localStorage.setItem('fc-lang',LANG); }catch(e){}
   paintStatic();
   if(CODE) pintarJuegos();
+}
+/* El formulario de añadir, plegado: el calendario es lo primero que
+   se ve, como en Marcador. */
+function plegarAlta(abrir){
+  var a = $('mAlta'), on = (abrir === undefined) ? a.className.indexOf('hide') >= 0 : abrir;
+  a.className = on ? 'alta' : 'alta hide';
+  $('mAdd').textContent = on ? T('mAddCerrar') : T('mAdd');
+  if (on) { try { $('jRival').focus() } catch(e){} }
 }
 function paintStatic(){
   $('tH1').textContent=T('h1');
@@ -594,13 +711,14 @@ function entrar(auto){
     .then(function(x){
       var r = x.r; k = x.k;
       if(!r||!r.ok){ if(auto) olvidar(); return say(T('bad'),'bad'); }
-      CODE=k; JUEGOS=r.juegos||[]; PROGRAMA=r.campana||'';
+      CODE=k; JUEGOS=r.juegos||[]; PROGRAMA=r.campana||''; CAMP_ID=r.campana_id||null; PUB=false;
+      document.body.classList.remove('publico');
       EQUIPO=r.equipo||'';
       recordar(k);
       say('');
       $('gate').className='gate hide';
       $('app').className='';
-      $('hwho').className='who'; $('hwho').textContent=PROGRAMA;
+      $('hwho').textContent=PROGRAMA;
       $('hout').className='out';
       pintarJuegos();
     })
@@ -618,99 +736,212 @@ function recargar(){
 
 function enlace(id){ return 'https://cadapunto.com/prometer.html?g=' + id }
 
-function pintarJuegos(){
-  $('quien').textContent = T('quien').replace('{P}', PROGRAMA || '');
+var FILTRO = '';   // '' todo · 'prox' próximos · 'jug' jugados
 
-  if(!JUEGOS.length){
-    $('teams').innerHTML = '<p class="help">'+esc(T('sinJuegos'))+'</p>';
+/* La hora como la escriba el entrenador («7:00 PM», «19:00», «7pm»),
+   en minutos para ordenar el día. Sin hora va al final del día. */
+function minutos(t){
+  var m = String(t || '').match(/(\d{1,2})(?::(\d{2}))?\s*([ap])?/i);
+  if (!m) return 24 * 60;
+  var h = parseInt(m[1], 10) % 12, mi = parseInt(m[2] || '0', 10);
+  if (m[3] ? /p/i.test(m[3]) : parseInt(m[1], 10) >= 12) h += 12;
+  if (!m[3] && parseInt(m[1], 10) === 12) h = 12;
+  return h * 60 + mi;
+}
+function diaLargo(iso){
+  var d = new Date(iso + 'T12:00:00');
+  if (isNaN(d)) return iso || '';
+  var t = d.toLocaleDateString(LANG === 'es' ? 'es-PR' : 'en-US', { weekday:'long', day:'numeric', month:'long' });
+  t = t.replace(',', '');
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+function diaCorto(iso){
+  var d = new Date(iso + 'T12:00:00');
+  if (isNaN(d)) return iso || '';
+  return d.toLocaleDateString(LANG === 'es' ? 'es-PR' : 'en-US', { day:'numeric', month:'long' });
+}
+/* El mes una sola vez si es el mismo, como Marcador: «del 7 al 21 de
+   noviembre», «Nov 7 to 21». */
+function rangoDias(a, b){
+  var da = new Date(a + 'T12:00:00'), db = new Date(b + 'T12:00:00');
+  if (isNaN(da) || isNaN(db) || da.getMonth() !== db.getMonth() || da.getFullYear() !== db.getFullYear())
+    return T('mDel', { A: diaCorto(a), B: diaCorto(b) });
+  if (LANG === 'es') return T('mDel', { A: String(da.getDate()), B: diaCorto(b) });
+  return T('mDel', { A: diaCorto(a), B: String(db.getDate()) });
+}
+function rival(g){ return String(g.juego || '').replace(/^(vs|@)\s+/i, '') }
+function deVisita(g){ return /^@/.test(String(g.juego || '')) }
+
+function pintarJuegos(){
+  var nos = EQUIPO || PROGRAMA || '';
+  $('quien').textContent = PUB ? '' : T('quien').replace('{P}', PROGRAMA || '');
+  $('hKick').textContent = PUB ? T('pubKick').toUpperCase() : 'ADMIN';
+  $('hwho').textContent = PUB ? (EQUIPO || PROGRAMA) : PROGRAMA;
+  $('mPub').textContent = T('copiarPub');
+  $('mPub').style.display = (!PUB && CAMP_ID) ? '' : 'none';
+  $('mCoach').querySelector('a').textContent = T('coachEntra');
+  $('mAdd').textContent = $('mAlta').className.indexOf('hide') >= 0 ? T('mAdd') : T('mAddCerrar');
+
+  /* La cabecera, de los juegos: como la de Marcador. */
+  var dias = [], jug = 0, prom = 0;
+  JUEGOS.forEach(function(g){
+    if (g.fecha && dias.indexOf(g.fecha) < 0) dias.push(g.fecha);
+    if (g.jugado) jug++;
+    prom += Number(g.promesas || 0);
+  });
+  dias.sort();
+  var n = JUEGOS.length;
+  $('mH1').textContent = !n ? T('h1') :
+    T(PUB ? (n === 1 ? 'pJuego' : 'pJuegos') : (n === 1 ? 'mJuego' : 'mJuegos'), { N: n }) +
+    (dias.length === 1 ? T('mEl', { A: diaCorto(dias[0]) })
+     : dias.length > 1 ? rangoDias(dias[0], dias[dias.length - 1]) : '');
+  $('mStat').innerHTML = !n ? '' :
+    '<span><b>' + n + '</b> ' + esc(T('sJuegos')) + '</span>' +
+    '<span><b>' + jug + '</b> ' + esc(T('sJugados')) + '</span>' +
+    (PUB ? '' : '<span><b>' + prom + '</b> ' + esc(T('sPromesas')) + '</span>') +
+    '<span><b>' + dias.length + '</b> ' + esc(T('sDias')) + '</span>';
+
+  $('mTabs').innerHTML = !n ? '' : [['', 'tabTodo'], ['prox', 'tabProx'], ['jug', 'tabJug']].map(function(t){
+    return '<button class="tab' + (FILTRO === t[0] ? ' on' : '') + '" data-f="' + t[0] + '">' + esc(T(t[1])) + '</button>';
+  }).join('');
+  $('mHint').textContent = (n && !PUB) ? T('mHint') : '';
+
+  if (!n){
+    $('teams').innerHTML = '<p class="help">' + esc(T('sinJuegos')) + '</p>';
+    if (!PUB) plegarAlta(true);
     return;
   }
 
-  $('teams').innerHTML = JUEGOS.map(function(g){
-    var marca = g.jugado
-      ? (g.puntos + (g.rival_puntos!=null ? '–'+g.rival_puntos : ''))
-      : T('sinMarcador');
-    var np = Number(g.promesas||0);
-    var prom = np===0 ? T('sinPromesas')
-             : np===1 ? T('nPromesa') : T('nPromesas').replace('{N}',np);
-
-    return '<div class="team"'+(g.es_prueba?' style="background:rgba(255,122,24,.07)"':'')+'>'+
-      '<div><b>'+esc(g.juego||'')+'</b>'+
-        '<small>'+esc(g.fecha||'')+
-          (g.hora   ? ' · '+esc(g.hora)   : '')+
-          (g.cancha ? ' · '+esc(g.cancha) : '')+
-          ' · '+esc(prom)+' · '+esc(marca)+'</small></div>'+
-
-      (g.es_prueba ? '<p class="help" style="color:var(--orange);font-weight:800;margin:6px 0 0">'+
-                       esc(T('esPrueba'))+'</p>' : '')+
-
-      /* El enlace primero: es lo que el entrenador viene a buscar.
-         Salvo que este juego no tenga padrinos, y entonces enseñar un
-         enlace que no lleva a ningún sitio sería lo peor que podría
-         hacer esta página: lo copiaría y lo mandaría igual. En su
-         sitio va la manera de encenderlo. */
-      (g.recauda === false
-        ? '<p class="help" style="font-weight:800;margin:6px 0 0">'+
-            esc(T('sinRecaudo'))+'</p>'+
-          (g.jugado ? ''
-            : '<div class="lin"><button class="btn mini line" data-rec="'+
-                esc(g.game_id)+'">'+esc(T('abrir'))+'</button></div>')
-        : '<div class="lin">'+
-            '<input readonly value="'+esc(enlace(g.game_id))+'" onclick="this.select()">'+
-            '<button class="btn mini" data-cop="'+esc(g.game_id)+'">'+esc(T('copiar'))+'</button>'+
-          '</div>'+
-          /* Y quitarlos sólo mientras no haya nadie dentro. Con una
-             promesa encima el botón ni sale: la base lo rechaza
-             igual, pero un botón que siempre falla es una trampa. */
-          ((np === 0 && !g.jugado)
-            ? '<div class="lin"><button class="btn mini line" data-norec="'+
-                esc(g.game_id)+'">'+esc(T('cerrar'))+'</button></div>'
-            : ''))+
-
-      /* CON SU RÓTULO. Eran dos casillas sueltas que decían
-         «nosotros» y «ellos» por dentro, y un entrenador buscándolo
-         no las reconoció como el sitio del marcador. */
-      '<p class="help" style="font-weight:800;margin:10px 0 0">'+esc(T('lMarcador'))+'</p>'+
-      '<div class="lin">'+
-        '<input class="pts" data-a="'+esc(g.game_id)+'" type="number" min="0" max="300" '+
-          'placeholder="'+esc(T('lMios'))+'" value="'+(g.puntos==null?'':g.puntos)+'">'+
-        '<input class="pts" data-b="'+esc(g.game_id)+'" type="number" min="0" max="300" '+
-          'placeholder="'+esc(T('lSuyos'))+'" value="'+(g.rival_puntos==null?'':g.rival_puntos)+'">'+
-        '<button class="btn mini" data-mar="'+esc(g.game_id)+'">'+esc(T('poner'))+'</button>'+
-        (g.jugado
-          ? '<button class="btn mini line" data-ret="'+esc(g.game_id)+'">'+esc(T('retirar'))+'</button>'
-          : '')+
-      '</div>'+
-
-      /* LOS AVISOS SALEN SOLOS al publicar el marcador: aquí no hay
-         botón de mandar. Era un paso que el entrenador tenía que
-         acordarse de dar, y el día que no se acordaba los padrinos no
-         se enteraban y el programa no cobraba. El reporte se queda: es
-         donde se mira promesa por promesa y se baja la hoja. */
-      (g.jugado
-        ? '<div class="lin">'+
-            '<a class="btn mini line" href="reporte.html">'+esc(T('verReporte'))+'</a>'+
-          '</div>'
-        : '')+
-    '</div>';
-  }).join('');
+  /* Por día y por hora, como Marcador. */
+  var lista = JUEGOS.filter(function(g){
+    return FILTRO === 'jug' ? g.jugado : FILTRO === 'prox' ? !g.jugado : true;
+  });
+  var porDia = {};
+  lista.forEach(function(g){ (porDia[g.fecha || ''] = porDia[g.fecha || ''] || []).push(g) });
+  var html = '';
+  Object.keys(porDia).sort().forEach(function(d){
+    var l = porDia[d].sort(function(a, b){ return minutos(a.hora) - minutos(b.hora) });
+    html += '<section class="day"><h2>' + esc(diaLargo(d)) + ' <span>' +
+            esc(l.length === 1 ? T('d1') : T('dN', { N: l.length })) + '</span></h2><div class="rows">';
+    l.forEach(function(g){ html += fila(g, nos) });
+    html += '</div></section>';
+  });
+  $('teams').innerHTML = html || '<p class="help">—</p>';
 
   var L = $('teams');
-  [].forEach.call(L.querySelectorAll('button[data-cop]'), function(b){
-    b.onclick = function(){ copiar(b.getAttribute('data-cop'), b) };
+  [].forEach.call($('mTabs').querySelectorAll('.tab'), function(b){
+    b.onclick = function(){ FILTRO = b.getAttribute('data-f'); pintarJuegos() };
   });
-  [].forEach.call(L.querySelectorAll('button[data-mar]'), function(b){
-    b.onclick = function(){ marcador(b.getAttribute('data-mar'), false) };
+  if (!PUB) [].forEach.call(L.querySelectorAll('.r'), function(r){
+    r.onclick = function(){ tocar(r) };
   });
-  [].forEach.call(L.querySelectorAll('button[data-ret]'), function(b){
-    b.onclick = function(){ marcador(b.getAttribute('data-ret'), true) };
+  [].forEach.call(L.querySelectorAll('[data-cop]'), function(b){
+    b.onclick = function(e){ e.stopPropagation(); copiar(b.getAttribute('data-cop'), b) };
   });
-  [].forEach.call(L.querySelectorAll('button[data-rec]'), function(b){
-    b.onclick = function(){ recaudar(b.getAttribute('data-rec'), true, b) };
+  [].forEach.call(L.querySelectorAll('[data-rec]'), function(b){
+    b.onclick = function(e){ e.stopPropagation(); recaudar(b.getAttribute('data-rec'), true, b) };
   });
-  [].forEach.call(L.querySelectorAll('button[data-norec]'), function(b){
-    b.onclick = function(){ recaudar(b.getAttribute('data-norec'), false, b) };
+  [].forEach.call(L.querySelectorAll('[data-norec]'), function(b){
+    b.onclick = function(e){ e.stopPropagation(); recaudar(b.getAttribute('data-norec'), false, b) };
   });
+  [].forEach.call(L.querySelectorAll('a.pl'), function(a){
+    a.onclick = function(e){ e.stopPropagation() };
+  });
+}
+
+/* Una fila de Marcador: hora · cancha · equipos y marcador, y debajo
+   lo de Cada Punto. */
+function fila(g, nos){
+  var r = rival(g), np = Number(g.promesas || 0);
+  var a = deVisita(g) ? r : nos, b = deVisita(g) ? nos : r;          // local primero, como en Marcador
+  var pa = deVisita(g) ? g.rival_puntos : g.puntos, pb = deVisita(g) ? g.puntos : g.rival_puntos;
+  var ca = '', cb = '', sc = '';
+  if (g.jugado && pa != null && pb != null){
+    if (pa > pb){ ca = ' won'; cb = ' lost'; sc = '<b class="hi">' + pa + '</b><span class="d">–</span><b class="lo">' + pb + '</b>' }
+    else if (pb > pa){ cb = ' won'; ca = ' lost'; sc = '<b class="lo">' + pa + '</b><span class="d">–</span><b class="hi">' + pb + '</b>' }
+    else sc = '<b>' + pa + '</b><span class="d">–</span><b>' + pb + '</b>';
+  }
+  var tag = g.es_prueba ? '<span class="k" style="--k:#FF7A18">' + esc(T('kPrueba')) + '</span>'
+          : g.recauda === false ? '<span class="k" style="--k:#5A6B7C">' + esc(T('kSolo')) + '</span>'
+          : '<span class="k" style="--k:#0C6E8C">' + esc(T('kPad')) + '</span>';
+  var prom = np === 0 ? T('sinPromesas') : np === 1 ? T('nPromesa') : T('nPromesas').replace('{N}', np);
+  var pls = '';
+  if (PUB){
+    /* Lo público: el resultado o lo que viene, y Prometer en los juegos
+       con padrinos que todavía están abiertos. Nada de cómo recaudar,
+       nada de cuentas ni enlaces del coach. */
+    if (g.abierto) pls = '<a class="pl prom" href="prometer.html?g=' + encodeURIComponent(g.game_id) + '">' + esc(T('prometer')) + '</a>';
+    if (g.recauda === false || g.jugado) tag = '';
+    return '<div class="r' + (g.jugado ? ' done' : '') + '" data-id="' + esc(g.game_id) + '">' +
+        '<span class="t">' + esc(g.hora || T('sinHora')) + '</span>' +
+        '<span class="m"><b class="sa' + ca + '">' + esc(a) + '</b> <i>vs</i> <b class="sb' + cb + '">' + esc(b) + '</b>' +
+          '<span class="sc">' + (sc || '<em class="pend">' + esc(T('stPend')) + '</em>') + '</span></span>' +
+        '<span class="j">' + esc(g.cancha || '') + (g.jugado ? (g.cancha ? ' · ' : '') + esc(T('stFinal')) : '') + '</span>' +
+        tag + '<span class="pls">' + pls + '</span></div>';
+  }
+  if (g.recauda === false){
+    if (!g.jugado) pls += '<button class="pl want" data-rec="' + esc(g.game_id) + '">' + esc(T('abrir')) + '</button>';
+  } else {
+    pls += '<span class="pl mine"><b>' + esc(prom) + '</b></span>';
+    pls += '<button class="pl" data-cop="' + esc(g.game_id) + '">' + esc(T('copiar')) + '</button>';
+    if (np === 0 && !g.jugado) pls += '<button class="pl want" data-norec="' + esc(g.game_id) + '">' + esc(T('cerrar')) + '</button>';
+  }
+  if (g.jugado) pls += '<a class="pl" href="reporte.html">' + esc(T('verReporte')) + '</a>';
+  return '<div class="r live' + (g.jugado ? ' done' : '') + (g.es_prueba ? ' p' : '') + '" data-id="' + esc(g.game_id) + '">' +
+      '<span class="t">' + esc(g.hora || T('sinHora')) + '</span>' +
+      '<span class="m"><b class="sa' + ca + '">' + esc(a) + '</b> <i>vs</i> <b class="sb' + cb + '">' + esc(b) + '</b>' +
+        '<span class="sc">' + (sc || '<em class="pend">' + esc(T('stPend')) + '</em>') + '</span></span>' +
+      '<span class="j">' + esc(g.cancha || '') + (g.jugado ? (g.cancha ? ' · ' : '') + esc(T('stFinal')) : '') + '</span>' +
+      tag +
+      '<span class="pls">' + pls + '</span>' +
+    '</div>';
+}
+
+/* EL MARCADOR SE PONE TOCANDO EL JUEGO, como en la mesa de Marcador:
+   se abren dos casillas ahí mismo, nuestro equipo y el rival, y
+   «Publicar» hace lo de siempre — pregunta, publica y manda los
+   avisos a los padrinos. «Retirar» quita un marcador ya puesto. */
+function tocar(row){
+  if (row.querySelector('.ed')) return;
+  var g = JUEGOS.filter(function(x){ return String(x.game_id) === row.getAttribute('data-id') })[0];
+  if (!g) return;
+  var nos = EQUIPO || PROGRAMA || T('lMios'), r = rival(g) || T('lSuyos');
+  /* Las casillas en el mismo orden que la fila: el local primero. De
+     visita, la primera es la del rival. */
+  var v = deVisita(g);
+  var n1 = v ? r : nos, n2 = v ? nos : r;
+  var p1 = v ? g.rival_puntos : g.puntos, p2 = v ? g.puntos : g.rival_puntos;
+  var ed = document.createElement('span');
+  ed.className = 'ed';
+  ed.innerHTML =
+    '<input class="ep" type="tel" inputmode="numeric" maxlength="3" value="' + (p1 == null ? '' : p1) + '" placeholder="' + esc(n1.slice(0, 9)) + '">' +
+    '<span class="edash">–</span>' +
+    '<input class="ep" type="tel" inputmode="numeric" maxlength="3" value="' + (p2 == null ? '' : p2) + '" placeholder="' + esc(n2.slice(0, 9)) + '">' +
+    '<button class="esave">' + esc(T('eGuardar')) + '</button>' +
+    (g.jugado ? '<button class="edel">' + esc(T('eBorrar')) + '</button>' : '') +
+    '<button class="eclose" aria-label="×">×</button>';
+  row.appendChild(ed);
+  var cajas = ed.querySelectorAll('.ep');
+  ed.addEventListener('click', function(e){ e.stopPropagation() });
+  cajas[0].addEventListener('input', function(){ if (this.value.length >= 2 && Number(this.value) > 9) cajas[1].focus() });
+  [].forEach.call(cajas, function(c){
+    c.addEventListener('keydown', function(e){
+      if (e.key === 'Enter'){ e.preventDefault(); guardar() }
+      if (e.key === 'Escape'){ e.preventDefault(); ed.remove() }
+    });
+  });
+  ed.querySelector('.esave').onclick = guardar;
+  ed.querySelector('.eclose').onclick = function(){ ed.remove() };
+  var del = ed.querySelector('.edel');
+  if (del) del.onclick = function(){ marcador(g.game_id, true) };
+  cajas[0].focus(); try { cajas[0].select() } catch(e){}
+  function guardar(){
+    var x = cajas[0].value.trim(), y = cajas[1].value.trim();
+    var mios = v ? y : x, suyos = v ? x : y, cajaMia = v ? cajas[1] : cajas[0];
+    if (!/^\d+$/.test(mios)){ cajaMia.focus(); return dice(T('errPuntos'), 'bad') }
+    if (suyos !== '' && !/^\d+$/.test(suyos)){ (v ? cajas[0] : cajas[1]).focus(); return }
+    marcador(g.game_id, false, Number(mios), suyos === '' ? null : Number(suyos));
+  }
 }
 
 /* Encender o apagar los padrinos de un juego.
@@ -816,11 +1047,8 @@ $('jCrear').onclick = function(){
 function dice(t,c){ var e=$('jm'); if(e){ e.textContent=t||''; e.className='msg '+(c||'') } }
 
 
-function marcador(id, retirar){
-  var a=document.querySelector('[data-a="'+id+'"]');
-  var b=document.querySelector('[data-b="'+id+'"]');
-  var mios  = retirar?null:(a&&a.value!==''?Number(a.value):null);
-  var suyos = retirar?null:(b&&b.value!==''?Number(b.value):null);
+function marcador(id, retirar, mios, suyos){
+  if (retirar) { mios = null; suyos = null; }
 
   if(!retirar && mios===null) return dice(T('errPuntos'),'bad');
   if(retirar && !confirm(T('confRetirar'))) return;
@@ -848,8 +1076,40 @@ $('code').addEventListener('keydown',function(e){
   if(e.key==='Enter'){ e.preventDefault(); entrar(false) }
 });
 
+/* ══ LA PÁGINA PÚBLICA ══════════════════════════════════════════════
+   El mismo calendario, para cualquiera con el enlace del equipo
+   (?e=<id del programa>): resultados, próximos juegos y Prometer en
+   los juegos abiertos. El coach entra en la misma página con su
+   código. Un teléfono donde el coach ya entró lo abre como Admin. */
+var PUB = false, CAMP_ID = null;
+var PUB_ID = (location.search.match(/[?&]e=([0-9a-f-]{36})/i) || [])[1] || null;
+function abrirPublico(){
+  rpc('calendario_publico', { p_campaign: PUB_ID }).then(function(r){
+    if (!r || !r.ok){ say(T('pubNo'), 'bad'); return; }
+    PUB = true; JUEGOS = r.juegos || []; EQUIPO = r.equipo || ''; PROGRAMA = r.equipo || '';
+    document.body.classList.add('publico');
+    $('gate').className = 'gate hide'; $('app').className = '';
+    pintarJuegos();
+  }).catch(function(e){ say(T('net') + porque(e), 'bad') });
+}
+function entrarCoach(){
+  PUB = false; document.body.classList.remove('publico');
+  $('app').className = 'hide'; $('gate').className = 'gate';
+  try { $('code').focus() } catch(e){}
+  return false;
+}
+function copiarPublica(b){
+  if (!CAMP_ID) return;
+  var url = 'https://cadapunto.com/mi-equipo.html?e=' + CAMP_ID;
+  var t = b.textContent;
+  var ok = function(){ b.textContent = T('copiado'); setTimeout(function(){ b.textContent = t }, 1600) };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(ok).catch(function(){});
+  else ok();
+}
+
 paintStatic();
 if(CODE) entrar(true);
+else if (PUB_ID) abrirPublico();
 </script>
 
 <script>
