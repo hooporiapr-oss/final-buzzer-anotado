@@ -8,38 +8,40 @@ const path = require('path');
 const DIR = 'file://' + path.resolve(__dirname) + '/';
 let bad = 0; const si = (c, m) => { if (!c) bad++; console.log((c ? '  ok   ' : '  MAL  ') + m) };
 const CAMP = '11111111-2222-3333-4444-555555555555';
+const GID = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+const EQ = 'mi-equipo.html?e=' + CAMP + '&g=' + GID;
 const BASE = { ok:true, equipo:'Testa License', juego:'vs luis', cancha:'luis court', hora:'3:00 PM', fecha:'2026-11-07', promesas:0 };
 
 (async () => {
   const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium', args:['--no-sandbox'] });
   async function abrir(file, resp, lang, extra){
-    const c = await b.newContext({ viewport:{ width:390, height:900 } }); const p = await c.newPage(); const errs = [];
+    const c = await b.newContext({ viewport:{ width:390, height:900 }, locale:'en-US' }); const p = await c.newPage(); const errs = [];
     p.on('pageerror', e => errs.push(String(e)));
     await p.route('**/*', r => { const u = r.request().url();
       if (u.startsWith('file:')) return r.continue();
       const m = u.match(/\/rpc\/([a-z_]+)/);
       if (m) return r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify(m[1] === 'juego_publico' ? resp : (extra || {})) });
       r.abort(); });
-    await p.addInitScript(l => { try { localStorage.setItem('cp-lang', l); localStorage.setItem('cfh_lang', l) } catch(e){} }, lang || 'es');
+    if (lang !== 'nada') await p.addInitScript(l => { try { localStorage.setItem('cp-lang', l); localStorage.setItem('cfh_lang', l) } catch(e){} }, lang || 'es');
     await p.goto(DIR + file); await p.waitForTimeout(400);
     return { c, p, errs };
   }
   const vis = (p, s) => p.locator(s).isVisible();
 
   console.log('\n1 · Open game: links to upcoming games and results');
-  let { c, p, errs } = await abrir('prometer.html?g=g2', { ...BASE, abierto:true, recauda:true, campana_id:CAMP });
+  let { c, p, errs } = await abrir('prometer.html?g=' + GID, { ...BASE, abierto:true, recauda:true, campana_id:CAMP });
   si(await vis(p, '#form'), 'the pledge form is there');
   si(await vis(p, '#juegosEq'), 'the links row shows');
-  si(await p.locator('#aProx').innerText() === 'Próximos juegos' && await p.locator('#aProx').getAttribute('href') === 'mi-equipo.html?e=' + CAMP, 'Próximos juegos → team page');
-  si(await p.locator('#aRes').innerText() === 'Resultados' && await p.locator('#aRes').getAttribute('href') === 'mi-equipo.html?e=' + CAMP + '&t=jug', 'Resultados → team page on results');
+  si(await p.locator('#aProx').innerText() === 'Próximos juegos' && await p.locator('#aProx').getAttribute('href') === EQ, 'Próximos juegos → team page');
+  si(await p.locator('#aRes').innerText() === 'Resultados' && await p.locator('#aRes').getAttribute('href') === EQ + '&t=jug', 'Resultados → team page on results');
   si(!errs.length, 'no page errors ' + errs.join(' ')); await c.close();
 
   console.log('\n2 · Closed by score (the case reported)');
-  ({ c, p, errs } = await abrir('prometer.html?g=g1', { ...BASE, abierto:false, recauda:true, jugado:true, puntos:50, rival_puntos:40, campana_id:CAMP }, 'en'));
+  ({ c, p, errs } = await abrir('prometer.html?g=' + GID, { ...BASE, abierto:false, recauda:true, jugado:true, puntos:50, rival_puntos:40, campana_id:CAMP }, 'en'));
   si(await vis(p, '#cerrado') && !(await vis(p, '#form')), 'closed block, no form');
   const t = await p.locator('#cerradoP').innerText();
   si(/see their upcoming games\.$/.test(t) && !/next link/.test(t), 'no more "ask them for the next link": ' + t);
-  si(await vis(p, '#irProx') && await p.locator('#irProx').innerText() === 'See upcoming games' && await p.locator('#irProx').getAttribute('href') === 'mi-equipo.html?e=' + CAMP, 'button to upcoming games');
+  si(await vis(p, '#irProx') && await p.locator('#irProx').innerText() === 'See upcoming games' && await p.locator('#irProx').getAttribute('href') === EQ, 'button to upcoming games');
   si(await p.locator('#aProx').innerText() === 'Upcoming games' && await p.locator('#aRes').innerText() === 'Results', 'links in English');
   await p.click('#lang'); await p.waitForTimeout(150);
   si(/mira sus próximos juegos\.$/.test(await p.locator('#cerradoP').innerText()) && await p.locator('#irProx').innerText() === 'Ver los próximos juegos', 'switches to Spanish');
@@ -69,6 +71,27 @@ const BASE = { ok:true, equipo:'Testa License', juego:'vs luis', cancha:'luis co
   await c.close();
   ({ c, p } = await abrir('mi-equipo.html?e=' + CAMP, {}, 'es', PUB));
   si((await p.locator('.tab.on').innerText()) === 'Próximos juegos' && await p.locator('.r[data-id="b"]').count() === 1, 'without &t: upcoming games, as before');
+  await c.close();
+
+  console.log('\n6 · Back link from the team page to the pledge');
+  ({ c, p } = await abrir(EQ + '&t=jug', {}, 'es', PUB));
+  si(await vis(p, '#volverP') && await p.locator('#volverP').innerText() === '← Volver a la promesa' && await p.locator('#volverP').getAttribute('href') === 'prometer.html?g=' + GID, 'Volver a la promesa → the same pledge page');
+  await p.click('#langBtn'); await p.waitForTimeout(150);
+  si(await p.locator('#volverP').innerText() === '← Back to the pledge', 'back link in English');
+  si(await p.locator('.tab.on').innerText() === 'Results' && /Testa|luis/i.test(await p.locator('#app').innerText()), 'the public games repaint in English too');
+  await p.click('#volverP'); await p.waitForTimeout(400);
+  si(p.url().endsWith('prometer.html?g=' + GID), 'tapping it goes back to the pledge');
+  await c.close();
+  ({ c, p } = await abrir('mi-equipo.html?e=' + CAMP, {}, 'es', PUB));
+  si(!(await vis(p, '#volverP')), 'opened straight (not from a pledge): no back link');
+  await c.close();
+
+  console.log('\n7 · Spanish first, even on an English phone');
+  ({ c, p } = await abrir('prometer.html?g=' + GID, { ...BASE, abierto:true, recauda:true, campana_id:CAMP }, 'nada'));
+  si(await p.locator('#aProx').innerText() === 'Próximos juegos' && await p.locator('#lang').innerText() === 'English', 'pledge page in Spanish, English toggle offered');
+  await c.close();
+  ({ c, p } = await abrir('mi-equipo.html?e=' + CAMP, {}, 'nada', PUB));
+  si(await p.locator('.tab.on').innerText() === 'Próximos juegos' && await p.locator('#langBtn').innerText() === 'English', 'team page in Spanish, English toggle offered');
   await c.close();
 
   await b.close();
