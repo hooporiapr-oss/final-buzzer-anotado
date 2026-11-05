@@ -1094,6 +1094,7 @@ function abrirPublico(){
 }
 function entrarCoach(){
   PUB = false; document.body.classList.remove('publico');
+  if (CODE) { entrar(true); return false; }
   $('app').className = 'hide'; $('gate').className = 'gate';
   try { $('code').focus() } catch(e){}
   return false;
@@ -1107,9 +1108,13 @@ function copiarPublica(b){
   else ok();
 }
 
+/* EL ENLACE PÚBLICO SIEMPRE ABRE LO PÚBLICO, también en el teléfono
+   del coach: es el que se manda al grupo, y el coach tiene que poder
+   ver lo mismo que verá un papá. Su Admin está en mi-equipo.html a
+   secas, o en «¿Eres el coach?», que entra directo si ya está guardado. */
 paintStatic();
-if(CODE) entrar(true);
-else if (PUB_ID) abrirPublico();
+if (PUB_ID) abrirPublico();
+else if (CODE) entrar(true);
 </script>
 
 <script>
