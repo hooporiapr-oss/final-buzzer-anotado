@@ -1103,6 +1103,8 @@ $('code').addEventListener('keydown',function(e){
    código. Un teléfono donde el coach ya entró lo abre como Admin. */
 var PUB = false, CAMP_ID = null;
 var PUB_ID = (location.search.match(/[?&]e=([0-9a-f-]{36})/i) || [])[1] || null;
+/* &t=jug opens the public page on Results (the pledge page links there). */
+if (PUB_ID && /[?&]t=jug(&|$)/.test(location.search)) FILTRO = 'jug';
 function abrirPublico(){
   rpc('calendario_publico', { p_campaign: PUB_ID }).then(function(r){
     if (!r || !r.ok){ say(T('pubNo'), 'bad'); return; }
