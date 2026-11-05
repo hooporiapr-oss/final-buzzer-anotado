@@ -210,6 +210,13 @@ button.volver{background:transparent;border:1px solid var(--navy);color:var(--na
   border-radius:9px}
 button.volver:hover{background:var(--navy);color:#fff}
 #alCal{margin:14px 0 0;text-align:center}
+/* Links to the team's public page: upcoming games and results. */
+.juegosEq{display:flex;gap:8px;margin:14px 0 0;flex-wrap:wrap}
+.juegosEq a{flex:1;min-width:130px;text-align:center;padding:10px 12px;border-radius:9px;
+  border:1.5px solid var(--navy);color:var(--navy);font-weight:800;font-size:.86rem;text-decoration:none}
+.juegosEq a:hover{border-color:var(--orange);color:var(--orange)}
+.cerrado .irProx{display:block;margin:14px 0 0;text-align:center;padding:12px;border-radius:9px;
+  background:var(--orange);color:#111a24;font-weight:800;text-decoration:none}
 #alCal a{font-weight:800;font-size:.9rem;color:var(--navy);
   text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px}
 
@@ -333,12 +340,14 @@ header{color:#101c2a}
     <p class="trato" id="trato"></p>
     <p class="cuando" id="cuando"></p>
     <p class="cuando" id="yaVan"></p>
+    <div class="juegosEq" id="juegosEq" hidden><a id="aProx" href="#"></a><a id="aRes" href="#"></a></div>
 
     <div class="caja" id="caja" hidden></div>
 
     <div id="cerrado" class="cerrado" hidden>
       <h2 id="cerradoH"></h2>
       <p id="cerradoP"></p>
+      <a class="irProx" id="irProx" href="#" hidden></a>
     </div>
 
     <form id="form" hidden>
@@ -432,6 +441,11 @@ var S={
   malRed:'No se pudo. Revisa la conexión y vuelve a intentar.',
   cerrada:'Las promesas ya cerraron',
   cerradaP:'Ya hay marcador, así que esta promesa llega tarde. Pero el equipo vuelve a jugar — pídele el próximo enlace.',
+  cerradaPEq:'Ya hay marcador, así que esta promesa llega tarde. Pero el equipo vuelve a jugar — mira sus próximos juegos.',
+  sinPadrinosPEq:'El equipo no abrió este juego a promesas: se juega y se anota, y nada más. No es que llegues tarde — mira sus próximos juegos; en los que llevan padrinos sí puedes.',
+  verProx:'Próximos juegos',
+  verRes:'Resultados',
+  irProx:'Ver los próximos juegos',
   cancelada:'Este juego no se jugó',
   canceladaP:'El juego se canceló, así que no hay nada que prometer. Nadie debe nada.',
   sinPadrinos:'Este juego no lleva padrinos',
@@ -475,6 +489,11 @@ var S={
   malRed:'That did not work. Check your connection and try again.',
   cerrada:'Pledging has closed',
   cerradaP:'The score is already in, so this pledge is late. But the team plays again — ask them for the next link.',
+  cerradaPEq:'The score is already in, so this pledge is late. But the team plays again \u2014 see their upcoming games.',
+  sinPadrinosPEq:'The team did not open this game to pledges: it gets played and scored, and that is all. You are not late \u2014 see their upcoming games; on the ones open to pledges you can.',
+  verProx:'Upcoming games',
+  verRes:'Results',
+  irProx:'See upcoming games',
   cancelada:'This game was not played',
   canceladaP:'The game was cancelled, so there is nothing to pledge on. Nobody owes anything.',
   sinPadrinos:'This game has no padrinos',
@@ -686,8 +705,20 @@ function pintar(){
   var cerr = ESTADO.cancelado        ? ['cancelada','canceladaP']
            : (ESTADO.recauda === false) ? ['sinPadrinos','sinPadrinosP']
            : ['cerrada','cerradaP'];
+  /* With the team's page known, the way back is a link to its
+     upcoming games, not "ask them for the next link". Without it
+     (an older database), the old words stay. */
+  var eq = ESTADO.campana_id ? 'mi-equipo.html?e=' + encodeURIComponent(ESTADO.campana_id) : '';
+  if (eq && cerr[1] !== 'canceladaP') cerr[1] += 'Eq';
   $('cerradoH').textContent = T(cerr[0]);
   $('cerradoP').textContent = T(cerr[1]);
+  $('juegosEq').hidden = !eq;
+  $('irProx').hidden = !eq;
+  if (eq){
+    $('aProx').textContent = T('verProx'); $('aProx').href = eq;
+    $('aRes').textContent  = T('verRes');  $('aRes').href  = eq + '&t=jug';
+    $('irProx').textContent = T('irProx'); $('irProx').href = eq;
+  }
   $('listoH').textContent=T('listoH');
   $('listoP').textContent=T('listoP');
   $('volver').textContent=T('volver');
