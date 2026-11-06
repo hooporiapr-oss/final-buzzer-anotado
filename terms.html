@@ -221,7 +221,7 @@ header{color:#fff}
   var l = 'es';
   try{ l = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
            localStorage.getItem('fc-lang') ||
-           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+           'es'; }catch(e){}
   var el = document.getElementById('fWhat');
   if (el) el.textContent = (l === 'es')
     ? 'Cada Punto Cuenta es un sistema de manejo de promesas de Gostar Digital LLC, una empresa con fines de lucro. El programa recibe su dinero directo; nosotros cobramos por el uso de la herramienta.'
@@ -568,7 +568,7 @@ PO Box 1980-345, Loíza, Puerto Rico 00772<br>
 <script>
 var LANG='en';
 try{ LANG = localStorage.getItem('cp-lang') ||
-  ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+  'es'; }catch(e){}
 /* EL ENLACE DE LA INSCRIPCIÓN TRAE SU IDIOMA. La casilla de la
    licencia apunta a #licencia desde el formulario en español y a
    #licence desde el inglés; la página se abre en ese idioma, para que
@@ -620,7 +620,7 @@ function idioma(){
   try{
     return localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
            localStorage.getItem('fc-lang') ||
-           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en');
+           'es';
   }catch(e){ return 'es' }
 }
 var b = document.getElementById('hamb'),
