@@ -1,13 +1,19 @@
-/* ONE SPORT PER TEAM   node prueba-deporte.js
-   Signup asks basketball or volleyball and saves it; the admin list
-   shows it; Admin, the public page and the pledge page label the team's
-   sport; volleyball score box says "total points, all sets". */
+/* SPORT AND CATEGORY PER GAME   node prueba-deporte.js
+   The program signs up once and lists its categories. In Admin the coach
+   picks Basketball or Volleyball, filters by category, and each game he
+   adds carries its sport and category (a new category joins the list).
+   The public page and the pledge page show them. Two programs on one
+   phone never open each other's Admin. */
 const { chromium } = require('/opt/node-tools/node_modules/playwright-core');
 const path = require('path');
 const DIR = 'file://' + path.resolve(__dirname) + '/';
 let bad = 0; const si = (c, m) => { if (!c) bad++; console.log((c ? '  ok   ' : '  MAL  ') + m) };
-const CAMP = '11111111-2222-3333-4444-555555555555', GID = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
-const JUEGOS = [{ game_id: GID, juego:'vs Caguas', rival:'Caguas', fecha:'2026-11-20', hora:'5:00 PM', cancha:'Coliseo', casa:true, jugado:false, puntos:null, rival_puntos:null, recauda:true, abierto:true }];
+const CAMP = '11111111-2222-3333-4444-555555555555';
+const G = (id, dep, cat, extra) => Object.assign({ game_id:id, juego:'vs Caguas', rival:'Caguas', fecha:'2026-11-20', hora:'5:00 PM',
+  cancha:'Coliseo', casa:true, jugado:false, puntos:null, rival_puntos:null, recauda:true, abierto:true, promesas:0, deporte:dep, categoria:cat }, extra || {});
+const JUEGOS = [ G('aaaaaaaa-0000-0000-0000-000000000001', 'baloncesto', 'Mini'),
+                 G('aaaaaaaa-0000-0000-0000-000000000002', 'baloncesto', 'Junior', { hora:'7:00 PM' }),
+                 G('aaaaaaaa-0000-0000-0000-000000000003', 'voleibol',   'Mini',   { hora:'6:00 PM', juego:'vs Ponce', rival:'Ponce' }) ];
 
 (async () => {
   const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium', args:['--no-sandbox'] });
@@ -18,39 +24,45 @@ const JUEGOS = [{ game_id: GID, juego:'vs Caguas', rival:'Caguas', fecha:'2026-1
       if (u.startsWith('file:')) return r.continue();
       const m = u.match(/\/rpc\/([a-z_]+)/);
       if (m){ calls.push([m[1], r.request().postDataJSON && r.request().postDataJSON()]);
-        return r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify(R[m[1]] || { ok:true }) }); }
+        const v = typeof R[m[1]] === 'function' ? R[m[1]](r.request().postDataJSON()) : R[m[1]];
+        return r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify(v || { ok:true }) }); }
       if (/\/rest\/v1\//.test(u)) return r.fulfill({ status:201, contentType:'application/json', body:'[]' });
       r.abort(); });
     await p.addInitScript(([l, i]) => { try { localStorage.setItem('cp-lang', l); localStorage.setItem('cfh_lang', l); if (i) for (const k in i) localStorage.setItem(k, i[k]) } catch(e){} }, [lang || 'es', init || null]);
     await p.goto(DIR + file); await p.waitForTimeout(400);
-    /* A remembered code is offered as a button (Nov 6, 2026). */
     if (init && await p.locator('#tEquipos .seguir').count()){ await p.locator('#tEquipos .seguir').first().click(); await p.waitForTimeout(400); }
     return { c, p, errs, calls };
   }
+  const txt = (p, s) => p.locator(s).innerText();
 
-  console.log('\n1 · Signup asks for the sport and saves it');
-  let { c, p, errs, calls } = await abrir('equipo.html', { bw_codigo_disponible:{ ok:true } });
-  si(await p.locator('#dBal').innerText() === '🏀 Baloncesto' && await p.locator('#dVol').innerText() === '🏐 Voleibol', 'two buttons: Baloncesto / Voleibol');
-  await p.fill('#tm', 'Voley 15U'); await p.fill('#pn', '4827'); await p.fill('#pg', 'Club Voley');
+  console.log('\n1 · Signup: the program lists its categories (no sport here)');
+  let { c, p, errs, calls } = await abrir('equipo.html', {});
+  si(await p.locator('#dBal').count() === 0 && await p.locator('#dVol').count() === 0, 'no sport buttons at signup');
+  await p.fill('#tm', 'Club Doble'); await p.fill('#pn', '4827'); await p.fill('#pg', 'Club Doble');
   await p.fill('#nm', 'Ana Prueba'); await p.fill('#em', 'ana@example.com');
   for (const k of ['#lc','#cu','#tc']) await p.check(k);
   await p.click('button[onclick="send()"]'); await p.waitForTimeout(300);
-  si(/deporte del equipo/i.test(await p.locator('body').innerText()) && !calls.some(x => x[0] === 'bw_request_team'), 'no sport picked: it asks, nothing is sent');
-  await p.click('#dVol'); 
-  si(await p.locator('#dVol').getAttribute('aria-pressed') === 'true' && await p.locator('#dBal').getAttribute('aria-pressed') === 'false', 'Voleibol selected');
+  si(/al menos una categoría/i.test(await p.locator('body').innerText()) && !calls.some(x => x[0] === 'bw_request_team'), 'no category: it asks, nothing is sent');
+  await p.fill('#catIn', ' Mini '); await p.click('#catAdd');
+  await p.fill('#catIn', 'Junior'); await p.press('#catIn', 'Enter');
+  await p.fill('#catIn', 'mini'); await p.click('#catAdd');
+  await p.fill('#catIn', '14U'); await p.click('#catAdd');
+  si((await p.locator('#catList span').allInnerTexts()).map(t => t.replace('×','').trim()).join(',') === 'Mini,Junior,14U', 'added with button and Enter; repeats ignored');
+  await p.locator('#catList span').nth(2).locator('button').click();
+  si(await p.locator('#catList span').count() === 2, '× removes one');
+  await p.fill('#catIn', 'Juvenil');   // still in the box: counts when sending
   await p.click('button[onclick="send()"]'); await p.waitForTimeout(800);
-  const dep = calls.find(x => x[0] === 'bw_request_deporte');
-  si(dep && dep[1].p_deporte === 'voleibol' && dep[1].p_email === 'ana@example.com', 'saves voleibol for that coach');
-  const iT = calls.findIndex(x => x[0] === 'bw_request_team'), iD = calls.findIndex(x => x[0] === 'bw_request_deporte'), iP = calls.findIndex(x => x[0] === 'bw_request_pin');
-  si(iT >= 0 && iT < iD && iD < iP, 'order: signup, sport, four numbers');
+  const cc = calls.find(x => x[0] === 'bw_request_categorias');
+  si(cc && JSON.stringify(cc[1].p_categorias) === '["Mini","Junior","Juvenil"]' && cc[1].p_email === 'ana@example.com', 'saves the list: ' + (cc && JSON.stringify(cc[1].p_categorias)));
+  const iT = calls.findIndex(x => x[0] === 'bw_request_team'), iC = calls.findIndex(x => x[0] === 'bw_request_categorias'), iP = calls.findIndex(x => x[0] === 'bw_request_pin');
+  si(iT >= 0 && iT < iC && iC < iP, 'order: signup, categories, four numbers');
+  si(!calls.some(x => x[0] === 'bw_request_deporte'), 'no sport sent at signup');
   si(!errs.length, 'no page errors ' + errs.join(' ')); await c.close();
-
   ({ c, p } = await abrir('equipo.html', {}, 'en'));
-  si(await p.locator('#dBal').innerText() === '🏀 Basketball' && await p.locator('#dVol').innerText() === '🏐 Volleyball', 'English: Basketball / Volleyball');
+  si(await txt(p, 'label[for="catIn"]') === 'Program categories' && await txt(p, '#catAdd') === 'Add', 'English: Program categories / Add');
   await c.close();
 
-  console.log('\n2 · Admin signup list shows the sport');
-  /* admin.html needs a signed-in admin; its card drawing is run on its own here. */
+  console.log('\n2 · Admin signup list shows the categories');
   const fuente = require('fs').readFileSync(path.join(__dirname, 'admin.html'), 'utf8');
   const fn = fuente.slice(fuente.indexOf('function pintarSolicitudes('));
   const cuerpo = fn.slice(0, fn.indexOf('\n}\n') + 2);
@@ -58,91 +70,110 @@ const JUEGOS = [{ game_id: GID, juego:'vs Caguas', rival:'Caguas', fecha:'2026-1
   await p.setContent('<div id="solicitudes"></div>');
   await p.addScriptTag({ content: 'var SOL_TODAS=true;function $(i){return document.getElementById(i)}function esc(x){return String(x==null?"":x).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",\'"\':"&quot;"}[c]})}function cuando(x){return String(x)}\n' + cuerpo });
   const html = await p.evaluate(() => { pintarSolicitudes([
-      { id:'1', equipo:'Voley 15U', deporte:'voleibol', estado:'pending', programa:'Club', coach:'Ana', email:'a@x.com', pedida:'2026-11-05' },
-      { id:'2', equipo:'Hoops 15U', deporte:'baloncesto', estado:'pending', programa:'Club', coach:'Luis', email:'l@x.com', pedida:'2026-11-05' },
-      { id:'3', equipo:'Old 15U', estado:'pending', programa:'Club', coach:'Old', email:'o@x.com', pedida:'2026-11-05' },
-      { id:'4', equipo:'Done 15U', estado:'approved', programa:'Club', coach:'D', email:'d@x.com', pedida:'2026-11-01' }]);
+      { id:'1', equipo:'Club Doble', categorias:['Mini','Junior'], estado:'pending', programa:'Club', coach:'Ana', email:'a@x.com', pedida:'2026-11-06' },
+      { id:'2', equipo:'Old', estado:'approved', programa:'Club', coach:'D', email:'d@x.com', pedida:'2026-11-01' }]);
     return [...document.querySelectorAll('#solicitudes .item')].map(e => e.innerText) });
-  si(/Volleyball/.test(html[0]) && /Basketball/.test(html[1]), 'volleyball and basketball signups labeled');
-  si(/Sport not chosen/.test(html[2]), 'pending with no sport: warned before approving');
-  si(/Basketball/.test(html[3]) && !/not chosen/.test(html[3]), 'old approved signup: basketball, no warning');
+  si(/Categories: Mini · Junior/.test(html[0]), 'categories listed on the signup');
+  si(!/Sport not chosen|Basketball|Volleyball/.test(html.join(' ')), 'no sport warning on signups any more');
   await c.close();
 
-  console.log('\n3 · Admin (coach) shows the sport; volleyball score box explains points');
-  ({ c, p, errs } = await abrir('mi-equipo.html', { juegos_del_codigo:{ ok:true, campana:'Club Voley', campana_id:CAMP, equipo:'Voley 15U', deporte:'voleibol', juegos:JUEGOS } }, 'es', { cp_code:'VOLEY15U-4827', cp_build:'VOLEY15U-4827' }));
-  si(await p.locator('#mDep').isVisible() && await p.locator('#mDep').innerText() === '🏐 Voleibol', 'Admin shows 🏐 Voleibol');
-  await p.locator('.r[data-id="' + GID + '"]').click(); await p.waitForTimeout(150);
-  si(/sumando todos los sets/.test(await p.locator('.ed').innerText()), 'score box: total points, all sets');
+  console.log('\n3 · Admin: Basketball / Volleyball switch, category filter, add a game');
+  const R = { juegos_del_codigo:{ ok:true, campana:'Club Doble', campana_id:CAMP, equipo:'Club Doble', categorias:['Mini','Junior','14U'], juegos:JUEGOS },
+              juego_crear:{ ok:true, game_id:'nuevo' } };
+  ({ c, p, errs, calls } = await abrir('mi-equipo.html', R, 'es', { cp_code:'DOBLE-4827', cp_build:'DOBLE-4827' }));
+  si((await p.locator('#mDepSw button').allInnerTexts()).join('|') === '🏀 Baloncesto|🏐 Voleibol', 'switch: 🏀 Baloncesto | 🏐 Voleibol');
+  si(await p.locator('#mDepSw button.on').innerText() === '🏀 Baloncesto' && await p.locator('.r').count() === 2, 'opens on basketball: its 2 games');
+  si((await p.locator('#mCats button').allInnerTexts()).join('|') === 'Todas|Mini|Junior|14U', 'categories: Todas | Mini | Junior | 14U');
+  await p.locator('#mCats button', { hasText:'Junior' }).click(); await p.waitForTimeout(100);
+  si(await p.locator('.r').count() === 1 && /Junior/.test(await p.locator('.r').first().innerText()), 'Junior filter: 1 game');
+  await p.locator('#mDepSw button', { hasText:'Voleibol' }).click(); await p.waitForTimeout(100);
+  si(await p.locator('.r').count() === 1 && /Ponce/.test(await p.locator('.r').first().innerText()), 'volleyball: its game (filter reset)');
+  si(await p.evaluate(() => localStorage.getItem('cp_dep')) === 'voleibol', 'the switch is remembered on this phone');
+  await p.locator('.r').first().click(); await p.waitForTimeout(100);
+  si(/sumando todos los sets/.test(await p.locator('.ed').innerText()), 'volleyball score box: all-sets note');
+  await p.locator('.eclose').click();
+  await p.click('#mAdd'); await p.waitForTimeout(100);
+  si(await txt(p, '#jDep') === 'Se añade a 🏐 Voleibol', 'add form: Se añade a 🏐 Voleibol');
+  const ops = await p.locator('#jCat option').allInnerTexts();
+  si(ops.join('|') === 'Mini|Junior|14U|Sin categoría|+ Añadir categoría…', 'category dropdown: ' + ops.join(' | '));
+  await p.selectOption('#jCat', '__nueva');
+  si(await p.locator('#jCatNueva').isVisible(), 'new category: a box appears');
+  await p.fill('#jRival', 'Bayamón'); await p.fill('#jFecha', '2026-11-22');
+  await p.click('#jCrear'); await p.waitForTimeout(200);
+  si(!calls.some(x => x[0] === 'juego_crear'), 'empty new category: it asks first');
+  await p.fill('#jCatNueva', '  Juvenil   Femenino '); await p.click('#jCrear'); await p.waitForTimeout(400);
+  const jc = calls.find(x => x[0] === 'juego_crear');
+  si(jc && jc[1].p_deporte === 'voleibol' && jc[1].p_categoria === 'Juvenil Femenino', 'game sent as voleibol / Juvenil Femenino');
+  await p.selectOption('#jCat', 'Mini'); await p.fill('#jRival', 'Arecibo'); await p.fill('#jFecha', '2026-11-23');
+  await p.locator('#mDepSw button', { hasText:'Baloncesto' }).click(); await p.waitForTimeout(100);
+  si(await txt(p, '#jDep') === 'Se añade a 🏀 Baloncesto', 'switching sport changes where the game goes');
+  await p.click('#jCrear'); await p.waitForTimeout(400);
+  const jc2 = calls.filter(x => x[0] === 'juego_crear')[1];
+  si(jc2 && jc2[1].p_deporte === 'baloncesto' && jc2[1].p_categoria === 'Mini', 'second game: baloncesto / Mini');
   si(!errs.length, 'no page errors ' + errs.join(' ')); await c.close();
-  ({ c, p } = await abrir('mi-equipo.html', { juegos_del_codigo:{ ok:true, campana:'Club', campana_id:CAMP, equipo:'Hoops', deporte:'baloncesto', juegos:JUEGOS } }, 'en', { cp_code:'HOOPS-1234', cp_build:'HOOPS-1234' }));
-  si(await p.locator('#mDep').innerText() === '🏀 Basketball', 'basketball team: 🏀 Basketball');
-  await p.locator('.r[data-id="' + GID + '"]').click(); await p.waitForTimeout(150);
-  si(await p.locator('.enota').count() === 0, 'no volleyball note on basketball');
+  ({ c, p } = await abrir('mi-equipo.html', R, 'en', { cp_code:'DOBLE-4827', cp_build:'DOBLE-4827' }));
+  si((await p.locator('#mDepSw button').allInnerTexts()).join('|') === '🏀 Basketball|🏐 Volleyball' && (await p.locator('#mCats button').first().innerText()) === 'All', 'English: Basketball | Volleyball, All');
   await c.close();
 
-  console.log('\n3b · Master code: every team at once, each game says its sport');
-  const MIX = [{ ...JUEGOS[0], campana:'Testa License', deporte:'baloncesto', cancha:'luis court' },
-               { ...JUEGOS[0], game_id:'bbbbbbbb-bbbb-cccc-dddd-eeeeeeeeeeee', campana:'Voley 15U', deporte:'voleibol', cancha:'Coliseo' }];
-  ({ c, p, errs } = await abrir('mi-equipo.html', { juegos_del_codigo:{ ok:true, maestro:true, campana:null, campana_id:null, equipo:null, deporte:null, juegos:MIX } }, 'es', { cp_code:'ADMIN-MASTER', cp_build:'ADMIN-MASTER' }));
+  console.log('\n4 · Master code: every program, rows name team and category');
+  const MIX = JUEGOS.map(g => ({ ...g, campana: g.deporte === 'voleibol' ? 'Voley Club' : 'Testa License' }));
+  ({ c, p, errs } = await abrir('mi-equipo.html', { juegos_del_codigo:{ ok:true, maestro:true, campana:null, campana_id:null, equipo:null, juegos:MIX } }, 'es', { cp_code:'ADMIN-MASTER', cp_build:'ADMIN-MASTER' }));
   const filas = await p.locator('.r').allInnerTexts();
-  si(!(await p.locator('#mDep').isVisible()), 'no single-team label at the top');
-  si(filas.some(t => /Testa License/.test(t) && /🏀 Baloncesto · luis court/.test(t)), 'Testa License row: 🏀 Baloncesto');
-  si(filas.some(t => /Voley 15U/.test(t) && /🏐 Voleibol · Coliseo/.test(t)), 'Voley 15U row: 🏐 Voleibol');
-  await p.locator('.r[data-id="bbbbbbbb-bbbb-cccc-dddd-eeeeeeeeeeee"]').click(); await p.waitForTimeout(150);
-  si(await p.locator('.enota').count() === 1, 'volleyball game score box: all-sets note');
-  await p.locator('.r[data-id="' + GID + '"]').click(); await p.waitForTimeout(150);
-  si(await p.locator('.enota').count() === 0, 'basketball game score box: no note');
+  si(filas.length === 2 && filas.every(t => /Testa License/.test(t)) && filas.some(t => /Junior · Coliseo/.test(t)), 'basketball rows: team and category');
   si(!errs.length, 'no page errors ' + errs.join(' ')); await c.close();
 
-  console.log('\n3c · Two teams on one phone: nothing opens by itself, one tap to switch');
+  console.log('\n5 · Two programs on one phone: nothing opens by itself, one tap to switch');
   {
     const ctx = await b.newContext({ viewport:{ width:390, height:900 } }); const pg = await ctx.newPage(); const errs2 = [];
     pg.on('pageerror', e => errs2.push(String(e)));
-    const R = { 'HOOPS-1234': { ok:true, campana:'Hoops 15U', campana_id:CAMP, equipo:'Hoops', deporte:'baloncesto', juegos:[] },
-                'VOLEY-4827': { ok:true, campana:'Voley 15U', campana_id:CAMP, equipo:'Voley', deporte:'voleibol', juegos:[] } };
+    const RR = { 'HOOPS-1234': { ok:true, campana:'Hoops Club', campana_id:CAMP, equipo:'Hoops', juegos:[] },
+                 'VOLEY-4827': { ok:true, campana:'Voley Club', campana_id:CAMP, equipo:'Voley', juegos:[] } };
     await pg.route('**/*', rt => { const u = rt.request().url();
       if (u.startsWith('file:')) return rt.continue();
       if (/juegos_del_codigo/.test(u)){ const k = (rt.request().postDataJSON() || {}).p_code;
-        return rt.fulfill({ status:200, contentType:'application/json', body: JSON.stringify(R[k] || { ok:false }) }); }
+        return rt.fulfill({ status:200, contentType:'application/json', body: JSON.stringify(RR[k] || { ok:false }) }); }
       rt.abort(); });
     await pg.addInitScript(() => { try { localStorage.setItem('cp-lang','es') } catch(e){} });
     await pg.goto(DIR + 'mi-equipo.html'); await pg.waitForTimeout(300);
     si(await pg.locator('#tEquipos .seguir').count() === 0, 'first visit: just the code box');
-    await pg.fill('#code', 'HOOPS-1234'); await pg.click('#tGo'); await pg.waitForTimeout(300);
-    si(await pg.locator('#mDep').innerText() === '🏀 Baloncesto', 'signed in as the basketball team');
-    si(await pg.locator('#mCambiar').isVisible() && await pg.locator('#mCambiar').innerText() === '⇄ Cambiar de equipo', 'Admin has ⇄ Cambiar de equipo');
+    await pg.fill('#code', 'HOOPS-1234'); await pg.click('#tGo');
+    await pg.waitForFunction(() => /Hoops/i.test(document.getElementById('hwho').textContent), null, { timeout:3000 }).catch(() => {});
+    si(/Hoops Club/i.test(await txt(pg, '#hwho')), 'signed in as Hoops Club');
+    si(await txt(pg, '#mCambiar') === '⇄ Cambiar de equipo', 'Admin has ⇄ Cambiar de equipo');
     await pg.click('#mCambiar'); await pg.waitForTimeout(200);
-    si(await pg.locator('#gate').isVisible() && !(await pg.locator('#app').isVisible()), 'switch goes back to the team list');
+    si(await pg.locator('#gate').isVisible() && !(await pg.locator('#app').isVisible()) && !(await txt(pg, '#hwho')), 'switch: back to the list, header cleared');
     await pg.fill('#code', 'VOLEY-4827'); await pg.click('#tGo');
-    await pg.waitForFunction(() => /Voleibol/.test(document.getElementById('mDep').textContent), null, { timeout:3000 }).catch(() => {});
-    si(await pg.locator('#mDep').innerText() === '🏐 Voleibol' && /Voley 15U/i.test(await pg.locator('#hwho').innerText()), 'typing the volleyball code opens the volleyball Admin');
-    await pg.reload(); await pg.waitForTimeout(400);
+    await pg.waitForFunction(() => /Voley/i.test(document.getElementById('hwho').textContent), null, { timeout:3000 }).catch(() => {});
+    si(/Voley Club/i.test(await txt(pg, '#hwho')), 'typing the other code opens the other program');
+    await pg.reload();
+    await pg.waitForFunction(() => document.querySelectorAll('#tEquipos .seguir').length === 2, null, { timeout:3000 }).catch(() => {});
     const btns = await pg.locator('#tEquipos .seguir').allInnerTexts();
-    si(await pg.locator('#gate').isVisible() && !(await pg.locator('#app').isVisible()), 'reopening opens NO team by itself');
-    si(btns.length === 2 && btns[0] === '🏐 Voley 15U' && btns[1] === '🏀 Hoops 15U', 'both teams listed with their sport: ' + btns.join(' | '));
-    await pg.locator('#tEquipos .seguir').nth(1).click(); await pg.waitForTimeout(300);
-    si(await pg.locator('#mDep').innerText() === '🏀 Baloncesto', 'one tap: basketball Admin');
-    await pg.click('#mCambiar'); await pg.locator('#tEquipos .seguir').filter({ hasText:'Voley' }).click(); await pg.waitForTimeout(300);
-    si(await pg.locator('#mDep').innerText() === '🏐 Voleibol', 'one tap back: volleyball Admin');
-    si(await pg.evaluate(() => localStorage.getItem('cp_code')) === 'VOLEY-4827', 'the other pages follow the team in use');
+    si(await pg.locator('#gate').isVisible() && !(await pg.locator('#app').isVisible()), 'reopening opens NO program by itself');
+    si(btns.join('|') === 'Voley Club|Hoops Club', 'both listed, last used first: ' + btns.join(' | '));
+    await pg.locator('#tEquipos .seguir').nth(1).click();
+    await pg.waitForFunction(() => /Hoops/i.test(document.getElementById('hwho').textContent), null, { timeout:3000 }).catch(() => {});
+    si(/Hoops Club/i.test(await txt(pg, '#hwho')) && await pg.evaluate(() => localStorage.getItem('cp_code')) === 'HOOPS-1234', 'one tap: Hoops Club (other pages follow)');
     await pg.click('#hout'); await pg.waitForTimeout(400);
     const quedan = await pg.locator('#tEquipos .seguir').allInnerTexts();
-    si(quedan.length === 1 && quedan[0] === '🏀 Hoops 15U', 'Salir forgets only that team on this phone');
+    si(quedan.join('|') === 'Voley Club', 'Salir forgets only that program on this phone');
     await pg.fill('#code', 'MALO-0000'); await pg.click('#tGo'); await pg.waitForTimeout(300);
     si(!(await pg.locator('#app').isVisible()) && (await pg.locator('#tEquipos .seguir').count()) === 1, 'a wrong code opens nothing and forgets nothing');
     si(!errs2.length, 'no page errors ' + errs2.join(' '));
     await ctx.close();
   }
 
-  console.log('\n4 · Public page and pledge page');
-  ({ c, p } = await abrir('mi-equipo.html?e=' + CAMP, { calendario_publico:{ ok:true, equipo:'Voley 15U', deporte:'voleibol', juegos:JUEGOS } }));
-  si(await p.locator('#mDep').innerText() === '🏐 Voleibol', 'public page shows the sport');
+  console.log('\n6 · Public page and pledge page');
+  ({ c, p } = await abrir('mi-equipo.html?e=' + CAMP, { calendario_publico:{ ok:true, equipo:'Club Doble', juegos:JUEGOS } }));
+  si(await p.locator('#mDepSw').isVisible() && await p.locator('#mDepSw button.on').innerText() === '🏀 Baloncesto', 'plays both: the public gets the switch');
+  si((await p.locator('#mCats button').allInnerTexts()).join('|') === 'Todas|Mini|Junior', 'and the categories in use');
+  await p.locator('#mDepSw button', { hasText:'Voleibol' }).click(); await p.waitForTimeout(100);
+  si(await p.locator('.r').count() === 1 && /Mini · Coliseo/.test(await p.locator('.r').first().innerText()), 'volleyball game with its category');
   await c.close();
-  ({ c, p } = await abrir('prometer.html?g=' + GID, { juego_publico:{ ok:true, equipo:'Voley 15U', juego:'vs Caguas', cancha:'Coliseo', hora:'5:00 PM', abierto:true, recauda:true, campana_id:CAMP, deporte:'voleibol', promesas:0 } }));
-  si(/^🏐 Voleibol · vs Caguas/.test(await p.locator('#programa').innerText()), 'pledge page: ' + await p.locator('#programa').innerText());
+  ({ c, p } = await abrir('mi-equipo.html?e=' + CAMP, { calendario_publico:{ ok:true, equipo:'Voley Club', juegos:[JUEGOS[2]] } }));
+  si(!(await p.locator('#mDepSw').isVisible()) && await p.locator('.r').count() === 1, 'one sport only: no switch, its games shown');
   await c.close();
-  ({ c, p } = await abrir('prometer.html?g=' + GID, { juego_publico:{ ok:true, equipo:'X', juego:'vs Caguas', abierto:true, recauda:true, promesas:0 } }));
-  si(/^vs Caguas/.test(await p.locator('#programa').innerText()), 'older database (no sport): no label');
+  ({ c, p } = await abrir('prometer.html?g=' + JUEGOS[2].game_id, { juego_publico:{ ok:true, equipo:'Club Doble', juego:'vs Ponce', cancha:'Coliseo', hora:'6:00 PM', abierto:true, recauda:true, campana_id:CAMP, deporte:'voleibol', categoria:'Mini', promesas:0 } }));
+  si(/^🏐 Voleibol · Mini · vs Ponce/.test(await txt(p, '#programa')), 'pledge page: ' + await txt(p, '#programa'));
   await c.close();
 
   await b.close();
