@@ -113,9 +113,9 @@ input[type=text]:focus{outline:none;border-color:var(--orange);
 .seguir[hidden]{display:none}
 .tusEq{font-weight:800;font-size:.85rem;color:var(--muted,#5a6b7c);margin:10px 0 6px}
 .tusEq[hidden]{display:none}
-.mTop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
+.mTop{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:0 0 12px}
 .mTop .depChip{margin:0}
-.cambiar{margin-left:auto;padding:7px 12px;border-radius:999px;border:1.5px solid var(--navy,#101c2a);background:#fff;
+.cambiar{margin-left:auto;white-space:nowrap;padding:7px 12px;border-radius:999px;border:1.5px solid var(--navy,#101c2a);background:#fff;
   color:var(--navy,#101c2a);font:inherit;font-weight:800;font-size:.78rem;cursor:pointer}
 .btn:hover{opacity:.92}
 .btn:disabled{opacity:.5;cursor:default}
@@ -289,6 +289,17 @@ body:not(.publico) #mCoach{display:none}
 .coachin a{color:var(--m-mute);font-weight:700}
 .pubcop{margin:0 0 12px}
 /* Back to the pledge page, when the public page was opened from it. */
+.depSw{display:inline-flex;border:1.5px solid var(--navy,#101c2a);border-radius:999px;overflow:hidden}
+.depSw button{border:0;background:#fff;color:var(--navy,#101c2a);font:inherit;font-weight:800;font-size:.84rem;padding:8px 12px;cursor:pointer;white-space:nowrap}
+.depSw button.on{background:var(--navy,#101c2a);color:#fff}
+.depSw[hidden]{display:none}
+.cats{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.cats button{border:1.5px solid var(--line,#d9dee5);background:#fff;color:var(--navy,#101c2a);border-radius:999px;padding:6px 12px;font:inherit;font-weight:700;font-size:.8rem;cursor:pointer}
+.cats button.on{border-color:var(--orange,#ff7a18);background:#fff4ea}
+.jDep{font-weight:800;margin:14px 0 10px}
+#jCat,#jCatNueva{width:100%;padding:12px 13px;border:1px solid #d6d9d6;border-radius:10px;font:inherit;font-size:1rem;background:#fff;color:inherit;margin:0 0 6px}
+#jCat:focus,#jCatNueva:focus{outline:none;border-color:var(--orange)}
+#jCatNueva[hidden]{display:none}
 .depChip{display:inline-block;margin:0 0 8px;padding:4px 10px;border-radius:999px;background:#EEF2F6;color:var(--navy,#101c2a);font-weight:800;font-size:.78rem}
 /* display above would otherwise beat the hidden attribute. */
 .depChip[hidden],.volverP[hidden]{display:none}
@@ -390,7 +401,7 @@ footer{background:#12202E}
            ahí mismo, dos casillas y publicar. Lo de Cada Punto va dentro
            de cada fila: el enlace de padrinos, las promesas, el reporte. -->
       <a class="volverP" id="volverP" href="#" hidden></a>
-      <div class="mTop"><span class="depChip" id="mDep" hidden></span><button type="button" class="cambiar" id="mCambiar" onclick="cambiarEquipo()"></button></div>
+      <div class="mTop"><div class="depSw" id="mDepSw" role="group"></div><button type="button" class="cambiar" id="mCambiar" onclick="cambiarEquipo()"></button></div>
       <h1 class="mh1" id="mH1"></h1>
       <p class="lede" id="quien"></p>
       <div class="stat" id="mStat"></div>
@@ -407,6 +418,12 @@ footer{background:#12202E}
            es el mismo que había, línea por línea. -->
       <h2 id="tNuevo"></h2>
       <p class="help" id="tNuevoP"></p>
+      <!-- The game goes into the sport chosen at the top, and one of the
+           program's categories — or a new one, which joins the list. -->
+      <p class="jDep" id="jDep"></p>
+      <label for="jCat" id="tCat"></label>
+      <select id="jCat"></select>
+      <input id="jCatNueva" maxlength="30" hidden autocapitalize="words">
       <div class="fila2">
         <div><label for="jRival" id="tRival"></label>
              <input id="jRival" autocapitalize="words"></div>
@@ -440,6 +457,7 @@ footer{background:#12202E}
       <p class="msg" id="jm"></p>
 
       <h2 id="tTeams" class="hide"></h2>
+      <div class="cats" id="mCats"></div>
       <div class="tabs" id="mTabs"></div>
       <p class="mhint" id="mHint"></p>
       <div id="teams"></div>
@@ -556,6 +574,7 @@ var S={
     aviErrServidor:'El marcador quedó puesto, pero no se pudo hablar con el servidor de avisos. Vuelve a poner el mismo marcador y saldrán: nadie recibe dos.',
     aviErrCodigo:'El marcador quedó puesto, pero el servidor de avisos no aceptó tu código. No se mandó nada.',
     okCreado:'Juego añadido. Su enlace está abajo — ése es el que mandas.',
+    tCat:'Categoría', catNueva:'+ Añadir categoría…', catNuevaPh:'Nombre de la categoría', catSin:'Sin categoría', catTodas:'Todas', jDep:'Se añade a {D}', errCat:'Escribe el nombre de la categoría nueva.',
     okMarcador:'Marcador puesto. Las promesas de este juego quedan cerradas.',
     okRetirado:'Marcador retirado. No sale ningún correo todavía: pon el marcador correcto y a cada padrino cuya cantidad cambie le llega su corrección.',
     confRetirar:'¿Retirar el marcador?\n\nEl juego sigue jugado, sólo se queda sin número. No sale ningún correo ahora: cuando pongas el marcador correcto, a cada padrino cuya cantidad cambie le llega su corrección.',
@@ -625,6 +644,7 @@ var S={
     aviErrServidor:'The score is posted, but the notice server could not be reached. Post the same score again and they will go out — nobody gets two.',
     aviErrCodigo:'The score is posted, but the notice server did not accept your code. Nothing was sent.',
     okCreado:'Game added. Its link is below — that is the one you send.',
+    tCat:'Category', catNueva:'+ Add a category…', catNuevaPh:'Category name', catSin:'No category', catTodas:'All', jDep:'Added to {D}', errCat:'Write the new category\'s name.',
     okMarcador:'Score posted. Pledging on this game is closed now.',
     okRetirado:'Score withdrawn. No email goes out yet: post the correct score and every padrino whose amount changes gets a correction.',
     confRetirar:'Withdraw the score?\n\nThe game stays played, it just has no number for now. No email goes out now: when you post the correct score, every padrino whose amount changes gets a correction.',
@@ -785,10 +805,10 @@ function entrar(auto){
     .then(function(x){
       var r = x.r; k = x.k;
       if(!r||!r.ok){ if(auto){ olvidar(); CODE=null; paintStatic(); } return say(T('bad'),'bad'); }
-      CODE=k; JUEGOS=r.juegos||[]; DEPORTE=r.deporte||''; PROGRAMA=r.campana||''; CAMP_ID=r.campana_id||null; PUB=false;
+      CODE=k; JUEGOS=r.juegos||[]; DEPORTE=r.deporte||''; CATS=r.categorias||[]; VER_CAT=''; PROGRAMA=r.campana||''; CAMP_ID=r.campana_id||null; PUB=false;
       document.body.classList.remove('publico');
       EQUIPO=r.equipo||'';
-      recordar(k, r.maestro ? '*' : (r.campana || r.equipo || ''), r.deporte || '');
+      recordar(k, r.maestro ? '*' : (r.campana || r.equipo || ''), '');
       paintStatic();
       say('');
       $('gate').className='gate hide';
@@ -803,7 +823,7 @@ function entrar(auto){
 function recargar(){
   if(!CODE) return;
   rpc('juegos_del_codigo',{p_code:CODE})
-    .then(function(r){ if(r&&r.ok){ JUEGOS=r.juegos||[]; DEPORTE=r.deporte||DEPORTE; PROGRAMA=r.campana||PROGRAMA;
+    .then(function(r){ if(r&&r.ok){ JUEGOS=r.juegos||[]; DEPORTE=r.deporte||DEPORTE; CATS=r.categorias||CATS; PROGRAMA=r.campana||PROGRAMA;
                                     EQUIPO=r.equipo||EQUIPO;
                                     pintarJuegos(); } })
     .catch(function(){});
@@ -847,6 +867,24 @@ function rangoDias(a, b){
 function rival(g){ return String(g.juego || '').replace(/^(vs|@)\s+/i, '') }
 function deVisita(g){ return /^@/.test(String(g.juego || '')) }
 
+function depDe(g){ return g.deporte === 'voleibol' ? 'voleibol' : 'baloncesto' }
+function tieneCat(l, c){ c = String(c || '').toLowerCase(); return l.some(function(x){ return String(x).toLowerCase() === c }) }
+/* The add form: which sport it goes into, and the category list. */
+function pintarAlta(){
+  $('jDep').textContent = T('jDep', { D: T(VER_DEP === 'voleibol' ? 'depV' : 'depB') });
+  $('tCat').textContent = T('tCat');
+  var antes = $('jCat').value;
+  var l = CATS.slice();
+  JUEGOS.forEach(function(g){ if (g.categoria && !tieneCat(l, g.categoria)) l.push(g.categoria) });
+  $('jCat').innerHTML = l.map(function(c){ return '<option value="' + esc(c) + '">' + esc(c) + '</option>' }).join('') +
+    '<option value="">' + esc(T('catSin')) + '</option>' +
+    '<option value="__nueva">' + esc(T('catNueva')) + '</option>';
+  if (VER_CAT && tieneCat(l, VER_CAT)) $('jCat').value = l.filter(function(c){ return c.toLowerCase() === VER_CAT.toLowerCase() })[0];
+  else if (antes && [].some.call($('jCat').options, function(o){ return o.value === antes })) $('jCat').value = antes;
+  $('jCatNueva').placeholder = T('catNuevaPh');
+  $('jCatNueva').hidden = $('jCat').value !== '__nueva';
+}
+
 function pintarJuegos(){
   var nos = EQUIPO || PROGRAMA || '';
   $('quien').textContent = PUB ? '' : T('quien').replace('{P}', PROGRAMA || '');
@@ -854,22 +892,50 @@ function pintarJuegos(){
   $('hwho').textContent = PUB ? (EQUIPO || PROGRAMA) : PROGRAMA;
   /* The team's sport, so pledges and scores are never mixed up. */
   $('mCambiar').style.display = PUB ? 'none' : '';
-  $('mDep').hidden = !DEPORTE;
-  $('mDep').textContent = DEPORTE === 'voleibol' ? T('depV') : DEPORTE ? T('depB') : '';
+  /* SPORT SWITCH. The coach always has both (he posts games in either);
+     the public sees it only when the program plays both. */
+  var hay = { baloncesto: 0, voleibol: 0 };
+  JUEGOS.forEach(function(g){ hay[depDe(g)]++ });
+  if (VER_DEP !== 'baloncesto' && VER_DEP !== 'voleibol')
+    VER_DEP = (hay.voleibol && !hay.baloncesto) ? 'voleibol' : 'baloncesto';
+  if (PUB && !hay[VER_DEP] && (hay.baloncesto || hay.voleibol)) VER_DEP = hay.baloncesto ? 'baloncesto' : 'voleibol';
+  $('mDepSw').hidden = PUB && !(hay.baloncesto && hay.voleibol);
+  $('mDepSw').innerHTML = [['baloncesto', 'depB'], ['voleibol', 'depV']].map(function(d){
+    return '<button type="button" data-dep="' + d[0] + '" class="' + (VER_DEP === d[0] ? 'on' : '') + '" aria-pressed="' + (VER_DEP === d[0]) + '">' + esc(T(d[1])) + '</button>';
+  }).join('');
+  [].forEach.call($('mDepSw').querySelectorAll('button'), function(b){
+    b.onclick = function(){ VER_DEP = b.getAttribute('data-dep'); VER_CAT = '';
+      if (!PUB) try { localStorage.setItem('cp_dep', VER_DEP) } catch(e){}
+      pintarJuegos() };
+  });
+  pintarAlta();
   $('mPub').textContent = T('copiarPub');
   $('mPub').style.display = (!PUB && CAMP_ID) ? '' : 'none';
   $('mCoach').querySelector('a').textContent = T('coachEntra');
   $('mAdd').textContent = $('mAlta').className.indexOf('hide') >= 0 ? T('mAdd') : T('mAddCerrar');
 
+  /* CATEGORIES of this sport: the program's list plus any a game uses. */
+  var delDep = JUEGOS.filter(function(g){ return depDe(g) === VER_DEP });
+  var cats = (PUB ? [] : CATS.slice());
+  delDep.forEach(function(g){ if (g.categoria && !tieneCat(cats, g.categoria)) cats.push(g.categoria) });
+  if (VER_CAT && !tieneCat(cats, VER_CAT)) VER_CAT = '';
+  $('mCats').innerHTML = cats.length < (PUB ? 2 : 1) ? '' : [''].concat(cats).map(function(c){
+    return '<button type="button" data-cat="' + esc(c) + '" class="' + (VER_CAT.toLowerCase() === c.toLowerCase() ? 'on' : '') + '">' + esc(c || T('catTodas')) + '</button>';
+  }).join('');
+  [].forEach.call($('mCats').querySelectorAll('button'), function(b){
+    b.onclick = function(){ VER_CAT = b.getAttribute('data-cat'); pintarJuegos() };
+  });
+  var VISTA = delDep.filter(function(g){ return !VER_CAT || String(g.categoria || '').toLowerCase() === VER_CAT.toLowerCase() });
+
   /* La cabecera, de los juegos: como la de Marcador. */
   var dias = [], jug = 0, prom = 0;
-  JUEGOS.forEach(function(g){
+  VISTA.forEach(function(g){
     if (g.fecha && dias.indexOf(g.fecha) < 0) dias.push(g.fecha);
     if (g.jugado) jug++;
     prom += Number(g.promesas || 0);
   });
   dias.sort();
-  var n = JUEGOS.length;
+  var n = VISTA.length;
   $('mH1').textContent = !n ? T('h1') :
     T(PUB ? (n === 1 ? 'pJuego' : 'pJuegos') : (n === 1 ? 'mJuego' : 'mJuegos'), { N: n }) +
     (dias.length === 1 ? T('mEl', { A: diaCorto(dias[0]) })
@@ -899,7 +965,7 @@ function pintarJuegos(){
   }
 
   /* Por día y por hora, como Marcador. */
-  var lista = JUEGOS.filter(function(g){
+  var lista = VISTA.filter(function(g){
     return FILTRO === 'jug' ? g.jugado : FILTRO === 'prox' ? !g.jugado : true;
   });
   var porDia = {};
@@ -968,7 +1034,7 @@ function fila(g, nos){
         '<span class="t">' + esc(g.hora || T('sinHora')) + '</span>' +
         '<span class="m"><b class="sa' + ca + '">' + esc(a) + '</b> <i>vs</i> <b class="sb' + cb + '">' + esc(b) + '</b>' +
           '<span class="sc">' + (sc || '<em class="pend">' + esc(T('stPend')) + '</em>') + '</span></span>' +
-        '<span class="j">' + esc(g.cancha || '') + (g.jugado ? (g.cancha ? ' · ' : '') + esc(T('stFinal')) : '') + '</span>' +
+        '<span class="j">' + esc(g.categoria ? g.categoria + (g.cancha ? ' · ' : '') : '') + esc(g.cancha || '') + (g.jugado ? (g.cancha || g.categoria ? ' · ' : '') + esc(T('stFinal')) : '') + '</span>' +
         tag + '<span class="pls">' + pls + '</span></div>';
   }
   if (g.recauda === false){
@@ -980,7 +1046,7 @@ function fila(g, nos){
   }
   if (g.jugado) pls += '<a class="pl" href="reporte.html">' + esc(T('verReporte')) + '</a>';
   /* Master code sees every team at once: each game says its sport. */
-  var depFila = (!DEPORTE && g.deporte) ? (g.deporte === 'voleibol' ? T('depV') : T('depB')) + (g.cancha ? ' · ' : '') : '';
+  var depFila = g.categoria ? g.categoria + (g.cancha ? ' · ' : '') : '';
   return '<div class="r live' + (g.jugado ? ' done' : '') + (g.es_prueba ? ' p' : '') + '" data-id="' + esc(g.game_id) + '">' +
       '<span class="t">' + esc(g.hora || T('sinHora')) + '</span>' +
       '<span class="m"><b class="sa' + ca + '">' + esc(a) + '</b> <i>vs</i> <b class="sb' + cb + '">' + esc(b) + '</b>' +
@@ -1018,7 +1084,7 @@ function tocar(row){
     '<button class="esave">' + esc(T('eGuardar')) + '</button>' +
     (g.jugado ? '<button class="edel">' + esc(T('eBorrar')) + '</button>' : '') +
     '<button class="eclose">' + esc(T('eCerrar')) + '</button>' +
-    ((g.deporte || DEPORTE) === 'voleibol' ? '<span class="enota">' + esc(T('notaVol')) + '</span>' : '');
+    (depDe(g) === 'voleibol' ? '<span class="enota">' + esc(T('notaVol')) + '</span>' : '');
   row.appendChild(ed);
   var cajas = ed.querySelectorAll('.ep');
   ed.addEventListener('click', function(e){ e.stopPropagation() });
@@ -1114,6 +1180,10 @@ function copiar(id, boton){
   else ok();
 }
 
+$('jCat').onchange = function(){
+  $('jCatNueva').hidden = this.value !== '__nueva';
+  if (!$('jCatNueva').hidden) try { $('jCatNueva').focus() } catch(e){}
+};
 $('jCrear').onclick = function(){
   var rival=($('jRival').value||'').trim();
   var fecha=($('jFecha').value||'').trim();
@@ -1121,6 +1191,8 @@ $('jCrear').onclick = function(){
   var cancha=($('jCancha').value||'').trim();
   var casa=$('jCasa').value==='1';
   var rec=$('jRecauda').value==='1';
+  var cat = $('jCat').value === '__nueva' ? ($('jCatNueva').value || '').replace(/\s+/g, ' ').trim() : $('jCat').value;
+  if ($('jCat').value === '__nueva' && !cat){ $('jCatNueva').focus(); return dice(T('errCat'), 'bad'); }
 
   if(!rival) return dice(T('errRival'),'bad');
   if(!fecha) return dice(T('errFecha'),'bad');
@@ -1128,7 +1200,7 @@ $('jCrear').onclick = function(){
   dice('…');
   rpc('juego_crear',{p_code:CODE,p_rival:rival,p_fecha:fecha,
                      p_hora:hora||null,p_cancha:cancha||null,p_casa:casa,
-                     p_recauda:rec})
+                     p_recauda:rec, p_deporte:VER_DEP || 'baloncesto', p_categoria:cat || null})
     .then(function(d){
       if(!d||d.ok!==true){
         var r=d&&d.reason;
@@ -1138,6 +1210,8 @@ $('jCrear').onclick = function(){
       }
       dice(T('okCreado'),'ok');
       $('jRival').value=''; $('jHora').value=''; $('jCancha').value='';
+      if (cat && !tieneCat(CATS, cat)) CATS.push(cat);
+      $('jCatNueva').value = ''; if ($('jCat').value === '__nueva') $('jCat').value = cat;
       recargar();
     })
     .catch(function(e){ dice(T('errGen')+porque(e),'bad') });
@@ -1182,7 +1256,10 @@ $('code').addEventListener('keydown',function(e){
    código. Un teléfono donde el coach ya entró lo abre como Admin. */
 var PUB = false, CAMP_ID = null;
 /* 'baloncesto' or 'voleibol', from the team. Empty with the master code. */
-var DEPORTE = '';
+/* What the page is showing: one sport, and one category or all. The
+   program's categories come from its signup; new ones join as games use them. */
+var DEPORTE = '', VER_DEP = '', VER_CAT = '', CATS = [];
+try { VER_DEP = localStorage.getItem('cp_dep') || '' } catch(e){}
 var PUB_ID = (location.search.match(/[?&]e=([0-9a-f-]{36})/i) || [])[1] || null;
 /* &t=jug opens the public page on Results (the pledge page links there). */
 if (PUB_ID && /[?&]t=jug(&|$)/.test(location.search)) FILTRO = 'jug';
@@ -1190,7 +1267,7 @@ var DESDE_G = PUB_ID ? ((location.search.match(/[?&]g=([0-9a-f-]{36})(&|$)/i) ||
 function abrirPublico(){
   rpc('calendario_publico', { p_campaign: PUB_ID }).then(function(r){
     if (!r || !r.ok){ say(T('pubNo'), 'bad'); return; }
-    PUB = true; JUEGOS = r.juegos || []; DEPORTE = r.deporte || ''; EQUIPO = r.equipo || ''; PROGRAMA = r.equipo || '';
+    PUB = true; JUEGOS = r.juegos || []; DEPORTE = r.deporte || ''; CATS = []; VER_CAT = ''; EQUIPO = r.equipo || ''; PROGRAMA = r.equipo || '';
     document.body.classList.add('publico');
     $('gate').className = 'gate hide'; $('app').className = '';
     pintarJuegos();
