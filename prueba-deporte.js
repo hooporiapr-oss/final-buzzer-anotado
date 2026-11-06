@@ -22,7 +22,7 @@ const JUEGOS = [ G('aaaaaaaa-0000-0000-0000-000000000001', 'baloncesto', 'Mini')
     p.on('pageerror', e => errs.push(String(e)));
     await p.route('**/*', r => { const u = r.request().url();
       if (u.startsWith('file:')) return r.continue();
-      const m = u.match(/\/rpc\/([a-z_]+)/);
+      const m = u.match(/\/rpc\/([a-z0-9_]+)/);
       if (m){ calls.push([m[1], r.request().postDataJSON && r.request().postDataJSON()]);
         const v = typeof R[m[1]] === 'function' ? R[m[1]](r.request().postDataJSON()) : R[m[1]];
         return r.fulfill({ status:200, contentType:'application/json', body: JSON.stringify(v || { ok:true }) }); }
@@ -35,31 +35,30 @@ const JUEGOS = [ G('aaaaaaaa-0000-0000-0000-000000000001', 'baloncesto', 'Mini')
   }
   const txt = (p, s) => p.locator(s).innerText();
 
-  console.log('\n1 · Signup: the program lists its categories (no sport here)');
-  let { c, p, errs, calls } = await abrir('equipo.html', {});
-  si(await p.locator('#dBal').count() === 0 && await p.locator('#dVol').count() === 0, 'no sport buttons at signup');
-  await p.fill('#tm', 'Club Doble'); await p.fill('#pn', '4827'); await p.fill('#pg', 'Club Doble');
-  await p.fill('#nm', 'Ana Prueba'); await p.fill('#em', 'ana@example.com');
+  console.log('\n1 · Signup: program, code (2 letters + 4 numbers), name, email, phone');
+  let { c, p, errs, calls } = await abrir('equipo.html', { bw_codigo6_libre: d => d.p_codigo === 'TK1111' ? { ok:false, reason:'usado' } : { ok:true, codigo:d.p_codigo } });
+  si(await p.locator('#tm').count() === 0 && await p.locator('#pn').count() === 0 && await p.locator('#catIn').count() === 0 && await p.locator('#dBal').count() === 0,
+     'no team name, no 4 numbers, no categories, no sport');
+  const orden = await p.evaluate(() => [...document.querySelectorAll('input[type=text],input[type=email],input[type=tel]')].map(e => e.id).filter(Boolean));
+  si(orden.join(',') === 'pg,cd,nm,em,ph', 'fields in order: ' + orden.join(','));
+  await p.fill('#pg', 'Club Doble'); await p.fill('#nm', 'Ana Prueba'); await p.fill('#em', 'ana@example.com');
   for (const k of ['#lc','#cu','#tc']) await p.check(k);
-  await p.click('button[onclick="send()"]'); await p.waitForTimeout(300);
-  si(/al menos una categoría/i.test(await p.locator('body').innerText()) && !calls.some(x => x[0] === 'bw_request_team'), 'no category: it asks, nothing is sent');
-  await p.fill('#catIn', ' Mini '); await p.click('#catAdd');
-  await p.fill('#catIn', 'Junior'); await p.press('#catIn', 'Enter');
-  await p.fill('#catIn', 'mini'); await p.click('#catAdd');
-  await p.fill('#catIn', '14U'); await p.click('#catAdd');
-  si((await p.locator('#catList span').allInnerTexts()).map(t => t.replace('×','').trim()).join(',') === 'Mini,Junior,14U', 'added with button and Enter; repeats ignored');
-  await p.locator('#catList span').nth(2).locator('button').click();
-  si(await p.locator('#catList span').count() === 2, '× removes one');
-  await p.fill('#catIn', 'Juvenil');   // still in the box: counts when sending
-  await p.click('button[onclick="send()"]'); await p.waitForTimeout(800);
-  const cc = calls.find(x => x[0] === 'bw_request_categorias');
-  si(cc && JSON.stringify(cc[1].p_categorias) === '["Mini","Junior","Juvenil"]' && cc[1].p_email === 'ana@example.com', 'saves the list: ' + (cc && JSON.stringify(cc[1].p_categorias)));
-  const iT = calls.findIndex(x => x[0] === 'bw_request_team'), iC = calls.findIndex(x => x[0] === 'bw_request_categorias'), iP = calls.findIndex(x => x[0] === 'bw_request_pin');
-  si(iT >= 0 && iT < iC && iC < iP, 'order: signup, categories, four numbers');
-  si(!calls.some(x => x[0] === 'bw_request_deporte'), 'no sport sent at signup');
+  for (const bad of ['', 'C4827', 'CPX482', '12CP34']){
+    await p.fill('#cd', bad); await p.click('button[onclick="send()"]'); await p.waitForTimeout(150);
+  }
+  si(/dos letras y cuatro números/i.test(await p.locator('body').innerText()) && !calls.some(x => x[0] === 'bw_request_team'), 'wrong shapes: it asks, nothing is sent');
+  await p.fill('#cd', 'tk-1111'); await p.click('button[onclick="send()"]'); await p.waitForTimeout(300);
+  si(/ya está en uso/i.test(await p.locator('body').innerText()) && !calls.some(x => x[0] === 'bw_request_team'), 'taken code: pick another, nothing is sent');
+  await p.fill('#cd', 'cp 4827'); await p.click('button[onclick="send()"]'); await p.waitForTimeout(800);
+  const rt = calls.find(x => x[0] === 'bw_request_team'), rc = calls.find(x => x[0] === 'bw_request_codigo');
+  si(rt && rt[1].p_team === 'Club Doble' && rt[1].p_program === 'Club Doble', 'the program signs up under its own name');
+  si(rc && rc[1].p_codigo === 'CP4827' && rc[1].p_email === 'ana@example.com', 'code saved as CP4827');
+  si(calls.findIndex(x => x[0] === 'bw_request_team') < calls.findIndex(x => x[0] === 'bw_request_codigo'), 'order: signup, then code');
+  si(/CP4827/.test(await p.locator('body').innerText()), 'the done screen shows CP4827');
+  si(!calls.some(x => /bw_request_(pin|categorias|deporte)|bw_codigo_disponible/.test(x[0])), 'nothing from the old signup is sent');
   si(!errs.length, 'no page errors ' + errs.join(' ')); await c.close();
   ({ c, p } = await abrir('equipo.html', {}, 'en'));
-  si(await txt(p, 'label[for="catIn"]') === 'Program categories' && await txt(p, '#catAdd') === 'Add', 'English: Program categories / Add');
+  si(await p.locator('label[for="cd"]').innerText() === 'Pick your code' && /on its own/.test(await p.locator('[data-i="codeAyuda"]').innerText()), 'English: Pick your code');
   await c.close();
 
   console.log('\n2 · Admin signup list shows the categories');
@@ -145,7 +144,8 @@ const JUEGOS = [ G('aaaaaaaa-0000-0000-0000-000000000001', 'baloncesto', 'Mini')
     await pg.fill('#code', 'VOLEY-4827'); await pg.click('#tGo');
     await pg.waitForFunction(() => /Voley/i.test(document.getElementById('hwho').textContent), null, { timeout:3000 }).catch(() => {});
     si(/Voley Club/i.test(await txt(pg, '#hwho')), 'typing the other code opens the other program');
-    await pg.reload();
+    await pg.waitForFunction(() => (JSON.parse(localStorage.getItem('cp_teams') || '[]')).length === 2, null, { timeout:3000 }).catch(() => {});
+    await pg.reload({ waitUntil:'load' });
     await pg.waitForFunction(() => document.querySelectorAll('#tEquipos .seguir').length === 2, null, { timeout:3000 }).catch(() => {});
     const btns = await pg.locator('#tEquipos .seguir').allInnerTexts();
     si(await pg.locator('#gate').isVisible() && !(await pg.locator('#app').isVisible()), 'reopening opens NO program by itself');
