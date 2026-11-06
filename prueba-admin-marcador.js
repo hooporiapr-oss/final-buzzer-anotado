@@ -131,7 +131,11 @@ const PUBLICO = JUEGOS.map(g => ({ game_id:g.game_id, juego:g.juego, fecha:g.fec
   await p.reload(); await p.waitForTimeout(400);
   si(await p.evaluate(() => document.body.classList.contains('publico')) && !(await p.isVisible('#mAdd')), 'abre lo público aunque el coach haya entrado: sin «Añadir un juego»');
   await p.click('#mCoach a');
-  await p.waitForSelector('#mAdd', { state:'visible', timeout:3000 }).then(() => ok('«¿Eres el coach?» lo lleva directo a su Admin'), () => mal('«¿Eres el coach?» no llevó a su Admin'));
+  /* Nov 6, 2026: a remembered code is offered as a button, not opened by
+     itself — two teams on one phone must never land in each other's Admin. */
+  si(await p.isVisible('#gate') && await p.locator('#tEquipos .seguir').count() === 1 && !(await p.isVisible('#mAdd')), '«¿Eres el coach?» ofrece su equipo, sin entrar solo');
+  await p.locator('#tEquipos .seguir').first().click();
+  await p.waitForSelector('#mAdd', { state:'visible', timeout:3000 }).then(() => ok('un toque y está en su Admin'), () => mal('«Continuar» no llevó a su Admin'));
   await c.close();
   console.log('\n7 · Cuando no hay nada publicado');
   for (const [nombre, lista, esperado] of [
