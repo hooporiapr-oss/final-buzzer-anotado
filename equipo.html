@@ -118,6 +118,11 @@ input[type=text],input[type=email],input[type=tel]{
   background:#fff;color:var(--ink);font:inherit;font-size:1.02rem}
 input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,122,24,.18)}
 .hint{color:var(--muted);font-size:.84rem;margin:6px 0 0}
+/* The team's sport. One team, one sport: pledges and scores never mix. */
+.dep{display:flex;gap:10px}
+.dep button{flex:1;padding:14px 10px;border-radius:12px;border:2px solid var(--line,#d9dee5);background:#fff;
+  font:inherit;font-weight:800;font-size:1rem;color:inherit;cursor:pointer}
+.dep button[aria-pressed="true"]{border-color:var(--orange,#ff7a18);background:#fff4ea;box-shadow:0 0 0 2px rgba(255,122,24,.18)}
 .ok{display:flex;gap:11px;align-items:flex-start;margin:20px 0 0;
   font-size:.9rem;color:var(--muted);line-height:1.45}
 .ok input{width:20px;height:20px;flex:0 0 20px;margin-top:2px;accent-color:var(--orange)}
@@ -313,6 +318,15 @@ header{color:#fff}
 <p class="lede" data-i="lede">Los padrinos prometen centavos por cada punto que anote tu equipo. Ganen o pierdan, cada punto cuenta.</p>
 <p class="sinrifas" data-i="sinrifas">Sin rifas. Sin ventas. Sin organizar otro evento.</p>
 
+<!-- THE SPORT (Nov 5, 2026). One team, one sport, so a team's pledges
+     and scores are always basketball or always volleyball. A program
+     with both signs up two teams. -->
+<label id="depL" data-i="depL">Deporte del equipo</label>
+<div class="dep" role="group" aria-labelledby="depL">
+  <button type="button" id="dBal" data-dep="baloncesto" aria-pressed="false"><span data-i="depBal">🏀 Baloncesto</span></button>
+  <button type="button" id="dVol" data-dep="voleibol" aria-pressed="false"><span data-i="depVol">🏐 Voleibol</span></button>
+</div>
+<p class="hint" data-i="depAyuda">Un equipo, un deporte. Si tu programa tiene los dos, inscribe cada equipo por separado.</p>
 <label for="tm" data-i="teamL">Nombre del equipo</label>
 <input id="tm" data-ph="teamPh" placeholder="Ejemplo: Canóvanas 15U" type="text" maxlength="60" autocapitalize="words" enterkeyhint="next">
 <!-- EL CÓDIGO PARA ENTRAR ES EL EQUIPO MÁS ESTOS CUATRO NÚMEROS.
@@ -456,6 +470,7 @@ var S = {
      palabra. */
   es:{
     errTeam:'Escribe el nombre del equipo.',
+    errDep:'Escoge el deporte del equipo: baloncesto o voleibol.',
     errProg:'Escribe el nombre del programa u organización.',
     errWho:'Tu nombre y tu correo, por favor.',
     errLic:'Tienes que aceptar la licencia por juego para seguir.',
@@ -496,6 +511,9 @@ var S = {
     go:'Sign up my program',
     siguiente:'We will review your request and send you the instructions to get started.',
     errTeam:'Write the team name.',
+    errDep:'Pick the team\'s sport: basketball or volleyball.',
+    depL:'Team sport', depBal:'🏀 Basketball', depVol:'🏐 Volleyball',
+    depAyuda:'One team, one sport. If your program has both, sign up each team separately.',
     errProg:'Write the program or organization name.',
     errWho:'Your name and email, please.',
     errLic:'You have to accept the per-game license to continue.',
@@ -654,6 +672,17 @@ function say(t,c){
   if (el){ el.textContent = t; el.className = 'msg ' + (c||''); }
 }
 
+/* The sport picked at the top of the form. */
+var DEPORTE = '';
+Array.prototype.forEach.call(document.querySelectorAll('.dep button'), function(b){
+  b.addEventListener('click', function(){
+    DEPORTE = b.getAttribute('data-dep');
+    Array.prototype.forEach.call(document.querySelectorAll('.dep button'), function(o){
+      o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+    });
+  });
+});
+
 function send(){
   var team  = (document.getElementById('tm').value || '').trim();
   var prog  = (document.getElementById('pg').value || '').trim();
@@ -661,6 +690,8 @@ function send(){
   var email = (document.getElementById('em').value || '').trim();
   var phone = (document.getElementById('ph').value || '').trim();
 
+  var dep = DEPORTE;
+  if (!dep) return say(T('errDep'), 'bad');
   if (!team) return say(T('errTeam'), 'bad');
   var pin = (document.getElementById('pn').value || '').replace(/\D/g, '');
   if (!/^\d{4}$/.test(pin)) return say(T('errPin'), 'bad');
@@ -708,7 +739,11 @@ function send(){
        va a funcionar. Si guardarlos fallara, la solicitud ya entró
        igual: se le dice que el código le llega al aprobarlo, y aprobar
        pone uno por su cuenta. */
-    return rpc('bw_request_pin', { p_email: email, p_pin: pin })
+    /* The sport is saved next to the four numbers. If it ever failed,
+       the admin sees "sport not chosen" on the signup before approving. */
+    return rpc('bw_request_deporte', { p_email: email, p_deporte: dep })
+      .catch(function(e){ console.error('bw_request_deporte', e) })
+      .then(function(){ return rpc('bw_request_pin', { p_email: email, p_pin: pin }) })
       .then(function(x){ return !!(x && x.ok) })
       .catch(function(e){ console.error('bw_request_pin', e); return false })
       .then(function(guardado){
