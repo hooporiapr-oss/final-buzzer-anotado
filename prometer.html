@@ -678,6 +678,7 @@ function pintar(){
   /* The team's sport leads the game line, so a padrino always knows
      which points the pledge is on. (Older database: no sport, no label.) */
   var dep = ESTADO.deporte === 'voleibol' ? T('depV') : ESTADO.deporte === 'baloncesto' ? T('depB') : '';
+  if (dep && ESTADO.categoria) dep += ' · ' + ESTADO.categoria;
   $('programa').textContent=
     (dep ? dep + ' · ' : '') +
     (ESTADO.juego||'') +
