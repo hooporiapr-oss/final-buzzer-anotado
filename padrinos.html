@@ -588,7 +588,7 @@ var lang = 'en';
 try {
   lang = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
          localStorage.getItem('fc-lang') ||
-         ((navigator.language||'').toLowerCase().indexOf('es') === 0 ? 'es' : 'en');
+         'es';
 } catch(e){}
 
 function t(k){ return (T[lang] && T[lang][k]) || T.en[k] || k; }
