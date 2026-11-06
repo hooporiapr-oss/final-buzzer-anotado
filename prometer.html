@@ -451,6 +451,7 @@ var S={
   sinPadrinos:'Este juego no lleva padrinos',
   sinPadrinosP:'El equipo no abrió este juego a promesas: se juega y se anota, y nada más. No es que llegues tarde — pídeles el enlace de otro juego, que ahí sí puedes.',
   jugado:'Marcador final',
+  depB:'🏀 Baloncesto', depV:'🏐 Voleibol',
   yaVan:'{N} ya prometieron en este juego.',
   yaVan1:'1 persona ya prometió en este juego.',
   listoH:'Listo. Eres su padrino.',
@@ -499,6 +500,7 @@ var S={
   sinPadrinos:'This game has no padrinos',
   sinPadrinosP:'The team did not open this game to pledges: it gets played and scored, and that is all. You are not late \u2014 ask them for another game\u2019s link, and on that one you can.',
   jugado:'Final score',
+  depB:'🏀 Basketball', depV:'🏐 Volleyball',
   yaVan:'{N} people have already pledged on this game.',
   yaVan1:'1 person has already pledged on this game.',
   listoH:'Done. You are their padrino.',
@@ -673,7 +675,11 @@ function pintar(){
   /* El EQUIPO es el titular, y el juego la línea de debajo. Un
      padrino promete por su equipo; cuál de sus juegos es el detalle. */
   $('quien').textContent=ESTADO.equipo||'';
+  /* The team's sport leads the game line, so a padrino always knows
+     which points the pledge is on. (Older database: no sport, no label.) */
+  var dep = ESTADO.deporte === 'voleibol' ? T('depV') : ESTADO.deporte === 'baloncesto' ? T('depB') : '';
   $('programa').textContent=
+    (dep ? dep + ' · ' : '') +
     (ESTADO.juego||'') +
     (ESTADO.cancha ? ' · ' + ESTADO.cancha : '') +
     (ESTADO.hora   ? ' · ' + ESTADO.hora   : '');
