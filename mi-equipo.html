@@ -106,6 +106,17 @@ input[type=text]:focus{outline:none;border-color:var(--orange);
   background:var(--navy);color:#fff;font:inherit;font-weight:800;font-size:1rem;
   cursor:pointer;text-decoration:none;text-align:center}
 .btn.go{background:var(--orange);color:#111a24;width:100%;margin-top:20px}
+/* A remembered team is offered, never opened on its own: one phone can
+   serve two teams, and the code typed always wins. */
+.seguir{display:block;width:100%;margin:6px 0 18px;padding:14px;border-radius:9px;border:2px solid var(--navy,#101c2a);
+  background:#fff;color:var(--navy,#101c2a);font:inherit;font-weight:800;cursor:pointer}
+.seguir[hidden]{display:none}
+.tusEq{font-weight:800;font-size:.85rem;color:var(--muted,#5a6b7c);margin:10px 0 6px}
+.tusEq[hidden]{display:none}
+.mTop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
+.mTop .depChip{margin:0}
+.cambiar{margin-left:auto;padding:7px 12px;border-radius:999px;border:1.5px solid var(--navy,#101c2a);background:#fff;
+  color:var(--navy,#101c2a);font:inherit;font-weight:800;font-size:.78rem;cursor:pointer}
 .btn:hover{opacity:.92}
 .btn:disabled{opacity:.5;cursor:default}
 .msg{margin:13px 0 0;font-weight:700;font-size:.9rem;min-height:1.2em}
@@ -361,6 +372,9 @@ footer{background:#12202E}
     <div class="gate" id="gate">
       <h1 id="tH1"></h1>
       <p class="lede" id="tLede"></p>
+      <!-- Teams signed in on this phone: one tap each. Nothing opens by itself. -->
+      <p class="tusEq" id="tTusEq" hidden></p>
+      <div id="tEquipos"></div>
       <label for="code" id="tCodeL"></label>
       <input id="code" type="text" autocapitalize="characters" autocorrect="off"
              spellcheck="false" enterkeyhint="go">
@@ -376,7 +390,7 @@ footer{background:#12202E}
            ahí mismo, dos casillas y publicar. Lo de Cada Punto va dentro
            de cada fila: el enlace de padrinos, las promesas, el reporte. -->
       <a class="volverP" id="volverP" href="#" hidden></a>
-      <span class="depChip" id="mDep" hidden></span>
+      <div class="mTop"><span class="depChip" id="mDep" hidden></span><button type="button" class="cambiar" id="mCambiar" onclick="cambiarEquipo()"></button></div>
       <h1 class="mh1" id="mH1"></h1>
       <p class="lede" id="quien"></p>
       <div class="stat" id="mStat"></div>
@@ -486,6 +500,7 @@ function esc(s){
 
 var S={
   es:{
+    tusEq:'Tus equipos en este teléfono', eqSin:'Mi último equipo', seguirTodos:'Todos los equipos (código maestro)', codeLOtro:'¿Otro equipo? Escribe su código', cambiar:'⇄ Cambiar de equipo',
     h1:'Admin',
     lede:'Entra con tu código. En este teléfono queda guardado — no lo vas a escribir otra vez.',
     codeL:'Tu código', codeH:'El mismo que te dimos para tu programa.',
@@ -554,6 +569,7 @@ var S={
     fAyuda:'Ayuda'
   },
   en:{
+    tusEq:'Your teams on this phone', eqSin:'My last team', seguirTodos:'All teams (master code)', codeLOtro:'Another team? Type its code', cambiar:'⇄ Switch team',
     h1:'Admin',
     lede:'Sign in with your code. It stays on this phone — you will not type it again.',
     codeL:'Your code', codeH:'The same one we gave you for your program.',
@@ -654,6 +670,19 @@ function paintStatic(){
   $('tCodeL').textContent=T('codeL');
   $('tCodeH').textContent=T('codeH');
   $('tGo').textContent=T('go');
+  /* The teams signed in on this phone, one button each (sport first). */
+  var eqs = equiposGuardados();
+  $('tTusEq').hidden = !eqs.length; $('tTusEq').textContent = T('tusEq');
+  $('tEquipos').innerHTML = eqs.map(function(e, i){
+    var nom = e.n === '*' ? T('seguirTodos') : (e.n || T('eqSin'));
+    var ic = e.d === 'voleibol' ? '🏐 ' : e.d === 'baloncesto' ? '🏀 ' : '';
+    return '<button type="button" class="seguir" data-eq="' + i + '">' + esc(ic + nom) + '</button>';
+  }).join('');
+  [].forEach.call($('tEquipos').querySelectorAll('[data-eq]'), function(b){
+    b.onclick = function(){ CODE = eqs[Number(b.getAttribute('data-eq'))].k; entrar(true) };
+  });
+  if (eqs.length) $('tCodeL').textContent = T('codeLOtro');
+  $('mCambiar').textContent = T('cambiar');
   $('tTeams').textContent=T('teams');
   [['tNuevo','nuevo'],['tNuevoP','nuevoP'],['tRival','rival'],['tFecha','fecha'],
    ['tHora','hora'],['tCancha','cancha'],['tDonde','donde'],['tCasa','casa'],
@@ -683,15 +712,42 @@ try{ CODE = localStorage.getItem('cp_build') || localStorage.getItem('cp_code') 
    —herencia del marcador de mano, donde el entrenador escribía los
    puntos y tenía que responder por ellos— y aquí esa casilla no tenía
    nada que certificar: el marcador lo anota el juego. */
-function recordar(k){
+/* TEAMS ON THIS PHONE (Nov 6, 2026). A coach with a basketball and a
+   volleyball team keeps both here and switches with one tap; the one
+   in use is also kept in cp_code / cp_build, which the other pages read. */
+function equiposGuardados(){
+  var l = [];
+  try { l = JSON.parse(localStorage.getItem('cp_teams') || '[]') || [] } catch(e){ l = [] }
+  if (!Array.isArray(l)) l = [];
+  l = l.filter(function(e){ return e && e.k });
+  /* A phone signed in before this change: its one code becomes the list. */
+  if (!l.length && CODE) l = [{ k: CODE, n: '', d: '' }];
+  return l;
+}
+function guardarEquipos(l){ try { localStorage.setItem('cp_teams', JSON.stringify(l.slice(0, 6))) } catch(e){} }
+function recordar(k, nombre, dep){
   try{
     localStorage.setItem('cp_build',k);
     localStorage.setItem('cp_code',k);
   }catch(e){}
+  var l = equiposGuardados().filter(function(e){ return e.k !== k });
+  l.unshift({ k: k, n: nombre || '', d: dep || '' });
+  guardarEquipos(l);
 }
+/* Forget ONE team on this phone (sign out, or a code that stopped working). */
 function olvidar(){
+  var k = CODE;
+  guardarEquipos(equiposGuardados().filter(function(e){ return e.k !== k }));
   try{ localStorage.removeItem('cp_build'); localStorage.removeItem('cp_code');
-       localStorage.removeItem('cp_by'); }catch(e){}
+       localStorage.removeItem('cp_by'); localStorage.removeItem('cp_who'); }catch(e){}
+}
+/* Back to the team list without forgetting anything. */
+function cambiarEquipo(){
+  CODE = null; PUB = false; document.body.classList.remove('publico');
+  $('app').className = 'hide'; $('gate').className = 'gate';
+  $('hwho').textContent = ''; $('hout').className = 'out hide';   /* no team in use on the list */
+  $('code').value = ''; say(''); paintStatic();
+  try { window.scrollTo(0, 0) } catch(e){}
 }
 function salir(){ olvidar(); location.reload(); }
 
@@ -728,11 +784,12 @@ function entrar(auto){
   probarCodigo(k)
     .then(function(x){
       var r = x.r; k = x.k;
-      if(!r||!r.ok){ if(auto) olvidar(); return say(T('bad'),'bad'); }
+      if(!r||!r.ok){ if(auto){ olvidar(); CODE=null; paintStatic(); } return say(T('bad'),'bad'); }
       CODE=k; JUEGOS=r.juegos||[]; DEPORTE=r.deporte||''; PROGRAMA=r.campana||''; CAMP_ID=r.campana_id||null; PUB=false;
       document.body.classList.remove('publico');
       EQUIPO=r.equipo||'';
-      recordar(k);
+      recordar(k, r.maestro ? '*' : (r.campana || r.equipo || ''), r.deporte || '');
+      paintStatic();
       say('');
       $('gate').className='gate hide';
       $('app').className='';
@@ -796,6 +853,7 @@ function pintarJuegos(){
   $('hKick').textContent = PUB ? T('pubKick').toUpperCase() : 'ADMIN';
   $('hwho').textContent = PUB ? (EQUIPO || PROGRAMA) : PROGRAMA;
   /* The team's sport, so pledges and scores are never mixed up. */
+  $('mCambiar').style.display = PUB ? 'none' : '';
   $('mDep').hidden = !DEPORTE;
   $('mDep').textContent = DEPORTE === 'voleibol' ? T('depV') : DEPORTE ? T('depB') : '';
   $('mPub').textContent = T('copiarPub');
@@ -1140,7 +1198,6 @@ function abrirPublico(){
 }
 function entrarCoach(){
   PUB = false; document.body.classList.remove('publico');
-  if (CODE) { entrar(true); return false; }
   $('app').className = 'hide'; $('gate').className = 'gate';
   try { $('code').focus() } catch(e){}
   return false;
@@ -1159,8 +1216,10 @@ function copiarPublica(b){
    ver lo mismo que verá un papá. Su Admin está en mi-equipo.html a
    secas, o en «¿Eres el coach?», que entra directo si ya está guardado. */
 paintStatic();
+/* A remembered code is NOT opened by itself any more: the sign-in
+   screen offers it as a button, next to the box for another team's code.
+   Two teams on one phone can't land in each other's Admin. */
 if (PUB_ID) abrirPublico();
-else if (CODE) entrar(true);
 </script>
 
 <script>
