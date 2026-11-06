@@ -1266,6 +1266,12 @@ function pintarSolicitudes(rows){
         '<b>' + esc(s.equipo) + '</b>' + marca +
         '<small>' + esc(s.programa || '—') + ' · ' + esc(s.coach || '—') +
           ' · ' + esc(s.product || 'cada-punto') + '</small>' +
+        /* The team's sport. Old signups have none: approving makes them basketball. */
+        '<small><b>' + (s.deporte === 'voleibol' ? '🏐 Volleyball'
+                       : s.deporte === 'baloncesto' ? '🏀 Basketball'
+                       : s.estado === 'pending' ? '<span style="color:#A8323F">Sport not chosen — approving makes it basketball</span>'
+                       : 'Basketball') +
+        '</b></small>' +
         '<small><a href="mailto:' + esc(s.email) + '">' + esc(s.email) + '</a>' +
           (s.telefono ? ' · ' + esc(s.telefono) : '') + '</small>' +
         '<small>' + cuando(s.pedida) + ' · ' + lic + '</small>' +
