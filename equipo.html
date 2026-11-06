@@ -527,7 +527,7 @@ document.querySelectorAll('[data-ph]').forEach(function(el){
 
 var LANG='es';
 try{ LANG = localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') || localStorage.getItem('fc-lang') ||
-  ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en'); }catch(e){}
+  'es'; }catch(e){}
 /* Y ?lang= manda sobre lo guardado, para poder mandar el enlace ya
    en un idioma y que se vea en la dirección. */
 var _q = (location.search.match(/[?&]lang=(es|en)\b/i)||[])[1];
@@ -797,7 +797,7 @@ function idioma(){
   try{
     return localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
            localStorage.getItem('fc-lang') ||
-           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en');
+           'es';
   }catch(e){ return 'es' }
 }
 var b = document.getElementById('hamb'),
