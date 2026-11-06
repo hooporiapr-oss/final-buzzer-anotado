@@ -279,6 +279,8 @@ body:not(.publico) #mCoach{display:none}
 .pubcop{margin:0 0 12px}
 /* Back to the pledge page, when the public page was opened from it. */
 .depChip{display:inline-block;margin:0 0 8px;padding:4px 10px;border-radius:999px;background:#EEF2F6;color:var(--navy,#101c2a);font-weight:800;font-size:.78rem}
+/* display above would otherwise beat the hidden attribute. */
+.depChip[hidden],.volverP[hidden]{display:none}
 .enota{flex:1 1 100%;font-size:.76rem;color:var(--muted,#5a6b7c);font-weight:600}
 .volverP{display:inline-block;margin:0 0 12px;font-weight:800;font-size:.9rem;color:var(--navy,#101c2a);text-decoration:none}
 .volverP:hover{color:var(--orange,#ff7a18)}
@@ -852,7 +854,8 @@ function pintarJuegos(){
     var l = porDia[d].sort(function(a, b){ return minutos(a.hora) - minutos(b.hora) });
     html += '<section class="day"><h2>' + esc(diaLargo(d)) + ' <span>' +
             esc(l.length === 1 ? T('d1') : T('dN', { N: l.length })) + '</span></h2><div class="rows">';
-    l.forEach(function(g){ html += fila(g, nos) });
+    /* Master code: every team's games, so each row names its own team. */
+    l.forEach(function(g){ html += fila(g, nos || g.campana || '') });
     html += '</div></section>';
   });
   $('teams').innerHTML = html || '<p class="vacio">' + esc(T(
@@ -918,11 +921,13 @@ function fila(g, nos){
     if (np === 0 && !g.jugado) pls += '<button class="pl want" data-norec="' + esc(g.game_id) + '">' + esc(T('cerrar')) + '</button>';
   }
   if (g.jugado) pls += '<a class="pl" href="reporte.html">' + esc(T('verReporte')) + '</a>';
+  /* Master code sees every team at once: each game says its sport. */
+  var depFila = (!DEPORTE && g.deporte) ? (g.deporte === 'voleibol' ? T('depV') : T('depB')) + (g.cancha ? ' · ' : '') : '';
   return '<div class="r live' + (g.jugado ? ' done' : '') + (g.es_prueba ? ' p' : '') + '" data-id="' + esc(g.game_id) + '">' +
       '<span class="t">' + esc(g.hora || T('sinHora')) + '</span>' +
       '<span class="m"><b class="sa' + ca + '">' + esc(a) + '</b> <i>vs</i> <b class="sb' + cb + '">' + esc(b) + '</b>' +
         '<span class="sc">' + (sc || '<em class="pend">' + esc(T('stPend')) + '</em>') + '</span></span>' +
-      '<span class="j">' + esc(g.cancha || '') + (g.jugado ? (g.cancha ? ' · ' : '') + esc(T('stFinal')) : '') + '</span>' +
+      '<span class="j">' + esc(depFila) + esc(g.cancha || '') + (g.jugado ? (g.cancha || depFila ? ' · ' : '') + esc(T('stFinal')) : '') + '</span>' +
       tag +
       '<span class="pls">' + pls + '</span>' +
     '</div>';
@@ -955,7 +960,7 @@ function tocar(row){
     '<button class="esave">' + esc(T('eGuardar')) + '</button>' +
     (g.jugado ? '<button class="edel">' + esc(T('eBorrar')) + '</button>' : '') +
     '<button class="eclose">' + esc(T('eCerrar')) + '</button>' +
-    (DEPORTE === 'voleibol' ? '<span class="enota">' + esc(T('notaVol')) + '</span>' : '');
+    ((g.deporte || DEPORTE) === 'voleibol' ? '<span class="enota">' + esc(T('notaVol')) + '</span>' : '');
   row.appendChild(ed);
   var cajas = ed.querySelectorAll('.ep');
   ed.addEventListener('click', function(e){ e.stopPropagation() });
