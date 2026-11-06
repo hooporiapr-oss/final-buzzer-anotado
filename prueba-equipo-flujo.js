@@ -61,17 +61,17 @@ async function corrida(browser, lang, correo){
   await p.click('.btn');
   await p.waitForTimeout(150);
   let m = await msg();
-  (m && /equipo|team/i.test(m)) ? ok('vacío: pide el nombre del equipo — "' + m.slice(0,46) + '"')
+  (m && /programa|program/i.test(m)) ? ok('vacío: pide el nombre del programa — "' + m.slice(0,46) + '"')
                                 : mal('vacío: no avisó de nada (' + m + ')');
   (await rpcs()).length === 0 ? ok('y no mandó nada')
                               : mal('mandó algo con el formulario vacío');
 
   // ── 2 · los cinco campos, escritos como los escribe una persona ──
-  for (const [sel, val] of [['#tm','Canóvanas 15U'], ['#pg','Canóvanas Basketball Club'],
+  for (const [sel, val] of [['#pg','Canóvanas Basketball Club'], ['#cd','cb4827'],
                             ['#nm','John Burgos'], ['#em', correo], ['#ph','7871234567']]){
     await p.click(sel); await p.fill(sel, val);
   }
-  const escrito = await p.evaluate(() => ['tm','pg','nm','em','ph']
+  const escrito = await p.evaluate(() => ['pg','cd','nm','em','ph']
     .map(i => document.getElementById(i).value));
   escrito.every(v => v) ? ok('los cinco campos aceptan lo que se escribe')
                         : mal('algún campo no recogió: ' + JSON.stringify(escrito));
@@ -139,7 +139,7 @@ async function corrida(browser, lang, correo){
     appOculto: document.getElementById('app').hidden,
     hecho:     !document.getElementById('done').hidden,
     txt:       document.getElementById('done').innerText,
-    campos:    !!document.getElementById('tm')
+    campos:    !!document.getElementById('pg')
   }));
   fin.hecho && fin.appOculto ? ok('sale el acuse de recibo y el formulario se esconde')
                              : mal('el acuse no apareció');
