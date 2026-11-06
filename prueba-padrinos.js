@@ -243,6 +243,12 @@ console.log('\n5 · Los dos idiomas, completos\n');
   await pag.goto(PAGINA);
   await pag.waitForTimeout(200);
 
+  /* Spanish opens first now, even on an English phone (Nov 5, 2026).
+     English is a choice: store it the way the toggle does, then reload. */
+  si(await pag.locator('#lang').textContent() === 'English', 'an English phone with no choice opens in Spanish');
+  await pag.evaluate(() => { for (const k of ['cfh_lang','cp-lang','fc-lang']) localStorage.setItem(k, 'en') });
+  await pag.reload();
+  await pag.waitForTimeout(200);
   eq(await pag.locator('#lang').textContent(), 'Español',
      'en inglés el botón ofrece español');
   await pag.locator('#lang').click();
