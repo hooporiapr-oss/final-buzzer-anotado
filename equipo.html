@@ -118,12 +118,6 @@ input[type=text],input[type=email],input[type=tel]{
   background:#fff;color:var(--ink);font:inherit;font-size:1.02rem}
 input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,122,24,.18)}
 .hint{color:var(--muted);font-size:.84rem;margin:6px 0 0}
-/* The program's categories at signup. */
-.catRow{display:flex;gap:8px}.catRow input{flex:1}
-.catAdd{padding:0 16px;border-radius:10px;border:2px solid var(--navy,#101c2a);background:#fff;font:inherit;font-weight:800;cursor:pointer}
-.catList{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
-.catList span{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#fff4ea;border:1.5px solid var(--orange,#ff7a18);font-weight:800;font-size:.86rem}
-.catList button{border:0;background:none;font:inherit;font-weight:900;cursor:pointer;padding:0 2px}
 .ok{display:flex;gap:11px;align-items:flex-start;margin:20px 0 0;
   font-size:.9rem;color:var(--muted);line-height:1.45}
 .ok input{width:20px;height:20px;flex:0 0 20px;margin-top:2px;accent-color:var(--orange)}
@@ -319,24 +313,13 @@ header{color:#fff}
 <p class="lede" data-i="lede">Los padrinos prometen centavos por cada punto que anote tu equipo. Ganen o pierdan, cada punto cuenta.</p>
 <p class="sinrifas" data-i="sinrifas">Sin rifas. Sin ventas. Sin organizar otro evento.</p>
 
-<!-- THE PROGRAM'S CATEGORIES (Nov 6, 2026). The program signs up once;
-     each game later gets one of these categories (and its sport) in Admin,
-     where more can be added. -->
-<label for="catIn" data-i="catsL">Categorías del programa</label>
-<div class="catRow"><input id="catIn" type="text" maxlength="30" list="catLista" autocomplete="off" data-ph="catsPh" placeholder="Ejemplo: Mini">
-<button type="button" class="catAdd" id="catAdd" data-i="catsAdd">Añadir</button></div>
-<datalist id="catLista"><option value="Pre-Mini"><option value="Mini"><option value="Infantil"><option value="Junior"><option value="Juvenil"><option value="10U"><option value="12U"><option value="14U"><option value="16U"><option value="18U"></datalist>
-<div class="catList" id="catList"></div>
-<p class="hint" data-i="catsAyuda">Escribe cada categoría de tu programa y toca Añadir. Baloncesto y voleibol se escogen en Admin, juego por juego.</p>
-<label for="tm" data-i="teamL">Nombre del equipo</label>
-<input id="tm" data-ph="teamPh" placeholder="Ejemplo: Canóvanas 15U" type="text" maxlength="60" autocapitalize="words" enterkeyhint="next">
-<!-- EL CÓDIGO PARA ENTRAR ES EL EQUIPO MÁS ESTOS CUATRO NÚMEROS.
-     Los escoge el entrenador, así que los recuerda. -->
-<label for="pn" data-i="pinL">Escoge 4 números</label>
-<input id="pn" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4827" enterkeyhint="next" style="max-width:9rem;letter-spacing:.2em;font-weight:800">
-<p class="hint" data-i="pinAyuda">Con el nombre del equipo forman tu código para entrar. Si tu equipo es <b>Canóvanas 15U</b> y escoges <b>4827</b>, tu código es <b>CANOVANAS15U-4827</b>.</p>
 <label for="pg" data-i="progL">Nombre del programa u organización</label>
 <input id="pg" data-ph="progPh" placeholder="Ejemplo: Canóvanas Basketball Club" type="text" maxlength="60" autocapitalize="words" autocomplete="organization" enterkeyhint="next">
+<!-- THE CODE (Nov 6, 2026): two letters and four numbers, picked here.
+     It is the whole sign-in code — no program name in front. -->
+<label for="cd" data-i="codeL">Escoge tu código</label>
+<input id="cd" type="text" maxlength="7" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="CP4827" enterkeyhint="next" style="max-width:11rem;letter-spacing:.15em;font-weight:800;text-transform:uppercase">
+<p class="hint" data-i="codeAyuda">Dos letras y cuatro números, por ejemplo <b>CP4827</b>. Es tu código para entrar a Admin, solo — sin el nombre del programa.</p>
 <label for="nm" data-i="nameL">Tu nombre</label>
 <input id="nm" data-ph="namePh" placeholder="Nombre y apellido" type="text" maxlength="60" autocomplete="name" autocapitalize="words" enterkeyhint="next">
 <label for="em" data-i="emailL">Correo electrónico</label>
@@ -470,8 +453,9 @@ var S = {
      para que dentro de un año se sepa qué se aceptó, palabra por
      palabra. */
   es:{
-    errTeam:'Escribe el nombre del equipo.',
-    errCats:'Añade al menos una categoría del programa (Mini, Junior, 14U…).',
+    errCode:'Tu código son dos letras y cuatro números, por ejemplo CP4827.',
+    errCodeUsado:'Ese código ya está en uso. Escoge otro.',
+    errEspera:'Demasiados intentos seguidos. Espera unos minutos y vuelve a intentarlo.',
     errProg:'Escribe el nombre del programa u organización.',
     errWho:'Tu nombre y tu correo, por favor.',
     errLic:'Tienes que aceptar la licencia por juego para seguir.',
@@ -480,10 +464,8 @@ var S = {
     errTaken:'Ese programa ya tiene campaña. Escríbenos si crees que es un error.',
     errPending:'Ya hay una petición para ese programa. Te escribimos pronto.',
     errGen:'No se pudo enviar. Intenta otra vez.',
-    errPin:'Escoge cuatro números: con el nombre del equipo forman tu código.',
-    errEquipoUsado:'Ya hay un equipo inscrito con ese nombre. Añádele algo que lo distinga —el pueblo o la categoría— y vuelve a intentarlo.',
     doneCode:'Tu código para entrar',
-    doneCodeH:'Es el nombre de tu equipo y los cuatro números que escogiste. <b>Empieza a funcionar cuando te aprobemos.</b> Apúntalo ahora; también te llega en el correo de bienvenida.',
+    doneCodeH:'Es el código que escogiste. <b>Empieza a funcionar cuando te aprobemos.</b> Apúntalo ahora; también te llega en el correo de bienvenida.',
     doneH:'Solicitud recibida',
     doneP:'Revisaremos tu inscripción y te enviaremos las instrucciones para comenzar.',
     licFull:'Acepto la licencia por juego: <b>un dólar por cada promesa que cualifica, con un máximo de $99 por juego</b>. Una promesa cualifica cuando vale cinco dólares o más una vez puesto el marcador final. No hay mínimo: con un juego basta, y cada juego de más es otra oportunidad. El precio entero está en la portada. No se paga nada por adelantado; se factura por los juegos que llevaron promesas y se paga dentro de siete días. Un juego que no recoge ni una promesa no se factura. Si el cargo no se paga dentro de los siete días, Gostar Digital LLC puede suspender las funciones de manejo de promesas de ese juego —recibir promesas nuevas y mandar sus avisos— hasta que se complete el pago. Corregir un marcador nunca se suspende: el programa siempre puede corregir un marcador publicado, y a cada padrino cuya cantidad cambie le llega su aviso de corrección. Una suspensión nunca le quita al programa su información: durante la suspensión puede ver, imprimir y bajar los registros y el reporte de ese juego, también en CSV. Los registros del juego y de sus promesas se conservan durante la suspensión, y en general doce meses desde la fecha del juego, según la política de conservación de datos. Al pagarse la licencia pendiente se restablecen las funciones suspendidas, y la suspensión no afecta a los demás juegos con licencia al día.'
@@ -494,13 +476,10 @@ var S = {
     h1:'Your team plays. Your program raises funds.',
     lede:'Padrinos pledge cents on every point your team scores. Win or lose, every point counts.',
     sinrifas:'No raffles. No sales. No extra event to organize.',
-    teamL:'Team name', teamPh:'Example: Canóvanas 15U',
     progL:'Program or organization name', progPh:'Example: Canóvanas Basketball Club',
     nameL:'Your name', namePh:'First and last name',
     emailL:'Email', emailPh:'you@email.com',
     phoneL:'Phone (optional)', phonePh:'787…',
-    pinL:'Pick 4 numbers',
-    pinAyuda:'Together with the team name they make your sign-in code. If your team is <b>Canóvanas 15U</b> and you pick <b>4827</b>, your code is <b>CANOVANAS15U-4827</b>.',
     precioH:'Per-game license',
     precio1:'$1 per qualifying pledge.',
     precio2:'Maximum $99 per game.',
@@ -511,10 +490,11 @@ var S = {
     terms:'<b>I accept the <a href="https://cadapunto.com/terms.html" target="_blank">Terms of Use</a> and the <a href="https://cadapunto.com/privacy.html" target="_blank">Privacy Policy</a>.</b>',
     go:'Sign up my program',
     siguiente:'We will review your request and send you the instructions to get started.',
-    errTeam:'Write the team name.',
-    errCats:'Add at least one of the program\'s categories (Mini, Junior, 14U…).',
-    catsL:'Program categories', catsPh:'Example: Mini', catsAdd:'Add', quitar:'Remove',
-    catsAyuda:'Type each category your program has and tap Add. Basketball or volleyball is picked in Admin, game by game.',
+    errCode:'Your code is two letters and four numbers, for example CP4827.',
+    errCodeUsado:'That code is already in use. Pick another.',
+    errEspera:'Too many tries in a row. Wait a few minutes and try again.',
+    codeL:'Pick your code',
+    codeAyuda:'Two letters and four numbers, for example <b>CP4827</b>. It is your Admin sign-in code on its own — no program name.',
     errProg:'Write the program or organization name.',
     errWho:'Your name and email, please.',
     errLic:'You have to accept the per-game license to continue.',
@@ -523,10 +503,8 @@ var S = {
     errTaken:'That program already has a campaign. Write to us if that seems wrong.',
     errPending:'There is already a request for that program. We will be in touch.',
     errGen:'That did not send. Try again.',
-    errPin:'Pick four numbers: together with the team name they make your code.',
-    errEquipoUsado:'There is already a team signed up with that name. Add something that tells it apart —the town or the age group— and try again.',
     doneCode:'Your sign-in code',
-    doneCodeH:'It is your team name and the four numbers you picked. <b>It starts working once we approve you.</b> Write it down now; it also comes in your welcome email.',
+    doneCodeH:'It is the code you picked. <b>It starts working once we approve you.</b> Write it down now; it also comes in your welcome email.',
     doneH:'Request received',
     doneP:'We will review your signup and send you the instructions to get started.',
     licFull:'I accept the per-game license: <b>one dollar for each qualifying pledge, capped at $99 per game</b>. A pledge qualifies when it comes to five dollars or more once the final score is in. There is no minimum: one game is enough, and every additional game is another opportunity. The full price is on the home page. Nothing is paid up front; it is invoiced for the games that carried pledges and is due within seven days. A game that records no pledges is not invoiced. If the fee is not paid within the seven days, Gostar Digital LLC may suspend that game&rsquo;s pledge management features —taking new pledges and sending its notices— until payment is completed. Correcting a score is never suspended: a program can always correct a published score, and every padrino whose amount changes still receives the correction notice. A suspension never takes a program&rsquo;s information away from it: during a suspension it can view, print and download that game&rsquo;s records and report, including the CSV. Game and pledge records are retained during suspension, and for twelve months from the date of the game, as set out in the data retention policy. Paying the outstanding licence fee restores the suspended features, and suspension does not affect other games with valid licences.'
@@ -673,43 +651,19 @@ function say(t,c){
   if (el){ el.textContent = t; el.className = 'msg ' + (c||''); }
 }
 
-/* The program's categories: typed, added, removable. */
-var CATS = [];
-function pintarCats(){
-  var box = document.getElementById('catList');
-  box.innerHTML = '';
-  CATS.forEach(function(c, i){
-    var s = document.createElement('span'); s.textContent = c;
-    var x = document.createElement('button'); x.type = 'button'; x.textContent = '×';
-    x.setAttribute('aria-label', (LANG === 'en' ? 'Remove ' : 'Quitar ') + c);
-    x.onclick = function(){ CATS.splice(i, 1); pintarCats() };
-    s.appendChild(x); box.appendChild(s);
-  });
-}
-function agregarCat(){
-  var inp = document.getElementById('catIn');
-  var c = (inp.value || '').replace(/\s+/g, ' ').trim().slice(0, 30);
-  if (c && !CATS.some(function(x){ return x.toLowerCase() === c.toLowerCase() }) && CATS.length < 20) CATS.push(c);
-  inp.value = ''; pintarCats();
-}
-document.getElementById('catAdd').addEventListener('click', function(){ agregarCat(); document.getElementById('catIn').focus() });
-document.getElementById('catIn').addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); agregarCat() } });
 
 function send(){
-  var team  = (document.getElementById('tm').value || '').trim();
   var prog  = (document.getElementById('pg').value || '').trim();
+  /* The program signs up once: its name is also the name it goes by. */
+  var team  = prog;
+  var code  = (document.getElementById('cd').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   var name  = (document.getElementById('nm').value || '').trim();
   var email = (document.getElementById('em').value || '').trim();
   var phone = (document.getElementById('ph').value || '').trim();
 
-  if (!team) return say(T('errTeam'), 'bad');
-  var pin = (document.getElementById('pn').value || '').replace(/\D/g, '');
-  if (!/^\d{4}$/.test(pin)) return say(T('errPin'), 'bad');
   if (!prog) return say(T('errProg'), 'bad');
+  if (!/^[A-Z]{2}[0-9]{4}$/.test(code)) return say(T('errCode'), 'bad');
   if (!name || email.indexOf('@') === -1) return say(T('errWho'), 'bad');
-  /* A category still in the box counts too. */
-  agregarCat();
-  if (!CATS.length) return say(T('errCats'), 'bad');
 
   /* La licencia primero: es la unica casilla que lleva un numero
      dentro, y facturarle a alguien que nunca lo vio seria nuestro
@@ -728,11 +682,14 @@ function send(){
      entrenador escoge otra vez — sus números nunca se cambian por
      detrás. La base contesta por el NOMBRE del equipo, que es público,
      así que esta pregunta no sirve para adivinar el código de nadie. */
-  rpc('bw_codigo_disponible', { p_team: team, p_pin: pin })
+  /* Is the code free? Each check counts like a sign-in attempt, so it
+     can't be used to hunt for other programs' codes. */
+  rpc('bw_codigo6_libre', { p_codigo: code })
   .then(function(d){
     if (!d || !d.ok){
-      if (d && d.reason === 'equipo')  { say(T('errEquipoUsado'), 'bad'); return null; }
-      if (d && d.reason === 'numeros') { say(T('errPin'), 'bad'); return null; }
+      if (d && d.reason === 'usado')   { say(T('errCodeUsado'), 'bad'); return null; }
+      if (d && d.reason === 'espera')  { say(T('errEspera'), 'bad'); return null; }
+      if (d && d.reason === 'formato') { say(T('errCode'), 'bad'); return null; }
       say(T('errGen'), 'bad'); return null;
     }
     return rpc('bw_request_team', {
@@ -752,15 +709,14 @@ function send(){
        va a funcionar. Si guardarlos fallara, la solicitud ya entró
        igual: se le dice que el código le llega al aprobarlo, y aprobar
        pone uno por su cuenta. */
-    /* The program's categories are saved next to the four numbers. */
-    return rpc('bw_request_categorias', { p_email: email, p_categorias: CATS.slice() })
-      .catch(function(e){ console.error('bw_request_categorias', e) })
-      .then(function(){ return rpc('bw_request_pin', { p_email: email, p_pin: pin }) })
+    /* The code is saved with the signup before it is shown: the code
+       the coach sees is the one that will work. */
+    return rpc('bw_request_codigo', { p_email: email, p_codigo: code })
       .then(function(x){ return !!(x && x.ok) })
-      .catch(function(e){ console.error('bw_request_pin', e); return false })
+      .catch(function(e){ console.error('bw_request_codigo', e); return false })
       .then(function(guardado){
         SENT = email;
-        SENT_CODE = guardado ? codigoDe(team, pin) : '';
+        SENT_CODE = guardado ? code : '';
         draw();
 
     /* DE QUÉ PRODUCTO ES ESTA SOLICITUD. Dos productos comparten la
