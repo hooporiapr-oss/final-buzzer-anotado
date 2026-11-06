@@ -1022,7 +1022,7 @@ var STR = {
 };
 
 var LANG = 'en';
-try { LANG = localStorage.getItem('fc-lang') || ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es' : 'en'); } catch(e){}
+try { LANG = localStorage.getItem('fc-lang') || 'es'; } catch(e){}
 
 function T(key, vals){
   var out = (STR[LANG] && STR[LANG][key]) || STR.en[key] || key;
