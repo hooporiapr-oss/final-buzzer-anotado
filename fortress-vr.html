@@ -715,7 +715,7 @@ var S={
 };
 var LANG='es';
 try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
-  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en') }catch(e){}
+  'es' }catch(e){}
 function T(k){ return (S[LANG]&&S[LANG][k])||S.es[k] }
 function $(id){ return document.getElementById(id) }
 
