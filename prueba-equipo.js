@@ -264,7 +264,7 @@ const not = (t,re,q) => !re.test(t) ? ok(q) : mal(q + '  (apareció ' + re + ')'
   has(texto, /Acepto la licencia por juego/,           'y la licencia que se acepta');
   has(texto, /Máximo \$99 por juego/,  'con su tope');
   has(texto, /Nombre del programa u organización/,  'y el formulario');
-  has(texto, /Nombre del equipo/,  'con el rótulo del equipo');
+  has(texto, /Escoge tu código/,  'con el código: dos letras y cuatro números (6 nov 2026)');
 
   /* EL MENÚ, EN ESPAÑOL. Estaba en inglés en el marcado y lo
      traducía el JavaScript, así que sin él la única parte legible
