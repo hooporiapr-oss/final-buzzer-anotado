@@ -23,6 +23,8 @@ const JUEGOS = [{ game_id: GID, juego:'vs Caguas', rival:'Caguas', fecha:'2026-1
       r.abort(); });
     await p.addInitScript(([l, i]) => { try { localStorage.setItem('cp-lang', l); localStorage.setItem('cfh_lang', l); if (i) for (const k in i) localStorage.setItem(k, i[k]) } catch(e){} }, [lang || 'es', init || null]);
     await p.goto(DIR + file); await p.waitForTimeout(400);
+    /* A remembered code is offered as a button (Nov 6, 2026). */
+    if (init && await p.locator('#tEquipos .seguir').count()){ await p.locator('#tEquipos .seguir').first().click(); await p.waitForTimeout(400); }
     return { c, p, errs, calls };
   }
 
@@ -91,6 +93,46 @@ const JUEGOS = [{ game_id: GID, juego:'vs Caguas', rival:'Caguas', fecha:'2026-1
   await p.locator('.r[data-id="' + GID + '"]').click(); await p.waitForTimeout(150);
   si(await p.locator('.enota').count() === 0, 'basketball game score box: no note');
   si(!errs.length, 'no page errors ' + errs.join(' ')); await c.close();
+
+  console.log('\n3c · Two teams on one phone: nothing opens by itself, one tap to switch');
+  {
+    const ctx = await b.newContext({ viewport:{ width:390, height:900 } }); const pg = await ctx.newPage(); const errs2 = [];
+    pg.on('pageerror', e => errs2.push(String(e)));
+    const R = { 'HOOPS-1234': { ok:true, campana:'Hoops 15U', campana_id:CAMP, equipo:'Hoops', deporte:'baloncesto', juegos:[] },
+                'VOLEY-4827': { ok:true, campana:'Voley 15U', campana_id:CAMP, equipo:'Voley', deporte:'voleibol', juegos:[] } };
+    await pg.route('**/*', rt => { const u = rt.request().url();
+      if (u.startsWith('file:')) return rt.continue();
+      if (/juegos_del_codigo/.test(u)){ const k = (rt.request().postDataJSON() || {}).p_code;
+        return rt.fulfill({ status:200, contentType:'application/json', body: JSON.stringify(R[k] || { ok:false }) }); }
+      rt.abort(); });
+    await pg.addInitScript(() => { try { localStorage.setItem('cp-lang','es') } catch(e){} });
+    await pg.goto(DIR + 'mi-equipo.html'); await pg.waitForTimeout(300);
+    si(await pg.locator('#tEquipos .seguir').count() === 0, 'first visit: just the code box');
+    await pg.fill('#code', 'HOOPS-1234'); await pg.click('#tGo'); await pg.waitForTimeout(300);
+    si(await pg.locator('#mDep').innerText() === '🏀 Baloncesto', 'signed in as the basketball team');
+    si(await pg.locator('#mCambiar').isVisible() && await pg.locator('#mCambiar').innerText() === '⇄ Cambiar de equipo', 'Admin has ⇄ Cambiar de equipo');
+    await pg.click('#mCambiar'); await pg.waitForTimeout(200);
+    si(await pg.locator('#gate').isVisible() && !(await pg.locator('#app').isVisible()), 'switch goes back to the team list');
+    await pg.fill('#code', 'VOLEY-4827'); await pg.click('#tGo');
+    await pg.waitForFunction(() => /Voleibol/.test(document.getElementById('mDep').textContent), null, { timeout:3000 }).catch(() => {});
+    si(await pg.locator('#mDep').innerText() === '🏐 Voleibol' && /Voley 15U/i.test(await pg.locator('#hwho').innerText()), 'typing the volleyball code opens the volleyball Admin');
+    await pg.reload(); await pg.waitForTimeout(400);
+    const btns = await pg.locator('#tEquipos .seguir').allInnerTexts();
+    si(await pg.locator('#gate').isVisible() && !(await pg.locator('#app').isVisible()), 'reopening opens NO team by itself');
+    si(btns.length === 2 && btns[0] === '🏐 Voley 15U' && btns[1] === '🏀 Hoops 15U', 'both teams listed with their sport: ' + btns.join(' | '));
+    await pg.locator('#tEquipos .seguir').nth(1).click(); await pg.waitForTimeout(300);
+    si(await pg.locator('#mDep').innerText() === '🏀 Baloncesto', 'one tap: basketball Admin');
+    await pg.click('#mCambiar'); await pg.locator('#tEquipos .seguir').filter({ hasText:'Voley' }).click(); await pg.waitForTimeout(300);
+    si(await pg.locator('#mDep').innerText() === '🏐 Voleibol', 'one tap back: volleyball Admin');
+    si(await pg.evaluate(() => localStorage.getItem('cp_code')) === 'VOLEY-4827', 'the other pages follow the team in use');
+    await pg.click('#hout'); await pg.waitForTimeout(400);
+    const quedan = await pg.locator('#tEquipos .seguir').allInnerTexts();
+    si(quedan.length === 1 && quedan[0] === '🏀 Hoops 15U', 'Salir forgets only that team on this phone');
+    await pg.fill('#code', 'MALO-0000'); await pg.click('#tGo'); await pg.waitForTimeout(300);
+    si(!(await pg.locator('#app').isVisible()) && (await pg.locator('#tEquipos .seguir').count()) === 1, 'a wrong code opens nothing and forgets nothing');
+    si(!errs2.length, 'no page errors ' + errs2.join(' '));
+    await ctx.close();
+  }
 
   console.log('\n4 · Public page and pledge page');
   ({ c, p } = await abrir('mi-equipo.html?e=' + CAMP, { calendario_publico:{ ok:true, equipo:'Voley 15U', deporte:'voleibol', juegos:JUEGOS } }));
