@@ -78,6 +78,20 @@ const JUEGOS = [{ game_id: GID, juego:'vs Caguas', rival:'Caguas', fecha:'2026-1
   si(await p.locator('.enota').count() === 0, 'no volleyball note on basketball');
   await c.close();
 
+  console.log('\n3b · Master code: every team at once, each game says its sport');
+  const MIX = [{ ...JUEGOS[0], campana:'Testa License', deporte:'baloncesto', cancha:'luis court' },
+               { ...JUEGOS[0], game_id:'bbbbbbbb-bbbb-cccc-dddd-eeeeeeeeeeee', campana:'Voley 15U', deporte:'voleibol', cancha:'Coliseo' }];
+  ({ c, p, errs } = await abrir('mi-equipo.html', { juegos_del_codigo:{ ok:true, maestro:true, campana:null, campana_id:null, equipo:null, deporte:null, juegos:MIX } }, 'es', { cp_code:'ADMIN-MASTER', cp_build:'ADMIN-MASTER' }));
+  const filas = await p.locator('.r').allInnerTexts();
+  si(!(await p.locator('#mDep').isVisible()), 'no single-team label at the top');
+  si(filas.some(t => /Testa License/.test(t) && /🏀 Baloncesto · luis court/.test(t)), 'Testa License row: 🏀 Baloncesto');
+  si(filas.some(t => /Voley 15U/.test(t) && /🏐 Voleibol · Coliseo/.test(t)), 'Voley 15U row: 🏐 Voleibol');
+  await p.locator('.r[data-id="bbbbbbbb-bbbb-cccc-dddd-eeeeeeeeeeee"]').click(); await p.waitForTimeout(150);
+  si(await p.locator('.enota').count() === 1, 'volleyball game score box: all-sets note');
+  await p.locator('.r[data-id="' + GID + '"]').click(); await p.waitForTimeout(150);
+  si(await p.locator('.enota').count() === 0, 'basketball game score box: no note');
+  si(!errs.length, 'no page errors ' + errs.join(' ')); await c.close();
+
   console.log('\n4 · Public page and pledge page');
   ({ c, p } = await abrir('mi-equipo.html?e=' + CAMP, { calendario_publico:{ ok:true, equipo:'Voley 15U', deporte:'voleibol', juegos:JUEGOS } }));
   si(await p.locator('#mDep').innerText() === '🏐 Voleibol', 'public page shows the sport');
