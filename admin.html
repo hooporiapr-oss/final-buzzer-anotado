@@ -1442,7 +1442,8 @@ function cargarCampanas(){
      hoy: el valor cambió con el producto y el filtro se quedó donde
      estaba. El comentario que había aquí decía las dos cosas a la vez
      y ninguna coincidía con el código. */
-  rest('campaigns?product=eq.cada-punto&select=*&order=created_at.desc')
+  /* Archived campaigns (kept on record, e.g. one with a paid license) stay off the list. */
+  rest('campaigns?product=eq.cada-punto&archivada=not.is.true&select=*&order=created_at.desc')
     .then(function(rows){
       CAMPS = rows || [];
       var s = $('camp');
@@ -1973,7 +1974,7 @@ $('crearCamp').onclick = function(){
       $('nNombre').value = ''; $('nQuien').value = ''; $('nCorreo').value = '';
       $('nueva').classList.add('oculto');
       di('mCamp', 'Created.', 'ok');
-      return rest('campaigns?product=eq.cada-punto&select=*&order=created_at.desc')
+      return rest('campaigns?product=eq.cada-punto&archivada=not.is.true&select=*&order=created_at.desc')
         .then(function(rows){ CAMPS = rows || [];
           $('camp').innerHTML = CAMPS.map(function(x){
             return '<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>' }).join('');
