@@ -278,6 +278,8 @@ body:not(.publico) #mCoach{display:none}
 .coachin a{color:var(--m-mute);font-weight:700}
 .pubcop{margin:0 0 12px}
 /* Back to the pledge page, when the public page was opened from it. */
+.depChip{display:inline-block;margin:0 0 8px;padding:4px 10px;border-radius:999px;background:#EEF2F6;color:var(--navy,#101c2a);font-weight:800;font-size:.78rem}
+.enota{flex:1 1 100%;font-size:.76rem;color:var(--muted,#5a6b7c);font-weight:600}
 .volverP{display:inline-block;margin:0 0 12px;font-weight:800;font-size:.9rem;color:var(--navy,#101c2a);text-decoration:none}
 .volverP:hover{color:var(--orange,#ff7a18)}
 .pl.prom{background:var(--m-ball);border-color:var(--m-ball);color:#1A0C00}
@@ -372,6 +374,7 @@ footer{background:#12202E}
            ahí mismo, dos casillas y publicar. Lo de Cada Punto va dentro
            de cada fila: el enlace de padrinos, las promesas, el reporte. -->
       <a class="volverP" id="volverP" href="#" hidden></a>
+      <span class="depChip" id="mDep" hidden></span>
       <h1 class="mh1" id="mH1"></h1>
       <p class="lede" id="quien"></p>
       <div class="stat" id="mStat"></div>
@@ -512,7 +515,7 @@ var S={
     errYaJugado:'Este juego ya tiene marcador. Eso ya no se cambia.',
     copiar:'Copiar el enlace', copiado:'Copiado',
     volverP:'← Volver a la promesa', tabPProx:'Próximos juegos', tabPRes:'Resultados', vacioProx:'No hay juegos próximos publicados todavía. Vuelve pronto.', vacioRes:'Todavía no hay resultados publicados. Vuelve pronto.', vacioPub:'Este equipo todavía no ha publicado juegos. Vuelve pronto.', vacioFiltro:'No hay juegos aquí.',
-    pubKick:'Calendario', prometer:'Prometer →', coachEntra:'¿Eres el coach? Entra aquí', copiarPub:'🔗 Copiar la página pública', pubNo:'Este calendario no existe.', pJuegos:'Los {N} juegos', pJuego:'El juego',
+    pubKick:'Calendario', prometer:'Prometer →', coachEntra:'¿Eres el coach? Entra aquí', copiarPub:'🔗 Copiar la página pública', depB:'🏀 Baloncesto', depV:'🏐 Voleibol', notaVol:'Voleibol: los puntos totales del partido, sumando todos los sets.', pubNo:'Este calendario no existe.', pJuegos:'Los {N} juegos', pJuego:'El juego',
     mJuegos:'Tus {N} juegos', mJuego:'Tu juego', mDel:', del {A} al {B}', mEl:', el {A}',
     sJuegos:'juegos', sJugados:'jugados', sPromesas:'promesas', sDias:'días',
     mAdd:'+ Añadir un juego', mAddCerrar:'− Cerrar', mHint:'Toca un juego para poner su marcador.',
@@ -580,7 +583,7 @@ var S={
     errYaJugado:'This game already has a score. That does not change now.',
     copiar:'Copy the link', copiado:'Copied',
     volverP:'← Back to the pledge', tabPProx:'Upcoming games', tabPRes:'Results', vacioProx:'No upcoming games posted yet. Check back soon.', vacioRes:'No results posted yet. Check back soon.', vacioPub:'This team has not posted any games yet. Check back soon.', vacioFiltro:'No games here.',
-    pubKick:'Schedule', prometer:'Pledge →', coachEntra:'Coach? Sign in here', copiarPub:'🔗 Copy the public page link', pubNo:'This schedule does not exist.', pJuegos:'The {N} games', pJuego:'The game',
+    pubKick:'Schedule', prometer:'Pledge →', coachEntra:'Coach? Sign in here', copiarPub:'🔗 Copy the public page link', depB:'🏀 Basketball', depV:'🏐 Volleyball', notaVol:'Volleyball: total points for the match, all sets added.', pubNo:'This schedule does not exist.', pJuegos:'The {N} games', pJuego:'The game',
     mJuegos:'Your {N} games', mJuego:'Your game', mDel:', {A} to {B}', mEl:', {A}',
     sJuegos:'games', sJugados:'played', sPromesas:'pledges', sDias:'days',
     mAdd:'+ Add a game', mAddCerrar:'− Close', mHint:'Tap a game to post its score.',
@@ -724,7 +727,7 @@ function entrar(auto){
     .then(function(x){
       var r = x.r; k = x.k;
       if(!r||!r.ok){ if(auto) olvidar(); return say(T('bad'),'bad'); }
-      CODE=k; JUEGOS=r.juegos||[]; PROGRAMA=r.campana||''; CAMP_ID=r.campana_id||null; PUB=false;
+      CODE=k; JUEGOS=r.juegos||[]; DEPORTE=r.deporte||''; PROGRAMA=r.campana||''; CAMP_ID=r.campana_id||null; PUB=false;
       document.body.classList.remove('publico');
       EQUIPO=r.equipo||'';
       recordar(k);
@@ -741,7 +744,7 @@ function entrar(auto){
 function recargar(){
   if(!CODE) return;
   rpc('juegos_del_codigo',{p_code:CODE})
-    .then(function(r){ if(r&&r.ok){ JUEGOS=r.juegos||[]; PROGRAMA=r.campana||PROGRAMA;
+    .then(function(r){ if(r&&r.ok){ JUEGOS=r.juegos||[]; DEPORTE=r.deporte||DEPORTE; PROGRAMA=r.campana||PROGRAMA;
                                     EQUIPO=r.equipo||EQUIPO;
                                     pintarJuegos(); } })
     .catch(function(){});
@@ -790,6 +793,9 @@ function pintarJuegos(){
   $('quien').textContent = PUB ? '' : T('quien').replace('{P}', PROGRAMA || '');
   $('hKick').textContent = PUB ? T('pubKick').toUpperCase() : 'ADMIN';
   $('hwho').textContent = PUB ? (EQUIPO || PROGRAMA) : PROGRAMA;
+  /* The team's sport, so pledges and scores are never mixed up. */
+  $('mDep').hidden = !DEPORTE;
+  $('mDep').textContent = DEPORTE === 'voleibol' ? T('depV') : DEPORTE ? T('depB') : '';
   $('mPub').textContent = T('copiarPub');
   $('mPub').style.display = (!PUB && CAMP_ID) ? '' : 'none';
   $('mCoach').querySelector('a').textContent = T('coachEntra');
@@ -948,7 +954,8 @@ function tocar(row){
     '<input class="ep" type="tel" inputmode="numeric" maxlength="3" value="' + (p2 == null ? '' : p2) + '" placeholder="' + esc(n2.slice(0, 9)) + '">' +
     '<button class="esave">' + esc(T('eGuardar')) + '</button>' +
     (g.jugado ? '<button class="edel">' + esc(T('eBorrar')) + '</button>' : '') +
-    '<button class="eclose">' + esc(T('eCerrar')) + '</button>';
+    '<button class="eclose">' + esc(T('eCerrar')) + '</button>' +
+    (DEPORTE === 'voleibol' ? '<span class="enota">' + esc(T('notaVol')) + '</span>' : '');
   row.appendChild(ed);
   var cajas = ed.querySelectorAll('.ep');
   ed.addEventListener('click', function(e){ e.stopPropagation() });
@@ -1111,6 +1118,8 @@ $('code').addEventListener('keydown',function(e){
    los juegos abiertos. El coach entra en la misma página con su
    código. Un teléfono donde el coach ya entró lo abre como Admin. */
 var PUB = false, CAMP_ID = null;
+/* 'baloncesto' or 'voleibol', from the team. Empty with the master code. */
+var DEPORTE = '';
 var PUB_ID = (location.search.match(/[?&]e=([0-9a-f-]{36})/i) || [])[1] || null;
 /* &t=jug opens the public page on Results (the pledge page links there). */
 if (PUB_ID && /[?&]t=jug(&|$)/.test(location.search)) FILTRO = 'jug';
@@ -1118,7 +1127,7 @@ var DESDE_G = PUB_ID ? ((location.search.match(/[?&]g=([0-9a-f-]{36})(&|$)/i) ||
 function abrirPublico(){
   rpc('calendario_publico', { p_campaign: PUB_ID }).then(function(r){
     if (!r || !r.ok){ say(T('pubNo'), 'bad'); return; }
-    PUB = true; JUEGOS = r.juegos || []; EQUIPO = r.equipo || ''; PROGRAMA = r.equipo || '';
+    PUB = true; JUEGOS = r.juegos || []; DEPORTE = r.deporte || ''; EQUIPO = r.equipo || ''; PROGRAMA = r.equipo || '';
     document.body.classList.add('publico');
     $('gate').className = 'gate hide'; $('app').className = '';
     pintarJuegos();
