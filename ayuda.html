@@ -445,7 +445,7 @@ var S={
 var LANG='es';
 try{ LANG=localStorage.getItem('cfh_lang')||localStorage.getItem('cp-lang')||
   localStorage.getItem('fc-lang')||
-  ((navigator.language||'').toLowerCase().indexOf('es')===0?'es':'en'); }catch(e){}
+  'es'; }catch(e){}
 function T(k,v){
   var t=(S[LANG]&&S[LANG][k]); if(t===undefined) t=S.es[k];
   if(v&&typeof t==='string') Object.keys(v).forEach(function(x){ t=t.split('{'+x+'}').join(v[x]) });
@@ -533,7 +533,7 @@ function idioma(){
   try{
     return localStorage.getItem('cfh_lang') || localStorage.getItem('cp-lang') ||
            localStorage.getItem('fc-lang') ||
-           ((navigator.language||'').toLowerCase().indexOf('es')===0 ? 'es':'en');
+           'es';
   }catch(e){ return 'es' }
 }
 var b = document.getElementById('hamb'),
