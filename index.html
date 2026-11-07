@@ -374,6 +374,8 @@ h1 em{font-style:normal;color:var(--orange)}
 .rpcPie{display:flex;flex-wrap:wrap;gap:.55rem;justify-content:center;
   padding:1rem 1.1rem .2rem;border-top:1px solid var(--linea)}
 .rpcPie .button{display:inline-block}
+.rpcPie.solo{padding:0;border:0;background:none;margin-top:1rem;justify-content:flex-start}
+.rpcPie.solo + .rpcNota{margin:.7rem 0 0;text-align:left}
 .rpcNota{margin:.85rem 1.1rem 1.15rem;color:var(--muted);font-size:.76rem;text-align:center}
 @media(max-width:520px){
   .rpcPie{flex-direction:column}
@@ -433,6 +435,15 @@ h1 em{font-style:normal;color:var(--orange)}
 .cuentaR{font-family:Archivo,sans-serif;font-weight:900;font-size:3rem;color:var(--orange);
   line-height:1.05}
 .cuentaPie{display:block;color:var(--claro);font-size:.9rem}
+.cuentaIm{color:#fff;font-size:1.06rem;line-height:1.45;margin:.8rem auto 0;max-width:34rem}
+.cuentaLista{list-style:none;padding:0;margin:1rem auto 0;max-width:26rem;text-align:left}
+.cuentaLista li{position:relative;padding:.45rem 0 .45rem 1.4rem;color:var(--claro);
+  border-bottom:1px solid var(--borde);font-size:.98rem}
+.cuentaLista li:last-child{border-bottom:0}
+.cuentaLista li::before{content:"";position:absolute;left:0;top:.95rem;width:8px;height:8px;
+  border-radius:50%;background:var(--orange)}
+.exMarca{text-align:center;margin:2.2rem auto 0}
+.exMarca p{margin:.5rem 0 0;font-family:Archivo,sans-serif;font-weight:900;font-size:1.25rem;color:#fff}
 @media(max-width:560px){
   .cuentaOp{font-size:1.5rem} .cuentaX{font-size:1.2rem} .cuentaR{font-size:2.3rem}
   .cuenta{padding:1.3rem 1rem 1.2rem}
@@ -440,6 +451,11 @@ h1 em{font-style:normal;color:var(--orange)}
 .priceSub{font-family:Archivo,sans-serif;font-weight:900;font-size:1.6rem;
   color:var(--ink);margin:.35rem 0 1.1rem}
 @media(max-width:560px){ .priceSub{font-size:1.3rem} }
+.precioPar{margin:1.4rem auto 0}
+.precioPar .priceSub{margin:0 0 .35rem}
+.precioPar .fine{margin-top:0}
+.precioNo{margin-top:1.6rem}
+.faqcta p b{color:var(--ink)}
 /* La muestra ocupa lo que le dejan. En el escritorio el paso 03 va
    a lo ancho de los dos de arriba, y una tarjeta de 30rem dentro de
    1120px dejaba 320px de aire muerto a cada lado. */
@@ -449,8 +465,7 @@ h1 em{font-style:normal;color:var(--orange)}
    cabría; apilándolos, la muestra se lee y los dos primeros pasos
    siguen cortos. */
 @media(min-width:58rem){
-  .pasos{grid-template-columns:repeat(2,1fr)}
-  .pasos .ancho{grid-column:1 / -1}
+  .pasos{grid-template-columns:repeat(3,1fr)}
 }
 /* El 03 va centrado entero —número, rótulo, línea y muestra— porque
    ocupa el ancho de los dos de arriba y alineado a la izquierda
@@ -461,9 +476,6 @@ h1 em{font-style:normal;color:var(--orange)}
    —nombre a la izquierda, dinero a la derecha— y centrarlas rompe
    la lectura de una tabla. Sólo su cabecera, sus botones y su nota
    van centrados, como ya estaban. */
-.pasos .ancho .rpcard{text-align:left}
-.pasos .ancho .rpcHead,.pasos .ancho .rpcTot{text-align:center}
-.pasos .ancho .rpcM,.pasos .ancho .rpcS{text-align:right}
 
 /* ── EN EL ESCRITORIO, EL 03 VA EN DOS COLUMNAS ──────────────────
    Centrado dejaba 240px de aire muerto a cada lado de la muestra
@@ -472,33 +484,33 @@ h1 em{font-style:normal;color:var(--orange)}
 
    En el teléfono no cambia nada: la rejilla sólo existe a partir de
    58rem, y debajo de eso todo sigue apilado y centrado. */
-@media(min-width:58rem){
-  /* Tres filas: las dos primeras se ajustan al texto y la tercera se
-     come el resto. Sin esto, los tres elementos de la izquierda se
-     repartían el alto de la muestra y quedaban separados por medio
-     paso de aire cada uno. */
-  .pasos .ancho{display:grid;grid-template-columns:1fr 1fr;
-    grid-template-rows:auto auto 1fr;gap:0 2.2rem;text-align:left}
-  .pasos .ancho .n,.pasos .ancho h3,.pasos .ancho p{grid-column:1;margin-left:0;margin-right:0}
-  .pasos .ancho .n{grid-row:1}
-  .pasos .ancho h3{grid-row:2}
-  .pasos .ancho p{grid-row:3;align-self:start}
-  .pasos .ancho .rpcard{grid-column:2;grid-row:1 / span 3;
-    margin:0;max-width:none;align-self:center}
-}
 /* Un enlace por paso, debajo de su texto: cada promesa de la columna
    se puede comprobar ahí mismo, sin bajar a buscarla. */
 /* No lleva .paso ni .ancho: no es un cuarto paso, y con .ancho
    heredaba la rejilla de dos columnas del 03 — el enlace se le
    montaba encima del párrafo. Es su propio bloque, a lo ancho. */
-.nocobra{grid-column:1 / -1;display:block;background:var(--navy);color:#fff;
-  border:1px solid var(--navy);border-radius:16px;padding:1.4rem 1.3rem}
-.nocobra h3{color:#fff;margin:0 0 .5rem;font-size:1.25rem}
+.nocobra{background:var(--navy);color:#fff;border-radius:16px;padding:1.6rem 1.4rem;
+  margin-top:14px;text-align:center}
+.nocobra h3{font-family:Archivo,sans-serif;font-weight:900;color:#fff;margin:0 0 .6rem;font-size:1.45rem}
+.nocobra p{max-width:40rem;margin:.5rem auto 0}
+.nocobra .ncLead{color:#fff;font-weight:700}
+.nocobra .ncMarca{font-family:Archivo,sans-serif;font-weight:900;color:var(--orange);margin-top:1rem}
+.paso p + p{margin-top:.5rem}
+.pasoSep{color:var(--muted);margin:0 .35rem}
 .nocobra p{color:var(--claro)}
 .nocobra .pasoLink a{color:#fff;text-decoration-color:var(--orange)}
 .nocobra .pasoLink a:hover{color:var(--orange)}
 .cgP{max-width:36rem;margin:0 auto;color:var(--muted);line-height:1.55}
-.cgGym a{color:inherit}
+.cgLead{font-family:Archivo,sans-serif;font-weight:800;font-size:1.15rem;color:var(--ink);
+  margin:1rem auto .6rem;max-width:36rem}
+.cgTres{font-family:Archivo,sans-serif;font-weight:900;font-size:1.2rem;color:var(--orange);
+  margin:1rem auto}
+.cgGratis{max-width:36rem;margin:1.8rem auto 0;padding:1.3rem 1.2rem;border:2px solid var(--orange);
+  border-radius:16px;background:rgba(255,122,24,.07)}
+.cgGratisH{font-family:Archivo,sans-serif;font-weight:900;font-size:1.45rem;line-height:1.2;
+  color:var(--ink);margin:0}
+.cgGratisP{color:var(--muted);margin:.55rem 0 0}
+@media(max-width:560px){ .cgGratisH{font-size:1.2rem} }
 .cgYa{margin-bottom:-.3rem}
 .faqcta{margin:2.2rem auto 0;max-width:34rem;text-align:center;
   border-top:1px solid var(--linea);padding-top:1.6rem}
@@ -763,78 +775,42 @@ button.lang{padding:0 10px;font-size:.8rem}
 <h2 data-i="howH2">Así de sencillo.</h2>
 </div>
 <div class="pasos">
-<!-- INVITA Y PROMETE ERAN DOS PASOS CON EL MISMO ENLACE, y eso es
-     la señal de que son uno: el jugador manda la hoja y el padrino
-     la llena. Dos tarjetas para un solo movimiento alargaban la
-     sección y repetían el enlace. -->
 <article class="paso">
 <div class="n num">01</div>
-<h3 data-i="q1w">Invita y promete</h3>
-<p data-i="q1p">Los jugadores comparten el enlace con sus padrinos, y cada padrino
-  elige cuánto prometer por punto.</p>
+<h3 data-i="q1w">Consigue padrinos</h3>
+<p data-i="q1p">Los jugadores invitan a familiares, amigos y patrocinadores a prometer una
+  cantidad por cada punto que anote su equipo en un juego programado.</p>
 <p class="pasoLink"><a href="prometer.html?ejemplo=1" data-i="vHoja1">Ver una hoja de promesa &rarr;</a></p>
 </article>
 <article class="paso">
 <div class="n num">02</div>
-<h3 data-i="q3w">Juega</h3>
-<p data-i="q3p">El equipo juega y se publica el marcador final. A cada padrino le llega
-  UN aviso con el marcador y lo que dio su promesa &mdash; y ése es el único correo que
-  mandamos: sin enlace de pago y sin recordatorios.</p>
+<h3 data-i="q3w">Juega y anota</h3>
+<p data-i="q3p">El equipo juega. Una vez publicado el marcador final, cada padrino recibe un
+  solo correo con el resultado y el valor de su promesa.</p>
+<p data-i="q3p2">Sin enlaces de pago. Sin recordatorios.</p>
 <p class="pasoLink"><a href="aviso.html" data-i="vAviso">Ver el aviso al padrino &rarr;</a></p>
 </article>
-<article class="paso ancho">
+<article class="paso">
 <div class="n num">03</div>
-<h3 data-i="q4w">Reporte</h3>
-<p data-i="q4p">Cada Punto Cuenta calcula las promesas y entrega el reporte.</p>
-<!-- EL REPORTE, ENSEÑADO Y NO EXPLICADO.
-
-     El paso 04 dice que entregamos un reporte. Esto lo enseña: tres
-     filas y un total, que es lo que convence a quien decide por un
-     programa. Un enlace que hay que pulsar para creerse algo es una
-     prueba mucho más débil que ver $197.20 y tres nombres.
-
-     Lo que NO vuelve son los párrafos: el rebote, la corrección, el
-     mínimo, las cuatro maneras de ver el reporte. Eso está en el
-     reporte completo, a un clic. Aquí sólo la muestra. -->
-<div class="rpcard">
-  <div class="rpcHead">
-    <b data-i="rpcJuego">Canóvanas 15U vs. Arecibo</b>
-    <span data-i="rpcMeta">68 puntos &middot; 12 padrinos &middot; Ejemplo</span>
-  </div>
-  <div class="rpcTot">
-    <span data-i="rpcTotL">Total de promesas que cualifican</span>
-    <b>$197.20</b>
-  </div>
-  <table class="rpcTab">
-    <tr><td class="rpcN">María Rivera</td><td class="rpcM">$17.00</td>
-        <td class="rpcS" data-i="rpcE1">Avisada</td></tr>
-    <tr><td class="rpcN">Rosa Vega</td><td class="rpcM">$20.40</td>
-        <td class="rpcS mal" data-i="rpcE2">Aviso fallido</td></tr>
-    <tr class="rpcCero"><td class="rpcN">Tía Carmen</td><td class="rpcM">$0.00</td>
-        <td class="rpcS" data-i="rpcE3">No cualifica</td></tr>
-  </table>
-  <div class="rpcPie">
-    <a class="button" href="reporte.html?ejemplo=1" data-i="verRep">Ver reporte completo &rarr;</a>
-    <a class="button linea" href="reporte-es.csv" download data-i="verCsv">Bajar CSV &rarr;</a>
-  </div>
-  <p class="rpcNota" data-i="rpcNota">Ejemplo con datos ficticios. Reportes en español e inglés.</p>
+<h3 data-i="q4w">Recibe tu reporte</h3>
+<p data-i="q4p">Cada Punto Cuenta calcula automáticamente el valor de todas las promesas y
+  entrega un reporte completo a tu organización.</p>
+<p data-i="q4p2">Disponible en español e inglés.</p>
+<p class="pasoLink"><a href="reporte.html?ejemplo=1" data-i="verRep">Ver reporte completo &rarr;</a>
+  <span class="pasoSep">&middot;</span>
+  <a href="reporte-es.csv" download data-i="verCsv">Descargar CSV &rarr;</a></p>
+</article>
 </div>
-</article>
 
-<!-- NO COBRAMOS, dicho donde se acaban los pasos.
-
-     Es la primera pregunta de quien decide por un programa —¿por
-     dónde pasa el dinero?— y la respuesta corta es que no pasa por
-     aquí. Tenía una sección propia de ocho párrafos; cabe en cuatro
-     líneas, y la hoja entera sigue en custodia.html para quien la
-     quiera leer antes de firmar. -->
-<article class="nocobra">
-<h3 data-i="ncH">No cobramos.</h3>
-<p data-i="ncP">Cada Punto Cuenta anota las promesas y hace la cuenta. El dinero no pasa
-  por nosotros: no lo procesamos, no lo guardamos y no lo reclamamos. Cada padrino le
-  paga a tu programa directo, por donde ustedes ya hablan.</p>
-<p class="pasoLink"><a href="custodia.html" data-i="ncL">Cómo funciona el dinero &rarr;</a></p>
-</article>
+<!-- TUS FONDOS. TU CONTROL. Declaración fija, justo debajo de los
+     tres pasos, y NO un cuarto paso: el dinero no es una tarea que la
+     plataforma haga. Pedida así por el dueño el 6 de noviembre de 2026. -->
+<div class="nocobra">
+<h3 data-i="ncH">Tus fondos. Tu control.</h3>
+<p class="ncLead" data-i="ncP">Cada Punto Cuenta administra las promesas, no el dinero.</p>
+<p data-i="ncP2">No recibimos, procesamos, guardamos ni cobramos las aportaciones. Cada padrino
+  aporta directamente a tu organización, que mantiene el control absoluto de sus fondos.</p>
+<p class="ncMarca">We manage the pledges. You manage the proceeds.</p>
 </div>
 
 </div>
@@ -846,22 +822,37 @@ button.lang{padding:0 10px;font-size:.8rem}
 <section class="section oscuro" id="example">
 <div class="wrap">
 <div class="cab">
-<div class="eyebrow" data-i="exEye">Un ejemplo</div>
-<h2 data-i="exH2">Un juego. Cada punto cuenta.</h2>
+<div class="eyebrow" data-i="exEye">Un juego. Cada punto cuenta.</div>
+<h2 data-i="exH2">Un punto en la cancha. Muchas promesas detrás.</h2>
+<p class="lede" data-i="exP1">Antes de cada juego programado, los jugadores invitan a familiares,
+  amigos y patrocinadores a prometer una pequeña cantidad por cada punto que anote su equipo.</p>
+<p class="lede" data-i="exP2">No importa quién enceste. Cada punto suma para todos.
+  Y mientras más padrinos se unan, mayor será el valor de cada punto.</p>
 </div>
 
 <div class="cuenta">
-  <p class="cuentaL">
-    <span class="cuentaOp">25&cent;</span>
-    <span class="cuentaX">&times;</span>
-    <span class="cuentaOp" data-i="exPts">68 puntos</span>
-    <span class="cuentaX">=</span>
-    <span class="cuentaR">$17.00</span>
-  </p>
-  <span class="cuentaPie" data-i="exUno">La promesa de un padrino.</span>
+  <span class="cuentaK" data-i="exPoder">El poder de muchos</span>
+  <p class="cuentaIm" data-i="exImagina">Imagina que 20 padrinos prometen solo 25&cent; por punto
+    y el equipo anota 68 puntos.</p>
+  <ul class="cuentaLista">
+    <li data-i="exL1">25&cent; por punto, por padrino.</li>
+    <li data-i="exL2">$5.00 prometidos por cada punto entre todos.</li>
+    <li data-i="exL3">68 puntos anotados por el equipo.</li>
+  </ul>
+  <p class="cuentaL"><span class="cuentaR">$340</span>
+    <span class="cuentaOp" data-i="exEnProm">en promesas</span></p>
+  <span class="cuentaPie" data-i="exUno">Un solo juego. 20 padrinos. 68 puntos.</span>
 </div>
 
-<p class="escpie" data-i="cPend"><b>Prometido no es cobrado.</b></p>
+<p class="escpie" data-i="ex50">Ahora imagina 50 padrinos: <b>$850 en promesas</b> por ese mismo juego.</p>
+<p class="escpie" data-i="exMult"><b>Cada padrino cuenta. Cada punto multiplica.</b></p>
+<p class="escpie" data-i="exCierre">Los jugadores consiguen las promesas. El equipo juega.
+  Cada padrino conoce el resultado y el total de su compromiso.</p>
+<div class="exMarca">
+  <div class="eyebrow">Cada Punto Cuenta</div>
+  <p>We manage the pledges. You manage the proceeds.</p>
+</div>
+<p class="escpie" data-i="cPend">Las cantidades son promesas, no dinero cobrado.</p>
 </div>
 </section>
 
@@ -871,23 +862,30 @@ button.lang{padding:0 10px;font-size:.8rem}
 <section class="section blanco" id="precio">
 <div class="wrap close">
 <div class="eyebrow" data-i="priceLabel">Cuánto cuesta</div>
-<h2 data-i="priceTitle">$1 por promesa que cualifica.</h2>
-<p class="priceSub" data-i="priceSub">Máximo $99 por juego.</p>
+<h2 data-i="priceTitle">Precios simples. Sin sorpresas.</h2>
 <!-- QUÉ CUALIFICA, EN UNA LÍNEA. No es un ejemplo ni una tabla: sin
      ella, «$1 por promesa que cualifica» no se puede leer. El padrino
      de cinco centavos tiene que poder saber que su promesa no cuesta
      nada. La regla no cambia — es la misma que corre en la base. -->
-<p class="fine" data-i="priceQ">Una promesa cualifica cuando su valor final llega a $5 o
-  más, con el marcador ya publicado.</p>
-<p class="fine" data-i="priceNo">Sin suscripción. Sin mínimo de licencia.</p>
+<div class="precioPar">
+  <p class="priceSub" data-i="priceUno">$1 por cada promesa que cualifique.</p>
+  <p class="fine" data-i="priceQ">Una promesa cualifica cuando su valor final alcanza $5 o más,
+    una vez publicado el resultado del juego.</p>
+</div>
+<div class="precioPar">
+  <p class="priceSub" data-i="priceSub">Máximo $99 por juego.</p>
+  <p class="fine" data-i="priceTope">No importa cuántas promesas consiga tu equipo, nunca pagarás
+    más de $99 por juego.</p>
+</div>
+<p class="fine precioNo" data-i="priceNo"><b>Sin suscripción. Sin costo inicial. Sin cargos sorpresa.</b></p>
 
 <!-- LA PUERTA A LAS PREGUNTAS. El precio es donde a un director de
      programa le salen las dudas que no caben en una portada —cuándo
      se paga, qué pasa si no, qué reciben los padrinos— y hasta ahora
      el único camino a las respuestas era el enlace del menú. -->
 <div class="faqcta">
-  <p data-i="faqP">¿Te quedan preguntas? Las que hacen los entrenadores y los padrinos,
-    contestadas completas.</p>
+  <p data-i="faqP"><b>¿Tienes preguntas?</b><br>Consulta las respuestas a las preguntas más
+    frecuentes de entrenadores, organizaciones y padrinos.</p>
   <a class="button linea" href="ayuda.html" data-i="faqB">Ver las preguntas &rarr;</a>
 </div>
 </div>
@@ -907,23 +905,30 @@ button.lang{padding:0 10px;font-size:.8rem}
      ══════════════════════════════════════════════════════════════════ -->
 <section class="section" id="cognitivo">
 <div class="wrap close">
-<div class="eyebrow" data-i="cgEye">Cognitivo Gym</div>
-<h2 data-i="cgH2">The Reset: entrena la próxima jugada.</h2>
-<p class="cgP" data-i="cgP">Una rutina corta —una señal, una respiración, una frase— que tus
-  jugadores practican en cinco momentos de juego. En baloncesto y en voleibol.</p>
-<p class="fine" data-i="cgFree"><b>Gratis para los equipos inscritos.</b> Con el código de tu
-  equipo, tus jugadores lo abren en su teléfono.</p>
+<div class="eyebrow" data-i="cgEye">Cognitivo Gym &middot; Beneficio exclusivo</div>
+<h2 data-i="cgH2">The Reset: la próxima jugada es la que cuenta.</h2>
+<p class="cgLead" data-i="cgLead">Después de un error, lo importante es cómo respondes.</p>
+<p class="cgP" data-i="cgP">The Reset ayuda a los jugadores a practicar una rutina sencilla para
+  recuperar la concentración y prepararse para la próxima jugada.</p>
+<p class="cgTres" data-i="cgTres">Una señal. Una respiración. Una frase.</p>
+<p class="cgP" data-i="cgP2">Cinco situaciones de juego para practicar una respuesta que, con la
+  repetición, se vuelva automática.</p>
+<!-- GRATIS, EN GRANDE: es la razón de la sección. -->
+<div class="cgGratis">
+  <p class="cgGratisH" data-i="cgFree">Gratis para los equipos inscritos en Cada Punto Cuenta.</p>
+  <p class="cgGratisP" data-i="cgFreeP">Cada jugador puede acceder desde su teléfono utilizando el
+    código de su equipo.</p>
+</div>
 <div class="ctas">
 <a class="button" href="equipo.html" data-i="cgCta">Inscribir mi equipo</a>
 </div>
 <!-- Quien ya tiene código escoge su deporte: la misma página de
      The Reset, con los momentos de baloncesto o de voleibol. -->
-<p class="fine cgYa" data-i="cgYa">¿Ya tienes tu código? Escoge tu deporte:</p>
+<p class="fine cgYa" data-i="cgYa">¿Ya tienes tu código? Elige tu deporte:</p>
 <div class="ctas">
 <a class="button linea" href="https://hooporia.mobi/005-reset.html" data-i="cgBk">Baloncesto &rarr;</a>
 <a class="button linea" href="https://hooporia.mobi/005-reset.html?d=volleyball" data-i="cgVb">Voleibol &rarr;</a>
 </div>
-<p class="fine cgGym"><a href="https://hooporia.mobi" data-i="cgGym">Ver el Cognitivo Gym &rarr;</a></p>
 </div>
 </section>
 
@@ -1009,11 +1014,21 @@ function licenciaDe(n){ return n > 0 ? Math.min(n, FEE.tope) * FEE.porPromesa : 
    ══════════════════════════════════════════════════════════════════ */
 const translations={
 en:{
-cPend:'<b>Prometido no es cobrado.</b>',
-exEye:'An example',
-exH2:'One game. Every point counts.',
-exPts:'68 points',
-exUno:'One padrino&rsquo;s pledge.',
+cPend:'The amounts are pledges, not money collected.',
+exEye:'One game. Every point counts.',
+exH2:'One point on the court. Many pledges behind it.',
+exP1:'Before each scheduled game, players invite family, friends and sponsors to pledge a small amount for every point their team scores.',
+exP2:'It doesn&rsquo;t matter who scores. Every point adds up for everyone. And the more padrinos join, the more each point is worth.',
+exPoder:'The power of many',
+exImagina:'Imagine 20 padrinos pledge just 25&cent; per point and the team scores 68 points.',
+exL1:'25&cent; per point, per padrino.',
+exL2:'$5.00 pledged for every point, all together.',
+exL3:'68 points scored by the team.',
+exEnProm:'in pledges',
+exUno:'One game. 20 padrinos. 68 points.',
+ex50:'Now imagine 50 padrinos: <b>$850 in pledges</b> for that same game.',
+exMult:'<b>Every padrino counts. Every point multiplies.</b>',
+exCierre:'The players bring in the pledges. The team plays. Every padrino learns the result and the total of their pledge.',
 footer:'We manage the pledges. You manage the proceeds.',
 lemaH:'Your team plays. Every point helps raise funds.',
 lemaP:'Turn the games already on your schedule into fundraising opportunities for your sports program.',
@@ -1032,42 +1047,42 @@ navCta:'Sign up my team',
 navMine:'Admin',
 navFaq:'Questions',
 priceLabel:'What it costs',
-priceNo:'No subscription. No minimum licence.',
-priceQ:'A pledge qualifies when its final value reaches $5 or more, once the score is posted.',
+priceNo:'<b>No subscription. No upfront cost. No surprise charges.</b>',
+priceQ:'A pledge qualifies when its final value reaches $5 or more, once the game result is posted.',
+priceUno:'$1 per qualifying pledge.',
 priceSub:'$99 maximum per game.',
-priceTitle:'$1 per qualifying pledge.',
-q1p:'The players share the link with their padrinos, and each padrino chooses how much to pledge per point.',
-q1w:'Invite and pledge',
-q3p:'The team plays and the final score is posted. Each padrino gets ONE notice with the score and what his pledge came to — and that is the only email we send: no payment link and no reminders.',
-q3w:'Play',
-q4p:'Cada Punto Cuenta works out the pledges and delivers the report.',
-q4w:'Report',
+priceTope:'No matter how many pledges your team gets, you will never pay more than $99 per game.',
+priceTitle:'Simple pricing. No surprises.',
+q1p:'The players invite family, friends and sponsors to pledge an amount for every point their team scores in a scheduled game.',
+q1w:'Get padrinos',
+q3p:'The team plays. Once the final score is posted, each padrino gets a single email with the result and the value of their pledge.',
+q3w:'Play and score',
+q4p:'Cada Punto Cuenta automatically works out the value of every pledge and delivers a complete report to your organization.',
+q4w:'Get your report',
 vHoja1:'See a pledge sheet &rarr;',
 vAviso:'See the padrino&rsquo;s notice &rarr;',
-faqP:'Still have questions? The ones coaches and padrinos ask, answered in full.',
+faqP:'<b>Have questions?</b><br>See the answers to the questions coaches, organizations and padrinos ask most.',
 faqB:'See the questions &rarr;',
-ncH:'We do not collect.',
-ncP:'Cada Punto Cuenta records the pledges and does the arithmetic. The money does not pass through us: we do not process it, hold it or claim it. Each padrino pays your program directly, however you already talk to them.',
-ncL:'How the money works &rarr;',
-rpcJuego:'Canóvanas 15U vs. Arecibo',
-rpcMeta:'68 points &middot; 12 padrinos &middot; Example',
-rpcTotL:'Total of qualifying pledges',
-rpcE1:'Notified',
-rpcE2:'Notice failed',
-rpcE3:'Does not qualify',
-rpcNota:'Example with fictional data. Reports in Spanish and English.',
+ncH:'Your funds. Your control.',
+ncP:'Cada Punto Cuenta manages the pledges, not the money.',
 verRep:'See full report &rarr;',
 verCsv:'Download CSV &rarr;',
+q3p2:'No payment links. No reminders.',
+q4p2:'Available in Spanish and English.',
+ncP2:'We do not receive, process, hold or collect the contributions. Each padrino gives directly to your organization, which keeps full control of its funds.',
 zCta1:'Sign up my team',
-cgEye:'Cognitivo Gym',
-cgH2:'The Reset: train the next play.',
-cgP:'One short routine (a cue, one breath, one line) that your players practise through five game moments. In basketball and in volleyball.',
-cgFree:'<b>Free for registered teams.</b> With your team code, your players open it on their phones.',
+cgEye:'Cognitivo Gym &middot; Exclusive benefit',
+cgH2:'The Reset: the next play is the one that counts.',
+cgP:'The Reset helps players practise a simple routine to regain focus and get ready for the next play.',
+cgFree:'Free for teams registered with Cada Punto Cuenta.',
 cgCta:'Sign up my team',
-cgYa:'Already have your code? Pick your sport:',
+cgYa:'Already have your code? Choose your sport:',
 cgBk:'Basketball &rarr;',
 cgVb:'Volleyball &rarr;',
-cgGym:'See the Cognitivo Gym &rarr;',
+cgLead:'After a mistake, what matters is how you respond.',
+cgTres:'One cue. One breath. One phrase.',
+cgP2:'Five game situations to practise a response that, with repetition, becomes automatic.',
+cgFreeP:'Every player can open it on their phone with the team code.',
 zEye:'Sign up your team',
 zH2:'Your games are already scheduled. Make every point count.'
 }
