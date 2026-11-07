@@ -125,7 +125,7 @@ console.log('\n2 · La portada lo dice en una línea, sin tabla\n');
      padrino de cinco centavos no sabría que la suya no cuesta nada.
      Era un párrafo con ejemplo; desde que la portada se vació el 31
      de octubre de 2026 es una línea, y con eso basta. */
-  si(/llega a \$5 o/.test(idx), 'pero sí dice qué hace que una promesa cualifique');
+  si(/alcanza \$5 o/.test(idx), 'pero sí dice qué hace que una promesa cualifique');
   si(/Máximo \$99 por juego/.test(idx), 'y el tope por juego');
 
   /* QUÉ PASA SI NO SE PAGA YA NO ESTÁ EN LA PORTADA, y es correcto:
