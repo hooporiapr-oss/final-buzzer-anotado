@@ -293,7 +293,7 @@ body.warm .play-container{min-height:0}
 
    A run used to finish in place: the board stayed up, the message
    line turned into GAME OVER and the button at the bottom quietly
-   became RESET. The run was over but the screen still looked
+   became play again. The run was over but the screen still looked
    like a game in progress, and the score was a number inside a
    sentence rather than the thing you were being shown.
 
@@ -339,7 +339,7 @@ body.warm .play-container{min-height:0}
    a message line.
 
    It ends on its own screen now, the way Replay does: the longest
-   sequence big in the middle, the score beside it, and RESET.
+   sequence big in the middle, the score beside it, and play again.
    ══════════════════════════════════════════════════════ */
 #screen-end{position:fixed;inset:0;display:none;flex-direction:column;
   align-items:center;justify-content:center;text-align:center;
@@ -372,7 +372,7 @@ body.warm .play-container{min-height:0}
 /* NO BUTTON ON THE BOARD, like Replay.
    It had exactly two jobs and neither is left: starting a run, which
    LET'S GO on the mode screen does, and starting the next one after a
-   game over, which RESET on the end screen does. All it did
+   game over, which play again on the end screen does. All it did
    during a turn was sit at the bottom of the screen, disabled, under
    the thumb you are tapping with. */
 .play-action-btn{display:none!important}
@@ -558,7 +558,7 @@ body.warm .play-container{min-height:0}
       <div class="final-stat-val" id="finalRounds">0</div>
     </div>
   </div>
-  <button class="final-again" id="finalAgain">&#9654; RESET</button>
+  <button class="final-again" id="finalAgain">&#9654; play again</button>
   <a class="final-back" href="fortress-mobile-hub.html">&larr; Back</a>
 </div>
 
@@ -569,7 +569,7 @@ body.warm .play-container{min-height:0}
     <div class="final-stat-cell"><div class="final-stat-label">Score</div><div class="final-stat-val" id="endScore">0</div></div>
     <div class="final-stat-cell"><div class="final-stat-label">Rounds</div><div class="final-stat-val" id="endRounds">0</div></div>
   </div>
-  <button class="again-btn" id="endAgainBtn">&#9654; RESET</button>
+  <button class="again-btn" id="endAgainBtn">&#9654; play again</button>
   <a class="end-back" href="fortress-mobile-hub.html">&larr; Back to the gym</a>
 </div>
 
@@ -1318,7 +1318,7 @@ function renderPlayTierDots(){}
 function updatePlayUI(){
     /* In the warm-up the number on screen is the STATION total, not
        this attempt's. They are the same thing until the first miss,
-       and after it they are not: the attempt resets to zero while the
+       and after it they are not: the attempt play agains to zero while the
        banked points are untouched. Showing the attempt would tell a
        student their minute just went back to nothing — which is both
        false and the exact moment they most need to see it did not.
@@ -1416,7 +1416,7 @@ function hideTimer(){stopTimerBar();$('timerWrap').classList.remove('active')}
    it: there a miss is banked and the next attempt starts, with the
    minute still running, so the run is not over at all.
 
-   RESET resets and starts straight away, count-in and all, so
+   play again play agains and starts straight away, count-in and all, so
    going again takes one press from here just as it does from the
    mode screen. */
 function showFinalRun(){
@@ -1538,7 +1538,7 @@ function roundComplete(success){
 /* ── THE END SCREEN ───────────────────────────────────────────────
    Replay's shape: the run leaves the board and lands on a screen of
    its own, with the longest sequence big, the score beside it and
-   RESET under them. RESET goes back to the mode screen, so
+   play again under them. play again goes back to the mode screen, so
    the next run can be a different mode without starting over.
 
    Two runs never see it. A warm-up station banks a miss and deals
@@ -1609,7 +1609,7 @@ function autoNextRound(){
     $('playActionBtn').disabled=true;
     startRound();
 }
-function resetRound(){
+function play againRound(){
     clearPlayTimeouts();isPlaying=false;canTap=false;playerIndex=0;pattern=[];hideTimer();stopFullStrobe();
     playCells.forEach(function(c){c.className='play-cell';c.querySelector('.cell-num').textContent=''});
     $('playMessage').textContent=t('tapLetsGo');
