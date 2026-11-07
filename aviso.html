@@ -75,8 +75,13 @@ h1{font-size:clamp(1.6rem,5vw,2.2rem);line-height:1.12;margin:.4rem 0 .6rem;
 .asunto{font-weight:800;font-size:1rem;margin-top:2px}
 
 /* El cuerpo: mismas medidas que el correo de verdad. */
-.cuerpo{padding:22px 18px 10px;font-size:15px;line-height:1.6;color:#12202E}
+.cuerpo{padding:22px 18px 10px;font-size:16px;line-height:1.55;color:#12202E;overflow-wrap:anywhere}
 .cuerpo p{margin:0 0 14px}
+/* El total, solo y en grande: igual que en el correo. */
+.cuerpo .total{background:#F4F6F8;border-radius:12px;padding:14px 16px}
+.totalK{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5A6B7C}
+.totalN{display:block;font-size:30px;font-weight:800;line-height:1.2}
+.cuerpo .gris{color:#5A6B7C;font-size:13px}
 .cuerpo .pie{color:#5A6B7C;font-size:.8rem;margin-top:22px;
   border-top:1px solid #D7E0E8;padding-top:14px}
 
@@ -122,11 +127,14 @@ footer a{color:#fff}
     <div class="cuerpo">
       <p data-i="c1">Hola María,</p>
       <p data-i="c2"><b>Team Demo</b> anotó <b>68 puntos</b> contra Arecibo (68–61).</p>
-      <p data-i="c3">Prometiste $0.25 por punto, así que tu promesa es de <b>$17.00</b>.</p>
-      <p data-i="c4">Ese dinero se lo pagas directamente a Team Demo: <b>ATH Móvil al
-        787-555-0100</b>. Si algo no te cuadra, escríbele a John Burgos:
-        entrenador@ejemplo.com. Cada Punto Cuenta no cobra pagos y no te va a escribir
-        otra vez por esto, salvo que el marcador se corrija.</p>
+      <p data-i="c3">Prometiste $0.25 por punto.</p>
+      <p class="total"><span class="totalK" data-i="cTotK">Tu promesa</span>
+        <span class="totalN">$17.00</span></p>
+      <p data-i="c4">Ese dinero se lo pagas directamente a Team Demo: <br><b>ATH Móvil al
+        787-123-4567</b></p>
+      <p data-i="c5">¿Algo no te cuadra? Escribe a entrenador@ejemplo.com.</p>
+      <p class="gris" data-i="c6">Cada Punto Cuenta no cobra pagos y no te va a escribir otra
+        vez por esto, salvo que el marcador se corrija.</p>
       <p class="pie" data-i="cpie">Cada Punto Cuenta · Gostar Digital LLC · Puerto Rico</p>
     </div>
   </div>
@@ -158,8 +166,11 @@ var EN = {
   asunto:'Team Demo scored 68 — your pledge',
   c1:'Hi María,',
   c2:'<b>Team Demo</b> scored <b>68 points</b> against Arecibo (68–61).',
-  c3:'You pledged $0.25 a point, so your pledge comes to <b>$17.00</b>.',
-  c4:'You pay that directly to Team Demo: <b>ATH Móvil to 787-555-0100</b>. If something does not look right, write to John Burgos: entrenador@ejemplo.com. Cada Punto Cuenta does not take payments and will not write to you about this again, unless the final score is corrected.',
+  c3:'You pledged $0.25 a point.',
+  cTotK:'Your pledge',
+  c4:'You pay that directly to Team Demo: <br><b>ATH Móvil al 787-123-4567</b>',
+  c5:'Something does not look right? Write to entrenador@ejemplo.com.',
+  c6:'Cada Punto Cuenta does not take payments and will not write to you about this again, unless the final score is corrected.',
   cpie:'Cada Punto Cuenta · Gostar Digital LLC · Puerto Rico',
   nota:'<b>Example with fictional data.</b> The notice goes out in Spanish or English, depending on the padrino. A cap, if one was set, gets its own line: what it would have come to, and what it is with the cap applied.',
   volver:'&larr; Cada Punto Cuenta'
