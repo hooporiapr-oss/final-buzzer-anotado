@@ -293,7 +293,7 @@ body.warm .play-container{min-height:0}
 
    A run used to finish in place: the board stayed up, the message
    line turned into GAME OVER and the button at the bottom quietly
-   became PLAY AGAIN. The run was over but the screen still looked
+   became RESET. The run was over but the screen still looked
    like a game in progress, and the score was a number inside a
    sentence rather than the thing you were being shown.
 
@@ -339,7 +339,7 @@ body.warm .play-container{min-height:0}
    a message line.
 
    It ends on its own screen now, the way Replay does: the longest
-   sequence big in the middle, the score beside it, and PLAY AGAIN.
+   sequence big in the middle, the score beside it, and RESET.
    ══════════════════════════════════════════════════════ */
 #screen-end{position:fixed;inset:0;display:none;flex-direction:column;
   align-items:center;justify-content:center;text-align:center;
@@ -372,7 +372,7 @@ body.warm .play-container{min-height:0}
 /* NO BUTTON ON THE BOARD, like Replay.
    It had exactly two jobs and neither is left: starting a run, which
    LET'S GO on the mode screen does, and starting the next one after a
-   game over, which PLAY AGAIN on the end screen does. All it did
+   game over, which RESET on the end screen does. All it did
    during a turn was sit at the bottom of the screen, disabled, under
    the thumb you are tapping with. */
 .play-action-btn{display:none!important}
@@ -1416,7 +1416,7 @@ function hideTimer(){stopTimerBar();$('timerWrap').classList.remove('active')}
    it: there a miss is banked and the next attempt starts, with the
    minute still running, so the run is not over at all.
 
-   PLAY AGAIN resets and starts straight away, count-in and all, so
+   RESET resets and starts straight away, count-in and all, so
    going again takes one press from here just as it does from the
    mode screen. */
 function showFinalRun(){
@@ -1538,7 +1538,7 @@ function roundComplete(success){
 /* ── THE END SCREEN ───────────────────────────────────────────────
    Replay's shape: the run leaves the board and lands on a screen of
    its own, with the longest sequence big, the score beside it and
-   PLAY AGAIN under them. PLAY AGAIN goes back to the mode screen, so
+   RESET under them. RESET goes back to the mode screen, so
    the next run can be a different mode without starting over.
 
    Two runs never see it. A warm-up station banks a miss and deals
