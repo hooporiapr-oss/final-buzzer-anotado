@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- SIN PUERTA. Estas cuatro páginas llegaron del gimnasio, donde
-     cada juego empieza comprobando una llave que pone la portada del
-     gimnasio y rebotando a index.html si no está. Aquí no hay portada
-     de gimnasio ni llave que poner, así que ese guardia mandaba cada
-     set del scrimmage a una página que no es suya. El scrimmage tiene
-     su propia puerta, que es fortress-vr.html. -->
+<script>
+if (localStorage.getItem('rct-mobile-pass') !== '1') {
+  window.location.replace('index.html');
+}
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>THE RECALL | Ritnome</title>
@@ -231,8 +230,14 @@ body.warm .play-screen{padding-top:calc(var(--nav-height) + 46px + env(safe-area
 
 /* The hand-off. Two and a bit seconds of black with the next station's
    name on it — long enough to read, short enough that nobody reaches
-   for the screen. Nothing here is tappable on purpose: the warm-up
-   runs itself from the first station to the last. */
+   for the screen.
+
+   IT USED TO RUN ITSELF from here, on a 2.2 second timer, and this
+   comment used to say nothing was tappable on purpose. A station now
+   ends on a button: the run stops between stations and the next one
+   starts when the player says so. Those seconds are his — he has
+   just played a minute flat out and the next minute starts the
+   moment he taps. */
 #warmNext{
   position:fixed;inset:0;z-index:2500;display:none;
   flex-direction:column;align-items:center;justify-content:center;
@@ -252,6 +257,15 @@ body.warm .play-screen{padding-top:calc(var(--nav-height) + 46px + env(safe-area
 .wn-dot.done{background:#00D9A5}
 .wn-dot.now{background:var(--orange);transform:scale(1.35);
   box-shadow:0 0 10px var(--orange)}
+.wn-go{margin-top:28px;padding:16px 36px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,var(--gold),var(--orange));color:#1a0f0f;
+  font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;
+  text-transform:uppercase;cursor:pointer}
+.wn-go:active{transform:scale(.98)}
+/* BORN SEALED. The tap that was chasing a cell a second ago must not
+   land on this button and start the next station before the player
+   has read his own score. */
+.wn-go[disabled]{opacity:.45}
 
 /* 3 · 2 · 1 — the lead-in to a station.
    Ported from The Fortress, which already had it: the same 7rem gold
@@ -362,14 +376,6 @@ body.warm .play-container{min-height:0}
    during a turn was sit at the bottom of the screen, disabled, under
    the thumb you are tapping with. */
 .play-action-btn{display:none!important}
-
-/* El botón de la pantalla entre sets. Nace apagado y se enciende
-   solo al segundo y pico — el sello. */
-#wnGo{margin-top:26px;padding:14px 28px;border:none;border-radius:12px;
-  font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;
-  background:linear-gradient(135deg,var(--gold,#FFD700),var(--orange,#FF6B35));
-  color:#1a0f0f;cursor:pointer;transition:opacity .25s}
-#wnGo:disabled{opacity:.35;cursor:default}
 </style>
 </head>
 <body>
@@ -442,7 +448,7 @@ body.warm .play-container{min-height:0}
 <div class="trophy-container">
 <div class="trophy-header">
 <div class="trophy-icon">🏆</div>
-<h1 class="trophy-title" id="trophyTitle">YOUR TROPHY ROOM</h1>
+<h1 class="trophy-title" id="trophyTitle">COGNITIVO GYM</h1>
 <p class="trophy-subtitle" id="trophySubtitle">THE RECALL Progress</p>
 </div>
 <div class="bpm-section">
@@ -534,7 +540,7 @@ body.warm .play-container{min-height:0}
   <div class="wn-kick" id="wnKick">UP NEXT</div>
   <div class="wn-name" id="wnName"></div>
   <div class="wn-dots" id="wnDots"></div>
-  <button id="wnGo" hidden>EMPEZAR</button>
+  <button class="wn-go" id="wnGo">START</button>
 </div>
 
 <div class="countdown-overlay" id="countdownOverlay"><div class="countdown-number" id="countdownNumber">3</div></div>
@@ -552,7 +558,7 @@ body.warm .play-container{min-height:0}
       <div class="final-stat-val" id="finalRounds">0</div>
     </div>
   </div>
-  <button class="final-again" id="finalAgain">&#9654; PLAY AGAIN</button>
+  <button class="final-again" id="finalAgain">&#9654; RESET</button>
   <a class="final-back" href="fortress-mobile-hub.html">&larr; Back</a>
 </div>
 
@@ -563,7 +569,7 @@ body.warm .play-container{min-height:0}
     <div class="final-stat-cell"><div class="final-stat-label">Score</div><div class="final-stat-val" id="endScore">0</div></div>
     <div class="final-stat-cell"><div class="final-stat-label">Rounds</div><div class="final-stat-val" id="endRounds">0</div></div>
   </div>
-  <button class="again-btn" id="endAgainBtn">&#9654; PLAY AGAIN</button>
+  <button class="again-btn" id="endAgainBtn">&#9654; RESET</button>
   <a class="end-back" href="fortress-mobile-hub.html">&larr; Back to the gym</a>
 </div>
 
@@ -610,7 +616,7 @@ var translations = {
     tipText: 'Start with Game mode to get a feel for it, then use Training mode to practice one level until you\'re consistent.',
     playNow: '▶ PLAY NOW',
     poweredBy: 'Powered by',
-    trophyTitle: 'YOUR TROPHY ROOM',
+    trophyTitle: 'COGNITIVO GYM',
     trophySubtitle: 'THE RECALL Progress',
     selectSpeed: 'SELECT MODE',
     tierFree: '✓ FREE',
@@ -655,7 +661,7 @@ var translations = {
     tipText: 'Empieza con el Modo Juego para sentirlo, luego usa el Modo Entrenamiento para practicar un nivel hasta ser consistente.',
     playNow: '▶ JUGAR AHORA',
     poweredBy: 'Impulsado por',
-    trophyTitle: 'TU VITRINA',
+    trophyTitle: 'COGNITIVO GYM',
     trophySubtitle: 'Progreso de THE RECALL',
     selectSpeed: 'SELECCIONA MODO',
     tierFree: '✓ GRATIS',
@@ -866,176 +872,107 @@ WARM.hostCountdown = function(cb){
 };
 
 // ══════════════════════════════════════════════════════
-//  LA CORRIDA DE CUATRO SETS
+//  THE GYM BLOCK — byte-identical in all four games
 //
-//  Cuatro juegos distintos, un set cada uno, en lugar de un juego en
-//  cuatro zonas. El set se puntúa por la MEJOR tirada que hiciste
-//  dentro de él — nunca por la suma — y los cuatro se suman: eso es
-//  el juego, y es sobre ese total que promete un padrino.
+//  Hands a finished score to the gym server, so the board can show
+//  it, and gets the player a code the first time he scores.
 //
-//  LO QUE CAMBIA DE VERDAD NO ES EL JUEGO, ES DÓNDE VIVE LA CORRIDA.
-//  Antes los cuatro cuartos pasaban en una sola carga de página, así
-//  que el estado podía ser un par de variables. Ahora cada set es una
-//  página distinta, y entre set y set el navegador descarta todo lo
-//  que había en memoria. Si la corrida vive en variables, al llegar
-//  al set 2 el nene ya perdió el set 1 — y en una corrida oficial eso
-//  es plata.
+//  THE CODE IS ISSUED HERE, not on the board page. The board is
+//  earned by playing all four, so by the time anybody reaches it he
+//  has already scored four times — the code has to exist well before
+//  then, and the first score is the first moment it can.
 //
-//  Por eso la corrida entera vive en sessionStorage y no en memoria:
-//  qué tipo de corrida es, cuánto dura un set, en qué set vamos, lo
-//  que ya está guardado y con qué identidad se juega. Cada página la
-//  lee al abrir y la vuelve a escribir al cerrar su set.
+//  NOTHING HERE CAN STOP A GAME. Every call is fire-and-forget and
+//  every failure is swallowed. A kid in the middle of his minute does
+//  not care that a server is down, and a game that freezes because a
+//  score would not save is a worse game than one that quietly loses
+//  the score.
 //
-//  sessionStorage, no localStorage, a propósito: una corrida pertenece
-//  a esta pestaña y a este rato. Si quedara en localStorage, el
-//  teléfono del entrenador arrancaría mañana a mitad de un scrimmage
-//  de ayer.
+//  THE GAME'S NAME COMES OUT OF WARM.STATION, which is the one line
+//  that already differs between these four files. That keeps this
+//  block identical in all of them and leaves no second place to get
+//  the station number wrong.
 // ══════════════════════════════════════════════════════
-var CORRIDA = {
-  LLAVE: 'cp-corrida',
-  FINAL: 'fortress-vr.html?fin=1',
-  SETS: [
-    { q:1, nombre:'RECALL',      archivo:'002-recall.html'      },
-    { q:2, nombre:'RECOGNITION', archivo:'003-recognition.html' },
-    { q:3, nombre:'REPLAY',      archivo:'004-replay.html'      },
-    { q:4, nombre:'FORTRESS',    archivo:'001-fortress.html'    }
-  ],
-  QESTE: 1,          // <<< el set que juega ESTA página: 1..4
-  viva: null, mejor: 0, hasta: 0, raf: null, cerrando: false
+var GYM = {
+  /* If the Render service is named differently, it changes here in
+     all four games AND in tablero-gym.html. The server only accepts
+     calls from hooporia.mobi, cognitivo.digital and cognitivogym.com:
+     from anywhere else the browser blocks the reply on its own, with
+     nothing shown on screen. */
+  SERVIDOR: 'https://cognitivo-gym-server.onrender.com',
+  LLAVE: 'cg-codigo',
+  LLAVE_EQUIPO: 'cg-equipo',
+  NOMBRES: ['recall', 'recognition', 'replay', 'fortress'],
+  pidiendo: null
 };
 
-/* LO QUE HAY QUE SABER DEL JUEGO DE ABAJO, y nada más: cuánto vale
-   la tirada que está en el aire, cómo empezar otra, y cómo parar.
-   Son los mismos tres ganchos del gimnasio. */
-function corridaLeer(){
+function gymJuego(){
+  var n = (typeof WARM === 'object' && WARM && WARM.STATION) ? WARM.STATION : 1;
+  return GYM.NOMBRES[n - 1] || null;
+}
+function gymGuardado(k){ try { return localStorage.getItem(k) } catch(e){ return null } }
+function gymGuardar(k, v){ try { localStorage.setItem(k, v) } catch(e){} }
+
+/* THE TEAM TRAVELS IN THE LINK the coach hands out — ?e=paradiso-6 —
+   and it is remembered the moment it is seen, on whatever page it
+   lands on. It has to be: the link might drop a kid straight into a
+   game, and by the time his code gets issued the query string could
+   be three pages behind him. */
+function gymEquipo(){
   try {
-    var crudo = sessionStorage.getItem(CORRIDA.LLAVE);
-    if(!crudo) return null;
-    var c = JSON.parse(crudo);
-    if(!c || !c.tipo) return null;
-    if(!c.cuartos) c.cuartos = [];
-    return c;
-  } catch(e){ return null }
+    var m = location.search.match(/[?&]e=([a-z0-9-]{1,40})/i);
+    if (m) gymGuardar(GYM.LLAVE_EQUIPO, m[1].toLowerCase());
+  } catch(e){}
+  return gymGuardado(GYM.LLAVE_EQUIPO);
 }
-function corridaGuardar(c){
-  try { sessionStorage.setItem(CORRIDA.LLAVE, JSON.stringify(c)) } catch(e){}
-}
-function corridaBorrar(){
-  try { sessionStorage.removeItem(CORRIDA.LLAVE) } catch(e){}
-}
+gymEquipo();
 
-/* ¿Esta página está jugando un set? Sólo si hay corrida viva Y es el
-   turno de este juego. Abrir el archivo suelto no arranca nada: el
-   juego sigue siendo el juego. */
-function enCorrida(){
-  var c = corridaLeer();
-  if(!c) return false;
-  if(c.q !== CORRIDA.QESTE) return false;
-  CORRIDA.viva = c;
-  return true;
-}
-
-/* El reloj del set sale de la corrida, no de aquí. Una corrida
-   oficial lleva cinco minutos por set y una amistosa uno; la página
-   no decide, obedece. */
-function corridaMs(){
-  var c = CORRIDA.viva;
-  var ms = c && parseInt(c.ms,10);
-  return (ms > 0 && ms <= 30*60*1000) ? ms : 60000;
-}
-
-function corridaTotal(){
-  var c = CORRIDA.viva || corridaLeer();
-  if(!c) return 0;
-  var t = 0;
-  c.cuartos.forEach(function(x){ t += (parseInt(x.puntos,10) || 0) });
-  return t;
-}
-
-/* ── EL SET, DE PRINCIPIO A FIN ───────────────────────────────────
-   Se cuenta primero y se arranca el reloj después, igual que en el
-   gimnasio: los tres segundos no salen del set.
-
-   Los ganchos del juego de abajo son los mismos que ya usa el
-   gimnasio — WARM.hostScore, hostRestart, hostStop, hostCountdown —
-   y por eso no se redefinen aquí. Un juego tiene una sola forma de
-   decir lo que vale una tirada, y las dos corridas la preguntan
-   igual. */
-function corridaEmpezar(alArrancar){
-  CORRIDA.mejor = 0;
-  CORRIDA.cerrando = false;
-  document.body.classList.add('warm');
-
-  var mio = CORRIDA.SETS[CORRIDA.QESTE - 1];
-  $('warmStation').innerHTML = '<b>SET ' + CORRIDA.QESTE + '/4</b>' + mio.nombre;
-
-  var seg = Math.round(corridaMs() / 1000);
-  $('warmClock').textContent = Math.floor(seg/60) + ':' + ('0'+(seg%60)).slice(-2);
-  $('warmClock').className = '';
-  $('warmFill').style.width = '100%';
-  $('warmFill').className = '';
-
-  WARM.hostCountdown(function(){
-    CORRIDA.hasta = performance.now() + corridaMs();
-    corridaPintar();
-    if (typeof alArrancar === 'function') alArrancar();
+function gymLlamar(ruta, cuerpo){
+  return fetch(GYM.SERVIDOR + ruta, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cuerpo || {})
+  }).then(function(r){
+    return r.json().then(function(j){ return { http: r.status, datos: j } },
+                         function(){ return { http: r.status, datos: null } });
   });
 }
 
-function corridaPintar(){
-  var queda = Math.max(0, CORRIDA.hasta - performance.now());
-  var total = corridaMs();
-  var pct = total > 0 ? (queda/total) : 0;
+/* One code, and only one. Two stations finishing close together could
+   each find no code and each ask for one, and the kid would end up
+   with two — with two halves of his four games, and a board that
+   never opens. GYM.pidiendo holds the promise so the second caller
+   waits on the first one's answer instead of starting its own. */
+function gymCodigo(){
+  var ya = gymGuardado(GYM.LLAVE);
+  if (ya) return Promise.resolve(ya);
+  if (GYM.pidiendo) return GYM.pidiendo;
 
-  $('warmFill').style.width = (pct*100) + '%';
-  var seg = Math.ceil(queda/1000);
-  $('warmClock').textContent = Math.floor(seg/60) + ':' + ('0'+(seg%60)).slice(-2);
-  $('warmFill').className = pct < 0.17 ? 'danger' : (pct < 0.34 ? 'warning' : '');
-  $('warmClock').className = pct < 0.17 ? 'danger' : '';
+  GYM.pidiendo = gymLlamar('/jugador', { equipo: gymEquipo() }).then(function(r){
+    GYM.pidiendo = null;
+    if (r.http === 200 && r.datos && r.datos.ok && r.datos.codigo){
+      gymGuardar(GYM.LLAVE, r.datos.codigo);
+      return r.datos.codigo;
+    }
+    return null;
+  }, function(){ GYM.pidiendo = null; return null });
 
-  if (queda <= 0){ corridaCerrarSet(); return }
-  CORRIDA.raf = requestAnimationFrame(corridaPintar);
+  return GYM.pidiendo;
 }
 
-/* SE FALLÓ CON RELOJ TODAVÍA: se queda la mejor tirada y empieza
-   otra. El reloj no se toca — por eso el set se puntúa por la mejor
-   y no por la suma: la única forma de subirlo es aguantar una cadena
-   más larga de la que ya aguantaste. */
-function corridaTrasFallo(){
-  if (CORRIDA.cerrando) return;
-  CORRIDA.mejor = Math.max(CORRIDA.mejor, WARM.hostScore());
-  WARM.hostRestart();
-}
-
-function corridaCerrarSet(){
-  if (CORRIDA.cerrando) return;
-  CORRIDA.cerrando = true;
-  if (CORRIDA.raf){ cancelAnimationFrame(CORRIDA.raf); CORRIDA.raf = null }
-
-  /* La tirada que estaba en el aire cuando sonó la chicharra cuenta:
-     se jugó dentro del set. Si fue la mejor, es la que manda. */
-  var puntos = Math.max(CORRIDA.mejor, WARM.hostScore());
-  WARM.hostStop();
-
-  var c = CORRIDA.viva || corridaLeer() || {cuartos:[]};
-  c.cuartos = (c.cuartos || []).filter(function(x){ return x.q !== CORRIDA.QESTE });
-  c.cuartos.push({ q: CORRIDA.QESTE, puntos: puntos });
-  var ultimo = CORRIDA.QESTE >= 4;
-  c.q = ultimo ? 5 : (CORRIDA.QESTE + 1);
-  CORRIDA.viva = c;
-  corridaGuardar(c);
-
-  /* DE VUELTA A LA PORTADA ENTRE SET Y SET, y no directo al juego
-     siguiente. Ahí vive lo que un set necesita después de jugarse:
-     guardar el cuarto en una corrida oficial, con su reintento si el
-     guardado falla; la caja de cuartos; el total hasta ahora; y el
-     botón sellado que arranca el siguiente.
-
-     Nada de eso puede vivir aquí. Duplicar el guardado en los cuatro
-     juegos significaría cuatro copias de la llave del servidor y
-     cuatro sitios donde arreglar un fallo de guardado — y el guardado
-     es la parte que lleva plata. */
-  location.href = 'fortress-vr.html?entre=1';
+/* The one call the games make. Everything it can do wrong, it does
+   quietly. */
+function gymAnotar(puntos){
+  try {
+    var juego = gymJuego();
+    var p = parseInt(puntos, 10);
+    if (!juego || !isFinite(p) || p < 0) return;
+    gymCodigo().then(function(codigo){
+      if (!codigo) return;
+      gymLlamar('/anotar', { codigo: codigo, juego: juego, puntos: p })
+        .then(function(){}, function(){});
+    }, function(){});
+  } catch(e){}
 }
 
 /* ?warm=1 starts a warm-up from a cold link, without the hub.
@@ -1109,6 +1046,33 @@ function warmQuery(){
    The game itself is handed over as a callback rather than started
    here, so the engine still knows nothing about the game under it —
    and nothing is playable until GO!. */
+/* LO QUE SE ENSEÑA ES LO QUE SE APUNTA.
+
+   La estación guarda Math.max(banked, hostScore()) — el mejor
+   intento del minuto, no la suma de ellos. Eso es deliberado y está
+   escrito en warmup-final.html: llegar a seis una vez es el logro;
+   llegar a tres dos veces no es lo mismo.
+
+   Pero la pantalla no enseñaba eso, y cada juego se equivocaba a su
+   manera. Recall y Recognition enseñaban banked + el intento actual,
+   que es una SUMA: con 10 guardados y 8 en el intento, el nene veía
+   18 y se apuntaban 10. Fortress y Replay enseñaban sólo el intento,
+   que al fallar vuelve a cero: con 10 guardados el nene veía 0 y se
+   apuntaban 10.
+
+   En los dos casos el número de la pantalla y el del tablero no eran
+   el mismo, que es justo lo que se reportó el 26 de octubre de 2026:
+   «acabo de terminar las cuatro y el marcador final no es el que
+   enseña el tablero».
+
+   Esto lo arregla en un solo sitio. El máximo nunca baja —con 10
+   guardados y un intento recién empezado enseña 10, no 0— así que el
+   número sigue sin ir hacia atrás, que era lo que se quería evitar.
+   Y es exactamente el que se va a guardar. */
+WARM.shown = function(){
+  return WARM.on ? Math.max(WARM.banked, WARM.hostScore()) : WARM.hostScore();
+};
+
 function warmBegin(onGo){
   WARM.on = true;
   WARM.banked = 0;
@@ -1183,12 +1147,18 @@ function warmFinishStation(){
   WARM.hostStop();
   warmWrite(WARM.STATION, total);
 
+  /* And to the gym, so the board can show it. Fire and forget: the
+     station is about to navigate to the next one and does not wait
+     for anybody. */
+  gymAnotar(total);
+
   var last = (WARM.STATION >= WARM.LIST.length);
   var next = last ? null : WARM.LIST[WARM.STATION];
 
-  $('wnDone').textContent = WARM.LIST[WARM.STATION - 1].name + ' DONE';
+  var mio = WARM.LIST[WARM.STATION - 1];
+  $('wnDone').textContent = 'STATION ' + mio.n + ' · ' + mio.name + ' COMPLETE';
   $('wnScore').textContent = total;
-  $('wnKick').textContent = last ? 'THAT IS THE FIVE MINUTES' : 'UP NEXT';
+  $('wnKick').textContent = last ? 'THAT IS ALL FOUR' : ('NEXT · STATION ' + next.n);
   $('wnName').textContent = last ? 'YOUR SCORE' : next.name;
 
   var dots = $('wnDots');
@@ -1200,10 +1170,25 @@ function warmFinishStation(){
     dots.appendChild(d);
   });
 
-  $('warmNext').classList.add('show');
-  setTimeout(function(){
+  /* THE RUN STOPS HERE AND WAITS. It used to navigate on a 2.2
+     second timer, which meant the next station started while the
+     player was still reading what he had just scored — and if he
+     wanted a breath between stations, there was no way to take one.
+
+     The button is sealed for a second first, for the same reason the
+     scrimmage seals its own: the tap that was chasing a cell a
+     moment ago is still in the air, and it must not spend itself on
+     starting the next station. */
+  var ir = $('wnGo');
+  ir.textContent = last ? 'SEE YOUR SCORE' : ('START STATION ' + next.n);
+  ir.disabled = true;
+  ir.onclick = function(){
+    if (ir.disabled) return;
     location.href = (last ? WARM.FINAL : next.file) + warmQuery();
-  }, 2200);
+  };
+
+  $('warmNext').classList.add('show');
+  setTimeout(function(){ ir.disabled = false }, 1000);
 }
 
 /* Starting the whole thing. Called from the hub, not from here. */
@@ -1338,7 +1323,7 @@ function updatePlayUI(){
        student their minute just went back to nothing — which is both
        false and the exact moment they most need to see it did not.
        This way the number only ever climbs for the whole minute. */
-    var shown = WARM.on ? (WARM.banked + gameState.sc) : gameState.sc;
+    var shown = WARM.shown();
     $('playScore').textContent=shown;
     $('playTotal').textContent=shown;
     $('playStreak').textContent=gameState.streak;
@@ -1546,7 +1531,6 @@ function roundComplete(success){
            banked and another attempt starts, with the minute still
            running. 900ms and not 1800 because a fifth of the station
            spent looking at WRONG ORDER is a fifth of it not played. */
-        if(CORRIDA.viva){ setPlayTimeout(corridaTrasFallo,900); return; }
         if(WARM.on){ setPlayTimeout(warmAfterMiss,900); return; }
         setPlayTimeout(showFinalScore,1800);
     }
@@ -1567,6 +1551,15 @@ function showEndScreen(){
   $('endScore').textContent = gameState.sc || 0;
   $('endRounds').textContent = gameState.roundsDone || 0;
   el.classList.add('show');
+
+  /* AND TO THE GYM, which is what the board reads. Only outside a
+     warm-up run: inside one the station posts its own score when the
+     minute ends, and posting here too would send the same run twice.
+
+     WARM.hostScore() and not a variable of this game's: that hook is
+     the one contract every one of the four already implements, so
+     this line is the same line in all four files. */
+  if (typeof WARM === 'object' && WARM && !WARM.on) gymAnotar(WARM.hostScore());
 }
 function hideEndScreen(){ var el=$('screen-end'); if(el) el.classList.remove('show') }
 
@@ -1637,17 +1630,7 @@ updateUILanguage();
 // screens are genuinely useful for standalone practice, but forcing
 // a player to click through both, four separate times, in the
 // middle of a run they already committed to, is just friction.
-if(enCorrida()){
-  /* UN SET DEL SCRIMMAGE MANDA SOBRE TODO LO DEMÁS en esta página.
-     No hay portada, ni modo que escoger, ni botón: el tablero sube,
-     se cuenta hasta tres y el reloj del set arranca en GO!. */
-  gameMode='game';
-  showScreen('play');
-  initGame();
-  $('playMessage').textContent = t('getReady');
-  $('playMessage').className = 'play-message-text watch';
-  corridaEmpezar(function(){ startRound() });
-}else if(warmOn()){
+if(warmOn()){
   /* Nobody picks a mode in a warm-up: it is the escalating game, it
      starts now, and the clock is already running. */
   gameMode='game';
