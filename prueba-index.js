@@ -114,30 +114,44 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
   // ════════ 3 · Cómo funciona ════════
   di('3 · Cómo funciona, en cuatro pasos');
   has(t, /Así de sencillo/,                                  'el titular');
-  has(t, /Los jugadores comparten el enlace con sus padrinos/,'01 invita');
-  has(t, /cada padrino\s+elige cuánto prometer por punto/,     'y promete, en el mismo paso');
-  has(t, /El equipo juega y se publica el marcador final/,    '02 juega');
-  has(t, /calcula las promesas y entrega el reporte/,         '03 reporte');
+  has(t, /Consigue padrinos/i,                                '01 consigue padrinos');
+  has(t, /invitan a familiares, amigos y patrocinadores/,     'a quién invitan');
+  has(t, /Juega y anota/i,                                    '02 juega y anota');
+  has(t, /Sin enlaces de pago\. Sin recordatorios/,           'sin enlaces de pago');
+  has(t, /Recibe tu reporte/i,                                '03 recibe tu reporte');
+  has(t, /entrega un reporte completo a tu organización/,     'el reporte completo');
+  has(t, /Tus fondos\. Tu control\./,                         'y debajo, tus fondos, tu control');
+  has(t, /administra las promesas, no el dinero/,             'las promesas, no el dinero');
   /* TRES, desde que «invita» y «promete» se juntaron: compartían el
      mismo enlace, que es la señal de que son un solo movimiento. */
   const pasos = await p.evaluate(() => document.querySelectorAll('#how .paso').length);
-  pasos === 3 ? ok('son tres, ni uno más') : mal('salieron ' + pasos + ' pasos');
+  pasos === 3 ? ok('son tres pasos') : mal('salieron ' + pasos + ' pasos');
+  const decl = await p.evaluate(() => { const e = document.querySelector('#how .pasos + .nocobra');
+    return e && !e.classList.contains('paso') ? e.querySelector('h3').textContent : ''; });
+  decl === 'Tus fondos. Tu control.' ? ok('«Tus fondos. Tu control.» justo debajo, y no es un paso')
+                                     : mal('debajo de los pasos: ' + decl);
 
   // ════════ 4 · Un ejemplo: UNA cuenta ════════
-  di('4 · Un ejemplo, una sola cuenta');
-  has(t, /Un juego\. Cada punto cuenta/, 'el titular');
-  has(t, /25¢/,                     'la tarifa, 25¢');
-  has(t, /68 puntos/,                    'los 68 puntos');
-  has(t, /\$17\.00/,                     'y el resultado, $17.00');
-  has(t, /La promesa de un padrino/,     'dicho que es UN padrino');
-  has(t, /Prometido no es cobrado/,      'y que lo prometido no es lo cobrado');
+  di('4 · Un juego, el poder de muchos');
+  has(t, /Un juego\. Cada punto cuenta/i,                     'el titular');
+  has(t, /Un punto en la cancha\. Muchas promesas detrás/,    'y su frase');
+  has(t, /No importa quién enceste\. Cada punto suma para todos/, 'cada punto suma para todos');
+  has(t, /El poder de muchos/i,                              'el poder de muchos');
+  has(t, /20 padrinos prometen solo 25¢ por punto/,          '20 padrinos a 25¢');
+  has(t, /\$5\.00 prometidos por cada punto entre todos/,     '$5.00 por punto entre todos');
+  has(t, /68 puntos anotados por el equipo/,                 '68 puntos');
+  has(t, /\$340/,                                            'el total, $340');
+  has(t, /50 padrinos: \$850 en promesas/,                    'y con 50 padrinos, $850');
+  has(t, /Cada padrino cuenta\. Cada punto multiplica/,       'cada punto multiplica');
+  has(t, /We manage the pledges\. You manage the proceeds/,   'la frase de marca');
+  has(t, /Las cantidades son promesas, no dinero cobrado/,    'y que son promesas, no dinero cobrado');
 
   /* LA CUENTA ES UNA. Eran tres peldaños y el que se llevaba un
      entrenador era el último: $816, por doce jugadores que a lo mejor
      no tiene y cuatro padrinos cada uno que nadie le ha prometido.
      Multiplicado por una temporada, una expectativa que la
      recaudación no iba a cumplir. */
-  not(t, /\$816|\$68\.00|\$8,160|\$16,320|\$480|\$960|\$250|\$500/,
+  not(t, /\$816|\$68\.00|\$8,160|\$16,320|\$480|\$960|\$250|\$500|\$197\.20/,
       'y no volvió ninguna proyección');
   not(t, /La plantilla entera|12 jugadores|48 padrinos|120 padrinos/,
       'ni los multiplicadores de jugadores y padrinos');
@@ -161,7 +175,7 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
     return t;
   });
   const dolares = (fuera.match(/\$[\d,]+(?:\.\d\d)?/g) || []);
-  const permitidos = new Set(['$17.00','$1','$99','$5']);
+  const permitidos = new Set(['$5.00','$340','$850','$1','$99','$5']);
   const sobran = [...new Set(dolares)].filter(x => !permitidos.has(x));
   sobran.length === 0
     ? ok('fuera de la muestra, las únicas cifras son ' + [...new Set(dolares)].join(' '))
@@ -169,10 +183,13 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
 
   // ════════ 5 · Cuánto cuesta ════════
   di('5 · Cuánto cuesta');
-  has(t, /\$1 por promesa que cualifica/, 'el dólar por promesa que cualifica');
+  has(t, /Precios simples\. Sin sorpresas/,  'el titular');
+  has(t, /\$1 por cada promesa que cualifique/, 'el dólar por promesa que cualifica');
   has(t, /Máximo \$99 por juego/,         'y el tope por juego');
-  has(t, /llega a \$5 o\s+más/,           'qué cualifica: $5 o más');
-  has(t, /Sin suscripción\. Sin mínimo de licencia/, 'sin suscripción ni mínimo');
+  has(t, /alcanza \$5 o\s+más/,           'qué cualifica: $5 o más');
+  has(t, /nunca pagarás\s+más de \$99 por juego/, 'nunca más de $99');
+  has(t, /Sin suscripción\. Sin costo inicial\. Sin cargos sorpresa/, 'sin suscripción ni sorpresas');
+  has(t, /¿Tienes preguntas\?/,            'y la puerta a las preguntas');
   /* UNA SOLA TABLA, la de la muestra, y con TRES filas. La que se
      quitó tenía doce padrinos y nueve columnas; ésta enseña un caso
      normal, uno que rebotó y uno que no cualifica, y nada más. Si
@@ -182,11 +199,10 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
     return { n: t.length, filas: t[0] ? t[0].rows.length : 0,
              cols: t[0] && t[0].rows[0] ? t[0].rows[0].cells.length : 0 };
   });
-  tab.n === 1 ? ok('una sola tabla: la de la muestra')
+  /* SIN TABLA: la muestra del reporte se quitó; quedan sus dos botones. */
+  tab.n === 0 ? ok('ninguna tabla en la portada')
               : mal('hay ' + tab.n + ' tabla(s)');
-  tab.filas === 3 && tab.cols === 3
-    ? ok('con tres filas y tres columnas, no doce y nueve')
-    : mal('la muestra creció: ' + tab.filas + ' filas × ' + tab.cols + ' columnas');
+  not(t, /María Rivera|Rosa Vega|Tía Carmen|Canóvanas 15U vs\. Arecibo/, 'y sin las filas de muestra');
 
   /* EL PRECIO SE LEE DEL JS, y ahí sigue aunque la sección sea de
      texto: prueba-precio.js lo saca de aquí para cuadrar las siete
@@ -197,8 +213,12 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
 
   // ════════ 5b · Cognitivo Gym ════════
   di('5b · Cognitivo Gym: The Reset');
-  has(t, /The Reset: entrena la próxima jugada/, 'el titular');
-  has(t, /Gratis para los equipos inscritos/,    'gratis para los inscritos');
+  has(t, /The Reset: la próxima jugada es la que cuenta/, 'el titular');
+  has(t, /Gratis para los equipos inscritos en Cada Punto Cuenta/, 'gratis para los inscritos');
+  has(t, /Una señal\. Una respiración\. Una frase/, 'señal, respiración, frase');
+  const grande = await p.evaluate(() => { const e = document.querySelector('.cgGratisH');
+    return e ? parseFloat(getComputedStyle(e).fontSize) : 0; });
+  grande >= 18 ? ok('y el «gratis» va en grande (' + grande + 'px)') : mal('el «gratis» no destaca: ' + grande + 'px');
   const cg = await p.evaluate(() =>
     [...document.querySelectorAll('#cognitivo a')].map(a => a.getAttribute('href')));
   cg[0] === 'equipo.html' ? ok('su botón principal inscribe el equipo') : mal('el primer botón va a ' + cg[0]);
@@ -207,7 +227,6 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
   cg.includes('https://hooporia.mobi/005-reset.html?d=volleyball') ? ok('y a The Reset de voleibol')
                                                                    : mal('falta el botón de voleibol');
   not(t, /lección para la vida/, 'y ya no habla de lecciones para la vida');
-  cg.includes('https://hooporia.mobi') ? ok('y el enlace al Cognitivo Gym') : mal('falta el enlace al gym');
 
   // ════════ 6 · Inscribe tu equipo ════════
   di('6 · Inscribe tu equipo');
@@ -228,7 +247,7 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
   /* PERO LA PUERTA AL REPORTE SE QUEDA. Es lo primero que pregunta
      quien decide por un programa: enséñamelo antes de inscribirme. */
   const puertas = await p.evaluate(() =>
-    [...document.querySelectorAll('.rpcard a')].map(a => a.getAttribute('href')));
+    [...document.querySelectorAll('#how .pasoLink a')].map(a => a.getAttribute('href')));
   puertas.includes('reporte.html?ejemplo=1') && puertas.includes('reporte-es.csv')
     ? ok('y los dos enlaces al reporte siguen ahí')
     : mal('faltan los enlaces al reporte: ' + JSON.stringify(puertas));
@@ -245,8 +264,8 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
      programa. Lo que se quitó fue la sección de ocho párrafos que
      la explicaba, y eso se vigila por su rótulo. */
   not(tSec, /A dónde va el dinero/,                 'sin la sección larga del dinero');
-  has(tSec, /No cobramos/,                          'pero se dice que no cobramos');
-  has(tSec, /no lo procesamos, no lo guardamos/,    'y qué significa eso');
+  has(tSec, /Tus fondos\. Tu control/,                          'pero se dice que el dinero es suyo');
+  has(tSec, /No recibimos, procesamos, guardamos ni cobramos/,    'y qué significa eso');
   not(t, /lavado de carros|car wash/,               'sin las comparaciones');
 
   /* LAS DOS QUE NO SE NEGOCIAN. Estaban antes y siguen: no se promete
@@ -259,7 +278,7 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
   const prometePago = /(?<!sin\s)enlace (?:para pagar|de pago)/i.test(t);
   !prometePago ? ok('y no se promete ningún enlace de pago')
                : mal('la portada promete un enlace de pago');
-  has(t, /sin enlace de pago/, 'al contrario: dice que no lo hay');
+  has(t, /Sin enlaces de pago/, 'al contrario: dice que no lo hay');
   not(t, /deducib/i,                         'ni una palabra de deducciones');
   not(t, /\bdeuda\b|\bdeudor\b/,             'ni se le llama deuda a una promesa');
 
@@ -274,7 +293,7 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
     ? ok('quedan ' + texto.length + ' caracteres sin ejecutar nada')
     : mal('sólo ' + texto.length + ': la portada volvió a ser un cascarón');
   has(texto, /Así de sencillo/,              'el titular está en el marcado');
-  has(texto, /\$1 por promesa que cualifica/,'y el precio');
+  has(texto, /\$1 por cada promesa que cualifique/,'y el precio');
   has(texto, /Tus juegos ya están programados/, 'y el cierre');
 
   // ════════ 9 · Las llaves y el inglés ════════
@@ -305,7 +324,8 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
   const { c:c2, p:pe, errs:erre } = await abrir('en');
   const en = await pe.evaluate(() => document.body.innerText);
   has(en, /As simple as this/,            'el titular');
-  has(en, /The players share the link/,   'los cuatro pasos');
+  has(en, /Get padrinos/i,                'los tres pasos');
+  has(en, /Your funds\. Your control\./,  'y la declaración');
   has(en, /One game\. Every point counts/,'el ejemplo');
   has(en, /\$1 per qualifying pledge/,    'el precio');
   has(en, /\$99 maximum per game/,        'y su tope');
@@ -313,7 +333,10 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
   has(en, /Sign up my team/,              'y el botón');
   /* La frase de marca no se traduce: es la misma en las dos, a
      propósito, porque es lo que se repite en los términos. */
-  has(en, /Prometido no es cobrado/,      'y «Prometido no es cobrado» se queda en español');
+  has(en, /The power of many/i,           'el poder de muchos');
+  has(en, /\$850 in pledges/,             'y los 50 padrinos');
+  has(en, /We manage the pledges\. You manage the proceeds/, 'la frase de marca');
+  has(en, /The amounts are pledges, not money collected/, 'y que son promesas');
   erre.length === 0 ? ok('sin errores de página') : erre.forEach(e => mal(e));
   await c2.close();
 
