@@ -214,16 +214,16 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
   // ════════ 5b · Cognitivo Gym ════════
   di('5b · Cognitivo Gym: The Reset');
   has(t, /The Reset: la próxima jugada es la que cuenta/, 'el titular');
-  has(t, /Gratis para los equipos inscritos en Cada Punto Cuenta/, 'gratis para los inscritos');
+  has(t, /Gratis para todos/, 'gratis para todos');
+  not(t, /código de su equipo|Ya tienes tu código|Beneficio exclusivo/, 'y sin pedir código de equipo');
   has(t, /Una señal\. Una respiración\. Una frase/, 'señal, respiración, frase');
   const grande = await p.evaluate(() => { const e = document.querySelector('.cgGratisH');
     return e ? parseFloat(getComputedStyle(e).fontSize) : 0; });
   grande >= 18 ? ok('y el «gratis» va en grande (' + grande + 'px)') : mal('el «gratis» no destaca: ' + grande + 'px');
   const cg = await p.evaluate(() =>
     [...document.querySelectorAll('#cognitivo a')].map(a => a.getAttribute('href')));
-  cg[0] === 'equipo.html' ? ok('su botón principal inscribe el equipo') : mal('el primer botón va a ' + cg[0]);
-  cg.includes('https://hooporia.mobi/005-reset.html') ? ok('quien ya tiene código entra a The Reset')
-                                                      : mal('falta el botón de The Reset');
+  cg[0] === 'https://hooporia.mobi/005-reset.html' ? ok('su botón abre The Reset directo')
+                                                   : mal('el primer botón va a ' + cg[0]);
   !cg.some(h => /d=volleyball/.test(h || '')) ? ok('y ya no hay Reset de voleibol')
                                               : mal('todavía hay un botón de voleibol');
   not(t, /lección para la vida/, 'y ya no habla de lecciones para la vida');
