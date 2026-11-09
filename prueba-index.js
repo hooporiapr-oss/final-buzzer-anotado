@@ -222,10 +222,10 @@ const not = (t,re,q) => !ci(re).test(t) ? ok(q) : mal(q + '  (apareció ' + re +
   const cg = await p.evaluate(() =>
     [...document.querySelectorAll('#cognitivo a')].map(a => a.getAttribute('href')));
   cg[0] === 'equipo.html' ? ok('su botón principal inscribe el equipo') : mal('el primer botón va a ' + cg[0]);
-  cg.includes('https://hooporia.mobi/005-reset.html') ? ok('quien ya tiene código entra a The Reset de baloncesto')
-                                                      : mal('falta el botón de baloncesto');
-  cg.includes('https://hooporia.mobi/005-reset.html?d=volleyball') ? ok('y a The Reset de voleibol')
-                                                                   : mal('falta el botón de voleibol');
+  cg.includes('https://hooporia.mobi/005-reset.html') ? ok('quien ya tiene código entra a The Reset')
+                                                      : mal('falta el botón de The Reset');
+  !cg.some(h => /d=volleyball/.test(h || '')) ? ok('y ya no hay Reset de voleibol')
+                                              : mal('todavía hay un botón de voleibol');
   not(t, /lección para la vida/, 'y ya no habla de lecciones para la vida');
 
   // ════════ 6 · Inscribe tu equipo ════════
