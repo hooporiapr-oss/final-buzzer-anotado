@@ -340,6 +340,14 @@ header{color:#fff}
      licencia completa —los siete días, la suspensión y la conservación
      de datos— está en los Términos, y es su texto entero el que se
      guarda como acuse (licFull, abajo), no esta línea. -->
+<!-- QUIÉN PUEDE USARLO, declarado por el programa: escuelas, sin
+     fines de lucro y programas comunitarios juveniles. No se piden
+     papeles; el programa responde por lo que declara, igual que por el
+     marcador. La frase entera se guarda con el acuse (eligFull). -->
+<div class="ok">
+<input id="el" type="checkbox">
+<span data-i="elig" onclick="document.getElementById('el').click()"><b>Confirmo que este programa es una escuela, una organización sin fines de lucro o un programa comunitario juvenil, y que lo recaudado es para el programa.</b></span>
+</div>
 <div class="ok">
 <input id="lc" type="checkbox">
 <span data-i="lic" onclick="document.getElementById('lc').click()"><b>Acepto la licencia por juego y <a href="https://cadapunto.com/terms.html#licencia" target="_blank">sus condiciones</a>.</b></span>
@@ -460,6 +468,8 @@ var S = {
     errWho:'Tu nombre y tu correo, por favor.',
     errLic:'Tienes que aceptar la licencia por juego para seguir.',
     errCustody:'Tienes que marcar que entiendes cómo funciona el dinero para seguir.',
+    errElig:'Cada Punto Cuenta es para escuelas, organizaciones sin fines de lucro y programas comunitarios juveniles. Marca la casilla para seguir.',
+    eligFull:'Declaración del programa: este programa es una escuela, una organización sin fines de lucro o un programa comunitario juvenil, y lo recaudado es para el programa. Gostar Digital LLC puede cerrar la cuenta de un programa que no lo sea.',
     errTerms:'Tienes que aceptar los Términos de Uso y la Política de Privacidad para seguir.',
     errTaken:'Ese programa ya tiene campaña. Escríbenos si crees que es un error.',
     errPending:'Ya hay una petición para ese programa. Te escribimos pronto.',
@@ -499,6 +509,9 @@ var S = {
     errWho:'Your name and email, please.',
     errLic:'You have to accept the per-game license to continue.',
     errCustody:'You have to confirm you understand how the money works to continue.',
+    elig:'<b>I confirm this program is a school, a nonprofit organization or a youth community program, and that what it raises is for the program.</b>',
+    errElig:'Cada Punto Cuenta is for schools, nonprofit organizations and youth community programs. Tick the box to continue.',
+    eligFull:'Program declaration: this program is a school, a nonprofit organization or a youth community program, and what it raises is for the program. Gostar Digital LLC may close the account of a program that is not.',
     errTerms:'You have to accept the Terms of Use and the Privacy Policy to continue.',
     errTaken:'That program already has a campaign. Write to us if that seems wrong.',
     errPending:'There is already a request for that program. We will be in touch.',
@@ -668,6 +681,11 @@ function send(){
   /* La licencia primero: es la unica casilla que lleva un numero
      dentro, y facturarle a alguien que nunca lo vio seria nuestro
      problema, no suyo. */
+  /* Who it is for comes first: a program that is not a school, a
+     nonprofit or a youth community program stops here. */
+  var el = document.getElementById('el');
+  if (!el || !el.checked) return say(T('errElig'), 'bad');
+
   var lc = document.getElementById('lc');
   if (!lc || !lc.checked) return say(T('errLic'), 'bad');
 
@@ -745,7 +763,9 @@ function send(){
        la solicitud entro: si esto falla, el equipo ya quedo inscrito
        igual. El correo al admin lo lleva tambien, asi que el acuse
        existe en dos sitios y no en ninguno. */
-    rpc('license_record', { p_email: email, p_by: name, p_terms: T('licFull') })
+    /* The program's declaration is saved with the licence, in the
+       same record and at the same moment. */
+    rpc('license_record', { p_email: email, p_by: name, p_terms: T('licFull') + '<br><br>' + T('eligFull') })
       .catch(function(e){ console.error('license_record', e) });
 
     fetch(SERVER + '/team-signup', {
@@ -759,7 +779,7 @@ function send(){
                                 factura, esto es lo que hay. */
                              license: { accepted: true, by: name,
                                         at: new Date().toISOString(),
-                                        terms: T('licFull') } })
+                                        terms: T('licFull') + '<br><br>' + T('eligFull') } })
     }).catch(function(e){ console.error('notice', e); });
     try{ var _m = document.querySelector('main'); if (_m) _m.scrollTop = 0; window.scrollTo(0, 0); }catch(e){}
       });
