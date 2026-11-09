@@ -76,6 +76,14 @@ async function corrida(browser, lang, correo){
   escrito.every(v => v) ? ok('los cinco campos aceptan lo que se escribe')
                         : mal('algún campo no recogió: ' + JSON.stringify(escrito));
 
+  // ── 3a · sin declarar qué es el programa, no entra ────────────
+  await p.click('.btn'); await p.waitForTimeout(150);
+  m = await msg();
+  (m && /escuelas|schools/i.test(m)) ? ok('sin la declaración del programa se para — "' + m.slice(0,46) + '"')
+                                     : mal('dejó pasar sin la declaración (' + m + ')');
+  (await rpcs()).length === 0 ? ok('y no manda nada') : mal('mandó sin la declaración');
+  await p.click('[data-i="elig"]');
+
   // ── 3 · sin marcar la licencia, no entra ──────────────────────
   await p.click('.btn'); await p.waitForTimeout(150);
   m = await msg();
@@ -95,10 +103,10 @@ async function corrida(browser, lang, correo){
   m = await msg();
   (m && /t[ée]rminos|terms/i.test(m)) ? ok('y los términos — "' + m.slice(0,42) + '"')
                                       : mal('no pidió los términos (' + m + ')');
-  const marcadas = await p.evaluate(() => ['lc','cu','tc']
+  const marcadas = await p.evaluate(() => ['lc','cu','tc','el']
     .map(i => document.getElementById(i).checked));
-  (marcadas[0] && marcadas[1] && !marcadas[2])
-    ? ok('pulsar el texto marca su casilla (lc y cu sí, tc todavía no)')
+  (marcadas[0] && marcadas[1] && !marcadas[2] && marcadas[3])
+    ? ok('pulsar el texto marca su casilla (el, lc y cu sí, tc todavía no)')
     : mal('las casillas no siguieron al texto: ' + JSON.stringify(marcadas));
 
   // ── 5 · completa ──────────────────────────────────────────────
@@ -127,6 +135,10 @@ async function corrida(browser, lang, correo){
   // ── 6 · el acuse de licencia lleva el texto QUE SE VIO ─────────
   const lic = await p.evaluate(() => (window.__rpc.find(c => c.rpc === 'license_record')||{}).body);
   const esperado = lang === 'es' ? /Acepto la licencia por juego/ : /I accept the per-game license/;
+  const decl = lang === 'es' ? /Declaración del programa: este programa es una escuela/ : /Program declaration: this program is a school/;
+  (lic && decl.test(lic.p_terms))
+    ? ok('la declaración del programa se guarda con el acuse de la licencia')
+    : mal('el acuse no lleva la declaración del programa');
   (lic && esperado.test(lic.p_terms))
     ? ok('el acuse guarda la licencia en el idioma que vio el entrenador')
     : mal('el acuse no lleva la licencia: ' + JSON.stringify(lic && lic.p_terms || '').slice(0,70));
