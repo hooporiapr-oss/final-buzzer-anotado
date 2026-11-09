@@ -42,7 +42,7 @@ const JUEGOS = [ G('aaaaaaaa-0000-0000-0000-000000000001', 'baloncesto', 'Mini')
   const orden = await p.evaluate(() => [...document.querySelectorAll('input[type=text],input[type=email],input[type=tel]')].map(e => e.id).filter(Boolean));
   si(orden.join(',') === 'pg,cd,nm,em,ph', 'fields in order: ' + orden.join(','));
   await p.fill('#pg', 'Club Doble'); await p.fill('#nm', 'Ana Prueba'); await p.fill('#em', 'ana@example.com');
-  for (const k of ['#lc','#cu','#tc']) await p.check(k);
+  for (const k of ['#el','#lc','#cu','#tc']) await p.check(k);
   for (const bad of ['', 'C4827', 'CPX482', '12CP34']){
     await p.fill('#cd', bad); await p.click('button[onclick="send()"]'); await p.waitForTimeout(150);
   }
