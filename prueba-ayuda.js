@@ -81,8 +81,13 @@ const PROHIBIDO = [
 
     forma.preguntas >= 25 ? ok(forma.preguntas + ' preguntas')
       : mal('sólo salieron ' + forma.preguntas + ' preguntas — ¿se comió algo la lista?');
-    forma.secciones.length === 7 ? ok('las siete secciones: ' + forma.secciones.join(' · '))
+    forma.secciones.length === 8 ? ok('las ocho secciones: ' + forma.secciones.join(' · '))
       : mal('salieron ' + forma.secciones.length + ' secciones: ' + forma.secciones.join(' · '));
+    // «¿Por qué Cada Punto?» va primero, antes de todo lo demás
+    const primera = await page.evaluate(() => (document.querySelector('details summary') || {}).textContent || '');
+    /^(¿Por qué Cada Punto\?|Why Cada Punto\?)$/.test(primera.trim())
+      ? ok('la primera pregunta es «' + primera.trim() + '»')
+      : mal('la primera pregunta es «' + primera.trim() + '»');
     forma.vacias === 0 ? ok('ninguna respuesta vacía')
       : mal(forma.vacias + ' respuesta(s) sin contenido');
     forma.sinResumen === 0 ? ok('todas tienen su pregunta')
