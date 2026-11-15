@@ -35,7 +35,8 @@ h2{font-family:Archivo,sans-serif;font-size:1.25rem;letter-spacing:-.02em;margin
 .caja{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 6px 20px #17243808}
 label{display:block;font-weight:600;font-size:.76rem;margin:0 0 4px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 input,select{width:100%;padding:9px 11px;border:1px solid #d9d8d4;border-radius:9px;font-family:inherit;font-size:.9rem;background:#fff;color:var(--ink)}
-.filtros{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.filtros{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.pill.cat{background:#e4f5ec;color:var(--ok);text-transform:none;letter-spacing:.02em}
 .chk{display:flex;align-items:center;gap:8px;font-size:.86rem;margin-top:12px;font-weight:600}
 .chk input{width:17px;height:17px}
 button{font-family:inherit;font-size:.8rem;font-weight:800;border:0;border-radius:9px;padding:7px 12px;background:var(--orange);color:#111a24;cursor:pointer}
@@ -61,6 +62,7 @@ tr.oc td.nombre input{color:#9aa3ad}
 .acc{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
 .oculto{display:none}
 .tabla{overflow-x:auto}
+@media(max-width:900px){ .filtros{grid-template-columns:repeat(3,1fr)} }
 @media(max-width:760px){
   .filtros{grid-template-columns:1fr 1fr}
   table,thead,tbody,tr,td{display:block}
@@ -94,6 +96,7 @@ tr.oc td.nombre input{color:#9aa3ad}
     <p class="sub">Every run saved by Ritnome. <b>Rename</b> a player · <b>Hide</b> a run (it stays on file and can be shown again) · <b>Delete</b> a run, or every run of a player at that school, for good. Delete asks you to confirm. Scores can't be changed.</p>
     <div class="filtros">
       <div><label for="fEsc">School</label><select id="fEsc"></select></div>
+      <div><label for="fCat">Category</label><select id="fCat"></select></div>
       <div><label for="fTab">Board</label><select id="fTab"></select></div>
       <div><label for="fVel">Speed</label><select id="fVel"></select></div>
       <div><label for="fNom">Player</label><input id="fNom" type="search" placeholder="Search a name"></div>
@@ -186,21 +189,24 @@ function opciones(sel, lista, todos){
   if (lista.some(function(o){ return String(o[0]) === v })) sel.value = v;
 }
 function armarFiltros(){
-  var esc_ = {}, jue = {}, vel = {};
+  var esc_ = {}, jue = {}, vel = {}, cat = {};
   TODO.forEach(function(r){
     esc_[r.school_name || ''] = 1;
+    cat[(r.category || '').trim()] = 1;
     var t = tablero(r.pattern); jue[t.juego] = 1; vel[t.vel] = 1;
   });
   opciones($('fEsc'), Object.keys(esc_).sort().map(function(k){ return [k === '' ? '(none)' : k, k === '' ? '(no school)' : k] }), 'All schools');
+  opciones($('fCat'), Object.keys(cat).sort(function(a, b){ var x = parseInt(a, 10), y = parseInt(b, 10); if (!isNaN(x) && !isNaN(y) && x !== y) return x - y; return a.localeCompare(b) }).map(function(k){ return [k === '' ? '(none)' : k, k === '' ? '(no category)' : k] }), 'All categories');
   opciones($('fTab'), Object.keys(jue).sort().map(function(k){ return [k, nombreJuego(k)] }), 'All boards');
   opciones($('fVel'), Object.keys(vel).sort(function(a, b){ return (a === 'free' ? -1 : +a) - (b === 'free' ? -1 : +b) }).map(function(k){ return [k, nombreVel(k === 'free' ? 'free' : +k)] }), 'All speeds');
 }
 
 function pintar(){
-  var fe = $('fEsc').value, ft = $('fTab').value, fv = $('fVel').value, fn = $('fNom').value.trim().toLowerCase(), fo = $('fOc').checked;
+  var fc = $('fCat').value, fe = $('fEsc').value, ft = $('fTab').value, fv = $('fVel').value, fn = $('fNom').value.trim().toLowerCase(), fo = $('fOc').checked;
   var lista = TODO.filter(function(r){
     var t = tablero(r.pattern);
     if (fe && (r.school_name || '(none)') !== fe) return false;
+    if (fc && ((r.category || '').trim() || '(none)') !== fc) return false;
     if (ft && t.juego !== ft) return false;
     if (fv && String(t.vel) !== fv) return false;
     if (fn && String(r.player_name || '').toLowerCase().indexOf(fn) === -1) return false;
@@ -218,7 +224,7 @@ function pintar(){
       '<td data-l="#">' + esc(r.admin_id) + '</td>' +
       '<td data-l="Saved">' + esc(fecha(r)) + '</td>' +
       '<td class="nombre"><input maxlength="20" value="' + esc(r.player_name) + '" aria-label="Player name"></td>' +
-      '<td data-l="School">' + esc(r.school_name || '—') + '</td>' +
+      '<td data-l="School">' + esc(r.school_name || '—') + (r.category ? ' <span class="pill cat">' + esc(r.category) + '</span>' : '') + '</td>' +
       '<td data-l="Board">' + esc(nombreJuego(t.juego)) + ' <span class="pill">' + esc(nombreVel(t.vel)) + '</span>' + (r.hidden ? ' <span class="pill oc">Hidden</span>' : '') + '</td>' +
       '<td class="n" data-l="Score">' + esc(puntaje(r, t)) + '</td>' +
       '<td class="n" data-l="Time">' + s.toFixed(1) + 's</td>' +
@@ -303,7 +309,7 @@ $('filas').addEventListener('click', function(e){
     b.disabled = true; borrar(todas.map(function(x){ return x.admin_id }), 'Deleted ' + r.player_name + ' (' + esc_ + '): {n} runs.');
   }
 });
-['fEsc', 'fTab', 'fVel', 'fOc'].forEach(function(id){ $(id).addEventListener('change', pintar) });
+['fEsc', 'fCat', 'fTab', 'fVel', 'fOc'].forEach(function(id){ $(id).addEventListener('change', pintar) });
 $('fNom').addEventListener('input', pintar);
 
 if (!SES) { fuera() }
