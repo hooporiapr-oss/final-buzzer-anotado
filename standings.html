@@ -3,22 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ritnome Standings — Admin</title>
+<title>Gym Standings — Admin</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-/* RITNOME STANDINGS ADMIN
-   Every run saved by Ritnome (cognitivo-gym-paradiso/ritnome.html), by
-   school, board and speed. Rename a player, hide a run from the board,
+/* GYM STANDINGS ADMIN
+   Every run saved by every game of the Paradiso gym
+   (cognitivo-gym-paradiso): Ritnome, the five Dynamic Memory games and
+   Final Score — one tab per game, then by school (and for Ritnome by
+   category, board and speed). Rename a player, hide a run from the board,
    or delete a run or a player for good. No score can be changed here.
    Same sign-in as admin.html (the session it keeps in this browser),
-   and every call goes through ritnome_admin_list / _set / _delete,
-   which refuse anyone not in app_admins (ritnome-admin.sql and
-   ritnome-admin-borrar.sql). Delete asks twice; each deleted run is
-   copied to ritnome_standings_deleted, which no page can read. */
+   and every call goes through gym_admin_list / _set / _delete, which
+   refuse anyone not in app_admins and any table but the three gym
+   standings tables (gym-standings-admin.sql). Delete asks twice; each
+   deleted run is copied to gym_standings_deleted, which no page can read. */
 :root{--navy:#101c2a;--orange:#ff7a18;--cream:#faf8f4;--ink:#1b2937;--muted:#617083;--line:#e7e6e2;--ok:#1a7f4b;--mal:#c0392b}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.5;font-size:15px}
@@ -61,6 +63,9 @@ tr.oc td.nombre input{color:#9aa3ad}
 .pill.oc{background:#fdecea;color:var(--mal)}
 .acc{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
 .oculto{display:none}
+.juegos{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+.juegos button{background:#fff;color:var(--navy);border:1px solid #d9d8d4;border-radius:999px;padding:7px 13px}
+.juegos button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 .tabla{overflow-x:auto}
 @media(max-width:900px){ .filtros{grid-template-columns:repeat(3,1fr)} }
 @media(max-width:760px){
@@ -78,7 +83,7 @@ tr.oc td.nombre input{color:#9aa3ad}
 <body>
 
 <header><div class="wrap bar">
-  <div class="marca">RITNOME STANDINGS<span>.</span><small>ADMIN</small></div>
+  <div class="marca">GYM STANDINGS<span>.</span><small>ADMIN</small></div>
   <a href="admin.html">← Admin</a>
 </div></header>
 
@@ -92,13 +97,14 @@ tr.oc td.nombre input{color:#9aa3ad}
 
 <section id="panel" class="oculto">
   <div class="caja">
-    <h2>Ritnome standings</h2>
-    <p class="sub">Every run saved by Ritnome. <b>Rename</b> a player · <b>Hide</b> a run (it stays on file and can be shown again) · <b>Delete</b> a run, or every run of a player at that school, for good. Delete asks you to confirm. Scores can't be changed.</p>
+    <div class="juegos" id="juegos"></div>
+    <h2 id="titulo">Ritnome standings</h2>
+    <p class="sub">Every run saved by this game. <b>Rename</b> a player · <b>Hide</b> a run (it stays on file and can be shown again) · <b>Delete</b> a run, or every run of a player at that school, for good. Delete asks you to confirm. Scores can't be changed.</p>
     <div class="filtros">
       <div><label for="fEsc">School</label><select id="fEsc"></select></div>
-      <div><label for="fCat">Category</label><select id="fCat"></select></div>
-      <div><label for="fTab">Board</label><select id="fTab"></select></div>
-      <div><label for="fVel">Speed</label><select id="fVel"></select></div>
+      <div class="solo-rit"><label for="fCat">Category</label><select id="fCat"></select></div>
+      <div class="solo-rit"><label for="fTab">Board</label><select id="fTab"></select></div>
+      <div class="solo-rit"><label for="fVel">Speed</label><select id="fVel"></select></div>
       <div><label for="fNom">Player</label><input id="fNom" type="search" placeholder="Search a name"></div>
     </div>
     <label class="chk"><input type="checkbox" id="fOc"> Show hidden runs too</label>
@@ -159,6 +165,27 @@ function rpc(nombre, args){
   });
 }
 
+// ── the games: which table, and for the memory games which game_key ──
+var MEM = 'dynamic_memory_quarter_standings';
+var JUEGOS = [
+  { k: 'ritnome',     label: 'Ritnome',      table: 'ritnome_standings' },
+  { k: 'fortress',    label: 'The Fortress', table: MEM, key: 'fortress' },
+  { k: 'recall',      label: 'Recall',       table: MEM, key: 'recall' },
+  { k: 'recognition', label: 'Recognition',  table: MEM, key: 'recognition' },
+  { k: 'reflex',      label: 'Shot Map',     table: MEM, key: 'reflex' },
+  { k: 'replay',      label: 'Replay',       table: MEM, key: 'replay' },
+  { k: 'final',       label: 'Final Score',  table: 'hooporia_4qtr_standings' }
+];
+var JUEGO = JUEGOS[0], CACHE = {};
+(function(){ var h = location.hash.slice(1); JUEGOS.forEach(function(j){ if (j.k === h) JUEGO = j }) })();
+function esRit(){ return JUEGO.k === 'ritnome' }
+function filasDelJuego(){ return (CACHE[JUEGO.table] || []).filter(function(r){ return !JUEGO.key || r.game_key === JUEGO.key }) }
+function pintarJuegos(){
+  $('juegos').innerHTML = JUEGOS.map(function(j){ return '<button type="button" data-k="' + j.k + '"' + (j === JUEGO ? ' class="on"' : '') + '>' + esc(j.label) + '</button>' }).join('');
+  $('titulo').textContent = JUEGO.label + ' standings';
+  Array.prototype.forEach.call(document.querySelectorAll('.solo-rit'), function(d){ d.classList.toggle('oculto', !esRit()) });
+}
+
 // ── boards: the pattern key says the game and the speed ──
 var GAMES = { gonogo: 'Go No Go', random: 'Reaction Speed', free: 'Free Tap' };
 function tablero(p){
@@ -170,6 +197,8 @@ function tablero(p){
 function nombreJuego(j){ return GAMES[j] || j }
 function nombreVel(v){ return v === 'free' ? 'No beat' : v + ' BPM' }
 function puntaje(r, t){
+  if (JUEGO.table === MEM) return r.level_achieved == null ? '--' : 'Level ' + r.level_achieved;
+  if (JUEGO.k === 'final') return (r.total_score == null ? '--' : r.total_score) + ' pts · ' + [r.q1_score, r.q2_score, r.q3_score, r.q4_score].map(function(q){ return q == null ? '-' : q }).join(' / ');
   var h = r.hits_scored, f = r.total_flashes, s = Number(r.time_seconds) || 0;
   if (t.juego === 'free') return (s > 0 ? Math.round(25 * 60 / s) : 0) + ' BPM';
   if (t.juego === 'gonogo') return (h == null ? '--' : h) + '/25';
@@ -202,6 +231,7 @@ function armarFiltros(){
 }
 
 function pintar(){
+  if (!esRit()) { $('fCat').value = ''; $('fTab').value = ''; $('fVel').value = '' }
   var fc = $('fCat').value, fe = $('fEsc').value, ft = $('fTab').value, fv = $('fVel').value, fn = $('fNom').value.trim().toLowerCase(), fo = $('fOc').checked;
   var lista = TODO.filter(function(r){
     var t = tablero(r.pattern);
@@ -219,15 +249,16 @@ function pintar(){
     '<div><b>' + vis + '</b><span>On the boards</span></div><div><b>' + (TODO.length - vis) + '</b><span>Hidden</span></div>';
   $('vacio').classList.toggle('oculto', lista.length > 0);
   $('filas').innerHTML = lista.map(function(r){
-    var t = tablero(r.pattern), s = Number(r.time_seconds) || 0;
+    var t = tablero(r.pattern), s = r.time_seconds == null ? null : Number(r.time_seconds);
+    var tab = esRit() ? esc(nombreJuego(t.juego)) + ' <span class="pill">' + esc(nombreVel(t.vel)) + '</span>' : esc(JUEGO.k === 'final' ? 'Q1 / Q2 / Q3 / Q4' : JUEGO.label);
     return '<tr data-id="' + esc(r.admin_id) + '"' + (r.hidden ? ' class="oc"' : '') + '>' +
       '<td data-l="#">' + esc(r.admin_id) + '</td>' +
       '<td data-l="Saved">' + esc(fecha(r)) + '</td>' +
-      '<td class="nombre"><input maxlength="20" value="' + esc(r.player_name) + '" aria-label="Player name"></td>' +
+      '<td class="nombre"><input maxlength="' + (esRit() ? 20 : 40) + '" value="' + esc(r.player_name) + '" aria-label="Player name"></td>' +
       '<td data-l="School">' + esc(r.school_name || '—') + (r.category ? ' <span class="pill cat">' + esc(r.category) + '</span>' : '') + '</td>' +
-      '<td data-l="Board">' + esc(nombreJuego(t.juego)) + ' <span class="pill">' + esc(nombreVel(t.vel)) + '</span>' + (r.hidden ? ' <span class="pill oc">Hidden</span>' : '') + '</td>' +
+      '<td data-l="Board">' + tab + (r.hidden ? ' <span class="pill oc">Hidden</span>' : '') + '</td>' +
       '<td class="n" data-l="Score">' + esc(puntaje(r, t)) + '</td>' +
-      '<td class="n" data-l="Time">' + s.toFixed(1) + 's</td>' +
+      '<td class="n" data-l="Time">' + (s == null ? '—' : s.toFixed(1) + 's') + '</td>' +
       '<td><div class="acc"><button type="button" class="q guardar" disabled>Save name</button>' +
         (r.hidden ? '<button type="button" class="q mostrar">Show</button>' : '<button type="button" class="q ocultar">Hide</button>') +
         '<button type="button" class="rojo borrar">Delete</button><button type="button" class="rojo borrarJug">Delete player</button></div></td>' +
@@ -235,18 +266,29 @@ function pintar(){
   }).join('');
 }
 
+var SIN_SQL = 'The database is not set up for every game yet: run gym-standings-admin.sql in Supabase first.';
 function cargar(){
-  di('Loading…');
-  return rpc('ritnome_admin_list', {}).then(function(d){
-    TODO = Array.isArray(d) ? d : [];
-    armarFiltros(); pintar(); di('');
+  pintarJuegos();
+  var tabla = JUEGO.table;
+  function listo(){ TODO = filasDelJuego(); armarFiltros(); pintar() }
+  if (CACHE[tabla]) { listo(); di(''); return Promise.resolve() }
+  TODO = []; pintar(); di('Loading…');
+  return rpc('gym_admin_list', { p_table: tabla }).then(function(d){
+    CACHE[tabla] = Array.isArray(d) ? d : [];
+    if (JUEGO.table === tabla) { listo(); di('') }
   }).catch(function(e){
     if (e.fuera) return fuera();
     if (/not an admin/i.test(e.message)) return fuera('That address is not in app_admins, so it cannot manage the standings.');
-    if (e.codigo === 'PGRST202' || /ritnome_admin_list/.test(e.message)) return di('The database is not set up for this page yet: run ritnome-admin.sql in Supabase first.', 'mal');
+    if (e.codigo === 'PGRST202' || /gym_admin_list/.test(e.message)) return di(SIN_SQL, 'mal');
     di('Could not load the standings' + porque(e), 'mal');
   });
 }
+$('juegos').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if (!b) return;
+  JUEGOS.forEach(function(j){ if (j.k === b.dataset.k) JUEGO = j });
+  try { history.replaceState(null, '', '#' + JUEGO.k) } catch(x){}
+  cargar();
+});
 
 /* Delete: the first tap arms the button ("Confirm…"), the second does
    it. Left alone for 5 seconds it goes back to normal. */
@@ -261,24 +303,28 @@ function armar(b, texto){
   return false;
 }
 function borrar(ids, txt){
-  return rpc('ritnome_admin_delete', { p_ids: ids.map(Number) }).then(function(n){
+  var tabla = JUEGO.table;
+  return rpc('gym_admin_delete', { p_table: tabla, p_ids: ids.map(Number) }).then(function(n){
     var fuera_ = {}; ids.forEach(function(i){ fuera_[String(i)] = 1 });
-    TODO = TODO.filter(function(x){ return !fuera_[String(x.admin_id)] });
+    CACHE[tabla] = (CACHE[tabla] || []).filter(function(x){ return !fuera_[String(x.admin_id)] });
+    TODO = filasDelJuego();
     armarFiltros(); pintar(); di(txt.replace('{n}', n), 'ok');
   }).catch(function(e){
     if (e.fuera) return fuera();
-    if (e.codigo === 'PGRST202' || /ritnome_admin_delete/.test(e.message)) return di('Delete is not set up in the database yet: run ritnome-admin-borrar.sql in Supabase first.', 'mal');
+    if (e.codigo === 'PGRST202' || /gym_admin_delete/.test(e.message)) return di(SIN_SQL, 'mal');
     di('Could not delete' + porque(e), 'mal'); pintar();
   });
 }
 
 function cambiar(id, cambios, txt){
-  var args = { p_id: +id, p_name: null, p_hidden: null };
+  var tabla = JUEGO.table;
+  var args = { p_table: tabla, p_id: +id, p_name: null, p_hidden: null };
   for (var k in cambios) args[k] = cambios[k];
-  return rpc('ritnome_admin_set', args).then(function(r){
-    TODO = TODO.map(function(x){ return String(x.admin_id) === String(id) ? r : x });
+  return rpc('gym_admin_set', args).then(function(r){
+    CACHE[tabla] = (CACHE[tabla] || []).map(function(x){ return String(x.admin_id) === String(id) ? r : x });
+    TODO = filasDelJuego();
     pintar(); di(txt, 'ok');
-  }).catch(function(e){ if (e.fuera) return fuera(); di('Could not save' + porque(e), 'mal') });
+  }).catch(function(e){ if (e.fuera) return fuera(); if (e.codigo === 'PGRST202') return di(SIN_SQL, 'mal'); di('Could not save' + porque(e), 'mal') });
 }
 
 $('filas').addEventListener('input', function(e){
@@ -305,8 +351,8 @@ $('filas').addEventListener('click', function(e){
     b.disabled = true; borrar([id], 'Deleted run #' + id + ' (' + r.player_name + ').');
   } else if (b.classList.contains('borrarJug')) {
     var todas = deEseJugador(r), esc_ = r.school_name || 'no school';
-    if (!armar(b, 'Confirm: ' + todas.length + (todas.length === 1 ? ' run' : ' runs'))) return di('Tap "Confirm" to delete all ' + todas.length + ' runs of ' + r.player_name + ' (' + esc_ + ') for good — hidden ones too.', 'mal');
-    b.disabled = true; borrar(todas.map(function(x){ return x.admin_id }), 'Deleted ' + r.player_name + ' (' + esc_ + '): {n} runs.');
+    if (!armar(b, 'Confirm: ' + todas.length + (todas.length === 1 ? ' run' : ' runs'))) return di('Tap "Confirm" to delete all ' + todas.length + ' ' + JUEGO.label + ' runs of ' + r.player_name + ' (' + esc_ + ') for good — hidden ones too. Other games are not touched.', 'mal');
+    b.disabled = true; borrar(todas.map(function(x){ return x.admin_id }), 'Deleted ' + r.player_name + ' (' + esc_ + ') from ' + JUEGO.label + ': {n} runs.');
   }
 });
 ['fEsc', 'fCat', 'fTab', 'fVel', 'fOc'].forEach(function(id){ $(id).addEventListener('change', pintar) });
