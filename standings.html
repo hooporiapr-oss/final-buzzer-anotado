@@ -191,10 +191,10 @@ var JUEGOS = [
 var JUEGO = JUEGOS[0], CACHE = {};
 (function(){ var h = location.hash.slice(1); JUEGOS.forEach(function(j){ if (j.k === h) JUEGO = j }) })();
 function esRit(){ return JUEGO.k === 'ritnome' }
-function conVel(){ return esRit() || JUEGO.k === 'rv-reaction-speed' }   // the games with a speed choice
+function conVel(){ return esRit() || JUEGO.k === 'rv-reaction-speed' || JUEGO.k === 'rv-reactific' }   // the games with a speed choice
 function velDe(r){
   if (esRit()) return tablero(r.pattern).vel;
-  if (JUEGO.k === 'rv-reaction-speed') return r.speed === 'free' ? 'free' : (r.speed ? parseInt(r.speed, 10) : 100);
+  if (JUEGO.k === 'rv-reaction-speed' || JUEGO.k === 'rv-reactific') return /^free/.test(r.speed || '') ? 'free' : (r.speed ? parseInt(r.speed, 10) : 100);
   return null;
 }
 function filasDelJuego(){ return (CACHE[JUEGO.table] || []).filter(function(r){ return !JUEGO.key || r.game_key === JUEGO.key }) }
@@ -218,7 +218,8 @@ function nombreJuego(j){ return GAMES[j] || j }
 function nombreVel(v){ return v === 'free' ? 'No beat' : v + ' BPM' }
 function puntaje(r, t){
   if (JUEGO.table === MEM) return r.level_achieved == null ? '--' : 'Level ' + r.level_achieved;
-  if (JUEGO.rv && r.speed === 'free') return (r.score == null ? '--' : r.score) + ' BPM · 25 taps' + (r.avg_ms != null ? ' · avg ' + Math.round(r.avg_ms) + ' ms' : '');
+  // Free Tap: a 10-tap speed check, then the game at that measured BPM ('free-92').
+  if (JUEGO.rv && /^free/.test(r.speed || '')) return (r.score == null ? '--' : r.score) + ' pts · at ' + (String(r.speed).split('-')[1] || '?') + ' BPM' + (r.hits != null ? ' · ' + r.hits + ' hits, ' + (r.misses || 0) + ' misses' : '') + (r.avg_ms != null ? ' · avg ' + Math.round(r.avg_ms) + ' ms' : '');
   if (JUEGO.rv) {
     var x = (r.score == null ? '--' : r.score) + ' pts';
     if (r.made != null) x += ' · ' + r.made + '/' + (r.attempts == null ? '-' : r.attempts) + ' made';
