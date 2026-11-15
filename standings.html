@@ -12,11 +12,13 @@
 <style>
 /* RITNOME STANDINGS ADMIN
    Every run saved by Ritnome (cognitivo-gym-paradiso/ritnome.html), by
-   school, board and speed. Rename a player, or hide a run from the
-   board. Nothing is ever deleted and no score can be changed here.
+   school, board and speed. Rename a player, hide a run from the board,
+   or delete a run or a player for good. No score can be changed here.
    Same sign-in as admin.html (the session it keeps in this browser),
-   and every call goes through ritnome_admin_list / ritnome_admin_set,
-   which refuse anyone not in app_admins (ritnome-admin.sql). */
+   and every call goes through ritnome_admin_list / _set / _delete,
+   which refuse anyone not in app_admins (ritnome-admin.sql and
+   ritnome-admin-borrar.sql). Delete asks twice; each deleted run is
+   copied to ritnome_standings_deleted, which no page can read. */
 :root{--navy:#101c2a;--orange:#ff7a18;--cream:#faf8f4;--ink:#1b2937;--muted:#617083;--line:#e7e6e2;--ok:#1a7f4b;--mal:#c0392b}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.5;font-size:15px}
@@ -40,6 +42,7 @@ button{font-family:inherit;font-size:.8rem;font-weight:800;border:0;border-radiu
 button.q{background:transparent;color:var(--navy);border:1px solid var(--navy)}
 button.rojo{background:transparent;color:var(--mal);border:1px solid #e3b9b4}
 button[disabled]{opacity:.45;cursor:default}
+button.rojo.seguro{background:var(--mal);color:#fff;border-color:var(--mal)}
 .tot{display:flex;gap:22px;flex-wrap:wrap;margin:14px 0 0}
 .tot b{display:block;font-family:Archivo,sans-serif;font-size:1.45rem;font-weight:900;letter-spacing:-.03em}
 .tot span{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
@@ -55,7 +58,7 @@ tr.oc td{background:#f6f3ee;color:#9aa3ad}
 tr.oc td.nombre input{color:#9aa3ad}
 .pill{font-size:.64rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:#eef1f4;color:var(--muted);white-space:nowrap}
 .pill.oc{background:#fdecea;color:var(--mal)}
-.acc{display:flex;gap:6px;justify-content:flex-end}
+.acc{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
 .oculto{display:none}
 .tabla{overflow-x:auto}
 @media(max-width:760px){
@@ -88,7 +91,7 @@ tr.oc td.nombre input{color:#9aa3ad}
 <section id="panel" class="oculto">
   <div class="caja">
     <h2>Ritnome standings</h2>
-    <p class="sub">Every run saved by Ritnome. Rename a player or hide a run from the board. Nothing is deleted and scores can't be changed — a hidden run stays on file and can be shown again.</p>
+    <p class="sub">Every run saved by Ritnome. <b>Rename</b> a player · <b>Hide</b> a run (it stays on file and can be shown again) · <b>Delete</b> a run, or every run of a player at that school, for good. Delete asks you to confirm. Scores can't be changed.</p>
     <div class="filtros">
       <div><label for="fEsc">School</label><select id="fEsc"></select></div>
       <div><label for="fTab">Board</label><select id="fTab"></select></div>
@@ -220,7 +223,8 @@ function pintar(){
       '<td class="n" data-l="Score">' + esc(puntaje(r, t)) + '</td>' +
       '<td class="n" data-l="Time">' + s.toFixed(1) + 's</td>' +
       '<td><div class="acc"><button type="button" class="q guardar" disabled>Save name</button>' +
-        (r.hidden ? '<button type="button" class="q mostrar">Show</button>' : '<button type="button" class="rojo ocultar">Hide</button>') + '</div></td>' +
+        (r.hidden ? '<button type="button" class="q mostrar">Show</button>' : '<button type="button" class="q ocultar">Hide</button>') +
+        '<button type="button" class="rojo borrar">Delete</button><button type="button" class="rojo borrarJug">Delete player</button></div></td>' +
     '</tr>';
   }).join('');
 }
@@ -235,6 +239,30 @@ function cargar(){
     if (/not an admin/i.test(e.message)) return fuera('That address is not in app_admins, so it cannot manage the standings.');
     if (e.codigo === 'PGRST202' || /ritnome_admin_list/.test(e.message)) return di('The database is not set up for this page yet: run ritnome-admin.sql in Supabase first.', 'mal');
     di('Could not load the standings' + porque(e), 'mal');
+  });
+}
+
+/* Delete: the first tap arms the button ("Confirm…"), the second does
+   it. Left alone for 5 seconds it goes back to normal. */
+function deEseJugador(r){
+  var n = String(r.player_name || '').toLowerCase(), e = r.school_name || '';
+  return TODO.filter(function(x){ return String(x.player_name || '').toLowerCase() === n && (x.school_name || '') === e });
+}
+function armar(b, texto){
+  if (b.classList.contains('seguro')) return true;
+  b.dataset.antes = b.textContent; b.textContent = texto; b.classList.add('seguro');
+  setTimeout(function(){ if (b.isConnected && b.classList.contains('seguro')) { b.textContent = b.dataset.antes; b.classList.remove('seguro') } }, 5000);
+  return false;
+}
+function borrar(ids, txt){
+  return rpc('ritnome_admin_delete', { p_ids: ids.map(Number) }).then(function(n){
+    var fuera_ = {}; ids.forEach(function(i){ fuera_[String(i)] = 1 });
+    TODO = TODO.filter(function(x){ return !fuera_[String(x.admin_id)] });
+    armarFiltros(); pintar(); di(txt.replace('{n}', n), 'ok');
+  }).catch(function(e){
+    if (e.fuera) return fuera();
+    if (e.codigo === 'PGRST202' || /ritnome_admin_delete/.test(e.message)) return di('Delete is not set up in the database yet: run ritnome-admin-borrar.sql in Supabase first.', 'mal');
+    di('Could not delete' + porque(e), 'mal'); pintar();
   });
 }
 
@@ -266,6 +294,13 @@ $('filas').addEventListener('click', function(e){
     b.disabled = true; cambiar(id, { p_hidden: true }, 'Run #' + id + ' (' + r.player_name + ') is hidden from the board. It stays on file.');
   } else if (b.classList.contains('mostrar')) {
     b.disabled = true; cambiar(id, { p_hidden: false }, 'Run #' + id + ' (' + r.player_name + ') is back on the board.');
+  } else if (b.classList.contains('borrar')) {
+    if (!armar(b, 'Confirm delete')) return di('Tap "Confirm delete" to remove run #' + id + ' (' + r.player_name + ') for good.', 'mal');
+    b.disabled = true; borrar([id], 'Deleted run #' + id + ' (' + r.player_name + ').');
+  } else if (b.classList.contains('borrarJug')) {
+    var todas = deEseJugador(r), esc_ = r.school_name || 'no school';
+    if (!armar(b, 'Confirm: ' + todas.length + (todas.length === 1 ? ' run' : ' runs'))) return di('Tap "Confirm" to delete all ' + todas.length + ' runs of ' + r.player_name + ' (' + esc_ + ') for good — hidden ones too.', 'mal');
+    b.disabled = true; borrar(todas.map(function(x){ return x.admin_id }), 'Deleted ' + r.player_name + ' (' + esc_ + '): {n} runs.');
   }
 });
 ['fEsc', 'fTab', 'fVel', 'fOc'].forEach(function(id){ $(id).addEventListener('change', pintar) });
