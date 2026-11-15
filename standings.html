@@ -108,7 +108,7 @@ tr.oc td.nombre input{color:#9aa3ad}
       <div><label for="fEsc">School</label><select id="fEsc"></select></div>
       <div><label for="fCat">Category</label><select id="fCat"></select></div>
       <div class="solo-rit"><label for="fTab">Board</label><select id="fTab"></select></div>
-      <div class="solo-rit"><label for="fVel">Speed</label><select id="fVel"></select></div>
+      <div><label for="fVel">Speed</label><select id="fVel"></select></div>
       <div><label for="fNom">Player</label><input id="fNom" type="search" placeholder="Search a name"></div>
     </div>
     <label class="chk"><input type="checkbox" id="fOc"> Show hidden runs too</label>
@@ -191,12 +191,19 @@ var JUEGOS = [
 var JUEGO = JUEGOS[0], CACHE = {};
 (function(){ var h = location.hash.slice(1); JUEGOS.forEach(function(j){ if (j.k === h) JUEGO = j }) })();
 function esRit(){ return JUEGO.k === 'ritnome' }
+function conVel(){ return esRit() || JUEGO.k === 'rv-reaction-speed' }   // the games with a speed choice
+function velDe(r){
+  if (esRit()) return tablero(r.pattern).vel;
+  if (JUEGO.k === 'rv-reaction-speed') return r.speed === 'free' ? 'free' : (r.speed ? parseInt(r.speed, 10) : 100);
+  return null;
+}
 function filasDelJuego(){ return (CACHE[JUEGO.table] || []).filter(function(r){ return !JUEGO.key || r.game_key === JUEGO.key }) }
 function pintarJuegos(){
   $('progs').innerHTML = PROGS.map(function(g){ return '<button type="button" data-p="' + g.k + '"' + (g.k === JUEGO.p ? ' class="on"' : '') + '>' + esc(g.label) + '</button>' }).join('');
   $('juegos').innerHTML = JUEGOS.filter(function(j){ return j.p === JUEGO.p }).map(function(j){ return '<button type="button" data-k="' + j.k + '"' + (j === JUEGO ? ' class="on"' : '') + '>' + esc(j.label) + '</button>' }).join('');
   $('titulo').textContent = (JUEGO.p === 'rv' ? 'Reaction Velocity · ' : '') + JUEGO.label + ' standings';
   Array.prototype.forEach.call(document.querySelectorAll('.solo-rit'), function(d){ d.classList.toggle('oculto', !esRit()) });
+  $('fVel').parentNode.classList.toggle('oculto', !conVel());
 }
 
 // ── boards: the pattern key says the game and the speed ──
@@ -211,6 +218,7 @@ function nombreJuego(j){ return GAMES[j] || j }
 function nombreVel(v){ return v === 'free' ? 'No beat' : v + ' BPM' }
 function puntaje(r, t){
   if (JUEGO.table === MEM) return r.level_achieved == null ? '--' : 'Level ' + r.level_achieved;
+  if (JUEGO.rv && r.speed === 'free') return (r.score == null ? '--' : r.score) + ' BPM · 25 taps' + (r.avg_ms != null ? ' · avg ' + Math.round(r.avg_ms) + ' ms' : '');
   if (JUEGO.rv) {
     var x = (r.score == null ? '--' : r.score) + ' pts';
     if (r.made != null) x += ' · ' + r.made + '/' + (r.attempts == null ? '-' : r.attempts) + ' made';
@@ -242,7 +250,7 @@ function armarFiltros(){
   TODO.forEach(function(r){
     esc_[r.school_name || ''] = 1;
     cat[(r.category || '').trim()] = 1;
-    var t = tablero(r.pattern); jue[t.juego] = 1; vel[t.vel] = 1;
+    var t = tablero(r.pattern); jue[t.juego] = 1; if (conVel()) vel[velDe(r)] = 1;
   });
   opciones($('fEsc'), Object.keys(esc_).sort().map(function(k){ return [k === '' ? '(none)' : k, k === '' ? '(no school)' : k] }), 'All schools');
   opciones($('fCat'), Object.keys(cat).sort(function(a, b){ var x = parseInt(a, 10), y = parseInt(b, 10); if (!isNaN(x) && !isNaN(y) && x !== y) return x - y; return a.localeCompare(b) }).map(function(k){ return [k === '' ? '(none)' : k, k === '' ? '(no category)' : k] }), 'All categories');
@@ -251,14 +259,15 @@ function armarFiltros(){
 }
 
 function pintar(){
-  if (!esRit()) { $('fTab').value = ''; $('fVel').value = '' }
+  if (!esRit()) $('fTab').value = '';
+  if (!conVel()) $('fVel').value = '';
   var fc = $('fCat').value, fe = $('fEsc').value, ft = $('fTab').value, fv = $('fVel').value, fn = $('fNom').value.trim().toLowerCase(), fo = $('fOc').checked;
   var lista = TODO.filter(function(r){
     var t = tablero(r.pattern);
     if (fe && (r.school_name || '(none)') !== fe) return false;
     if (fc && ((r.category || '').trim() || '(none)') !== fc) return false;
     if (ft && t.juego !== ft) return false;
-    if (fv && String(t.vel) !== fv) return false;
+    if (fv && String(velDe(r)) !== fv) return false;
     if (fn && String(r.player_name || '').toLowerCase().indexOf(fn) === -1) return false;
     if (!fo && r.hidden) return false;
     return true;
@@ -270,7 +279,8 @@ function pintar(){
   $('vacio').classList.toggle('oculto', lista.length > 0);
   $('filas').innerHTML = lista.map(function(r){
     var t = tablero(r.pattern), s = r.time_seconds == null ? null : Number(r.time_seconds);
-    var tab = esRit() ? esc(nombreJuego(t.juego)) + ' <span class="pill">' + esc(nombreVel(t.vel)) + '</span>' : esc(JUEGO.final ? 'Q1 / Q2 / Q3 / Q4' : JUEGO.label);
+    var tab = esRit() ? esc(nombreJuego(t.juego)) + ' <span class="pill">' + esc(nombreVel(t.vel)) + '</span>'
+            : esc(JUEGO.final ? 'Q1 / Q2 / Q3 / Q4' : JUEGO.label) + (conVel() ? ' <span class="pill">' + esc(nombreVel(velDe(r))) + '</span>' : '');
     return '<tr data-id="' + esc(r.admin_id) + '"' + (r.hidden ? ' class="oc"' : '') + '>' +
       '<td data-l="#">' + esc(r.admin_id) + '</td>' +
       '<td data-l="Saved">' + esc(fecha(r)) + '</td>' +

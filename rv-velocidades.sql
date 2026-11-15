@@ -1,0 +1,13 @@
+-- ═══════════════════════════════════════════════════════════════════
+--  REACTION SPEED: ONE BOARD PER SPEED
+--  Run once in the Supabase SQL editor, BEFORE the updated pages go live.
+--
+--  Reaction Speed (Reaction Velocity) now has a speed choice: Free Tap
+--  (no beat, scored by the player's BPM over 25 taps) and 20, 40, 60,
+--  80, 100 or 120 BPM. Each saved run keeps its speed ('free', '20' …
+--  '120') so every speed has its own board. Runs saved before today
+--  have no speed and stay on the 100 BPM board, the original setting.
+--
+--  Nothing already there is deleted or changed. Safe to run more than once.
+-- ═══════════════════════════════════════════════════════════════════
+alter table public.vr_reaction_speed_standings add column if not exists speed text;
