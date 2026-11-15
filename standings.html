@@ -106,7 +106,7 @@ tr.oc td.nombre input{color:#9aa3ad}
     <p class="sub">Every run saved by this game. <b>Rename</b> a player · <b>Hide</b> a run (it stays on file and can be shown again) · <b>Delete</b> a run, or every run of a player at that school, for good. Delete asks you to confirm. Scores can't be changed.</p>
     <div class="filtros">
       <div><label for="fEsc">School</label><select id="fEsc"></select></div>
-      <div class="solo-rit"><label for="fCat">Category</label><select id="fCat"></select></div>
+      <div><label for="fCat">Category</label><select id="fCat"></select></div>
       <div class="solo-rit"><label for="fTab">Board</label><select id="fTab"></select></div>
       <div class="solo-rit"><label for="fVel">Speed</label><select id="fVel"></select></div>
       <div><label for="fNom">Player</label><input id="fNom" type="search" placeholder="Search a name"></div>
@@ -251,7 +251,7 @@ function armarFiltros(){
 }
 
 function pintar(){
-  if (!esRit()) { $('fCat').value = ''; $('fTab').value = ''; $('fVel').value = '' }
+  if (!esRit()) { $('fTab').value = ''; $('fVel').value = '' }
   var fc = $('fCat').value, fe = $('fEsc').value, ft = $('fTab').value, fv = $('fVel').value, fn = $('fNom').value.trim().toLowerCase(), fo = $('fOc').checked;
   var lista = TODO.filter(function(r){
     var t = tablero(r.pattern);
