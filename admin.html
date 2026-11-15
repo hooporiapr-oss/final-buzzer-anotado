@@ -127,7 +127,10 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 
 <header><div class="wrap bar">
   <div class="marca">CADA PUNTO CUENTA<span>.</span><small>ADMIN</small></div>
-  <button class="q sm oculto" id="salir" style="color:#fff;border-color:#ffffff55">Sign out</button>
+  <div style="display:flex;gap:8px;align-items:center">
+    <a class="oculto" id="aStand" href="standings.html" style="color:#fff;font-size:.74rem;font-weight:800;text-decoration:none;border:1px solid #ffffff55;border-radius:9px;padding:5px 10px">🏆 Ritnome standings</a>
+    <button class="q sm oculto" id="salir" style="color:#fff;border-color:#ffffff55">Sign out</button>
+  </div>
 </div></header>
 
 <main class="wrap">
@@ -586,6 +589,7 @@ function arrancar(){
       $('entrar').classList.add('oculto');
       $('panel').classList.remove('oculto');
       $('salir').classList.remove('oculto');
+      $('aStand').classList.remove('oculto');
       cargarCampanas();
       /* La cola se carga sola al entrar. Es lo único de esta página
          que llega sin que nadie lo pida, así que tiene que estar ahí

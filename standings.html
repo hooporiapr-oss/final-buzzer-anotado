@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ritnome Standings — Admin</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;800;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* RITNOME STANDINGS ADMIN
+   Every run saved by Ritnome (cognitivo-gym-paradiso/ritnome.html), by
+   school, board and speed. Rename a player, or hide a run from the
+   board. Nothing is ever deleted and no score can be changed here.
+   Same sign-in as admin.html (the session it keeps in this browser),
+   and every call goes through ritnome_admin_list / ritnome_admin_set,
+   which refuse anyone not in app_admins (ritnome-admin.sql). */
+:root{--navy:#101c2a;--orange:#ff7a18;--cream:#faf8f4;--ink:#1b2937;--muted:#617083;--line:#e7e6e2;--ok:#1a7f4b;--mal:#c0392b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.5;font-size:15px}
+header{background:var(--navy);color:#fff;padding:14px 0}
+.wrap{width:min(1100px,calc(100% - 32px));margin:auto}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.marca{font-family:Archivo,sans-serif;font-weight:900;letter-spacing:.07em;font-size:1rem}
+.marca span{color:var(--orange)}
+.marca small{display:block;font-size:.62rem;letter-spacing:.2em;color:#8fa3b6;font-weight:800}
+header a{color:#fff;font-size:.8rem;font-weight:800;text-decoration:none;border:1px solid #ffffff55;border-radius:9px;padding:6px 12px}
+main{padding:24px 0 70px}
+h2{font-family:Archivo,sans-serif;font-size:1.25rem;letter-spacing:-.02em;margin:0 0 3px}
+.sub{color:var(--muted);font-size:.84rem;margin:0 0 14px}
+.caja{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 6px 20px #17243808}
+label{display:block;font-weight:600;font-size:.76rem;margin:0 0 4px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+input,select{width:100%;padding:9px 11px;border:1px solid #d9d8d4;border-radius:9px;font-family:inherit;font-size:.9rem;background:#fff;color:var(--ink)}
+.filtros{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.chk{display:flex;align-items:center;gap:8px;font-size:.86rem;margin-top:12px;font-weight:600}
+.chk input{width:17px;height:17px}
+button{font-family:inherit;font-size:.8rem;font-weight:800;border:0;border-radius:9px;padding:7px 12px;background:var(--orange);color:#111a24;cursor:pointer}
+button.q{background:transparent;color:var(--navy);border:1px solid var(--navy)}
+button.rojo{background:transparent;color:var(--mal);border:1px solid #e3b9b4}
+button[disabled]{opacity:.45;cursor:default}
+.tot{display:flex;gap:22px;flex-wrap:wrap;margin:14px 0 0}
+.tot b{display:block;font-family:Archivo,sans-serif;font-size:1.45rem;font-weight:900;letter-spacing:-.03em}
+.tot span{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.m{margin:10px 0 0;font-size:.84rem;min-height:1.1em}
+.m.ok{color:var(--ok)} .m.mal{color:var(--mal)}
+.vacio{color:var(--muted);font-size:.9rem;padding:14px 4px}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th,td{text-align:left;padding:8px 7px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.nombre input{min-width:120px;padding:6px 8px}
+tr.oc td{background:#f6f3ee;color:#9aa3ad}
+tr.oc td.nombre input{color:#9aa3ad}
+.pill{font-size:.64rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:#eef1f4;color:var(--muted);white-space:nowrap}
+.pill.oc{background:#fdecea;color:var(--mal)}
+.acc{display:flex;gap:6px;justify-content:flex-end}
+.oculto{display:none}
+.tabla{overflow-x:auto}
+@media(max-width:760px){
+  .filtros{grid-template-columns:1fr 1fr}
+  table,thead,tbody,tr,td{display:block}
+  thead{display:none}
+  tr{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;padding:6px;background:#fff}
+  td{border:0;padding:4px 6px}
+  td.n{text-align:left}
+  td[data-l]::before{content:attr(data-l) ': ';font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800}
+  .acc{justify-content:flex-start}
+}
+</style>
+</head>
+<body>
+
+<header><div class="wrap bar">
+  <div class="marca">RITNOME STANDINGS<span>.</span><small>ADMIN</small></div>
+  <a href="admin.html">← Admin</a>
+</div></header>
+
+<main class="wrap">
+
+<section id="fuera" class="caja oculto">
+  <h2>Sign in first</h2>
+  <p class="sub" id="fueraTxt">Sign in on the Admin page, then come back here — this page uses the same sign-in.</p>
+  <a href="admin.html"><button type="button">Go to Admin sign-in</button></a>
+</section>
+
+<section id="panel" class="oculto">
+  <div class="caja">
+    <h2>Ritnome standings</h2>
+    <p class="sub">Every run saved by Ritnome. Rename a player or hide a run from the board. Nothing is deleted and scores can't be changed — a hidden run stays on file and can be shown again.</p>
+    <div class="filtros">
+      <div><label for="fEsc">School</label><select id="fEsc"></select></div>
+      <div><label for="fTab">Board</label><select id="fTab"></select></div>
+      <div><label for="fVel">Speed</label><select id="fVel"></select></div>
+      <div><label for="fNom">Player</label><input id="fNom" type="search" placeholder="Search a name"></div>
+    </div>
+    <label class="chk"><input type="checkbox" id="fOc"> Show hidden runs too</label>
+    <div class="tot" id="tot"></div>
+    <p class="m" id="msg"></p>
+  </div>
+  <div class="caja tabla">
+    <table>
+      <thead><tr><th>#</th><th>Saved</th><th>Player</th><th>School</th><th>Board</th><th class="n">Score</th><th class="n">Time</th><th></th></tr></thead>
+      <tbody id="filas"></tbody>
+    </table>
+    <div class="vacio oculto" id="vacio">No runs match these filters.</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+'use strict';
+var SB_URL = 'https://sdaphocueugzfvjovuxd.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYXBob2N1ZXVnemZ2am92dXhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjQyMDgsImV4cCI6MjA5OTIwMDIwOH0.pDAzf4P6dD9eNEBlnP95SdF5BI-R84-Rdc0vKzYcn7M';
+function $(id){ return document.getElementById(id) }
+function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+function di(t, c){ var e = $('msg'); e.textContent = t || ''; e.className = 'm ' + (c || '') }
+function porque(x){ var r = x && (x.message || x.hint || x.error || ''); return r ? ' — ' + String(r).slice(0, 200) : '' }
+
+// ── the same session admin.html keeps in this browser ──
+var SES = null;
+try { SES = JSON.parse(localStorage.getItem('hoo-admin') || 'null') } catch(e){}
+function fuera(t){ $('panel').classList.add('oculto'); $('fuera').classList.remove('oculto'); if (t) $('fueraTxt').textContent = t }
+function token(){
+  if (!SES) return Promise.resolve(null);
+  if (SES.expires_at && Date.now() < SES.expires_at - 60000) return Promise.resolve(SES.access_token);
+  return fetch(SB_URL + '/auth/v1/token?grant_type=refresh_token', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY },
+    body: JSON.stringify({ refresh_token: SES.refresh_token })
+  }).then(function(r){ return r.ok ? r.json() : null }).then(function(d){
+    if (!d || !d.access_token) { SES = null; try { localStorage.removeItem('hoo-admin') } catch(e){} return null }
+    SES = { access_token: d.access_token, refresh_token: d.refresh_token, expires_at: Date.now() + (d.expires_in || 3600) * 1000, email: SES.email };
+    try { localStorage.setItem('hoo-admin', JSON.stringify(SES)) } catch(e){}
+    return d.access_token;
+  });
+}
+function rpc(nombre, args){
+  return token().then(function(tk){
+    if (!tk) { var e = new Error('signed out'); e.fuera = true; throw e }
+    return fetch(SB_URL + '/rest/v1/rpc/' + nombre, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + tk },
+      body: JSON.stringify(args || {})
+    }).then(function(r){
+      return r.text().then(function(t){
+        var d = null; try { d = JSON.parse(t) } catch(x){}
+        if (r.ok) return d;
+        var e = new Error((d && (d.message || d.hint)) || t || ('HTTP ' + r.status)); e.codigo = d && d.code; throw e;
+      });
+    });
+  });
+}
+
+// ── boards: the pattern key says the game and the speed ──
+var GAMES = { gonogo: 'Go No Go', random: 'Reaction Speed', free: 'Free Tap' };
+function tablero(p){
+  p = String(p || '');
+  if (p === 'free') return { juego: 'free', vel: 'free' };
+  var m = p.split('@');
+  return { juego: m[0], vel: m[1] ? parseInt(m[1], 10) : 80 };
+}
+function nombreJuego(j){ return GAMES[j] || j }
+function nombreVel(v){ return v === 'free' ? 'No beat' : v + ' BPM' }
+function puntaje(r, t){
+  var h = r.hits_scored, f = r.total_flashes, s = Number(r.time_seconds) || 0;
+  if (t.juego === 'free') return (s > 0 ? Math.round(25 * 60 / s) : 0) + ' BPM';
+  if (t.juego === 'gonogo') return (h == null ? '--' : h) + '/25';
+  return (h == null ? '--' : h) + '/' + (h != null && h >= 25 ? 25 : 100) + (f != null ? ' · ' + f + ' flashes' : '');
+}
+function fecha(r){
+  var v = r.logged_at || r.created_at;
+  if (!v) return 'before log';
+  var d = new Date(v);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+var TODO = [];
+function opciones(sel, lista, todos){
+  var v = sel.value;
+  sel.innerHTML = '<option value="">' + todos + '</option>' + lista.map(function(o){ return '<option value="' + esc(o[0]) + '">' + esc(o[1]) + '</option>' }).join('');
+  if (lista.some(function(o){ return String(o[0]) === v })) sel.value = v;
+}
+function armarFiltros(){
+  var esc_ = {}, jue = {}, vel = {};
+  TODO.forEach(function(r){
+    esc_[r.school_name || ''] = 1;
+    var t = tablero(r.pattern); jue[t.juego] = 1; vel[t.vel] = 1;
+  });
+  opciones($('fEsc'), Object.keys(esc_).sort().map(function(k){ return [k === '' ? '(none)' : k, k === '' ? '(no school)' : k] }), 'All schools');
+  opciones($('fTab'), Object.keys(jue).sort().map(function(k){ return [k, nombreJuego(k)] }), 'All boards');
+  opciones($('fVel'), Object.keys(vel).sort(function(a, b){ return (a === 'free' ? -1 : +a) - (b === 'free' ? -1 : +b) }).map(function(k){ return [k, nombreVel(k === 'free' ? 'free' : +k)] }), 'All speeds');
+}
+
+function pintar(){
+  var fe = $('fEsc').value, ft = $('fTab').value, fv = $('fVel').value, fn = $('fNom').value.trim().toLowerCase(), fo = $('fOc').checked;
+  var lista = TODO.filter(function(r){
+    var t = tablero(r.pattern);
+    if (fe && (r.school_name || '(none)') !== fe) return false;
+    if (ft && t.juego !== ft) return false;
+    if (fv && String(t.vel) !== fv) return false;
+    if (fn && String(r.player_name || '').toLowerCase().indexOf(fn) === -1) return false;
+    if (!fo && r.hidden) return false;
+    return true;
+  });
+  var vis = TODO.filter(function(r){ return !r.hidden }).length;
+  var jug = {}; lista.forEach(function(r){ jug[String(r.player_name || '').toLowerCase()] = 1 });
+  $('tot').innerHTML = '<div><b>' + lista.length + '</b><span>Runs shown</span></div><div><b>' + Object.keys(jug).length + '</b><span>Players</span></div>' +
+    '<div><b>' + vis + '</b><span>On the boards</span></div><div><b>' + (TODO.length - vis) + '</b><span>Hidden</span></div>';
+  $('vacio').classList.toggle('oculto', lista.length > 0);
+  $('filas').innerHTML = lista.map(function(r){
+    var t = tablero(r.pattern), s = Number(r.time_seconds) || 0;
+    return '<tr data-id="' + esc(r.admin_id) + '"' + (r.hidden ? ' class="oc"' : '') + '>' +
+      '<td data-l="#">' + esc(r.admin_id) + '</td>' +
+      '<td data-l="Saved">' + esc(fecha(r)) + '</td>' +
+      '<td class="nombre"><input maxlength="20" value="' + esc(r.player_name) + '" aria-label="Player name"></td>' +
+      '<td data-l="School">' + esc(r.school_name || '—') + '</td>' +
+      '<td data-l="Board">' + esc(nombreJuego(t.juego)) + ' <span class="pill">' + esc(nombreVel(t.vel)) + '</span>' + (r.hidden ? ' <span class="pill oc">Hidden</span>' : '') + '</td>' +
+      '<td class="n" data-l="Score">' + esc(puntaje(r, t)) + '</td>' +
+      '<td class="n" data-l="Time">' + s.toFixed(1) + 's</td>' +
+      '<td><div class="acc"><button type="button" class="q guardar" disabled>Save name</button>' +
+        (r.hidden ? '<button type="button" class="q mostrar">Show</button>' : '<button type="button" class="rojo ocultar">Hide</button>') + '</div></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function cargar(){
+  di('Loading…');
+  return rpc('ritnome_admin_list', {}).then(function(d){
+    TODO = Array.isArray(d) ? d : [];
+    armarFiltros(); pintar(); di('');
+  }).catch(function(e){
+    if (e.fuera) return fuera();
+    if (/not an admin/i.test(e.message)) return fuera('That address is not in app_admins, so it cannot manage the standings.');
+    if (e.codigo === 'PGRST202' || /ritnome_admin_list/.test(e.message)) return di('The database is not set up for this page yet: run ritnome-admin.sql in Supabase first.', 'mal');
+    di('Could not load the standings' + porque(e), 'mal');
+  });
+}
+
+function cambiar(id, cambios, txt){
+  var args = { p_id: +id, p_name: null, p_hidden: null };
+  for (var k in cambios) args[k] = cambios[k];
+  return rpc('ritnome_admin_set', args).then(function(r){
+    TODO = TODO.map(function(x){ return String(x.admin_id) === String(id) ? r : x });
+    pintar(); di(txt, 'ok');
+  }).catch(function(e){ if (e.fuera) return fuera(); di('Could not save' + porque(e), 'mal') });
+}
+
+$('filas').addEventListener('input', function(e){
+  if (!e.target.matches('td.nombre input')) return;
+  var tr = e.target.closest('tr'), r = TODO.filter(function(x){ return String(x.admin_id) === tr.dataset.id })[0];
+  tr.querySelector('.guardar').disabled = !e.target.value.trim() || e.target.value.trim() === r.player_name;
+});
+$('filas').addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && e.target.matches('td.nombre input')) { var b = e.target.closest('tr').querySelector('.guardar'); if (!b.disabled) b.click() }
+});
+$('filas').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if (!b) return;
+  var tr = b.closest('tr'), id = tr.dataset.id;
+  var r = TODO.filter(function(x){ return String(x.admin_id) === id })[0];
+  if (b.classList.contains('guardar')) {
+    var nuevo = tr.querySelector('td.nombre input').value.trim();
+    b.disabled = true; cambiar(id, { p_name: nuevo }, 'Renamed run #' + id + ': ' + r.player_name + ' → ' + nuevo + '.');
+  } else if (b.classList.contains('ocultar')) {
+    b.disabled = true; cambiar(id, { p_hidden: true }, 'Run #' + id + ' (' + r.player_name + ') is hidden from the board. It stays on file.');
+  } else if (b.classList.contains('mostrar')) {
+    b.disabled = true; cambiar(id, { p_hidden: false }, 'Run #' + id + ' (' + r.player_name + ') is back on the board.');
+  }
+});
+['fEsc', 'fTab', 'fVel', 'fOc'].forEach(function(id){ $(id).addEventListener('change', pintar) });
+$('fNom').addEventListener('input', pintar);
+
+if (!SES) { fuera() }
+else {
+  rpc('is_admin', {}).then(function(ok){
+    if (ok !== true) return fuera('That address is not in app_admins, so it cannot manage the standings.');
+    $('panel').classList.remove('oculto'); cargar();
+  }).catch(function(e){ if (e.fuera) return fuera(); fuera('Could not check your sign-in' + porque(e)) });
+}
+})();
+</script>
+</body>
+</html>
