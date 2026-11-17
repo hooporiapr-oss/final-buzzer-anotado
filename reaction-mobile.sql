@@ -1,12 +1,14 @@
 -- ═══════════════════════════════════════════════════════════════════
---  REACTION MOBILE — the phone games' board
+--  HOME BASE and SWIPE IT — their board
 --  Run once in the Supabase SQL editor, BEFORE the updated pages go live.
 --
---  One new board for the two phone games (vreaction.com/mobile.html):
+--  One new board for Home Base and Swipe It — played from the Reaction
+--  Velocity hub (any device) or from Reaction Mobile (phones):
 --    vr_mobile_standings   game_key 'home-base' (Home Base)
 --                                   'swipe-it'  (Swipe It)
---  Phone BPM stays apart from the tablet games' boards, so the two never
---  mix in My Progress, personal bests or the Coach View.
+--  Each run records its device ('tablet' or 'phone'), so a tablet reach
+--  and a phone flick never mix in My Progress, personal bests or the
+--  Coach View. If the board was already created, this adds the device.
 --
 --  Pages may read the board and add runs; they cannot change or delete
 --  runs. Codes for these games are product 'reaction-mobile' in the
@@ -28,6 +30,9 @@ create table if not exists public.vr_mobile_standings (
   hidden      boolean not null default false,
   logged_at   timestamptz not null default now()
 );
+
+alter table public.vr_mobile_standings add column if not exists device text not null default 'phone'
+  check (device in ('tablet', 'phone'));
 
 create index if not exists vr_mobile_standings_school on public.vr_mobile_standings (school_name, game_key);
 
