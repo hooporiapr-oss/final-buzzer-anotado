@@ -1,0 +1,11 @@
+-- ═══════════════════════════════════════════════════════════════════
+--  THE FORTRESS: CHAIN SPEED
+--  Run once in the Supabase SQL editor, BEFORE the updated Fortress goes live.
+--
+--  The Fortress now plays its chain at the player's own speed (their
+--  Reaction Speed Free Tap BPM, adjustable with − / +). Each saved run
+--  keeps that speed (e.g. '90') so the board can show it next to the level.
+--  Runs saved before today have none. Nothing already there is deleted
+--  or changed. Safe to run more than once.
+-- ═══════════════════════════════════════════════════════════════════
+alter table public.dynamic_memory_quarter_standings add column if not exists speed text;
